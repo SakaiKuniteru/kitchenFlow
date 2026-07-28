@@ -78,6 +78,25 @@ const LOAI_CHINH_SACH = [
 
 ];
 
+const LOAI_DON_VI = [
+
+    {
+        value: 10,
+        name: "Khối lượng"
+    },
+
+    {
+        value: 20,
+        name: "Thể tích"
+    },
+
+    {
+        value: 30,
+        name: "Đếm"
+    }
+
+];
+
 const TRANG_THAI_PHIEU_THU = [
     {
         value: -10,
@@ -175,6 +194,8 @@ module.exports = {
     "loaiMienGiam": LOAI_MIEN_GIAM,
 
     "loaiChinhSach": LOAI_CHINH_SACH,
+
+    "loaiDonVi": LOAI_DON_VI,
 
     "trangThaiPhieuThu": TRANG_THAI_PHIEU_THU,
 

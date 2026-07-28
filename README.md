@@ -567,6 +567,237 @@ src
 └── public
 ```
 
+
+---
+
+---
+
+# Quy tắc Git
+
+Dự án sử dụng 2 nhánh chính:
+
+| Nhánh | Mục đích |
+|-------|----------|
+| `development` | Phát triển hằng ngày |
+| `production` | Phiên bản ổn định, dùng để phát hành |
+
+> **Lưu ý:** Không commit trực tiếp lên `production`. Mọi thay đổi đều được phát triển trên `development` và chỉ merge sang `production` khi kiểm thử hoàn tất.
+
+---
+
+# Quy tắc Commit
+
+Định dạng:
+
+```text
+<type>: <mô tả ngắn>
+```
+
+Các loại commit:
+
+| Type | Ý nghĩa |
+|------|----------|
+| feat | Thêm chức năng mới |
+| fix | Sửa lỗi |
+| docs | Cập nhật tài liệu |
+| style | Chỉnh sửa định dạng code |
+| refactor | Tái cấu trúc code |
+| test | Thêm hoặc sửa test |
+| chore | Công việc bảo trì (config, package...) |
+| db | Thay đổi cấu trúc Database |
+| seed | Cập nhật dữ liệu seed |
+
+Ví dụ:
+
+```bash
+git commit -m "feat: thêm quản lý voucher"
+
+git commit -m "fix: sửa validate chức vụ"
+
+git commit -m "docs: cập nhật README"
+
+git commit -m "db: cập nhật bảng dm_voucher"
+
+git commit -m "seed: cập nhật dữ liệu quốc gia"
+```
+
+---
+
+# Quy trình làm việc
+
+## 1. Chuyển sang nhánh phát triển
+
+```bash
+git checkout development
+```
+
+Cập nhật code mới nhất:
+
+```bash
+git pull origin development
+```
+
+---
+
+## 2. Sau khi hoàn thành chức năng
+
+Kiểm tra thay đổi:
+
+```bash
+git status
+```
+
+Thêm file:
+
+```bash
+git add .
+```
+
+Hoặc:
+
+```bash
+git add <tên_file>
+```
+
+Commit:
+
+```bash
+git commit -m "feat: thêm API quản lý voucher"
+```
+
+Đẩy lên GitHub:
+
+```bash
+git push
+```
+
+> Nếu là lần đầu đẩy nhánh `development`:
+
+```bash
+git push -u origin development
+```
+
+---
+
+## 3. Phát hành phiên bản
+
+Chuyển sang nhánh production:
+
+```bash
+git checkout production
+```
+
+Lấy code mới nhất:
+
+```bash
+git pull origin production
+```
+
+Merge từ development:
+
+```bash
+git merge development
+```
+
+Đẩy lên GitHub:
+
+```bash
+git push origin production
+```
+
+---
+
+# Một số lệnh Git thường dùng
+
+## Kiểm tra trạng thái
+
+```bash
+git status
+```
+
+## Xem lịch sử commit
+
+```bash
+git log --oneline
+```
+
+## Kiểm tra nhánh hiện có
+
+```bash
+git branch
+```
+
+## Kiểm tra tất cả nhánh
+
+```bash
+git branch -a
+```
+
+## Kiểm tra nhánh trên GitHub
+
+```bash
+git branch -r
+```
+
+## Kiểm tra nhánh đang theo dõi
+
+```bash
+git branch -vv
+```
+
+## Chuyển nhánh
+
+```bash
+git checkout development
+```
+
+```bash
+git checkout production
+```
+
+## Tạo nhánh mới
+
+```bash
+git checkout -b ten_nhanh
+```
+
+## Lấy code mới nhất
+
+```bash
+git pull
+```
+
+## Đẩy code lên GitHub
+
+```bash
+git push
+```
+
+---
+
+# Quy trình phát triển
+
+```text
+Code
+    ↓
+git status
+    ↓
+git add .
+    ↓
+git commit -m "feat: ..."
+    ↓
+git push
+    ↓
+Pull Request (nếu làm việc nhóm)
+    ↓
+Merge vào development
+    ↓
+Kiểm thử
+    ↓
+Merge sang production
+```
+
+
 ---
 
 ## Tác giả
