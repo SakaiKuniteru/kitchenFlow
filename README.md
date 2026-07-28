@@ -102,6 +102,334 @@ psql -U postgres -d kitchenflow -f database.sql
 
 ---
 
+# Truy cập Database
+
+## Đăng nhập PostgreSQL
+
+```bash
+psql -U postgres
+```
+
+Hoặc đăng nhập trực tiếp vào database:
+
+```bash
+psql -U <username> -d kitchenflow
+```
+
+Ví dụ:
+
+```bash
+psql -U quochuy -d kitchenflow
+```
+
+---
+
+# Một số lệnh PostgreSQL thường dùng
+
+## Liệt kê Database
+
+```sql
+\l
+```
+
+Hoặc
+
+```sql
+\list
+```
+
+---
+
+## Kết nối Database
+
+```sql
+\c kitchenflow
+```
+
+Hoặc
+
+```sql
+\connect kitchenflow
+```
+
+---
+
+## Kiểm tra đang kết nối Database nào
+
+```sql
+SELECT current_database();
+```
+
+---
+
+## Kiểm tra tài khoản đang đăng nhập
+
+```sql
+SELECT current_user;
+```
+
+---
+
+## Hiển thị danh sách Schema
+
+```sql
+\dn
+```
+
+---
+
+## Hiển thị danh sách bảng
+
+```sql
+\dt
+```
+
+Hiển thị bảng của schema cụ thể:
+
+```sql
+\dt public.*
+```
+
+---
+
+## Hiển thị tất cả đối tượng
+
+```sql
+\d
+```
+
+Lệnh này sẽ hiển thị:
+
+* Table
+* View
+* Sequence
+* Index
+* Materialized View
+
+---
+
+## Hiển thị View
+
+```sql
+\dv
+```
+
+---
+
+## Hiển thị Sequence
+
+```sql
+\ds
+```
+
+---
+
+## Xem cấu trúc bảng
+
+```sql
+\d dm_nhan_vien
+```
+
+Ví dụ
+
+```sql
+\d dm_voucher
+```
+
+Hiển thị:
+
+* Column
+* Data Type
+* Nullable
+* Default
+* Primary Key
+* Foreign Key
+* Index
+
+---
+
+## Xem Index của bảng
+
+```sql
+\di
+```
+
+---
+
+## Mô tả đầy đủ bảng
+
+```sql
+\d+ dm_nhan_vien
+```
+
+---
+
+## Truy vấn dữ liệu
+
+```sql
+SELECT * FROM dm_nhan_vien;
+```
+
+---
+
+## Giới hạn số bản ghi
+
+```sql
+SELECT * FROM dm_nhan_vien
+LIMIT 10;
+```
+
+---
+
+## Sắp xếp dữ liệu
+
+```sql
+SELECT *
+FROM dm_nhan_vien
+ORDER BY id DESC;
+```
+
+---
+
+## Đếm số lượng
+
+```sql
+SELECT COUNT(*)
+FROM dm_nhan_vien;
+```
+
+---
+
+## Tìm kiếm
+
+```sql
+SELECT *
+FROM dm_nhan_vien
+WHERE ho_ten ILIKE '%Nguyễn%';
+```
+
+---
+
+## Xóa toàn bộ dữ liệu bảng
+
+> Không xóa cấu trúc bảng
+
+```sql
+TRUNCATE TABLE dm_nhan_vien;
+```
+
+Hoặc reset luôn ID:
+
+```sql
+TRUNCATE TABLE dm_nhan_vien RESTART IDENTITY;
+```
+
+---
+
+## Xóa câu truy vấn đang nhập
+
+Nếu nhập sai nhưng chưa thực thi:
+
+```sql
+\r
+```
+
+Ví dụ
+
+```sql
+SELECT *
+FROM dm_nhan_vien
+WHERE
+```
+
+Muốn hủy:
+
+```sql
+\r
+```
+
+---
+
+## Xóa màn hình
+
+```sql
+\! clear
+```
+
+Hoặc
+
+```text
+Ctrl + L
+```
+
+---
+
+## Hiển thị thời gian thực thi câu SQL
+
+```sql
+\timing
+```
+
+Tắt:
+
+```sql
+\timing off
+```
+
+---
+
+## Thực thi file SQL
+
+```sql
+\i database.sql
+```
+
+Ví dụ
+
+```sql
+\i migrations/20260723_add_dm_voucher.sql
+```
+
+---
+
+## Thoát PostgreSQL
+
+```sql
+\q
+```
+
+---
+
+# Truy vấn nhanh từ Terminal
+
+Thực hiện trực tiếp câu SQL mà không cần vào `psql`.
+
+Ví dụ xem dữ liệu:
+
+```bash
+psql -U quochuy -d kitchenflow -c "SELECT * FROM dm_nhan_vien;"
+```
+
+Đếm số lượng:
+
+```bash
+psql -U quochuy -d kitchenflow -c "SELECT COUNT(*) FROM dm_nhan_vien;"
+```
+
+Xem 10 quốc gia đầu tiên:
+
+```bash
+psql -U quochuy -d kitchenflow -c "SELECT * FROM dm_quoc_gia LIMIT 10;"
+```
+
+Xem danh sách bảng:
+
+```bash
+psql -U quochuy -d kitchenflow -c "\dt"
+```
+
+---
+
 # Seed dữ liệu
 
 ```bash
