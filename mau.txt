@@ -1,0 +1,699 @@
+.route
+import express from "express";
+const router = express.Router();
+
+const phongBanController = require("./phong-ban.controller");
+const { updateSchema } = require("./phong-ban.validation");
+
+const validate = require("../../middlewares/validate.middleware");
+const authenticate = require("../../middlewares/authenticate.middleware");
+
+const router = express.Router();
+
+router.get(
+    "/dm-phong-ban",
+    authenticate,
+    controller.getDanhSach
+);
+
+router.get(
+    "/chi-tiet/:id",
+    authenticate,
+    controller.getChiTiet
+);
+
+
+router.post(
+    "/them-moi",
+    authenticate,
+    controller.create
+);
+
+
+router.put(
+    "/cap-nhat/:id",
+    authenticate,
+    controller.update
+);
+
+
+router.put(
+    "/khoa/:id",
+    authenticate,
+    controller.khoa
+);
+
+router.put(
+    "/mo-khoa/:id",
+    authenticate,
+    controller.moKhoa
+);
+
+
+export default router;
+
+
+.service
+const ApiError = require("../../utils/api-error");
+
+const phongBanRepository = require("./phong-ban.repository");
+
+class PhongBanService {
+
+    async getDanhSach(query) {
+
+        return await phongBanRepository
+            .getDanhSach(query);
+
+    }
+
+    async getChiTiet(id) {
+
+        const phongBan =
+            await phongBanRepository
+                .getChiTiet(id);
+
+        if (!phongBan) {
+
+            throw new Error(
+                "Phòng ban không tồn tại."
+            );
+
+        }
+
+        return phongBan;
+
+    }
+
+    async chuanHoaLienKet(data) {
+
+        const duLieu = {
+            ...data
+        };
+
+        return duLieu;
+
+    }
+
+    async validateLienKet(data) {
+
+    }
+
+    async validateTrungDuLieu(
+        data,
+        excludeId = null
+    ) {
+
+    }
+
+    async create(data) {
+
+        const {
+            error,
+            value
+        } = createPhongBanSchema.validate(
+            data,
+            {
+                abortEarly: false,
+                stripUnknown: true
+            }
+        );
+
+        if (error) {
+
+            throw new Error(
+                error.details
+                    .map(item => item.message)
+                    .join(", ")
+            );
+
+        }
+
+        const duLieu =
+            await this.chuanHoaLienKet(
+                value
+            );
+
+        await this.validateLienKet(
+            duLieu
+        );
+
+        await this.validateTrungDuLieu(
+            duLieu
+        );
+
+        return await phongBanRepository
+            .create(duLieu);
+
+    }
+
+    async update(id, data) {
+
+        const phongBan =
+            await phongBanRepository
+                .getChiTiet(id);
+
+        if (!phongBan) {
+
+            throw new Error(
+                "Phòng ban không tồn tại."
+            );
+
+        }
+
+        const {
+            error,
+            value
+        } = updatePhongBanSchema.validate(
+            data,
+            {
+                abortEarly: false,
+                stripUnknown: true
+            }
+        );
+
+        if (error) {
+
+            throw new Error(
+                error.details
+                    .map(item => item.message)
+                    .join(", ")
+            );
+
+        }
+
+        const duLieu =
+            await this.chuanHoaLienKet(
+                value
+            );
+
+        await this.validateLienKet(
+            duLieu
+        );
+
+        await this.validateTrungDuLieu(
+            duLieu,
+            id
+        );
+
+        return await phongBanRepository
+            .update(
+                id,
+                duLieu
+            );
+
+    }
+
+    async khoa(id) {
+
+        const phongBan =
+            await phongBanRepository
+                .getChiTiet(id);
+
+        if (!phongBan) {
+
+            throw new Error(
+                "Phòng ban không tồn tại."
+            );
+
+        }
+
+        if (!phongBan.active) {
+
+            throw new Error(
+                "Phòng ban đã bị khóa."
+            );
+
+        }
+
+        await phongBanRepository.khoa(id);
+
+    }
+
+    async moKhoa(id) {
+
+        const phongBan =
+            await phongBanRepository
+                .getChiTiet(id);
+
+        if (!phongBan) {
+
+            throw new Error(
+                "Phòng ban không tồn tại."
+            );
+
+        }
+
+        if (phongBan.active) {
+
+            throw new Error(
+                "Phòng ban đang hoạt động."
+            );
+
+        }
+
+        await phongBanRepository.moKhoa(id);
+
+    }
+
+}
+
+
+export default new PhongBanService();
+
+
+.repository
+import pool from "../../config/database.js";
+
+
+class PhongBanRepository {
+
+    mapPhongBan(row) {
+
+        if (!row) {
+            return null;
+        }
+
+        return {
+
+            id: row.id,
+
+            maPhongBan:
+                row.ma_phong_ban,
+
+            tenPhongBan:
+                row.ten_phong_ban,
+
+            moTa:
+                row.mo_ta,
+
+            coSoId:
+                row.co_so_id,
+
+            maCoSo:
+                row.ma_co_so,
+
+            tenCoSo:
+                row.ten_co_so,
+
+            active:
+                row.active,
+
+            createdAt:
+                row.created_at,
+
+            updatedAt:
+                row.updated_at
+
+        };
+
+    }
+
+    getBaseQuery() {
+
+        return `
+            SELECT
+                pb.id,
+                pb.ma_phong_ban,
+                pb.ten_phong_ban,
+                pb.mo_ta,
+                pb.co_so_id,
+                pb.active,
+                pb.created_at,
+                pb.updated_at,
+
+                cs.ma_co_so,
+                cs.ten_co_so
+
+            FROM dm_phong_ban pb
+
+            LEFT JOIN dm_co_so cs
+                ON cs.id = pb.co_so_id
+        `;
+
+    }
+
+
+    async getDanhSach(query) {
+
+    }
+
+    async getChiTiet(id) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE pb.id = $1
+
+            LIMIT 1
+        `;
+
+        const result =
+            await pool.query(
+                sql,
+                [id]
+            );
+
+        return this.mapPhongBan(
+            result.rows[0]
+        );
+
+    }
+
+    async getCoSoByMa(maCoSo) {
+
+    }
+
+    async existsCoSo(coSoId) {
+
+    }
+
+    async existsMaPhongBan(
+        maPhongBan,
+        excludeId = null
+    ) {
+
+    }
+
+    async existsTenPhongBan(
+        tenPhongBan,
+        coSoId,
+        excludeId = null
+    ) {
+
+    }
+
+    async create(data) {
+
+    }
+
+    async update(id, data) {
+
+    }
+
+    async khoa(id) {
+
+        const sql = `
+            UPDATE dm_phong_ban
+            SET
+                active = FALSE,
+                updated_at = NOW()
+            WHERE id = $1
+            RETURNING id
+        `;
+
+        const result =
+            await pool.query(
+                sql,
+                [id]
+            );
+
+        return result.rowCount > 0;
+
+    }
+
+    async moKhoa(id) {
+
+        const sql = `
+            UPDATE dm_phong_ban
+            SET
+                active = TRUE,
+                updated_at = NOW()
+            WHERE id = $1
+            RETURNING id
+        `;
+
+        const result =
+            await pool.query(
+                sql,
+                [id]
+            );
+
+        return result.rowCount > 0;
+
+    }
+
+}
+
+
+export default new PhongBanRepository();
+
+
+.controller
+import phongBanService from "./phong-ban.service.js";
+
+
+class PhongBanController {
+    async getDanhSach(req, res, next) {
+
+        try {
+
+            const data =
+                await phongBanService.getDanhSach(
+                    req.query
+                );
+
+            return res.status(200).json({
+
+                success: true,
+
+                message:
+                    "Lấy danh sách phòng ban thành công.",
+
+                data
+
+            });
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
+
+    async getChiTiet(req, res, next) {
+
+        try {
+
+            const { id } = req.params;
+
+            const data =
+                await phongBanService.getChiTiet(id);
+
+            return res.status(200).json({
+
+                success: true,
+
+                message:
+                    "Lấy chi tiết phòng ban thành công.",
+
+                data
+
+            });
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
+
+    async create(req, res, next) {
+
+        try {
+
+            const data =
+                await phongBanService.create(
+                    req.body
+                );
+
+            return res.status(201).json({
+
+                success: true,
+
+                message:
+                    "Thêm phòng ban thành công.",
+
+                data
+
+            });
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
+
+
+    async update(req, res, next) {
+
+        try {
+
+            const { id } = req.params;
+
+            const data =
+                await phongBanService.update(
+                    id,
+                    req.body
+                );
+
+            return res.status(200).json({
+
+                success: true,
+
+                message:
+                    "Cập nhật phòng ban thành công.",
+
+                data
+
+            });
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
+
+
+    async khoa(req, res, next) {
+
+        try {
+
+            const { id } = req.params;
+
+            await phongBanService.khoa(id);
+
+            return res.status(200).json({
+
+                success: true,
+
+                message:
+                    "Khóa phòng ban thành công.",
+
+                data: null
+
+            });
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
+
+
+    async moKhoa(req, res, next) {
+
+        try {
+
+            const { id } = req.params;
+
+            await phongBanService.moKhoa(id);
+
+            return res.status(200).json({
+
+                success: true,
+
+                message:
+                    "Mở khóa phòng ban thành công.",
+
+                data: null
+
+            });
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
+
+}
+
+
+export default new PhongBanController();
+
+.validate
+
+const Joi = require("joi");
+
+const updateSchema = Joi.object({
+
+    maPhongBan: Joi.string()
+        .trim()
+        .max(50)
+        .required()
+        .messages({
+            "string.empty":
+                "Mã phòng ban không được để trống.",
+            "string.max":
+                "Mã phòng ban không được vượt quá 50 ký tự.",
+            "any.required":
+                "Mã phòng ban là bắt buộc."
+        }),
+
+    tenPhongBan: Joi.string()
+        .trim()
+        .max(255)
+        .required()
+        .messages({
+            "string.empty":
+                "Tên phòng ban không được để trống.",
+            "string.max":
+                "Tên phòng ban không được vượt quá 255 ký tự.",
+            "any.required":
+                "Tên phòng ban là bắt buộc."
+        }),
+
+    moTa: Joi.string()
+        .trim()
+        .max(500)
+        .allow("", null),
+
+    coSoId: Joi.number()
+        .integer()
+        .positive()
+        .optional()
+        .messages({
+            "number.base":
+                "ID cơ sở phải là số.",
+            "number.integer":
+                "ID cơ sở không hợp lệ.",
+            "number.positive":
+                "ID cơ sở không hợp lệ."
+        }),
+
+    maCoSo: Joi.string()
+        .trim()
+        .max(50)
+        .optional()
+        .messages({
+            "string.empty":
+                "Mã cơ sở không được để trống.",
+            "string.max":
+                "Mã cơ sở không được vượt quá 50 ký tự."
+        })
+
+})
+    .or(
+        "coSoId",
+        "maCoSo"
+    )
+    .messages({
+
+        "object.missing":
+            "Phải truyền coSoId hoặc maCoSo."
+
+    });
+
+module.exports = {
+    updateSchema
+};
