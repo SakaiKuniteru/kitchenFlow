@@ -42,9 +42,17 @@ module.exports = [
 
     {
         ma_vai_tro:"KHO",
-        ten_vai_tro:"Nhân viên kho",
+        ten_vai_tro:"Quả lý kho",
         mo_ta:"Quản lý nhập xuất kho",
         active:true
-    }
+    },
+
+
+    {
+        ma_vai_tro:"XEM",
+        ten_vai_tro:"Chỉ Xem",
+        mo_ta:"Chỉ xem được không sửa được",
+        active:true
+    },
 
 ];

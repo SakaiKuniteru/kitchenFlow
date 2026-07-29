@@ -3,6 +3,7 @@
 // ======================
 const seedNhomTinhNang = require("./xac-thuc/seed/nhom-tinh-nang.seed");
 const seedQuyen = require("./xac-thuc/seed/quyen.seed");
+const seedQuyenNhomTinhNang = require("./xac-thuc/seed/quyen-nhom-tinh-nang.seed")
 const seedVaiTro = require("./xac-thuc/seed/vai-tro.seed");
 const seedVaiTroQuyen = require("./xac-thuc/seed/vai-tro-quyen.seed");
 const seedTaiKhoan = require("./xac-thuc/seed/tai-khoan.seed");
@@ -38,6 +39,7 @@ const seedVoucher = require("./chinh-sach/seed/voucher.seed");
 // SYTEM
 // ======================
 const seedThietLap = require("./he-thong/seed/thiet-lap.seed");
+const seedThietLapNhomTinhNang = require("./he-thong/seed/thiet-lap-nhom-tinh-nang.seed");
 
 // ======================
 // ĐỊA CHỈ
@@ -58,12 +60,15 @@ async function runSeed() {
 
     await seedNhomTinhNang();
     await seedQuyen();
+    await seedQuyenNhomTinhNang();
     await seedVaiTro();
     await seedVaiTroQuyen();
     await seedCoSo();
     await seedChucVu();
     await seedPhongBan();
     await seedNhanVien();
+    await seedThietLap();
+    await seedThietLapNhomTinhNang();
     await seedTaiKhoan();
     await seedNhanVienVaiTro();
     await seedDonViTinh();
@@ -72,7 +77,6 @@ async function runSeed() {
     await seedDonViTinh();
     await seedNhomMonAn();
     await seedThucPham();
-    await seedThietLap();
     await seedVoucher();
     await seedChinhSach();
     await seedChinhSachVaiTro();

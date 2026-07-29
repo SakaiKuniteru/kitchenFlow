@@ -49,12 +49,12 @@ const LOAI_MIEN_GIAM = [
 
     {
         value: 10,
-        name: "Theo phần trăm"
+        name: "Phần trăm"
     },
 
     {
         value: 20,
-        name: "Theo số tiền"
+        name: "Số tiền"
     }
 
 ];

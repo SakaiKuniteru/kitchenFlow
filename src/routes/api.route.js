@@ -36,6 +36,8 @@ const chinhSachRoute = require("../modules/chinh-sach/chinh-sach.route");
 
 const donViTinhRoute = require("../modules/don-vi-tinh/don-vi-tinh.route");
 
+const nhaAnTinhRoute = require("../modules/nha-an/nha-an.route");
+
 //-------------//
 
 router.use("/enums", enumRoute);
@@ -71,5 +73,7 @@ router.use("/dm-voucher", voucherRoute);
 router.use("/dm-chinh-sach", chinhSachRoute);
 
 router.use("/dm-don-vi-tinh", donViTinhRoute);
+
+router.use("/dm-nha-an", nhaAnTinhRoute);
 
 module.exports = router;

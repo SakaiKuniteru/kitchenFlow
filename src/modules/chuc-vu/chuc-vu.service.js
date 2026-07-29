@@ -179,6 +179,5 @@ class ChucVuService {
 
 }
 
-
 module.exports =
     new ChucVuService();

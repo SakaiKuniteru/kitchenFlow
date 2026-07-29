@@ -1,12 +1,8 @@
 module.exports = [
 
     {
-        ma_co_so: "CS",
-
+        ma_co_so: "CS01",
         ten_co_so: "Trụ sở",
-
-        dia_chi: "Hà Nội",
-
         active: true
     }
 

@@ -1,502 +1,387 @@
 module.exports = [
+
     {
-        ma_quyen: "AUTH_00001",
-        ten_quyen: "Đăng nhập",
-        
-        mo_ta: "Cho phép đăng nhập hệ thống"
-    },
-    {
-        ma_quyen: "AUTH_00002",
-        ten_quyen: "Đăng xuất",
-        
-        mo_ta: "Cho phép đăng xuất"
-    },
-    {
-        ma_quyen: "AUTH_00003",
-        ten_quyen: "Làm mới Access Token",
-        
-        mo_ta: "Refresh Access Token"
-    },
-    {
-        ma_quyen: "AUTH_00004",
-        ten_quyen: "Đổi mật khẩu",
-        
-        mo_ta: "Đổi mật khẩu tài khoản"
-    },
-    {
-        ma_quyen: "AUTH_00005",
-        ten_quyen: "Quên mật khẩu",
-        
-        mo_ta: "Khôi phục mật khẩu"
-    },
-    {
-        ma_quyen: "AUTH_00006",
-        ten_quyen: "Đặt lại mật khẩu",
-        
-        mo_ta: "Reset mật khẩu"
-    },
-    {
-        ma_quyen: "AUTH_00007",
-        ten_quyen: "Xem thông tin cá nhân",
-        
-        mo_ta: "Xem hồ sơ cá nhân"
-    },
-    {
-        ma_quyen: "AUTH_00008",
-        ten_quyen: "Cập nhật thông tin cá nhân",
-        
-        mo_ta: "Cập nhật hồ sơ cá nhân"
+        ma_quyen: "Q000001",
+        ten_quyen: "Truy cập trang chủ",
+        mo_ta: "Cho phép người dùng truy cập và sử dụng màn hình trang chủ của hệ thống."
     },
 
     {
-        ma_quyen: "ROLE_00001",
-        ten_quyen: "Xem danh sách vai trò",
-        
-        mo_ta: "Xem danh sách vai trò"
-    },
-    {
-        ma_quyen: "ROLE_00002",
-        ten_quyen: "Xem chi tiết vai trò",
-        
-        mo_ta: "Xem chi tiết vai trò"
-    },
-    {
-        ma_quyen: "ROLE_00003",
-        ten_quyen: "Thêm vai trò",
-        
-        mo_ta: "Tạo vai trò"
-    },
-    {
-        ma_quyen: "ROLE_00004",
-        ten_quyen: "Cập nhật vai trò",
-        
-        mo_ta: "Cập nhật vai trò"
-    },
-    {
-        ma_quyen: "ROLE_00005",
-        ten_quyen: "Xóa vai trò",
-        
-        mo_ta: "Xóa vai trò"
-    },
-    {
-        ma_quyen: "ROLE_00006",
-        ten_quyen: "Phân quyền cho vai trò",
-        
-        mo_ta: "Gán quyền cho vai trò"
-    },
-    {
-        ma_quyen: "ROLE_00007",
-        ten_quyen: "Kích hoạt vai trò",
-        
-        mo_ta: "Kích hoạt vai trò"
-    },
-    {
-        ma_quyen: "ROLE_00008",
-        ten_quyen: "Xuất Excel vai trò",
-        
-        mo_ta: "Xuất danh sách vai trò"
+        ma_quyen: "Q000002",
+        ten_quyen: "Xem cấu hình xác thực",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết cấu hình xác thực trong hệ thống."
     },
 
     {
-        ma_quyen: "PERM_00001",
-        ten_quyen: "Xem danh sách quyền",
-        
-        mo_ta: "Xem danh sách quyền"
-    },
-    {
-        ma_quyen: "PERM_00002",
-        ten_quyen: "Xem chi tiết quyền",
-        
-        mo_ta: "Xem chi tiết quyền"
-    },
-    {
-        ma_quyen: "PERM_00003",
-        ten_quyen: "Thêm quyền",
-        
-        mo_ta: "Tạo quyền"
-    },
-    {
-        ma_quyen: "PERM_00004",
-        ten_quyen: "Cập nhật quyền",
-        
-        mo_ta: "Cập nhật quyền"
-    },
-    {
-        ma_quyen: "PERM_00005",
-        ten_quyen: "Xóa quyền",
-        
-        mo_ta: "Xóa quyền"
-    },
-    {
-        ma_quyen: "PERM_00006",
-        ten_quyen: "Kích hoạt quyền",
-        
-        mo_ta: "Kích hoạt quyền"
-    },
-    {
-        ma_quyen: "PERM_00007",
-        ten_quyen: "Xuất Excel quyền",
-        
-        mo_ta: "Xuất danh sách quyền"
+        ma_quyen: "Q000003",
+        ten_quyen: "Xem + Thêm cấu hình xác thực",
+        mo_ta: "Cho phép người dùng thêm mới cấu hình xác thực trong hệ thống."
     },
 
     {
-        ma_quyen: "SHIFT_00001",
-        ten_quyen: "Xem danh sách ca ăn",
-        
-        mo_ta: "Xem danh sách ca ăn"
-    },
-    {
-        ma_quyen: "SHIFT_00002",
-        ten_quyen: "Xem chi tiết ca ăn",
-        
-        mo_ta: "Xem chi tiết ca ăn"
-    },
-    {
-        ma_quyen: "SHIFT_00003",
-        ten_quyen: "Thêm ca ăn",
-        
-        mo_ta: "Tạo mới ca ăn"
-    },
-    {
-        ma_quyen: "SHIFT_00004",
-        ten_quyen: "Cập nhật ca ăn",
-        
-        mo_ta: "Cập nhật ca ăn"
-    },
-    {
-        ma_quyen: "SHIFT_00005",
-        ten_quyen: "Xóa ca ăn",
-        
-        mo_ta: "Xóa ca ăn"
-    },
-    {
-        ma_quyen: "SHIFT_00006",
-        ten_quyen: "Kích hoạt ca ăn",
-        
-        mo_ta: "Kích hoạt hoặc ngừng sử dụng ca ăn"
-    },
-    {
-        ma_quyen: "SHIFT_00007",
-        ten_quyen: "Sắp xếp thứ tự ca ăn",
-        
-        mo_ta: "Thay đổi thứ tự hiển thị ca ăn"
-    },
-    {
-        ma_quyen: "SHIFT_00008",
-        ten_quyen: "Xuất Excel ca ăn",
-        
-        mo_ta: "Xuất danh sách ca ăn"
-    },
-    {
-        ma_quyen: "SHIFT_00009",
-        ten_quyen: "Nhập Excel ca ăn",
-        
-        mo_ta: "Nhập danh sách ca ăn"
+        ma_quyen: "Q000004",
+        ten_quyen: "Xem + Sửa cấu hình xác thực",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa cấu hình xác thực trong hệ thống."
     },
 
     {
-        ma_quyen: "FOOD_00001",
-        ten_quyen: "Xem danh sách món ăn",
-        
-        mo_ta: "Xem danh sách món ăn"
-    },
-    {
-        ma_quyen: "FOOD_00002",
-        ten_quyen: "Xem chi tiết món ăn",
-        
-        mo_ta: "Xem chi tiết món ăn"
-    },
-    {
-        ma_quyen: "FOOD_00003",
-        ten_quyen: "Thêm món ăn",
-        
-        mo_ta: "Tạo mới món ăn"
-    },
-    {
-        ma_quyen: "FOOD_00004",
-        ten_quyen: "Cập nhật món ăn",
-        
-        mo_ta: "Cập nhật món ăn"
-    },
-    {
-        ma_quyen: "FOOD_00005",
-        ten_quyen: "Xóa món ăn",
-        
-        mo_ta: "Xóa món ăn"
-    },
-    {
-        ma_quyen: "FOOD_00006",
-        ten_quyen: "Kích hoạt món ăn",
-        
-        mo_ta: "Kích hoạt hoặc ngừng sử dụng món ăn"
-    },
-    {
-        ma_quyen: "FOOD_00007",
-        ten_quyen: "Sắp xếp thứ tự món ăn",
-        
-        mo_ta: "Thay đổi thứ tự hiển thị món ăn"
-    },
-    {
-        ma_quyen: "FOOD_00008",
-        ten_quyen: "Xuất Excel món ăn",
-        
-        mo_ta: "Xuất danh sách món ăn"
-    },
-    {
-        ma_quyen: "FOOD_00009",
-        ten_quyen: "Nhập Excel món ăn",
-        
-        mo_ta: "Nhập danh sách món ăn"
-    },
-    {
-        ma_quyen: "FOOD_00010",
-        ten_quyen: "Quản lý nhóm món ăn",
-        
-        mo_ta: "Quản lý nhóm món ăn"
-    },
-    {
-        ma_quyen: "FOOD_00011",
-        ten_quyen: "Cập nhật giá món ăn",
-        
-        mo_ta: "Thay đổi giá món ăn"
-    },
-    {
-        ma_quyen: "FOOD_00012",
-        ten_quyen: "Cập nhật hình ảnh món ăn",
-        
-        mo_ta: "Thay đổi hình ảnh món ăn"
-    },
-    {
-        ma_quyen: "FOOD_00013",
-        ten_quyen: "Xem lịch sử chỉnh sửa món ăn",
-        
-        mo_ta: "Xem lịch sử thay đổi món ăn"
+        ma_quyen: "Q000005",
+        ten_quyen: "Xem danh mục cơ sở",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục cơ sở trong hệ thống."
     },
 
     {
-        ma_quyen: "POLICY_00001",
-        ten_quyen: "Xem danh sách chính sách",
-        
-        mo_ta: "Xem danh sách chính sách hỗ trợ"
-    },
-    {
-        ma_quyen: "POLICY_00002",
-        ten_quyen: "Xem chi tiết chính sách",
-        
-        mo_ta: "Xem chi tiết chính sách"
-    },
-    {
-        ma_quyen: "POLICY_00003",
-        ten_quyen: "Thêm chính sách",
-        
-        mo_ta: "Tạo mới chính sách"
-    },
-    {
-        ma_quyen: "POLICY_00004",
-        ten_quyen: "Cập nhật chính sách",
-        
-        mo_ta: "Cập nhật chính sách"
-    },
-    {
-        ma_quyen: "POLICY_00005",
-        ten_quyen: "Xóa chính sách",
-        
-        mo_ta: "Xóa chính sách"
-    },
-    {
-        ma_quyen: "POLICY_00006",
-        ten_quyen: "Kích hoạt chính sách",
-        
-        mo_ta: "Kích hoạt hoặc ngừng áp dụng chính sách"
-    },
-    {
-        ma_quyen: "POLICY_00007",
-        ten_quyen: "Gán vai trò áp dụng",
-        
-        mo_ta: "Gán chính sách cho vai trò"
-    },
-    {
-        ma_quyen: "POLICY_00008",
-        ten_quyen: "Gán chức vụ áp dụng",
-        
-        mo_ta: "Gán chính sách cho chức vụ"
-    },
-    {
-        ma_quyen: "POLICY_00009",
-        ten_quyen: "Gán nhân viên áp dụng",
-        
-        mo_ta: "Gán chính sách cho nhân viên"
-    },
-    {
-        ma_quyen: "POLICY_00010",
-        ten_quyen: "Xuất Excel chính sách",
-        
-        mo_ta: "Xuất danh sách chính sách"
+        ma_quyen: "Q000006",
+        ten_quyen: "Xem + Thêm danh mục cơ sở",
+        mo_ta: "Cho phép người dùng thêm mới danh mục cơ sở trong hệ thống."
     },
 
     {
-        ma_quyen: "VOTE_00001",
-        ten_quyen: "Xem danh sách đợt bình chọn",
-        
-        mo_ta: "Xem danh sách đợt bình chọn"
-    },
-    {
-        ma_quyen: "VOTE_00002",
-        ten_quyen: "Xem chi tiết đợt bình chọn",
-        
-        mo_ta: "Xem chi tiết đợt bình chọn"
-    },
-    {
-        ma_quyen: "VOTE_00003",
-        ten_quyen: "Tạo đợt bình chọn",
-        
-        mo_ta: "Tạo mới đợt bình chọn"
-    },
-    {
-        ma_quyen: "VOTE_00004",
-        ten_quyen: "Cập nhật đợt bình chọn",
-        
-        mo_ta: "Cập nhật đợt bình chọn"
-    },
-    {
-        ma_quyen: "VOTE_00005",
-        ten_quyen: "Xóa đợt bình chọn",
-        
-        mo_ta: "Xóa đợt bình chọn"
-    },
-    {
-        ma_quyen: "VOTE_00006",
-        ten_quyen: "Khóa bình chọn",
-        
-        mo_ta: "Khóa đợt bình chọn"
-    },
-    {
-        ma_quyen: "VOTE_00007",
-        ten_quyen: "Mở khóa bình chọn",
-        
-        mo_ta: "Mở khóa đợt bình chọn"
-    },
-    {
-        ma_quyen: "VOTE_00008",
-        ten_quyen: "Bình chọn suất ăn",
-        
-        mo_ta: "Thực hiện bình chọn suất ăn"
-    },
-    {
-        ma_quyen: "VOTE_00009",
-        ten_quyen: "Hủy bình chọn",
-        
-        mo_ta: "Hủy phiếu bình chọn"
-    },
-    {
-        ma_quyen: "VOTE_00010",
-        ten_quyen: "Xem kết quả bình chọn",
-        
-        mo_ta: "Xem kết quả bình chọn"
-    },
-    {
-        ma_quyen: "VOTE_00011",
-        ten_quyen: "Xuất Excel kết quả",
-        
-        mo_ta: "Xuất kết quả bình chọn"
-    },
-    {
-        ma_quyen: "VOTE_00012",
-        ten_quyen: "Gửi thông báo bình chọn",
-        
-        mo_ta: "Gửi thông báo đến nhân viên"
+        ma_quyen: "Q000007",
+        ten_quyen: "Xem + Sửa danh mục cơ sở",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục cơ sở trong hệ thống."
     },
 
     {
-        ma_quyen: "REPORT_00001",
-        ten_quyen: "Xem báo cáo",
-        
-        mo_ta: "Xem báo cáo hệ thống"
-    },
-    {
-        ma_quyen: "REPORT_00002",
-        ten_quyen: "Xuất Excel báo cáo",
-        
-        mo_ta: "Xuất báo cáo Excel"
-    },
-    {
-        ma_quyen: "REPORT_00003",
-        ten_quyen: "Xuất PDF báo cáo",
-        
-        mo_ta: "Xuất báo cáo PDF"
-    },
-    {
-        ma_quyen: "REPORT_00004",
-        ten_quyen: "Thống kê suất ăn",
-        
-        mo_ta: "Thống kê số lượng suất ăn"
-    },
-    {
-        ma_quyen: "REPORT_00005",
-        ten_quyen: "Thống kê chi phí",
-        
-        mo_ta: "Thống kê chi phí"
+        ma_quyen: "Q000008",
+        ten_quyen: "Xem danh mục phòng ban",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục phòng ban trong hệ thống."
     },
 
     {
-        ma_quyen: "SYSTEM_00001",
-        ten_quyen: "Xem cấu hình hệ thống",
-        
-        mo_ta: "Xem cấu hình hệ thống"
+        ma_quyen: "Q000009",
+        ten_quyen: "Xem + Thêm danh mục phòng ban",
+        mo_ta: "Cho phép người dùng thêm mới danh mục phòng ban trong hệ thống."
     },
+
     {
-        ma_quyen: "SYSTEM_00002",
-        ten_quyen: "Cập nhật cấu hình",
-        
-        mo_ta: "Cập nhật cấu hình hệ thống"
+        ma_quyen: "Q000010",
+        ten_quyen: "Xem + Sửa danh mục phòng ban",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục phòng ban trong hệ thống."
     },
+
     {
-        ma_quyen: "SYSTEM_00003",
-        ten_quyen: "Xem nhật ký hệ thống",
-        
-        mo_ta: "Xem nhật ký hoạt động"
+        ma_quyen: "Q000011",
+        ten_quyen: "Xem danh mục chức vụ",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục chức vụ trong hệ thống."
     },
+
     {
-        ma_quyen: "SYSTEM_00004",
-        ten_quyen: "Xóa nhật ký",
-        
-        mo_ta: "Xóa nhật ký hệ thống"
+        ma_quyen: "Q000012",
+        ten_quyen: "Xem + Thêm danh mục chức vụ",
+        mo_ta: "Cho phép người dùng thêm mới danh mục chức vụ trong hệ thống."
     },
+
     {
-        ma_quyen: "SYSTEM_00005",
-        ten_quyen: "Sao lưu dữ liệu",
-        
-        mo_ta: "Sao lưu cơ sở dữ liệu"
+        ma_quyen: "Q000013",
+        ten_quyen: "Xem + Sửa danh mục chức vụ",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục chức vụ trong hệ thống."
     },
+
     {
-        ma_quyen: "SYSTEM_00006",
-        ten_quyen: "Khôi phục dữ liệu",
-        
-        mo_ta: "Khôi phục cơ sở dữ liệu"
+        ma_quyen: "Q000014",
+        ten_quyen: "Xem danh mục quốc gia",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục quốc gia trong hệ thống."
     },
+
     {
-        ma_quyen: "SYSTEM_00007",
-        ten_quyen: "Quản lý tham số hệ thống",
-        
-        mo_ta: "Quản lý tham số hệ thống"
+        ma_quyen: "Q000015",
+        ten_quyen: "Xem + Thêm danh mục quốc gia",
+        mo_ta: "Cho phép người dùng thêm mới danh mục quốc gia trong hệ thống."
     },
+
     {
-        ma_quyen: "SYSTEM_00008",
-        ten_quyen: "Quản lý thông báo",
-        
-        mo_ta: "Quản lý thông báo"
+        ma_quyen: "Q000016",
+        ten_quyen: "Xem + Sửa danh mục quốc gia",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục quốc gia trong hệ thống."
     },
+
     {
-        ma_quyen: "SYSTEM_00009",
-        ten_quyen: "Quản lý phiên đăng nhập",
-        
-        mo_ta: "Quản lý phiên đăng nhập"
+        ma_quyen: "Q000017",
+        ten_quyen: "Xem danh mục tỉnh thành",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục tỉnh thành trong hệ thống."
     },
+
     {
-        ma_quyen: "SYSTEM_00010",
-        ten_quyen: "Toàn quyền hệ thống",
-        
-        mo_ta: "Toàn quyền quản trị hệ thống"
+        ma_quyen: "Q000018",
+        ten_quyen: "Xem + Thêm danh mục tỉnh thành",
+        mo_ta: "Cho phép người dùng thêm mới danh mục tỉnh thành trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000019",
+        ten_quyen: "Xem + Sửa danh mục tỉnh thành",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục tỉnh thành trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000020",
+        ten_quyen: "Xem danh mục xã phường",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục xã phường trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000021",
+        ten_quyen: "Xem + Thêm danh mục xã phường",
+        mo_ta: "Cho phép người dùng thêm mới danh mục xã phường trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000022",
+        ten_quyen: "Xem + Sửa danh mục xã phường",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục xã phường trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000023",
+        ten_quyen: "Xem danh mục nhóm tính năng",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục nhóm tính năng trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000024",
+        ten_quyen: "Xem + Thêm danh mục nhóm tính năng",
+        mo_ta: "Cho phép người dùng thêm mới danh mục nhóm tính năng trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000025",
+        ten_quyen: "Xem + Sửa danh mục nhóm tính năng",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục nhóm tính năng trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000026",
+        ten_quyen: "Xem danh mục quyền",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục quyền trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000027",
+        ten_quyen: "Xem + Thêm danh mục quyền",
+        mo_ta: "Cho phép người dùng thêm mới danh mục quyền trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000028",
+        ten_quyen: "Xem + Sửa danh mục quyền",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục quyền trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000029",
+        ten_quyen: "Xem danh mục vai trò",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục vai trò trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000030",
+        ten_quyen: "Xem + Thêm danh mục vai trò",
+        mo_ta: "Cho phép người dùng thêm mới danh mục vai trò trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000031",
+        ten_quyen: "Xem + Sửa danh mục vai trò",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục vai trò trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000032",
+        ten_quyen: "Xem danh mục tài khoản",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục tài khoản trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000033",
+        ten_quyen: "Xem + Thêm danh mục tài khoản",
+        mo_ta: "Cho phép người dùng thêm mới danh mục tài khoản trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000034",
+        ten_quyen: "Xem + Sửa danh mục tài khoản",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục tài khoản trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000035",
+        ten_quyen: "Xem thiết lập chung",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết thiết lập chung trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000036",
+        ten_quyen: "Xem + Thêm thiết lập chung",
+        mo_ta: "Cho phép người dùng thêm mới thiết lập chung trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000037",
+        ten_quyen: "Xem + Sửa thiết lập chung",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa thiết lập chung trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000038",
+        ten_quyen: "Xem danh mục voucher",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục voucher trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000039",
+        ten_quyen: "Xem + Thêm danh mục voucher",
+        mo_ta: "Cho phép người dùng thêm mới danh mục voucher trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000040",
+        ten_quyen: "Xem + Sửa danh mục voucher",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục voucher trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000041",
+        ten_quyen: "Xem danh mục chính sách",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục chính sách trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000042",
+        ten_quyen: "Xem + Thêm danh mục chính sách",
+        mo_ta: "Cho phép người dùng thêm mới danh mục chính sách trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000043",
+        ten_quyen: "Xem + Sửa danh mục chính sách",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục chính sách trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000044",
+        ten_quyen: "Xem danh mục đơn vị tính",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục đơn vị tính trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000045",
+        ten_quyen: "Xem + Thêm danh mục đơn vị tính",
+        mo_ta: "Cho phép người dùng thêm mới danh mục đơn vị tính trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000046",
+        ten_quyen: "Xem + Sửa danh mục đơn vị tính",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục đơn vị tính trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000047",
+        ten_quyen: "Xem danh mục nhà ăn",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục nhà ăn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000048",
+        ten_quyen: "Xem + Thêm danh mục nhà ăn",
+        mo_ta: "Cho phép người dùng thêm mới danh mục nhà ăn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000049",
+        ten_quyen: "Xem + Sửa danh mục nhà ăn",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục nhà ăn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000050",
+        ten_quyen: "Xem danh mục ca ăn",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục ca ăn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000051",
+        ten_quyen: "Xem + Thêm danh mục ca ăn",
+        mo_ta: "Cho phép người dùng thêm mới danh mục ca ăn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000052",
+        ten_quyen: "Xem + Sửa danh mục ca ăn",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục ca ăn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000053",
+        ten_quyen: "Xem danh mục nhóm món ăn",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục nhóm món ăn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000054",
+        ten_quyen: "Xem + Thêm danh mục nhóm món ăn",
+        mo_ta: "Cho phép người dùng thêm mới danh mục nhóm món ăn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000055",
+        ten_quyen: "Xem + Sửa danh mục nhóm món ăn",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục nhóm món ăn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000056",
+        ten_quyen: "Xem danh mục món ăn",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục món ăn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000057",
+        ten_quyen: "Xem + Thêm danh mục món ăn",
+        mo_ta: "Cho phép người dùng thêm mới danh mục món ăn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000058",
+        ten_quyen: "Xem + Sửa danh mục món ăn",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục món ăn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000059",
+        ten_quyen: "Xem danh mục thực phẩm",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục thực phẩm trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000060",
+        ten_quyen: "Xem + Thêm danh mục thực phẩm",
+        mo_ta: "Cho phép người dùng thêm mới danh mục thực phẩm trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000061",
+        ten_quyen: "Xem + Sửa danh mục thực phẩm",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục thực phẩm trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000062",
+        ten_quyen: "Xem danh mục kho",
+        mo_ta: "Cho phép người dùng xem danh sách và thông tin chi tiết danh mục kho trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000063",
+        ten_quyen: "Xem + Thêm danh mục kho",
+        mo_ta: "Cho phép người dùng thêm mới danh mục kho trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q000064",
+        ten_quyen: "Xem + Sửa danh mục kho",
+        mo_ta: "Cho phép người dùng cập nhật và chỉnh sửa danh mục kho trong hệ thống."
     }
+
 ];

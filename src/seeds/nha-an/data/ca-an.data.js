@@ -1,7 +1,7 @@
 module.exports = [
 
     {
-        ma_ca_an: "SANG",
+        ma_ca_an: "CA01",
         ten_ca_an: "Ca sáng",
         gio_bat_dau: "06:00:00",
         gio_ket_thuc: "09:00:00",
@@ -9,7 +9,7 @@ module.exports = [
     },
 
     {
-        ma_ca_an: "TRUA",
+        ma_ca_an: "CA02",
         ten_ca_an: "Ca trưa",
         gio_bat_dau: "11:00:00",
         gio_ket_thuc: "13:30:00",
@@ -17,7 +17,7 @@ module.exports = [
     },
 
     {
-        ma_ca_an: "TOI",
+        ma_ca_an: "CA03",
         ten_ca_an: "Ca tối",
         gio_bat_dau: "17:00:00",
         gio_ket_thuc: "21:00:00",

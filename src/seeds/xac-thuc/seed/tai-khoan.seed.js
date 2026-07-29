@@ -16,42 +16,69 @@ async function seedTaiKhoan() {
 
         data,
 
-        transform: async (client, item) => {
+transform: async (client, item) => {
 
-            const result = await client.query(
-                `
-                SELECT id
-                FROM dm_nhan_vien
-                WHERE ma_nhan_vien = $1
-                `,
-                [
-                    item.ma_nhan_vien
-                ]
+    const nhanVien = await client.query(
+        `
+        SELECT id
+        FROM dm_nhan_vien
+        WHERE ma_nhan_vien = $1
+        `,
+        [
+            item.ma_nhan_vien
+        ]
+    );
+
+    if (nhanVien.rows.length === 0) {
+
+        throw new Error(
+            `Không tìm thấy nhân viên: ${item.ma_nhan_vien}`
+        );
+
+    }
+
+    let matKhau = item.mat_khau;
+
+    if (!matKhau) {
+
+        const thietLap = await client.query(
+            `
+            SELECT gia_tri
+            FROM dm_thiet_lap
+            WHERE ma_thiet_lap = 'MAT_KHAU_MAC_DINH'
+            LIMIT 1
+            `
+        );
+
+        if (thietLap.rows.length === 0) {
+
+            throw new Error(
+                "Không tìm thấy thiết lập MAT_KHAU_MAC_DINH."
             );
 
-            if (result.rows.length === 0) {
-
-                throw new Error(
-                    `Không tìm thấy nhân viên: ${item.ma_nhan_vien}`
-                );
-
-            }
-
-            const passwordHash = md5.hash(item.mat_khau);
-
-            return {
-
-                nhan_vien_id: result.rows[0].id,
-
-                ten_dang_nhap: item.ten_dang_nhap,
-
-                mat_khau_hash: passwordHash,
-
-                active: item.active
-
-            };
-
         }
+
+        matKhau = thietLap.rows[0].gia_tri;
+
+    }
+
+    return {
+
+        nhan_vien_id:
+            nhanVien.rows[0].id,
+
+        ten_dang_nhap:
+            item.ten_dang_nhap,
+
+        mat_khau_hash:
+            md5.hash(matKhau),
+
+        active:
+            item.active
+
+    };
+
+}
 
     });
 

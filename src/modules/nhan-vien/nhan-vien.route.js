@@ -17,9 +17,6 @@ router.get(
 
     authenticate,
 
-    authorize(
-        "SUPER_ADMIN"
-    ),
 
     controller.getTongHop
 
@@ -31,9 +28,6 @@ router.get(
 
     authenticate,
 
-    authorize(
-        "SUPER_ADMIN"
-    ),
 
     controller.getChiTiet
 
@@ -44,10 +38,6 @@ router.post(
     "/them-moi",
 
     authenticate,
-
-    authorize(
-        "SUPER_ADMIN"
-    ),
 
     validate(createSchema),
 
