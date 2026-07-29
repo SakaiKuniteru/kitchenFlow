@@ -46,6 +46,11 @@ module.exports = [
     },
 
     {
+        ma_thiet_lap: "THOI_GIAN_TIMEOUT",
+        ma_nhom_tinh_nang: "NTN06"
+    },
+
+    {
         ma_thiet_lap: "SO_NGAY_REFRESH_TOKEN",
         ma_nhom_tinh_nang: "NTN11"
     },
