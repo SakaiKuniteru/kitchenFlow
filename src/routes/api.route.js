@@ -38,6 +38,8 @@ const donViTinhRoute = require("../modules/don-vi-tinh/don-vi-tinh.route");
 
 const nhaAnTinhRoute = require("../modules/nha-an/nha-an.route");
 
+const caAnTinhRoute = require("../modules/ca-an/ca-an.route");
+
 //-------------//
 
 router.use("/enums", enumRoute);
@@ -75,5 +77,7 @@ router.use("/dm-chinh-sach", chinhSachRoute);
 router.use("/dm-don-vi-tinh", donViTinhRoute);
 
 router.use("/dm-nha-an", nhaAnTinhRoute);
+
+router.use("/dm-ca-an", caAnTinhRoute);
 
 module.exports = router;
