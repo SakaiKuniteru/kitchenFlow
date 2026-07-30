@@ -140,6 +140,13 @@ const routes = [
         )
     ],
 
+    [
+        "/dm-mon-an",
+        require(
+            "../../modules/mon-an/mon-an.route"
+        )
+    ],
+
 ];
 
 module.exports = routes;
