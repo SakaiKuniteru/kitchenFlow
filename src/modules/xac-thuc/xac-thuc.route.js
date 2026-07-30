@@ -8,19 +8,7 @@ const authenticate = require("../../middlewares/authenticate.middleware");
 const authorize = require("../../middlewares/authorize.middleware");
 const validate = require("../../middlewares/validate.middleware");
 
-const {
-
-    loginSchema,
-
-    refreshTokenSchema,
-
-    logoutSchema,
-
-    profileSchema,
-
-    changePasswordSchema
-
-} = require("./xac-thuc.validation");
+const { loginSchema, refreshTokenSchema, logoutSchema, profileSchema, changeMatKhauSchema } = require("./xac-thuc.validation");
 
 router.post(
     "/login",
@@ -36,28 +24,16 @@ router.post(
 
 router.post(
     "/logout",
-    validate(logoutSchema),
+    // validate(logoutSchema),
     controller.logout
-);
-
-router.get(
-    "/trang-ca-nhan",
-    validate(profileSchema),
-    authenticate,
-    authorize(
-        "SUPER_ADMIN"
-    ),
-    controller.getProfile
 );
 
 router.post(
 
     "/doi-mat-khau",
-    validate(changePasswordSchema),
-
+    validate(changeMatKhauSchema),
     authenticate,
-
-    controller.changePassword
+    controller.changeMatKhau
 
 );
 

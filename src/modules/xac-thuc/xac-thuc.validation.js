@@ -2,22 +2,20 @@ const Joi = require("joi");
 
 const loginSchema = Joi.object({
 
-    username: Joi.string()
+    taiKhoan: Joi.string()
         .trim()
         .allow(""),
 
-    password: Joi.string()
+    matKhau: Joi.string()
         .allow("")
 
 
 })
 .custom((value, helpers) => {
 
-
-    // cả username và password đều trống
     if (
-        !value.username &&
-        !value.password
+        !value.taiKhoan &&
+        !value.matKhau
     ) {
 
         return helpers.message(
@@ -26,9 +24,7 @@ const loginSchema = Joi.object({
 
     }
 
-
-    // chỉ username trống
-    if (!value.username) {
+    if (!value.taiKhoan) {
 
         return helpers.message(
             "Tên đăng nhập không được để trống."
@@ -36,9 +32,7 @@ const loginSchema = Joi.object({
 
     }
 
-
-    // chỉ password trống
-    if (!value.password) {
+    if (!value.matKhau) {
 
         return helpers.message(
             "Mật khẩu không được để trống."
@@ -68,9 +62,9 @@ const refreshTokenSchema = Joi.object({
 
 });
 
-const changePasswordSchema = Joi.object({
+const changeMatKhauSchema = Joi.object({
 
-    oldPassword: Joi.string()
+    matKhauCu: Joi.string()
         .required()
         .messages({
 
@@ -82,7 +76,7 @@ const changePasswordSchema = Joi.object({
 
         }),
 
-    newPassword: Joi.string()
+    matKhauMoi: Joi.string()
         .min(8)
         .pattern(
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{};:'",.<>/?\\|`~]).+$/
@@ -112,6 +106,6 @@ module.exports = {
 
     refreshTokenSchema,
 
-    changePasswordSchema
+    changeMatKhauSchema
 
 };

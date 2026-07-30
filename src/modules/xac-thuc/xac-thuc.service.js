@@ -8,10 +8,10 @@ const thietLapRepository = require("../thiet-lap/thiet-lap.repository");
 
 class XacThucService {
 
-    async login(username, password) {
+    async login(taiKhoan, matKhau) {
 
-        const account = await authRepository.findByUsername(
-            username
+        const account = await authRepository.findByTaiKhoan(
+            taiKhoan
         );
 
         if (!account) {
@@ -33,8 +33,8 @@ class XacThucService {
         }
 
         if (
-            account.khoa_den &&
-            new Date(account.khoa_den) > new Date()
+            account.khoaDen &&
+            new Date(account.khoaDen) > new Date()
         ) {
 
             throw new ApiError(
@@ -44,12 +44,12 @@ class XacThucService {
 
         }
 
-        const isCorrectPassword = md5.compare(
-            password,
-            account.mat_khau_hash
+        const isCorrectMatKhau = md5.compare(
+            matKhau,
+            account.matKhauHash
         );
 
-        if (!isCorrectPassword) {
+        if (!isCorrectMatKhau) {
 
             await authRepository.increaseFailedLogin(
                 account.id
@@ -86,13 +86,15 @@ class XacThucService {
                     lockUntil
                 );
 
-                throw new Error(
+                throw new ApiError(
+                    423,
                     `Tài khoản đã bị khóa tạm thời ${lockMinutes} phút.`
                 );
 
             }
 
-            throw new Error(
+            throw new ApiError(
+                401,
                 "Sai tài khoản hoặc mật khẩu."
             );
 
@@ -108,13 +110,23 @@ class XacThucService {
 
         const payload = {
 
-            taiKhoanId: account.id,
+            taiKhoanId:
+                account.id,
 
-            nhanVienId: account.nhan_vien_id,
+            nhanVienId:
+                account.nhanVienId,
 
-            username: account.ten_dang_nhap,
+            taiKhoan:
+                account.taiKhoan,
 
-            roles: account.vai_tros
+            roles:
+                account.roles,
+
+            dsVaiTroId:
+                account.dsVaiTroId,
+
+            dsQuyenId:
+                account.dsQuyenId
 
         };
 
@@ -152,23 +164,104 @@ class XacThucService {
 
             refreshToken,
 
-            firstLogin: account.doi_mat_khau_lan_dau,
+            id:
+                account.id,
 
-            user: {
+            nhanVienId:
+                account.nhanVienId,
 
-                id: account.id,
+            maNhanVien:
+                account.maNhanVien,
 
-                nhanVienId: account.nhan_vien_id,
+            hoTen:
+                account.hoTen,
 
-                maNhanVien: account.ma_nhan_vien,
+            taiKhoan:
+                account.taiKhoan,
 
-                hoTen: account.ho_ten,
+            firstLogin:
+                account.doiMatKhauLanDau,
 
-                username: account.ten_dang_nhap,
+            email:
+                account.email,
 
-                roles: account.vai_tros
+            soDienThoai:
+                account.soDienThoai,
 
-            }
+            anhDaiDien:
+                account.anhDaiDien,
+
+            ngaySinh:
+                account.ngaySinh,
+
+            gioiTinh:
+                account.gioiTinh,
+
+            diaChi:
+                account.diaChi,
+
+            ghiChu:
+                account.ghiChu,
+
+            maThe:
+                account.maThe,
+
+            maQr:
+                account.maQr,
+
+            maBarcode:
+                account.maBarcode,
+
+            quocGiaId:
+                account.quocGiaId,
+
+            tinhThanhId:
+                account.tinhThanhId,
+
+            xaPhuongId:
+                account.xaPhuongId,
+
+            roles:
+                account.roles,
+
+            dsVaiTroId:
+                account.dsVaiTroId,
+
+            dsVaiTro:
+                account.dsVaiTro,
+
+            coSoId:
+                account.coSoId,
+
+            coSo:
+                account.coSo,
+
+            phongBanId:
+                account.phongBanId,
+
+            phongBan:
+                account.phongBan,
+
+            chucVuId:
+                account.chucVuId,
+
+            chucVu:
+                account.chucVu,
+
+            dsQuyenId:
+                account.dsQuyenId,
+
+            dsQuyen:
+                account.dsQuyen,
+
+            active:
+                account.active,
+
+            createdAt:
+                account.createdAt,
+
+            updatedAt:
+                account.updatedAt
 
         };
 
@@ -252,13 +345,23 @@ class XacThucService {
 
         const newPayload = {
 
-            taiKhoanId: account.id,
+            taiKhoanId:
+                account.id,
 
-            nhanVienId: account.nhan_vien_id,
+            nhanVienId:
+                account.nhanVienId,
 
-            username: account.ten_dang_nhap,
+            taiKhoan:
+                account.taiKhoan,
 
-            roles: account.vai_tros
+            roles:
+                account.roles,
+
+            dsVaiTroId:
+                account.dsVaiTroId,
+
+            dsQuyenId:
+                account.dsQuyenId
 
         };
 
@@ -336,10 +439,10 @@ class XacThucService {
         return;
 
     }
-    async changePassword(
+    async changeMatKhau(
         taiKhoanId,
-        oldPassword,
-        newPassword
+        matKhauCu,
+        matKhauMoi
     ) {
 
         const account =
@@ -356,15 +459,15 @@ class XacThucService {
 
         }
 
-        const password =
-            await authRepository.getPasswordHash(
+        const matKhau =
+            await authRepository.getMatKhauHash(
                 taiKhoanId
             );
 
         const isCorrect =
             md5.compare(
-                oldPassword,
-                password.mat_khau_hash
+                matKhauCu,
+                matKhau.mat_khau_hash
             );
 
         if (!isCorrect) {
@@ -376,7 +479,7 @@ class XacThucService {
 
         }
 
-        if (oldPassword === newPassword) {
+        if (matKhauCu === matKhauMoi) {
 
             throw new ApiError(
                 400,
@@ -385,16 +488,16 @@ class XacThucService {
 
         }
 
-        const passwordHash =
+        const matKhauHash =
             md5.hash(
-                newPassword
+                matKhauMoi
             );
 
-        await authRepository.changePassword(
+        await authRepository.changeMatKhau(
 
             taiKhoanId,
 
-            passwordHash
+            matKhauHash
 
         );
 
@@ -403,10 +506,6 @@ class XacThucService {
         );
 
         return;
-
-    }
-
-    async getProfile() {
 
     }
 

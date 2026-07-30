@@ -10,13 +10,13 @@ class XacThucController {
 
             const {
 
-                username,
+                taiKhoan,
 
-                password
+                matKhau
 
             } = req.body;
 
-            if (!username || !password) {
+            if (!taiKhoan || !matKhau) {
 
                 throw new ApiError(
                     400,
@@ -27,8 +27,8 @@ class XacThucController {
 
             const result =
                 await xacThucService.login(
-                    username,
-                    password
+                    taiKhoan,
+                    matKhau
                 );
 
             return res.status(200).json({
@@ -110,67 +110,25 @@ class XacThucController {
 
     }
 
-    // async getProfile(req, res, next) {
-
-    //     try {
-
-    //         const userId = req.user.id;
-
-    //         const profile =
-    //             await xacThucService.getProfile(
-    //                 userId
-    //             );
-
-    //         return res.status(200).json({
-
-    //             success: true,
-
-    //             message: "Lấy thông tin cá nhân thành công.",
-
-    //             data: profile
-
-    //         });
-
-    //     }
-    //     catch (error) {
-
-    //         next(error);
-
-    //     }
-
-    // }
-
-    async getProfile(req, res) {
-
-        res.json({
-
-            success: true,
-
-            data: req.user
-
-        });
-
-    }
-
-    async changePassword(req, res, next) {
+    async changeMatKhau(req, res, next) {
 
         try {
 
             const {
 
-                oldPassword,
+                matKhauCu,
 
-                newPassword
+                matKhauMoi
 
             } = req.body;
 
-            await xacThucService.changePassword(
+            await xacThucService.changeMatKhau(
 
                 req.user.taiKhoanId,
 
-                oldPassword,
+                matKhauCu,
 
-                newPassword
+                matKhauMoi
 
             );
 
