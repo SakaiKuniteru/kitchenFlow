@@ -147,6 +147,13 @@ const routes = [
         )
     ],
 
+    [
+        "/dm-thuc-pham",
+        require(
+            "../../modules/thuc-pham/thuc-pham.route"
+        )
+    ],
+
 ];
 
 module.exports = routes;
