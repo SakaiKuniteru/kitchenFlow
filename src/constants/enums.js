@@ -97,6 +97,40 @@ const LOAI_DON_VI = [
 
 ];
 
+const LOAI_KHO = [
+
+    {
+        value: 10,
+        name: "Kho khô"
+    },
+
+    {
+        value: 20,
+        name: "Kho mát"
+    },
+
+    {
+        value: 30,
+        name: "Kho đông lạnh"
+    },
+
+    {
+        value: 40,
+        name: "Kho gia vị"
+    },
+
+    {
+        value: 50,
+        name: "Kho thành phẩm"
+    },
+
+    {
+        value: 60,
+        name: "Kho khác"
+    }
+
+];
+
 const TRANG_THAI_PHIEU_THU = [
     {
         value: -10,
@@ -160,29 +194,6 @@ const LOAI_BINH_CHON = [
     }
 ]
 
-// module.exports = {
-
-//     gioiTinh: GIOI_TINH,
-
-//     trangThai: TRANG_THAI,
-
-//     active: ACTIVE,
-
-//     loaiMienGiam: LOAI_MIEN_GIAM,
-
-//     loaiChinhSach: LOAI_CHINH_SACH,
-
-//     trangThaiPhieuThu: TRANG_THAI_PHIEU_THU,
-
-//     trangThaiPhieuNhapXuat: TRANG_THAI_PHIEU_NHAP_XUAT,
-
-//     trangThaiBinhChon: TRANG_THAI_BINH_CHON,
-
-//     loaiBinhChon: LOAI_BINH_CHON,
-
-// };
-
-
 module.exports = {
 
     "gioiTinh": GIOI_TINH,
@@ -196,6 +207,8 @@ module.exports = {
     "loaiChinhSach": LOAI_CHINH_SACH,
 
     "loaiDonVi": LOAI_DON_VI,
+
+    "loaiKho": LOAI_KHO,
 
     "trangThaiPhieuThu": TRANG_THAI_PHIEU_THU,
 

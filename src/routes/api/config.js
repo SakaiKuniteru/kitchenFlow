@@ -154,6 +154,13 @@ const routes = [
         )
     ],
 
+    [
+        "/dm-kho",
+        require(
+            "../../modules/kho/kho.route"
+        )
+    ],
+
 ];
 
 module.exports = routes;
