@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+    <head>
+
+        {{> common/head}}
+
+    </head>
+
+    <body>
+
+        {{> common/loading}}
+
+        <div id="auth-layout">
+
+            <main class="auth-content">
+
+                {{{body}}}
+
+            </main>
+
+        </div>
+
+        {{> common/toast}}
+
+        {{> modals.alert}}
+
+    </body>
+
+</html>

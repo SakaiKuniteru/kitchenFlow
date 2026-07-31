@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+    <head>
+
+        {{> common/head}}
+
+    </head>
+
+    <body>
+
+        {{> common/loading}}
+
+        <div id="app">
+
+            {{> common/header}}
+
+            <div class="app-wrapper">
+
+                {{> common/sidebar}}
+
+                <main class="app-content">
+
+                    {{> common/breadcrumb}}
+
+                    <section class="page-content">
+
+                        {{{body}}}
+
+                    </section>
+
+                    {{> common/footer}}
+
+                </main>
+
+            </div>
+
+        </div>
+
+        {{> common/toast}}
+
+        {{> modals.alert}}
+
+        {{> modals.confirm}}
+
+        {{> modals.change-password}}
+
+    </body>
+
+</html>
