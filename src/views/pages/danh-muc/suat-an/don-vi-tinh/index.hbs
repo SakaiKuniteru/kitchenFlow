@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="don-vi-tinh"
+    apiBase="/api/mcs/v1/dm-don-vi-tinh"
+    title="Danh mục đơn vị tính"
+    description="Quản lý đơn vị tính và loại đơn vị."
+    searchPlaceholder="Tìm theo mã, tên hoặc ký hiệu..."
+    createButtonLabel="Thêm đơn vị tính"
+    createButtonId="btnCreateDonViTinh"
+    searchInputId="searchDonViTinh"
+    tableId="donViTinhTable"
+    tableBodyId="donViTinhTableBody"
+    paginationId="donViTinhPagination"
+    detailPanelId="donViTinhDetailPanel"
+    detailContentId="donViTinhDetailContent"
+    formId="donViTinhForm"
+    formPartial="catalog/forms/don-vi-tinh-form"
+    detailTitle="Thông tin đơn vị tính"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="donViTinhMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="don-vi-tinh"}}

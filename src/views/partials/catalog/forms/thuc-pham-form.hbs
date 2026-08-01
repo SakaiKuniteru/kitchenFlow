@@ -1,0 +1,122 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin thực phẩm
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maThucPham"
+            name="maThucPham"
+            label="Mã thực phẩm"
+            placeholder="Nhập mã thực phẩm"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenThucPham"
+            name="tenThucPham"
+            label="Tên thực phẩm"
+            placeholder="Nhập tên thực phẩm"
+            maxlength=150
+            required=true
+        }}
+
+        {{> forms/number
+            id="giaNhap"
+            name="giaNhap"
+            label="Giá nhập"
+            placeholder="Nhập giá nhập"
+            min=0
+            step="0.01"
+            suffix="VNĐ"
+        }}
+
+        {{> forms/number
+            id="haoHutDuKien"
+            name="haoHutDuKien"
+            label="Hao hụt dự kiến"
+            placeholder="Nhập tỷ lệ hao hụt"
+            min=0
+            max=100
+            step="0.01"
+            suffix="%"
+        }}
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Đơn vị và quy đổi
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/select
+            id="donViSoCapId"
+            name="donViSoCapId"
+            label="Đơn vị sơ cấp"
+            placeholder="Chọn đơn vị sơ cấp"
+            required=true
+        }}
+
+        {{> forms/select
+            id="donViSuDungId"
+            name="donViSuDungId"
+            label="Đơn vị sử dụng"
+            placeholder="Chọn đơn vị sử dụng"
+            required=true
+        }}
+
+        {{> forms/number
+            id="heSoQuyDoi"
+            name="heSoQuyDoi"
+            label="Hệ số quy đổi"
+            placeholder="Ví dụ: 10"
+            min=0.01
+            step="0.01"
+            required=true
+        }}
+
+        {{> forms/input
+            id="quyCach"
+            name="quyCach"
+            label="Quy cách"
+            placeholder="Ví dụ: 1 Bao = 10 KG"
+            maxlength=255
+            description="Nếu bỏ trống, hệ thống tự tạo theo đơn vị và hệ số quy đổi."
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="ghiChu"
+                name="ghiChu"
+                label="Ghi chú"
+                placeholder="Nhập ghi chú"
+                maxlength=500
+                rows=4
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

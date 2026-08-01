@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="ca-an"
+    apiBase="/api/mcs/v1/dm-ca-an"
+    title="Danh mục ca ăn"
+    description="Quản lý thời gian bắt đầu và kết thúc các ca ăn."
+    searchPlaceholder="Tìm theo mã hoặc tên ca ăn..."
+    createButtonLabel="Thêm ca ăn"
+    createButtonId="btnCreateCaAn"
+    searchInputId="searchCaAn"
+    tableId="caAnTable"
+    tableBodyId="caAnTableBody"
+    paginationId="caAnPagination"
+    detailPanelId="caAnDetailPanel"
+    detailContentId="caAnDetailContent"
+    formId="caAnForm"
+    formPartial="catalog/forms/ca-an-form"
+    detailTitle="Thông tin ca ăn"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="caAnMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="ca-an"}}

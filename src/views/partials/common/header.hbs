@@ -1,11 +1,281 @@
-<header id="app-header">
+<header
+    id="appHeader"
+    class="app-header">
 
-    {{!-- Logo --}}
+    <div class="app-header__left">
 
-    {{!-- Menu --}}
+        <button
+            type="button"
+            class="app-header__menu-button"
+            data-sidebar-main-toggle
+            aria-label="Mở hoặc thu gọn thanh điều hướng"
+            aria-expanded="false">
 
-    {{!-- Thông tin người dùng --}}
+            ☰
 
-    {{!-- Notification --}}
+        </button>
+
+        <div class="app-header__brand">
+
+            <span class="app-header__brand-name">
+                MCS KITCHENFLOW
+            </span>
+
+            {{#if pageSubtitle}}
+
+                <span class="app-header__brand-subtitle">
+                    {{pageSubtitle}}
+                </span>
+
+            {{/if}}
+
+        </div>
+
+    </div>
+
+    <div class="app-header__right">
+
+        <div class="app-header__notification">
+
+            <button
+                type="button"
+                class="app-header__action"
+                data-header-notification-button
+                aria-label="Thông báo"
+                aria-expanded="false">
+
+                <span aria-hidden="true">
+                    🔔
+                </span>
+
+                {{#if notificationCount}}
+
+                    <span class="app-header__notification-count">
+                        {{notificationCount}}
+                    </span>
+
+                {{/if}}
+
+            </button>
+
+            <div
+                class="app-header__notification-menu"
+                data-header-notification-menu
+                hidden>
+
+                <div class="app-header__dropdown-header">
+
+                    <strong>
+                        Thông báo
+                    </strong>
+
+                </div>
+
+                <div class="app-header__dropdown-empty">
+
+                    Chưa có thông báo mới.
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="app-header__user">
+
+            <button
+                type="button"
+                class="app-header__user-button"
+                data-header-user-button
+                aria-expanded="false"
+                aria-controls="headerUserMenu">
+
+                <span class="app-header__avatar">
+
+                    {{#if currentUser.anhDaiDien}}
+
+                        <img
+                            src="{{currentUser.anhDaiDien}}"
+                            alt="{{currentUser.hoTen}}">
+
+                    {{else}}
+
+                        <span aria-hidden="true">
+                            👤
+                        </span>
+
+                    {{/if}}
+
+                </span>
+
+                <span class="app-header__user-information">
+
+                    <strong class="app-header__user-name">
+                        {{#if currentUser.hoTen}}
+                            {{currentUser.hoTen}}
+                        {{else}}
+                            Người dùng
+                        {{/if}}
+                    </strong>
+
+                    {{#if currentUser.tenDangNhap}}
+
+                        <small class="app-header__username">
+                            {{currentUser.tenDangNhap}}
+                        </small>
+
+                    {{/if}}
+
+                </span>
+
+                <span
+                    class="app-header__user-arrow"
+                    data-header-user-arrow
+                    aria-hidden="true">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+
+                        <path d="m6 9 6 6 6-6"></path>
+
+                    </svg>
+
+                </span>
+
+            </button>
+
+
+            <div
+                id="headerUserMenu"
+                class="app-header__user-menu"
+                data-header-user-menu
+                hidden>
+
+                <div class="app-header__user-menu-header">
+
+                    <span class="app-header__user-menu-avatar">
+                        👤
+                    </span>
+
+                    <div class="app-header__user-menu-information">
+
+                        <strong>
+                            {{#if currentUser.hoTen}}
+                                {{currentUser.hoTen}}
+                            {{else}}
+                                Người dùng
+                            {{/if}}
+                        </strong>
+
+                        <small>
+                            {{#if currentUser.tenDangNhap}}
+                                {{currentUser.tenDangNhap}}
+                            {{else}}
+                                Chưa có thông tin tài khoản
+                            {{/if}}
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="app-header__user-menu-divider">
+                </div>
+
+
+                <button
+                    type="button"
+                    class="app-header__user-menu-item"
+                    data-header-change-password>
+
+                    <span
+                        class="app-header__user-menu-icon"
+                        aria-hidden="true">
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+
+                            <rect
+                                x="5"
+                                y="10"
+                                width="14"
+                                height="10"
+                                rx="2">
+                            </rect>
+
+                            <path
+                                d="M8 10V7a4 4 0 0 1 8 0v3">
+                            </path>
+
+                        </svg>
+
+                    </span>
+
+                    <span>
+                        Đổi mật khẩu
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="
+                        app-header__user-menu-item
+                        app-header__user-menu-item--danger
+                    "
+                    data-header-logout>
+
+                    <span
+                        class="app-header__user-menu-icon"
+                        aria-hidden="true">
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+
+                            <path
+                                d="M9 18H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4">
+                            </path>
+
+                            <path
+                                d="m16 17 5-5-5-5">
+                            </path>
+
+                            <path
+                                d="M21 12H9">
+                            </path>
+
+                        </svg>
+
+                    </span>
+
+                    <span>
+                        Đăng xuất
+                    </span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </header>

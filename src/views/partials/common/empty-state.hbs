@@ -1,21 +1,66 @@
-<div class="empty-state">
+<div
+    class="empty-state"
+    role="status">
 
-    <div class="empty-state-icon">
+    <div
+        class="empty-state__icon"
+        aria-hidden="true">
 
-        {{!-- Icon --}}
+        {{#if emptyIcon}}
+
+            <img
+                src="{{emptyIcon}}"
+                alt="">
+
+        {{else}}
+
+            <span>
+                📭
+            </span>
+
+        {{/if}}
 
     </div>
 
-    <div class="empty-state-title">
+    <h3 class="empty-state__title">
 
-        Không có dữ liệu
+        {{#if emptyTitle}}
 
-    </div>
+            {{emptyTitle}}
 
-    <div class="empty-state-description">
+        {{else}}
 
-        Hiện chưa có dữ liệu để hiển thị.
+            Không có dữ liệu
 
-    </div>
+        {{/if}}
+
+    </h3>
+
+    <p class="empty-state__description">
+
+        {{#if emptyDescription}}
+
+            {{emptyDescription}}
+
+        {{else}}
+
+            Hiện chưa có dữ liệu để hiển thị.
+
+        {{/if}}
+
+    </p>
+
+    {{#if emptyActionLabel}}
+
+        <button
+            type="button"
+            class="empty-state__action"
+            id="{{emptyActionId}}">
+
+            {{emptyActionLabel}}
+
+        </button>
+
+    {{/if}}
 
 </div>

@@ -1,0 +1,70 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin ca ăn
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maCaAn"
+            name="maCaAn"
+            label="Mã ca ăn"
+            placeholder="Nhập mã ca ăn"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenCaAn"
+            name="tenCaAn"
+            label="Tên ca ăn"
+            placeholder="Nhập tên ca ăn"
+            maxlength=255
+            required=true
+        }}
+
+        {{> forms/date
+            id="thoiGianBatDau"
+            name="thoiGianBatDau"
+            label="Thời gian bắt đầu"
+            type="time"
+            required=true
+        }}
+
+        {{> forms/date
+            id="thoiGianKetThuc"
+            name="thoiGianKetThuc"
+            label="Thời gian kết thúc"
+            type="time"
+            required=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="moTa"
+                name="moTa"
+                label="Mô tả"
+                placeholder="Nhập mô tả ca ăn"
+                maxlength=500
+                rows=4
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

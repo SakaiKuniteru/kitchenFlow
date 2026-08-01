@@ -1,0 +1,366 @@
+<div
+    class="detail-panel__section"
+    data-form-section="thong-tin-chung">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin chung
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maCoSo"
+            name="maCoSo"
+            label="Mã cơ sở"
+            placeholder="Nhập mã cơ sở"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenCoSo"
+            name="tenCoSo"
+            label="Tên cơ sở"
+            placeholder="Nhập tên cơ sở"
+            maxlength=150
+            required=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="diaChi"
+                name="diaChi"
+                label="Địa chỉ"
+                placeholder="Nhập địa chỉ chi tiết"
+                rows=3
+                maxlength=500
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    class="detail-panel__section"
+    data-form-section="dia-chi-hanh-chinh">
+
+    <h3 class="detail-panel__section-title">
+        Địa chỉ hành chính
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/select
+            id="quocGiaId"
+            name="quocGiaId"
+            label="Quốc gia"
+            placeholder="Chọn quốc gia"
+            placeholderDisabled=true
+            required=true
+        }}
+
+        {{> forms/select
+            id="tinhThanhId"
+            name="tinhThanhId"
+            label="Tỉnh thành"
+            placeholder="Chọn tỉnh thành"
+            placeholderDisabled=true
+            required=true
+            disabled=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/select
+                id="xaPhuongId"
+                name="xaPhuongId"
+                label="Xã phường"
+                placeholder="Chọn xã phường"
+                placeholderDisabled=true
+                required=true
+                disabled=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    class="detail-panel__section"
+    data-form-section="nhan-dien">
+
+    <h3 class="detail-panel__section-title">
+        Nhận diện cơ sở
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        <div
+            class="form-field catalog-form-grid__full"
+            data-form-field="logo">
+
+            <label
+                for="logo"
+                class="form-field__label">
+
+                <span>
+                    Logo cơ sở
+                </span>
+
+            </label>
+
+            <div
+                class="catalog-upload"
+                data-upload-field="logo">
+
+                <div
+                    class="catalog-upload__preview"
+                    data-upload-preview>
+
+                    <img
+                        src="/assets/images/defaults/image-placeholder.png"
+                        alt="Ảnh xem trước logo cơ sở"
+                        data-upload-preview-image>
+
+                </div>
+
+                <div class="catalog-upload__content">
+
+                    <input
+                        type="file"
+                        id="logo"
+                        name="logoFile"
+                        class="catalog-upload__input"
+                        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                        data-upload-input>
+
+                    <input
+                        type="hidden"
+                        id="logoUrl"
+                        name="logo">
+
+                    <label
+                        for="logo"
+                        class="catalog-upload__button">
+
+                        Chọn logo
+
+                    </label>
+
+                    <button
+                        type="button"
+                        class="catalog-upload__remove"
+                        data-upload-remove
+                        hidden>
+
+                        Xóa ảnh
+
+                    </button>
+
+                    <small class="form-field__description">
+                        Chấp nhận PNG, JPG, WEBP hoặc SVG.
+                    </small>
+
+                </div>
+
+            </div>
+
+            <small
+                id="logoError"
+                class="form-field__error"
+                data-field-error="logo"
+                hidden>
+            </small>
+
+        </div>
+
+
+        <div
+            class="form-field catalog-form-grid__full"
+            data-form-field="logoDoiTac">
+
+            <label
+                for="logoDoiTac"
+                class="form-field__label">
+
+                <span>
+                    Logo đối tác
+                </span>
+
+            </label>
+
+            <div
+                class="catalog-upload"
+                data-upload-field="logoDoiTac">
+
+                <div
+                    class="catalog-upload__preview"
+                    data-upload-preview>
+
+                    <img
+                        src="/assets/images/defaults/image-placeholder.png"
+                        alt="Ảnh xem trước logo đối tác"
+                        data-upload-preview-image>
+
+                </div>
+
+                <div class="catalog-upload__content">
+
+                    <input
+                        type="file"
+                        id="logoDoiTac"
+                        name="logoDoiTacFile"
+                        class="catalog-upload__input"
+                        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                        data-upload-input>
+
+                    <input
+                        type="hidden"
+                        id="logoDoiTacUrl"
+                        name="logoDoiTac">
+
+                    <label
+                        for="logoDoiTac"
+                        class="catalog-upload__button">
+
+                        Chọn logo đối tác
+
+                    </label>
+
+                    <button
+                        type="button"
+                        class="catalog-upload__remove"
+                        data-upload-remove
+                        hidden>
+
+                        Xóa ảnh
+
+                    </button>
+
+                    <small class="form-field__description">
+                        Có thể bỏ trống nếu cơ sở không có đối tác.
+                    </small>
+
+                </div>
+
+            </div>
+
+            <small
+                id="logoDoiTacError"
+                class="form-field__error"
+                data-field-error="logoDoiTac"
+                hidden>
+            </small>
+
+        </div>
+
+
+        <div
+            class="form-field catalog-form-grid__full"
+            data-form-field="favicon">
+
+            <label
+                for="favicon"
+                class="form-field__label">
+
+                <span>
+                    Favicon
+                </span>
+
+            </label>
+
+            <div
+                class="catalog-upload catalog-upload--compact"
+                data-upload-field="favicon">
+
+                <div
+                    class="catalog-upload__preview catalog-upload__preview--small"
+                    data-upload-preview>
+
+                    <img
+                        src="/assets/images/defaults/image-placeholder.png"
+                        alt="Ảnh xem trước favicon"
+                        data-upload-preview-image>
+
+                </div>
+
+                <div class="catalog-upload__content">
+
+                    <input
+                        type="file"
+                        id="favicon"
+                        name="faviconFile"
+                        class="catalog-upload__input"
+                        accept=".ico,image/png,image/svg+xml"
+                        data-upload-input>
+
+                    <input
+                        type="hidden"
+                        id="faviconUrl"
+                        name="favicon">
+
+                    <label
+                        for="favicon"
+                        class="catalog-upload__button">
+
+                        Chọn favicon
+
+                    </label>
+
+                    <button
+                        type="button"
+                        class="catalog-upload__remove"
+                        data-upload-remove
+                        hidden>
+
+                        Xóa ảnh
+
+                    </button>
+
+                    <small class="form-field__description">
+                        Khuyến nghị tệp ICO hoặc PNG vuông.
+                    </small>
+
+                </div>
+
+            </div>
+
+            <small
+                id="faviconError"
+                class="form-field__error"
+                data-field-error="favicon"
+                hidden>
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    class="detail-panel__section"
+    data-form-section="trang-thai">
+
+    <h3 class="detail-panel__section-title">
+        Trạng thái
+    </h3>
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        description="Cho phép cơ sở được sử dụng trong toàn bộ hệ thống."
+        checked=true
+    }}
+
+</div>

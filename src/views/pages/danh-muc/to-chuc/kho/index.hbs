@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="kho"
+    apiBase="/api/mcs/v1/dm-kho"
+    title="Danh mục kho"
+    description="Quản lý kho theo từng nhà ăn."
+    searchPlaceholder="Tìm theo mã, tên hoặc địa điểm kho..."
+    createButtonLabel="Thêm kho"
+    createButtonId="btnCreateKho"
+    searchInputId="searchKho"
+    tableId="khoTable"
+    tableBodyId="khoTableBody"
+    paginationId="khoPagination"
+    detailPanelId="khoDetailPanel"
+    detailContentId="khoDetailContent"
+    formId="khoForm"
+    formPartial="catalog/forms/kho-form"
+    detailTitle="Thông tin kho"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="khoMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="kho"}}

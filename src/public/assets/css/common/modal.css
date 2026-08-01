@@ -1,0 +1,879 @@
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal[hidden] {
+    display: none !important;
+    pointer-events: none !important;
+}
+
+.modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.62);
+    backdrop-filter: blur(4px);
+}
+
+.modal__dialog {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 560px);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    border: 1px solid
+        rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-lg);
+    animation:
+        modal-enter
+        180ms
+        ease-out;
+}
+
+.modal__dialog--small {
+    width: min(100%, 440px);
+}
+
+.modal__header,
+.modal__footer {
+    display: flex;
+    align-items: center;
+    padding: 18px 22px;
+}
+
+.modal__header {
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 1px solid
+        var(--color-border-light);
+}
+
+.modal__title {
+    margin: 0;
+    font-size: var(--font-size-xl);
+}
+
+.modal__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    background: transparent;
+    font-size: 1.5rem;
+}
+
+.modal__close:hover {
+    color: var(--color-danger);
+    background: var(--color-danger-soft);
+}
+
+.modal__body {
+    padding: 22px;
+}
+
+.modal__icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 2.5rem;
+}
+
+.modal__message {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    text-align: center;
+    white-space: pre-line;
+}
+
+.modal__footer {
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid
+        var(--color-border-light);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 18px;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    transition:
+        background-color var(--transition-fast),
+        color var(--transition-fast),
+        opacity var(--transition-fast);
+}
+
+.btn-primary {
+    color: #ffffff;
+    background: var(--color-primary);
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-hover);
+}
+
+.btn-secondary {
+    color: var(--color-text-secondary);
+    background: var(--color-surface-secondary);
+}
+
+.btn-secondary:hover {
+    color: var(--color-primary);
+    background: var(--color-primary-soft);
+}
+
+.btn-danger {
+    color: #ffffff;
+    background: var(--color-danger);
+}
+
+.btn:disabled {
+    opacity: 0.65;
+}
+
+@keyframes modal-enter {
+
+    from {
+        opacity: 0;
+        transform: translateY(10px)
+            scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0)
+            scale(1);
+    }
+
+}
+
+@media (max-width: 520px) {
+
+    .modal {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .modal__dialog,
+    .modal__dialog--small {
+        width: 100%;
+        max-height: 92vh;
+        border-radius:
+            var(--radius-xl)
+            var(--radius-xl)
+            0
+            0;
+    }
+
+}
+
+/* =========================================================
+   Modal đổi mật khẩu
+   ========================================================= */
+
+.modal__dialog--change-password {
+    width: min(calc(100vw - 32px), 480px);
+    max-height: calc(100vh - 32px);
+    overflow: hidden;
+    border: 1px solid #e5eaf2;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow:
+        0 24px 70px rgba(15, 23, 42, 0.22),
+        0 4px 14px rgba(15, 23, 42, 0.08);
+}
+
+.modal__dialog--change-password .modal__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 24px 26px 20px;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.modal__dialog--change-password .modal__heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.change-password-modal__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    color: #2563eb;
+    background: #eff6ff;
+}
+
+.change-password-modal__icon svg {
+    width: 23px;
+    height: 23px;
+}
+
+.modal__dialog--change-password .modal__title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 21px;
+    font-weight: 750;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+}
+
+.modal__dialog--change-password .modal__subtitle {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.modal__dialog--change-password .modal__close {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    color: #64748b;
+    background: transparent;
+    font-size: 25px;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+        color 160ms ease,
+        background-color 160ms ease;
+}
+
+.modal__dialog--change-password .modal__close:hover {
+    color: #dc2626;
+    background: #fef2f2;
+}
+
+
+/* =========================================================
+   Form đổi mật khẩu
+   ========================================================= */
+
+.change-password-form {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.change-password-form .modal__body {
+    display: grid;
+    gap: 18px;
+    padding: 24px 26px 26px;
+    overflow-y: auto;
+}
+
+.change-password-form .form-field {
+    display: grid;
+    gap: 7px;
+    width: 100%;
+    min-width: 0;
+}
+
+.change-password-form .form-field__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    width: fit-content;
+    margin: 0;
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.change-password-form .form-field__required {
+    color: #dc2626;
+}
+
+
+/* =========================================================
+   Input mật khẩu
+   ========================================================= */
+
+.change-password-form .password-field {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-width: 0;
+}
+
+.change-password-form .form-input {
+    display: block;
+    width: 100%;
+    height: 44px;
+    min-width: 0;
+    padding: 0 48px 0 14px;
+    border: 1px solid #d8e0eb;
+    border-radius: 10px;
+    outline: none;
+    color: #0f172a;
+    background: #ffffff;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1;
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        background-color 160ms ease;
+}
+
+.change-password-form .form-input::placeholder {
+    color: #94a3b8;
+}
+
+.change-password-form .form-input:hover {
+    border-color: #94a3b8;
+}
+
+.change-password-form .form-input:focus {
+    border-color: #2563eb;
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.12);
+}
+
+
+/* =========================================================
+   Nút hiện / ẩn mật khẩu
+   ========================================================= */
+
+.change-password-form .password-field__toggle {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    outline: none;
+    color: #64748b;
+    background: transparent;
+    cursor: pointer;
+    pointer-events: auto;
+    transform: translateY(-50%);
+    appearance: none;
+    -webkit-appearance: none;
+    transition:
+        color 160ms ease,
+        background-color 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.change-password-form .password-field__toggle:hover {
+    color: #2563eb;
+    background: #eff6ff;
+}
+
+.change-password-form .password-field__toggle:focus-visible {
+    color: #2563eb;
+    background: #eff6ff;
+    box-shadow:
+        0 0 0 2px
+        rgba(37, 99, 235, 0.2);
+}
+
+.change-password-form .password-field__icon {
+    display: block;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+}
+
+.change-password-form
+.password-field__icon--hide {
+    display: none;
+}
+
+.change-password-form
+.password-field__toggle.is-visible
+.password-field__icon--show {
+    display: none;
+}
+
+.change-password-form
+.password-field__toggle.is-visible
+.password-field__icon--hide {
+    display: block;
+}
+
+
+/* =========================================================
+   Danh sách yêu cầu mật khẩu
+   ========================================================= */
+
+.password-requirements {
+    margin-top: 2px;
+    padding: 11px 12px;
+    border: 1px solid #e5eaf2;
+    border-radius: 9px;
+    background: #f8fafc;
+}
+
+.password-requirements__title {
+    margin: 0 0 7px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.password-requirements__list {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+    gap: 5px 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.password-requirements__list li {
+    position: relative;
+    padding-left: 18px;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.password-requirements__list li::before {
+    position: absolute;
+    top: 1px;
+    left: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 13px;
+    height: 13px;
+    content: "•";
+    border: 1px solid #cbd5e1;
+    border-radius: 50%;
+    color: #94a3b8;
+    background: #ffffff;
+    font-size: 9px;
+}
+
+.password-requirements__list li.is-valid {
+    color: #15803d;
+}
+
+.password-requirements__list li.is-valid::before {
+    content: "✓";
+    border-color: #22c55e;
+    color: #ffffff;
+    background: #22c55e;
+}
+
+
+/* =========================================================
+   Validation
+   ========================================================= */
+
+.change-password-form .form-field__error {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0;
+    color: #dc2626;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.change-password-form
+.form-field__error:not([hidden])::before {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    content: "!";
+    border-radius: 50%;
+    color: #ffffff;
+    background: #dc2626;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.change-password-form
+.form-field.is-invalid
+.form-input,
+.change-password-form
+.form-input[aria-invalid="true"] {
+    border-color: #dc2626;
+    background: #fffafa;
+    box-shadow:
+        0 0 0 3px
+        rgba(220, 38, 38, 0.08);
+}
+
+.change-password-form
+.form-field.is-invalid
+.password-field__toggle {
+    color: #dc2626;
+}
+
+
+/* =========================================================
+   Footer và nút
+   ========================================================= */
+
+.change-password-form .modal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 26px 20px;
+    border-top: 1px solid #edf0f5;
+    background: #fafbfc;
+}
+
+.change-password-form .modal-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 110px;
+    height: 42px;
+    padding: 0 17px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        color 160ms ease,
+        border-color 160ms ease,
+        background-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.change-password-form .modal-button--secondary {
+    border-color: #d8e0eb;
+    color: #475569;
+    background: #ffffff;
+}
+
+.change-password-form .modal-button--secondary:hover {
+    border-color: #94a3b8;
+    color: #0f172a;
+    background: #f8fafc;
+}
+
+.change-password-form .modal-button--primary {
+    border-color: #2563eb;
+    color: #ffffff;
+    background: #2563eb;
+    box-shadow:
+        0 5px 14px
+        rgba(37, 99, 235, 0.2);
+}
+
+.change-password-form .modal-button--primary:hover {
+    border-color: #1d4ed8;
+    background: #1d4ed8;
+    box-shadow:
+        0 7px 18px
+        rgba(37, 99, 235, 0.26);
+    transform: translateY(-1px);
+}
+
+.change-password-form .modal-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.change-password-form .modal-button__spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid
+        rgba(255, 255, 255, 0.38);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation:
+        change-password-spin
+        700ms
+        linear
+        infinite;
+}
+
+@keyframes change-password-spin {
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================================================
+   Mobile
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+    .modal__dialog--change-password {
+        width: calc(100vw - 20px);
+        max-height: calc(100vh - 20px);
+        border-radius: 16px;
+    }
+
+    .modal__dialog--change-password .modal__header {
+        padding: 20px 18px 17px;
+    }
+
+    .change-password-modal__icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+    }
+
+    .change-password-form .modal__body {
+        gap: 16px;
+        padding: 20px 18px;
+    }
+
+    .password-requirements__list {
+        grid-template-columns:
+            minmax(0, 1fr);
+    }
+
+    .change-password-form .modal__footer {
+        align-items: stretch;
+        flex-direction: column-reverse;
+        padding: 14px 18px 18px;
+    }
+
+    .change-password-form .modal-button {
+        width: 100%;
+    }
+
+}
+
+/* =========================================================
+   Modal xác nhận
+   ========================================================= */
+
+.modal__dialog--confirm {
+    width: min(calc(100vw - 32px), 420px);
+    overflow: hidden;
+    border: 1px solid #e5eaf2;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow:
+        0 24px 70px rgba(15, 23, 42, 0.2),
+        0 4px 14px rgba(15, 23, 42, 0.08);
+}
+
+.confirm-modal__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 22px 18px;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.confirm-modal__heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.confirm-modal__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    color: #dc2626;
+    background: #fef2f2;
+}
+
+.confirm-modal__icon svg {
+    width: 21px;
+    height: 21px;
+}
+
+.confirm-modal__title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 19px;
+    font-weight: 750;
+    line-height: 1.3;
+}
+
+.confirm-modal__subtitle {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.confirm-modal__close {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 9px;
+    color: #64748b;
+    background: transparent;
+    font-size: 23px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.confirm-modal__close:hover {
+    color: #dc2626;
+    background: #fef2f2;
+}
+
+.confirm-modal__body {
+    padding: 24px 22px;
+}
+
+.confirm-modal__message {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.65;
+    text-align: left;
+}
+
+.confirm-modal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 22px 18px;
+    border-top: 1px solid #edf0f5;
+    background: #fafbfc;
+}
+
+.confirm-modal__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 104px;
+    height: 40px;
+    padding: 0 16px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        color 160ms ease,
+        border-color 160ms ease,
+        background-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.confirm-modal__button--secondary {
+    border-color: #d8e0eb;
+    color: #475569;
+    background: #ffffff;
+}
+
+.confirm-modal__button--secondary:hover {
+    border-color: #94a3b8;
+    color: #0f172a;
+    background: #f8fafc;
+}
+
+.confirm-modal__button--danger {
+    border-color: #dc2626;
+    color: #ffffff;
+    background: #dc2626;
+    box-shadow:
+        0 5px 14px
+        rgba(220, 38, 38, 0.18);
+}
+
+.confirm-modal__button--danger:hover {
+    border-color: #b91c1c;
+    background: #b91c1c;
+    box-shadow:
+        0 7px 18px
+        rgba(220, 38, 38, 0.24);
+    transform: translateY(-1px);
+}
+
+.confirm-modal__button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+@media (max-width: 520px) {
+
+    .modal__dialog--confirm {
+        width: calc(100vw - 20px);
+        border-radius: 16px;
+    }
+
+    .confirm-modal__header {
+        padding: 20px 18px 16px;
+    }
+
+    .confirm-modal__body {
+        padding: 20px 18px;
+    }
+
+    .confirm-modal__footer {
+        align-items: stretch;
+        flex-direction: column-reverse;
+        padding: 14px 18px 18px;
+    }
+
+    .confirm-modal__button {
+        width: 100%;
+    }
+
+}

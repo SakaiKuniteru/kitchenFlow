@@ -1,0 +1,81 @@
+<section
+    id="{{moduleName}}Page"
+    class="catalog-page"
+    data-catalog-page
+    data-module="{{moduleName}}"
+    data-api-base="{{apiBase}}">
+
+    <div class="catalog-page__list">
+
+        {{> catalog/toolbar
+            title=title
+            description=description
+            searchInputId=searchInputId
+            searchPlaceholder=searchPlaceholder
+            createButtonId=createButtonId
+            createButtonLabel=createButtonLabel
+            showRefreshButton=true
+            showFilterButton=true
+            showExportButton=showExportButton
+            hideCreateButton=hideCreateButton
+        }}
+
+        <div class="catalog-page__table-section">
+
+            {{> catalog/table
+                tableId=tableId
+                tableBodyId=tableBodyId
+                columns=columns
+                showIndex=true
+                showActions=showActions
+                showFilterRow=true
+            }}
+
+            {{> catalog/pagination
+                paginationId=paginationId
+            }}
+
+        </div>
+
+    </div>
+
+    <aside
+        id="{{detailPanelId}}"
+        class="catalog-page__detail"
+        data-catalog-detail-panel
+        data-panel-mode="view"
+        aria-label="{{detailTitle}}">
+
+        {{> catalog/detail-panel
+            panelId=detailContentId
+            formId=formId
+            title=detailTitle
+            formPartial=formPartial
+            showEditButton=showEditButton
+            showCloseButton=true
+        }}
+
+    </aside>
+
+    <div
+        class="catalog-page__overlay"
+        data-catalog-overlay
+        hidden>
+    </div>
+
+</section>
+
+<script
+    type="application/json"
+    id="{{moduleName}}PageConfig">
+
+    {
+        "moduleName": "{{moduleName}}",
+        "apiBase": "{{apiBase}}",
+        "listEndpoint": "{{apiBase}}/tong-hop",
+        "detailEndpoint": "{{apiBase}}",
+        "createEndpoint": "{{apiBase}}/them-moi",
+        "updateEndpoint": "{{apiBase}}/cap-nhat"
+    }
+
+</script>

@@ -1,7 +1,24 @@
 <div
-    id="loading"
+    id="globalLoading"
+    class="loading-overlay"
+    role="status"
+    aria-live="polite"
+    aria-busy="true"
     hidden>
 
-    {{!-- Spinner --}}
+    <div class="loading-overlay__content">
+
+        <div
+            class="loading-overlay__spinner"
+            aria-hidden="true">
+        </div>
+
+        <p
+            id="globalLoadingMessage"
+            class="loading-overlay__message">
+            Đang xử lý dữ liệu...
+        </p>
+
+    </div>
 
 </div>

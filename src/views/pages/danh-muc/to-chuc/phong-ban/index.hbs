@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="phong-ban"
+    apiBase="/api/mcs/v1/dm-phong-ban"
+    title="Danh mục phòng ban"
+    description="Quản lý phòng ban theo từng cơ sở."
+    searchPlaceholder="Tìm theo mã hoặc tên phòng ban..."
+    createButtonLabel="Thêm phòng ban"
+    createButtonId="btnCreatePhongBan"
+    searchInputId="searchPhongBan"
+    tableId="phongBanTable"
+    tableBodyId="phongBanTableBody"
+    paginationId="phongBanPagination"
+    detailPanelId="phongBanDetailPanel"
+    detailContentId="phongBanDetailContent"
+    formId="phongBanForm"
+    formPartial="catalog/forms/phong-ban-form"
+    detailTitle="Thông tin phòng ban"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="phongBanMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="phong-ban"}}

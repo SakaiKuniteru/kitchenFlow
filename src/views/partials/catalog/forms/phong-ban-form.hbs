@@ -1,0 +1,67 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin phòng ban
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maPhongBan"
+            name="maPhongBan"
+            label="Mã phòng ban"
+            placeholder="Nhập mã phòng ban"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenPhongBan"
+            name="tenPhongBan"
+            label="Tên phòng ban"
+            placeholder="Nhập tên phòng ban"
+            maxlength=255
+            required=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/select
+                id="coSoId"
+                name="coSoId"
+                label="Cơ sở"
+                placeholder="Chọn cơ sở"
+                required=true
+            }}
+
+        </div>
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="moTa"
+                name="moTa"
+                label="Mô tả"
+                placeholder="Nhập mô tả phòng ban"
+                maxlength=500
+                rows=4
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        description="Cho phép phòng ban được sử dụng."
+        checked=true
+    }}
+
+</div>

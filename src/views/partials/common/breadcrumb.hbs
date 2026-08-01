@@ -1,9 +1,55 @@
-<nav id="breadcrumb">
+{{#if breadcrumbs}}
 
-    {{!-- Home --}}
+    <nav
+        class="breadcrumb"
+        aria-label="Đường dẫn điều hướng">
 
-    {{!-- Danh mục --}}
+        <ol class="breadcrumb__list">
 
-    {{!-- Module --}}
+            <li class="breadcrumb__item">
 
-</nav>
+                <a
+                    href="/"
+                    class="breadcrumb__link">
+                    Trang chủ
+                </a>
+
+            </li>
+
+            {{#each breadcrumbs}}
+
+                <li
+                    class="breadcrumb__separator"
+                    aria-hidden="true">
+                    /
+                </li>
+
+                <li class="breadcrumb__item">
+
+                    {{#if path}}
+
+                        <a
+                            href="{{path}}"
+                            class="breadcrumb__link">
+                            {{label}}
+                        </a>
+
+                    {{else}}
+
+                        <span
+                            class="breadcrumb__current"
+                            aria-current="page">
+                            {{label}}
+                        </span>
+
+                    {{/if}}
+
+                </li>
+
+            {{/each}}
+
+        </ol>
+
+    </nav>
+
+{{/if}}

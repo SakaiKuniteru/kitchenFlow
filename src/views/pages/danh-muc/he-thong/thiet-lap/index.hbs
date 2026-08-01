@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="thiet-lap"
+    apiBase="/api/mcs/v1/dm-thiet-lap"
+    title="Thiết lập hệ thống"
+    description="Quản lý các tham số cấu hình của MCS KitchenFlow."
+    searchPlaceholder="Tìm theo mã hoặc tên thiết lập..."
+    createButtonLabel="Thêm thiết lập"
+    createButtonId="btnCreateThietLap"
+    searchInputId="searchThietLap"
+    tableId="thietLapTable"
+    tableBodyId="thietLapTableBody"
+    paginationId="thietLapPagination"
+    detailPanelId="thietLapDetailPanel"
+    detailContentId="thietLapDetailContent"
+    formId="thietLapForm"
+    formPartial="catalog/forms/thiet-lap-form"
+    detailTitle="Thông tin thiết lập"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="thietLapMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="thiet-lap"}}

@@ -1,0 +1,67 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin thiết lập
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maThietLap"
+            name="maThietLap"
+            label="Mã thiết lập"
+            placeholder="Ví dụ: SO_NGAY_REFRESH_TOKEN"
+            maxlength=100
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenThietLap"
+            name="tenThietLap"
+            label="Tên thiết lập"
+            placeholder="Nhập tên thiết lập"
+            maxlength=255
+            required=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/input
+                id="giaTri"
+                name="giaTri"
+                label="Giá trị"
+                placeholder="Nhập giá trị thiết lập"
+                maxlength=500
+                required=true
+            }}
+
+        </div>
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="moTa"
+                name="moTa"
+                label="Mô tả"
+                placeholder="Giải thích ý nghĩa và cách sử dụng thiết lập"
+                maxlength=500
+                rows=4
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

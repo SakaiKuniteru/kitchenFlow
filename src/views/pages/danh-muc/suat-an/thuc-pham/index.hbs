@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="thuc-pham"
+    apiBase="/api/mcs/v1/dm-thuc-pham"
+    title="Danh mục thực phẩm"
+    description="Quản lý thực phẩm, đơn vị và quy cách."
+    searchPlaceholder="Tìm theo mã hoặc tên thực phẩm..."
+    createButtonLabel="Thêm thực phẩm"
+    createButtonId="btnCreateThucPham"
+    searchInputId="searchThucPham"
+    tableId="thucPhamTable"
+    tableBodyId="thucPhamTableBody"
+    paginationId="thucPhamPagination"
+    detailPanelId="thucPhamDetailPanel"
+    detailContentId="thucPhamDetailContent"
+    formId="thucPhamForm"
+    formPartial="catalog/forms/thuc-pham-form"
+    detailTitle="Thông tin thực phẩm"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="thucPhamMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="thuc-pham"}}

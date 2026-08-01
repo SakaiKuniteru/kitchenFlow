@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="chuc-vu"
+    apiBase="/api/mcs/v1/dm-chuc-vu"
+    title="Danh mục chức vụ"
+    description="Quản lý các chức vụ của nhân viên."
+    searchPlaceholder="Tìm theo mã hoặc tên chức vụ..."
+    createButtonLabel="Thêm chức vụ"
+    createButtonId="btnCreateChucVu"
+    searchInputId="searchChucVu"
+    tableId="chucVuTable"
+    tableBodyId="chucVuTableBody"
+    paginationId="chucVuPagination"
+    detailPanelId="chucVuDetailPanel"
+    detailContentId="chucVuDetailContent"
+    formId="chucVuForm"
+    formPartial="catalog/forms/chuc-vu-form"
+    detailTitle="Thông tin chức vụ"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="chucVuMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="chuc-vu"}}

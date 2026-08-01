@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="co-so"
+    apiBase="/api/mcs/v1/dm-co-so"
+    title="Danh mục cơ sở"
+    description="Quản lý danh sách cơ sở trong hệ thống."
+    searchPlaceholder="Tìm theo mã, tên hoặc địa chỉ..."
+    createButtonLabel="Thêm cơ sở"
+    createButtonId="btnCreateCoSo"
+    searchInputId="searchCoSo"
+    tableId="coSoTable"
+    tableBodyId="coSoTableBody"
+    paginationId="coSoPagination"
+    detailPanelId="coSoDetailPanel"
+    detailContentId="coSoDetailContent"
+    formId="coSoForm"
+    formPartial="catalog/forms/co-so-form"
+    detailTitle="Thông tin cơ sở"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="coSoMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="co-so"}}

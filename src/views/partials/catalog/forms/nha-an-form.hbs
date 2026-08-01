@@ -1,0 +1,66 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin nhà ăn
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maNhaAn"
+            name="maNhaAn"
+            label="Mã nhà ăn"
+            placeholder="Nhập mã nhà ăn"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenNhaAn"
+            name="tenNhaAn"
+            label="Tên nhà ăn"
+            placeholder="Nhập tên nhà ăn"
+            maxlength=150
+            required=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/select
+                id="coSoId"
+                name="coSoId"
+                label="Cơ sở"
+                placeholder="Chọn cơ sở"
+                required=true
+            }}
+
+        </div>
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="moTa"
+                name="moTa"
+                label="Mô tả"
+                placeholder="Nhập mô tả nhà ăn"
+                maxlength=500
+                rows=4
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

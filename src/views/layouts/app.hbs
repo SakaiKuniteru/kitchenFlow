@@ -1,50 +1,147 @@
 <!DOCTYPE html>
+
 <html lang="vi">
 
-    <head>
+<head>
 
-        {{> common/head}}
+    {{> common/head}}
 
-    </head>
+    {{!-- ==================================================
+         CSS dùng chung cho layout app
+         ================================================== --}}
 
-    <body>
+    <link
+        rel="stylesheet"
+        href="/assets/css/common/reset.css">
 
-        {{> common/loading}}
+    <link
+        rel="stylesheet"
+        href="/assets/css/common/variables.css">
 
-        <div id="app">
+    <link
+        rel="stylesheet"
+        href="/assets/css/common/layout.css">
 
-            {{> common/header}}
+    <link
+        rel="stylesheet"
+        href="/assets/css/common/header.css">
 
-            <div class="app-wrapper">
+    <link
+        rel="stylesheet"
+        href="/assets/css/common/sidebar.css">
 
-                {{> common/sidebar}}
+    <link
+        rel="stylesheet"
+        href="/assets/css/common/footer.css">
 
-                <main class="app-content">
+    <link
+        rel="stylesheet"
+        href="/assets/css/common/modal.css">
 
-                    {{> common/breadcrumb}}
+    <link
+        rel="stylesheet"
+        href="/assets/css/common/toast.css">
 
-                    <section class="page-content">
+    <link
+        rel="stylesheet"
+        href="/assets/css/common/loading.css">
 
-                        {{{body}}}
 
-                    </section>
+    {{!-- ==================================================
+         CSS chỉ dành cho màn hình danh mục
+         ================================================== --}}
 
-                    {{> common/footer}}
+    {{#if isCatalogPage}}
 
-                </main>
+        <link
+            rel="stylesheet"
+            href="/assets/css/catalog/catalog.css">
 
-            </div>
+        <link
+            rel="stylesheet"
+            href="/assets/css/catalog/toolbar.css">
+
+        <link
+            rel="stylesheet"
+            href="/assets/css/catalog/table.css">
+
+        <link
+            rel="stylesheet"
+            href="/assets/css/catalog/detail-panel.css">
+
+        <link
+            rel="stylesheet"
+            href="/assets/css/catalog/form.css">
+
+        <link
+            rel="stylesheet"
+            href="/assets/css/catalog/pagination.css">
+
+        <link
+            rel="stylesheet"
+            href="/assets/css/catalog/mobile.css">
+
+    {{/if}}
+
+</head>
+
+<body>
+
+    {{> common/loading}}
+
+    <div id="app">
+
+        {{> common/header}}
+
+        <div class="app-wrapper">
+
+            {{> common/sidebar}}
+
+            <main class="app-content">
+
+                {{> common/breadcrumb}}
+
+                <section class="page-content">
+
+                    {{{body}}}
+
+                </section>
+
+                {{> common/footer}}
+
+            </main>
 
         </div>
 
-        {{> common/toast}}
+    </div>
 
-        {{> modals.alert}}
+    {{> common/toast}}
 
-        {{> modals.confirm}}
+    {{> modals/alert}}
 
-        {{> modals.change-password}}
+    {{> modals/confirm}}
 
-    </body>
+    {{> modals/change-password}}
+
+
+    {{!-- ==================================================
+         JavaScript dùng chung
+         ================================================== --}}
+
+    <script defer src="/assets/js/common/app.js"></script>
+    
+    <script defer src="/assets/js/common/header.js"></script>
+
+    <script defer src="/assets/js/common/sidebar.js"></script>
+
+    <script defer src="/assets/js/common/modal.js"></script>
+
+    <script defer src="/assets/js/common/toast.js"></script>
+
+    <script defer src="/assets/js/common/loading.js"></script>
+
+    <script defer src="/assets/js/common/change-password.js"></script>
+
+</body>
 
 </html>

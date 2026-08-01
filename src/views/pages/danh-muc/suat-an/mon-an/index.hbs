@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="mon-an"
+    apiBase="/api/mcs/v1/dm-mon-an"
+    title="Danh mục món ăn"
+    description="Quản lý danh sách món ăn và giá dự kiến."
+    searchPlaceholder="Tìm theo mã hoặc tên món ăn..."
+    createButtonLabel="Thêm món ăn"
+    createButtonId="btnCreateMonAn"
+    searchInputId="searchMonAn"
+    tableId="monAnTable"
+    tableBodyId="monAnTableBody"
+    paginationId="monAnPagination"
+    detailPanelId="monAnDetailPanel"
+    detailContentId="monAnDetailContent"
+    formId="monAnForm"
+    formPartial="catalog/forms/mon-an-form"
+    detailTitle="Thông tin món ăn"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="monAnMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="mon-an"}}

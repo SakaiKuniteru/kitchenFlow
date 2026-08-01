@@ -1,0 +1,78 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin tài khoản
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="tenDangNhap"
+            name="tenDangNhap"
+            label="Tên đăng nhập"
+            placeholder="Nhập tên đăng nhập"
+            maxlength=100
+            required=true
+            autocomplete="off"
+        }}
+
+        {{> forms/select
+            id="nhanVienId"
+            name="nhanVienId"
+            label="Nhân viên"
+            placeholder="Chọn nhân viên"
+            required=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/input
+                id="matKhau"
+                name="matKhau"
+                label="Mật khẩu"
+                placeholder="Nhập mật khẩu"
+                type="password"
+                autocomplete="new-password"
+                description="Khi cập nhật có thể bỏ trống nếu không thay đổi mật khẩu."
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Vai trò
+    </h3>
+
+    {{> forms/select
+        id="dsVaiTroId"
+        name="dsVaiTroId"
+        label="Danh sách vai trò"
+        description="Có thể chọn nhiều vai trò."
+        multiple=true
+    }}
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="doiMatKhauLanDau"
+        name="doiMatKhauLanDau"
+        label="Yêu cầu đổi mật khẩu lần đầu"
+        description="Người dùng phải đổi mật khẩu sau khi đăng nhập."
+        checked=true
+    }}
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Tài khoản đang hoạt động"
+        checked=true
+    }}
+
+</div>

@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="nhom-tinh-nang"
+    apiBase="/api/mcs/v1/dm-nhom-tinh-nang"
+    title="Danh mục nhóm tính năng"
+    description="Phân nhóm các quyền và chức năng hệ thống."
+    searchPlaceholder="Tìm theo mã hoặc tên nhóm tính năng..."
+    createButtonLabel="Thêm nhóm tính năng"
+    createButtonId="btnCreateNhomTinhNang"
+    searchInputId="searchNhomTinhNang"
+    tableId="nhomTinhNangTable"
+    tableBodyId="nhomTinhNangTableBody"
+    paginationId="nhomTinhNangPagination"
+    detailPanelId="nhomTinhNangDetailPanel"
+    detailContentId="nhomTinhNangDetailContent"
+    formId="nhomTinhNangForm"
+    formPartial="catalog/forms/nhom-tinh-nang-form"
+    detailTitle="Thông tin nhóm tính năng"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="nhomTinhNangMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="nhom-tinh-nang"}}

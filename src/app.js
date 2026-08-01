@@ -50,9 +50,9 @@ app.use(
 
 setupView(app);
 
-app.use("/", webRoute);
-
 app.use("/api/mcs/v1", apiRoute);
+
+app.use("/", webRoute);
 
 app.get("/test", (req,res)=>{
         res.send("OK");

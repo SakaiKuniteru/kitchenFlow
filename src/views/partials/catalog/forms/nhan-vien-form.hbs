@@ -1,0 +1,230 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin cá nhân
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maNhanVien"
+            name="maNhanVien"
+            label="Mã nhân viên"
+            placeholder="Nhập mã nhân viên"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="hoTen"
+            name="hoTen"
+            label="Họ và tên"
+            placeholder="Nhập họ và tên"
+            maxlength=255
+            required=true
+        }}
+
+        {{> forms/date
+            id="ngaySinh"
+            name="ngaySinh"
+            label="Ngày sinh"
+            type="date"
+        }}
+
+        {{> forms/select
+            id="gioiTinh"
+            name="gioiTinh"
+            label="Giới tính"
+            placeholder="Chọn giới tính"
+        }}
+
+        {{> forms/input
+            id="soDienThoai"
+            name="soDienThoai"
+            label="Số điện thoại"
+            placeholder="Nhập số điện thoại"
+            maxlength=20
+        }}
+
+        {{> forms/input
+            id="email"
+            name="email"
+            label="Email"
+            placeholder="example@kitchenflow.com"
+            type="email"
+            maxlength=255
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/input
+                id="anhDaiDien"
+                name="anhDaiDien"
+                label="Ảnh đại diện"
+                placeholder="/uploads/nhan-vien/avatar.jpg"
+                maxlength=500
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Tổ chức
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/select
+            id="coSoId"
+            name="coSoId"
+            label="Cơ sở"
+            placeholder="Chọn cơ sở"
+            required=true
+        }}
+
+        {{> forms/select
+            id="phongBanId"
+            name="phongBanId"
+            label="Phòng ban"
+            placeholder="Chọn phòng ban"
+            required=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/select
+                id="chucVuId"
+                name="chucVuId"
+                label="Chức vụ"
+                placeholder="Chọn chức vụ"
+                required=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Địa chỉ
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/select
+            id="quocGiaId"
+            name="quocGiaId"
+            label="Quốc gia"
+            placeholder="Chọn quốc gia"
+        }}
+
+        {{> forms/select
+            id="tinhThanhId"
+            name="tinhThanhId"
+            label="Tỉnh thành"
+            placeholder="Chọn tỉnh thành"
+            disabled=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/select
+                id="xaPhuongId"
+                name="xaPhuongId"
+                label="Xã phường"
+                placeholder="Chọn xã phường"
+                disabled=true
+            }}
+
+        </div>
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="diaChi"
+                name="diaChi"
+                label="Địa chỉ chi tiết"
+                placeholder="Nhập địa chỉ"
+                maxlength=500
+                rows=3
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Mã nhận diện
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maThe"
+            name="maThe"
+            label="Mã thẻ"
+            placeholder="Nhập mã thẻ"
+            maxlength=255
+        }}
+
+        {{> forms/input
+            id="maQr"
+            name="maQr"
+            label="Mã QR"
+            placeholder="Nhập nội dung QR"
+            maxlength=255
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/input
+                id="maBarcode"
+                name="maBarcode"
+                label="Mã Barcode"
+                placeholder="Nhập mã Barcode"
+                maxlength=255
+            }}
+
+        </div>
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="ghiChu"
+                name="ghiChu"
+                label="Ghi chú"
+                placeholder="Nhập ghi chú"
+                maxlength=500
+                rows=3
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

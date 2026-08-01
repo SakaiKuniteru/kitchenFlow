@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="chinh-sach"
+    apiBase="/api/mcs/v1/dm-chinh-sach"
+    title="Danh mục chính sách"
+    description="Quản lý chính sách theo vai trò, chức vụ hoặc nhân viên."
+    searchPlaceholder="Tìm theo mã hoặc tên chính sách..."
+    createButtonLabel="Thêm chính sách"
+    createButtonId="btnCreateChinhSach"
+    searchInputId="searchChinhSach"
+    tableId="chinhSachTable"
+    tableBodyId="chinhSachTableBody"
+    paginationId="chinhSachPagination"
+    detailPanelId="chinhSachDetailPanel"
+    detailContentId="chinhSachDetailContent"
+    formId="chinhSachForm"
+    formPartial="catalog/forms/chinh-sach-form"
+    detailTitle="Thông tin chính sách"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="chinhSachMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="chinh-sach"}}

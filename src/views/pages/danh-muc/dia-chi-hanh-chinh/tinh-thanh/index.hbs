@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="tinh-thanh"
+    apiBase="/api/mcs/v1/dm-tinh-thanh"
+    title="Danh mục tỉnh thành"
+    description="Quản lý tỉnh thành theo quốc gia."
+    searchPlaceholder="Tìm theo mã hoặc tên tỉnh thành..."
+    createButtonLabel="Thêm tỉnh thành"
+    createButtonId="btnCreateTinhThanh"
+    searchInputId="searchTinhThanh"
+    tableId="tinhThanhTable"
+    tableBodyId="tinhThanhTableBody"
+    paginationId="tinhThanhPagination"
+    detailPanelId="tinhThanhDetailPanel"
+    detailContentId="tinhThanhDetailContent"
+    formId="tinhThanhForm"
+    formPartial="catalog/forms/tinh-thanh-form"
+    detailTitle="Thông tin tỉnh thành"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="tinhThanhMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="tinh-thanh"}}

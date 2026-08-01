@@ -1,0 +1,119 @@
+<footer
+    id="{{#if paginationId}}{{paginationId}}{{else}}catalogPagination{{/if}}"
+    class="catalog-pagination"
+    data-catalog-pagination>
+
+    <div class="catalog-pagination__information">
+
+        <span>
+            Hiển thị
+        </span>
+
+        <strong data-pagination-from>
+            0
+        </strong>
+
+        <span>
+            đến
+        </span>
+
+        <strong data-pagination-to>
+            0
+        </strong>
+
+        <span>
+            trong tổng số
+        </span>
+
+        <strong data-pagination-total>
+            0
+        </strong>
+
+        <span>
+            bản ghi
+        </span>
+
+    </div>
+
+    <div class="catalog-pagination__controls">
+
+        <label class="catalog-pagination__page-size">
+
+            <span>
+                Số dòng:
+            </span>
+
+            <select
+                data-pagination-size
+                aria-label="Số bản ghi trên mỗi trang">
+
+                <option value="10">
+                    10
+                </option>
+
+                <option value="20" selected>
+                    20
+                </option>
+
+                <option value="50">
+                    50
+                </option>
+
+                <option value="100">
+                    100
+                </option>
+
+            </select>
+
+        </label>
+
+        <div
+            class="catalog-pagination__buttons"
+            aria-label="Điều hướng phân trang">
+
+            <button
+                type="button"
+                class="catalog-pagination__button"
+                data-pagination-first
+                aria-label="Trang đầu"
+                disabled>
+                «
+            </button>
+
+            <button
+                type="button"
+                class="catalog-pagination__button"
+                data-pagination-previous
+                aria-label="Trang trước"
+                disabled>
+                ‹
+            </button>
+
+            <div
+                class="catalog-pagination__pages"
+                data-pagination-pages>
+            </div>
+
+            <button
+                type="button"
+                class="catalog-pagination__button"
+                data-pagination-next
+                aria-label="Trang tiếp theo"
+                disabled>
+                ›
+            </button>
+
+            <button
+                type="button"
+                class="catalog-pagination__button"
+                data-pagination-last
+                aria-label="Trang cuối"
+                disabled>
+                »
+            </button>
+
+        </div>
+
+    </div>
+
+</footer>

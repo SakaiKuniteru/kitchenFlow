@@ -1,0 +1,83 @@
+<div
+    class="form-field form-field--checkbox {{#if fieldClass}}{{fieldClass}}{{/if}}"
+    data-form-field="{{name}}">
+
+    <label
+        for="{{id}}"
+        class="form-checkbox">
+
+        <input
+            type="checkbox"
+            id="{{id}}"
+            name="{{name}}"
+            class="form-checkbox__input"
+            value="{{#if value}}{{value}}{{else}}true{{/if}}"
+
+            {{#if checked}}
+                checked
+            {{/if}}
+
+            {{#if required}}
+                required
+                aria-required="true"
+            {{/if}}
+
+            {{#if disabled}}
+                disabled
+            {{/if}}
+
+            {{#if error}}
+                aria-invalid="true"
+                aria-describedby="{{id}}Error"
+            {{else if description}}
+                aria-describedby="{{id}}Description"
+            {{/if}}>
+
+        <span
+            class="form-checkbox__box"
+            aria-hidden="true">
+        </span>
+
+        <span class="form-checkbox__content">
+
+            <span class="form-checkbox__label">
+
+                {{label}}
+
+                {{#if required}}
+
+                    <span
+                        class="form-field__required"
+                        aria-hidden="true">
+                        *
+                    </span>
+
+                {{/if}}
+
+            </span>
+
+            {{#if description}}
+
+                <small
+                    id="{{id}}Description"
+                    class="form-checkbox__description">
+                    {{description}}
+                </small>
+
+            {{/if}}
+
+        </span>
+
+    </label>
+
+    <small
+        id="{{id}}Error"
+        class="form-field__error"
+        data-field-error="{{name}}"
+        {{#unless error}}hidden{{/unless}}>
+
+        {{error}}
+
+    </small>
+
+</div>

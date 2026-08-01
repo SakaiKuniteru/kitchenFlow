@@ -1,16 +1,29 @@
-<footer id="app-footer">
+<footer
+    id="appFooter"
+    class="app-footer">
 
-    <small>
+    <div class="app-footer__copyright">
 
-        © 2026 MCS KitchenFlow.
-        All rights reserved.
+        <span>
+            © {{currentYear}} MCS KITCHENFLOW.
+        </span>
 
-    </small>
+        <span>
+            Bản quyền thuộc về MCS Software.
+        </span>
 
-    <small>
+    </div>
 
-        Phát triển bởi MCS Software.
+    <div class="app-footer__version">
 
-    </small>
+        {{#if appVersion}}
+
+            <span>
+                Phiên bản {{appVersion}}
+            </span>
+
+        {{/if}}
+
+    </div>
 
 </footer>

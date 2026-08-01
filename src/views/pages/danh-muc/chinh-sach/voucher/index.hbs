@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="voucher"
+    apiBase="/api/mcs/v1/dm-voucher"
+    title="Danh mục voucher"
+    description="Quản lý voucher và giá trị miễn giảm."
+    searchPlaceholder="Tìm theo mã hoặc tên voucher..."
+    createButtonLabel="Thêm voucher"
+    createButtonId="btnCreateVoucher"
+    searchInputId="searchVoucher"
+    tableId="voucherTable"
+    tableBodyId="voucherTableBody"
+    paginationId="voucherPagination"
+    detailPanelId="voucherDetailPanel"
+    detailContentId="voucherDetailContent"
+    formId="voucherForm"
+    formPartial="catalog/forms/voucher-form"
+    detailTitle="Thông tin voucher"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="voucherMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="voucher"}}

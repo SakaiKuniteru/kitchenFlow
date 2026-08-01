@@ -1,0 +1,91 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin chính sách
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maChinhSach"
+            name="maChinhSach"
+            label="Mã chính sách"
+            placeholder="Nhập mã chính sách"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenChinhSach"
+            name="tenChinhSach"
+            label="Tên chính sách"
+            placeholder="Nhập tên chính sách"
+            maxlength=255
+            required=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="moTa"
+                name="moTa"
+                label="Mô tả"
+                placeholder="Nhập nội dung chính sách"
+                maxlength=500
+                rows=5
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Phạm vi áp dụng
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/select
+            id="dsVaiTroId"
+            name="dsVaiTroId"
+            label="Vai trò áp dụng"
+            multiple=true
+        }}
+
+        {{> forms/select
+            id="dsChucVuId"
+            name="dsChucVuId"
+            label="Chức vụ áp dụng"
+            multiple=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/select
+                id="dsNhanVienId"
+                name="dsNhanVienId"
+                label="Nhân viên áp dụng"
+                multiple=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

@@ -1,0 +1,87 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin voucher
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maVoucher"
+            name="maVoucher"
+            label="Mã voucher"
+            placeholder="Nhập mã voucher"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenVoucher"
+            name="tenVoucher"
+            label="Tên voucher"
+            placeholder="Nhập tên voucher"
+            maxlength=255
+            required=true
+        }}
+
+        {{> forms/number
+            id="giaTri"
+            name="giaTri"
+            label="Giá trị voucher"
+            placeholder="Nhập giá trị"
+            min=0
+            step="0.01"
+            suffix="VNĐ"
+            required=true
+        }}
+
+        {{> forms/input
+            id="hinhAnh"
+            name="hinhAnh"
+            label="Hình ảnh"
+            placeholder="/uploads/voucher/banner.jpg"
+            maxlength=500
+        }}
+
+        {{> forms/date
+            id="ngayBatDau"
+            name="ngayBatDau"
+            label="Ngày bắt đầu"
+            type="date"
+        }}
+
+        {{> forms/date
+            id="ngayKetThuc"
+            name="ngayKetThuc"
+            label="Ngày kết thúc"
+            type="date"
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="moTa"
+                name="moTa"
+                label="Mô tả"
+                placeholder="Nhập mô tả voucher"
+                maxlength=500
+                rows=4
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

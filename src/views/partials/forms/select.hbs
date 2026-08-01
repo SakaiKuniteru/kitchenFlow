@@ -1,0 +1,110 @@
+<div
+    class="form-field {{#if fieldClass}}{{fieldClass}}{{/if}}"
+    data-form-field="{{name}}">
+
+    {{#if label}}
+
+        <label
+            for="{{id}}"
+            class="form-field__label">
+
+            <span>
+                {{label}}
+            </span>
+
+            {{#if required}}
+
+                <span
+                    class="form-field__required"
+                    aria-hidden="true">
+                    *
+                </span>
+
+            {{/if}}
+
+        </label>
+
+    {{/if}}
+
+    <div class="form-field__control">
+
+        <select
+            id="{{id}}"
+            name="{{name}}"
+            class="form-select {{#if inputClass}}{{inputClass}}{{/if}}"
+
+            {{#if required}}
+                required
+                aria-required="true"
+            {{/if}}
+
+            {{#if disabled}}
+                disabled
+            {{/if}}
+
+            {{#if multiple}}
+                multiple
+            {{/if}}
+
+            {{#if error}}
+                aria-invalid="true"
+                aria-describedby="{{id}}Error"
+            {{else if description}}
+                aria-describedby="{{id}}Description"
+            {{/if}}>
+
+            {{#unless hidePlaceholder}}
+
+                <option
+                    value=""
+                    {{#if placeholderDisabled}}disabled{{/if}}
+                    {{#if placeholderSelected}}selected{{/if}}>
+
+                    {{#if placeholder}}
+                        {{placeholder}}
+                    {{else}}
+                        -- Chọn dữ liệu --
+                    {{/if}}
+
+                </option>
+
+            {{/unless}}
+
+            {{#each options}}
+
+                <option
+                    value="{{value}}"
+                    {{#if selected}}selected{{/if}}
+                    {{#if disabled}}disabled{{/if}}>
+
+                    {{label}}
+
+                </option>
+
+            {{/each}}
+
+        </select>
+
+    </div>
+
+    {{#if description}}
+
+        <small
+            id="{{id}}Description"
+            class="form-field__description">
+            {{description}}
+        </small>
+
+    {{/if}}
+
+    <small
+        id="{{id}}Error"
+        class="form-field__error"
+        data-field-error="{{name}}"
+        {{#unless error}}hidden{{/unless}}>
+
+        {{error}}
+
+    </small>
+
+</div>

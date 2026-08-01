@@ -1,0 +1,56 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin đơn vị tính
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maDonViTinh"
+            name="maDonViTinh"
+            label="Mã đơn vị tính"
+            placeholder="Nhập mã đơn vị"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenDonViTinh"
+            name="tenDonViTinh"
+            label="Tên đơn vị tính"
+            placeholder="Nhập tên đơn vị"
+            maxlength=100
+            required=true
+        }}
+
+        {{> forms/input
+            id="kyHieu"
+            name="kyHieu"
+            label="Ký hiệu"
+            placeholder="KG, G, Bao..."
+            maxlength=20
+        }}
+
+        {{> forms/select
+            id="loaiDonVi"
+            name="loaiDonVi"
+            label="Loại đơn vị"
+            placeholder="Chọn loại đơn vị"
+            required=true
+        }}
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

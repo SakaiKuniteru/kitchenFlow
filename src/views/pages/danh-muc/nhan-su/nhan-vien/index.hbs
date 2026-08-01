@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="nhan-vien"
+    apiBase="/api/mcs/v1/dm-nhan-vien"
+    title="Danh mục nhân viên"
+    description="Quản lý hồ sơ và thông tin nhân viên."
+    searchPlaceholder="Tìm theo mã, họ tên, email hoặc số điện thoại..."
+    createButtonLabel="Thêm nhân viên"
+    createButtonId="btnCreateNhanVien"
+    searchInputId="searchNhanVien"
+    tableId="nhanVienTable"
+    tableBodyId="nhanVienTableBody"
+    paginationId="nhanVienPagination"
+    detailPanelId="nhanVienDetailPanel"
+    detailContentId="nhanVienDetailContent"
+    formId="nhanVienForm"
+    formPartial="catalog/forms/nhan-vien-form"
+    detailTitle="Thông tin nhân viên"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="nhanVienMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="nhan-vien"}}

@@ -1,0 +1,100 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin kho
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maKho"
+            name="maKho"
+            label="Mã kho"
+            placeholder="Nhập mã kho"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenKho"
+            name="tenKho"
+            label="Tên kho"
+            placeholder="Nhập tên kho"
+            maxlength=150
+            required=true
+        }}
+
+        {{> forms/select
+            id="nhaAnId"
+            name="nhaAnId"
+            label="Nhà ăn"
+            placeholder="Chọn nhà ăn"
+            required=true
+        }}
+
+        {{> forms/select
+            id="loaiKho"
+            name="loaiKho"
+            label="Loại kho"
+            placeholder="Chọn loại kho"
+            required=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/input
+                id="diaDiem"
+                name="diaDiem"
+                label="Địa điểm"
+                placeholder="Nhập vị trí kho"
+                maxlength=255
+            }}
+
+        </div>
+
+        {{> forms/number
+            id="nhietDoToiThieu"
+            name="nhietDoToiThieu"
+            label="Nhiệt độ tối thiểu"
+            placeholder="Ví dụ: -18"
+            step="0.01"
+            suffix="°C"
+        }}
+
+        {{> forms/number
+            id="nhietDoToiDa"
+            name="nhietDoToiDa"
+            label="Nhiệt độ tối đa"
+            placeholder="Ví dụ: 5"
+            step="0.01"
+            suffix="°C"
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="moTa"
+                name="moTa"
+                label="Mô tả"
+                placeholder="Nhập mô tả kho"
+                maxlength=500
+                rows=4
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

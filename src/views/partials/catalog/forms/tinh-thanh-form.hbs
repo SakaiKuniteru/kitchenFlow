@@ -1,0 +1,56 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin tỉnh thành
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maTinhThanh"
+            name="maTinhThanh"
+            label="Mã tỉnh thành"
+            placeholder="Nhập mã tỉnh thành"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenTinhThanh"
+            name="tenTinhThanh"
+            label="Tên tỉnh thành"
+            placeholder="Nhập tên tỉnh thành"
+            maxlength=255
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenVietTat"
+            name="tenVietTat"
+            label="Tên viết tắt"
+            placeholder="Nhập tên viết tắt"
+            maxlength=50
+        }}
+
+        {{> forms/select
+            id="quocGiaId"
+            name="quocGiaId"
+            label="Quốc gia"
+            placeholder="Chọn quốc gia"
+            required=true
+        }}
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

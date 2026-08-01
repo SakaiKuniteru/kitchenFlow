@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="tong-hop-dia-chi"
+    apiBase="/api/mcs/v1/dm-dia-chi"
+    title="Tổng hợp địa chỉ hành chính"
+    description="Tra cứu tổng hợp quốc gia, tỉnh thành và xã phường."
+    searchPlaceholder="Tìm theo mã hoặc tên địa chỉ..."
+    searchInputId="searchTongHopDiaChi"
+    tableId="tongHopDiaChiTable"
+    tableBodyId="tongHopDiaChiTableBody"
+    paginationId="tongHopDiaChiPagination"
+    detailPanelId="tongHopDiaChiDetailPanel"
+    detailContentId="tongHopDiaChiDetailContent"
+    formId="tongHopDiaChiForm"
+    formPartial="catalog/forms/tong-hop-dia-chi-form"
+    detailTitle="Thông tin địa chỉ hành chính"
+    hideCreateButton=true
+    showEditButton=false
+    showActions=true
+    showExportButton=true
+    mobilePanelId="tongHopDiaChiMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="tong-hop-dia-chi"}}

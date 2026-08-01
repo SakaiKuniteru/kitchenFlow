@@ -1,0 +1,56 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin xã phường
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maXaPhuong"
+            name="maXaPhuong"
+            label="Mã xã phường"
+            placeholder="Nhập mã xã phường"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenXaPhuong"
+            name="tenXaPhuong"
+            label="Tên xã phường"
+            placeholder="Nhập tên xã phường"
+            maxlength=255
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenVietTat"
+            name="tenVietTat"
+            label="Tên viết tắt"
+            placeholder="Nhập tên viết tắt"
+            maxlength=50
+        }}
+
+        {{> forms/select
+            id="tinhThanhId"
+            name="tinhThanhId"
+            label="Tỉnh thành"
+            placeholder="Chọn tỉnh thành"
+            required=true
+        }}
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

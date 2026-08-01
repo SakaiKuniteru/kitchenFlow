@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="nha-an"
+    apiBase="/api/mcs/v1/dm-nha-an"
+    title="Danh mục nhà ăn"
+    description="Quản lý danh sách nhà ăn theo cơ sở."
+    searchPlaceholder="Tìm theo mã hoặc tên nhà ăn..."
+    createButtonLabel="Thêm nhà ăn"
+    createButtonId="btnCreateNhaAn"
+    searchInputId="searchNhaAn"
+    tableId="nhaAnTable"
+    tableBodyId="nhaAnTableBody"
+    paginationId="nhaAnPagination"
+    detailPanelId="nhaAnDetailPanel"
+    detailContentId="nhaAnDetailContent"
+    formId="nhaAnForm"
+    formPartial="catalog/forms/nha-an-form"
+    detailTitle="Thông tin nhà ăn"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="nhaAnMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="nha-an"}}

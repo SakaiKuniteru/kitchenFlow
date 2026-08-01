@@ -1,0 +1,66 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin quyền
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maQuyen"
+            name="maQuyen"
+            label="Mã quyền"
+            placeholder="Ví dụ: Q000001"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenQuyen"
+            name="tenQuyen"
+            label="Tên quyền"
+            placeholder="Nhập tên quyền"
+            maxlength=255
+            required=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/select
+                id="nhomTinhNangId"
+                name="nhomTinhNangId"
+                label="Nhóm tính năng"
+                placeholder="Chọn nhóm tính năng"
+                required=true
+            }}
+
+        </div>
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="moTa"
+                name="moTa"
+                label="Mô tả"
+                placeholder="Nhập mô tả quyền"
+                maxlength=500
+                rows=4
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

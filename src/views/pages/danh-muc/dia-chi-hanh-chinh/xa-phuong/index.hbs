@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="xa-phuong"
+    apiBase="/api/mcs/v1/dm-xa-phuong"
+    title="Danh mục xã phường"
+    description="Quản lý xã phường theo tỉnh thành."
+    searchPlaceholder="Tìm theo mã hoặc tên xã phường..."
+    createButtonLabel="Thêm xã phường"
+    createButtonId="btnCreateXaPhuong"
+    searchInputId="searchXaPhuong"
+    tableId="xaPhuongTable"
+    tableBodyId="xaPhuongTableBody"
+    paginationId="xaPhuongPagination"
+    detailPanelId="xaPhuongDetailPanel"
+    detailContentId="xaPhuongDetailContent"
+    formId="xaPhuongForm"
+    formPartial="catalog/forms/xa-phuong-form"
+    detailTitle="Thông tin xã phường"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="xaPhuongMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="xa-phuong"}}

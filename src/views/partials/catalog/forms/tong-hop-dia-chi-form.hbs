@@ -1,0 +1,199 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin quốc gia
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maQuocGia"
+            name="maQuocGia"
+            label="Mã quốc gia"
+            readonly=true
+        }}
+
+        {{> forms/input
+            id="tenQuocGia"
+            name="tenQuocGia"
+            label="Tên quốc gia"
+            readonly=true
+        }}
+
+        {{> forms/input
+            id="tenQuocGiaEn"
+            name="tenQuocGiaEn"
+            label="Tên quốc gia tiếng Anh"
+            readonly=true
+        }}
+
+        {{> forms/input
+            id="tenQuocGiaVietTat"
+            name="tenQuocGiaVietTat"
+            label="Tên viết tắt"
+            readonly=true
+        }}
+
+        {{> forms/input
+            id="maIso2"
+            name="maIso2"
+            label="Mã ISO2"
+            readonly=true
+        }}
+
+        {{> forms/input
+            id="maIso3"
+            name="maIso3"
+            label="Mã ISO3"
+            readonly=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/input
+                id="maDienThoai"
+                name="maDienThoai"
+                label="Mã điện thoại"
+                readonly=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin tỉnh thành
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maTinhThanh"
+            name="maTinhThanh"
+            label="Mã tỉnh thành"
+            readonly=true
+        }}
+
+        {{> forms/input
+            id="tenTinhThanh"
+            name="tenTinhThanh"
+            label="Tên tỉnh thành"
+            readonly=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/input
+                id="tenTinhThanhVietTat"
+                name="tenTinhThanhVietTat"
+                label="Tên viết tắt"
+                readonly=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin xã phường
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maXaPhuong"
+            name="maXaPhuong"
+            label="Mã xã phường"
+            readonly=true
+        }}
+
+        {{> forms/input
+            id="tenXaPhuong"
+            name="tenXaPhuong"
+            label="Tên xã phường"
+            readonly=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/input
+                id="tenXaPhuongVietTat"
+                name="tenXaPhuongVietTat"
+                label="Tên viết tắt"
+                readonly=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Địa chỉ tổng hợp
+    </h3>
+
+    <div class="catalog-form-grid catalog-form-grid--one-column">
+
+        {{> forms/textarea
+            id="diaChiDayDu"
+            name="diaChiDayDu"
+            label="Địa chỉ đầy đủ"
+            rows=3
+            readonly=true
+        }}
+
+    </div>
+
+</div>
+
+
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Trạng thái dữ liệu
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/switch
+            id="quocGiaActive"
+            name="quocGiaActive"
+            label="Quốc gia đang hoạt động"
+            disabled=true
+        }}
+
+        {{> forms/switch
+            id="tinhThanhActive"
+            name="tinhThanhActive"
+            label="Tỉnh thành đang hoạt động"
+            disabled=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/switch
+                id="xaPhuongActive"
+                name="xaPhuongActive"
+                label="Xã phường đang hoạt động"
+                disabled=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>

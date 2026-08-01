@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="vai-tro"
+    apiBase="/api/mcs/v1/dm-vai-tro"
+    title="Danh mục vai trò"
+    description="Quản lý vai trò và danh sách quyền được cấp."
+    searchPlaceholder="Tìm theo mã hoặc tên vai trò..."
+    createButtonLabel="Thêm vai trò"
+    createButtonId="btnCreateVaiTro"
+    searchInputId="searchVaiTro"
+    tableId="vaiTroTable"
+    tableBodyId="vaiTroTableBody"
+    paginationId="vaiTroPagination"
+    detailPanelId="vaiTroDetailPanel"
+    detailContentId="vaiTroDetailContent"
+    formId="vaiTroForm"
+    formPartial="catalog/forms/vai-tro-form"
+    detailTitle="Thông tin vai trò"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="vaiTroMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="vai-tro"}}

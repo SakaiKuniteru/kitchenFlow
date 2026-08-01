@@ -1,0 +1,687 @@
+{{!-- CSS dùng chung của khung ứng dụng và trang chủ --}}
+
+<link rel="stylesheet" href="/assets/css/home/home.css">
+
+<section
+    id="homePage"
+    class="home-page">
+
+    <header class="home-page__header">
+
+        <div class="home-page__heading">
+
+            <p class="home-page__eyebrow">
+                Tổng quan hệ thống
+            </p>
+
+            <h1 class="home-page__title">
+
+                Xin chào,
+
+                <span data-home-user-name>
+
+                    {{#if currentUser.hoTen}}
+
+                        {{currentUser.hoTen}}
+
+                    {{else}}
+
+                        Người dùng
+
+                    {{/if}}
+
+                </span>
+
+            </h1>
+
+            <p class="home-page__description">
+
+                Chào mừng bạn quay lại hệ thống quản lý nhà ăn
+                MCS KitchenFlow.
+
+            </p>
+
+        </div>
+
+        <div class="home-page__date">
+
+            <span
+                class="home-page__date-label">
+                Hôm nay
+            </span>
+
+            <strong
+                class="home-page__date-value"
+                data-current-date>
+
+                {{currentDate}}
+
+            </strong>
+
+        </div>
+
+    </header>
+
+
+    <section
+        class="home-summary"
+        aria-label="Thống kê tổng quan">
+
+        <article
+            class="home-summary-card"
+            data-summary-card="co-so">
+
+            <div class="home-summary-card__icon">
+
+                <span aria-hidden="true">
+                    🏢
+                </span>
+
+            </div>
+
+            <div class="home-summary-card__content">
+
+                <span class="home-summary-card__label">
+                    Cơ sở
+                </span>
+
+                <strong
+                    class="home-summary-card__value"
+                    data-summary-value="co-so">
+
+                    {{#if summary.tongCoSo}}
+
+                        {{summary.tongCoSo}}
+
+                    {{else}}
+
+                        0
+
+                    {{/if}}
+
+                </strong>
+
+            </div>
+
+            <a
+                href="/danh-muc/to-chuc/co-so"
+                class="home-summary-card__link">
+
+                Xem chi tiết
+
+                <span aria-hidden="true">
+                    →
+                </span>
+
+            </a>
+
+        </article>
+
+
+        <article
+            class="home-summary-card"
+            data-summary-card="nha-an">
+
+            <div class="home-summary-card__icon">
+
+                <span aria-hidden="true">
+                    🍽
+                </span>
+
+            </div>
+
+            <div class="home-summary-card__content">
+
+                <span class="home-summary-card__label">
+                    Nhà ăn
+                </span>
+
+                <strong
+                    class="home-summary-card__value"
+                    data-summary-value="nha-an">
+
+                    {{#if summary.tongNhaAn}}
+
+                        {{summary.tongNhaAn}}
+
+                    {{else}}
+
+                        0
+
+                    {{/if}}
+
+                </strong>
+
+            </div>
+
+            <a
+                href="/danh-muc/to-chuc/nha-an"
+                class="home-summary-card__link">
+
+                Xem chi tiết
+
+                <span aria-hidden="true">
+                    →
+                </span>
+
+            </a>
+
+        </article>
+
+
+        <article
+            class="home-summary-card"
+            data-summary-card="kho">
+
+            <div class="home-summary-card__icon">
+
+                <span aria-hidden="true">
+                    📦
+                </span>
+
+            </div>
+
+            <div class="home-summary-card__content">
+
+                <span class="home-summary-card__label">
+                    Kho
+                </span>
+
+                <strong
+                    class="home-summary-card__value"
+                    data-summary-value="kho">
+
+                    {{#if summary.tongKho}}
+
+                        {{summary.tongKho}}
+
+                    {{else}}
+
+                        0
+
+                    {{/if}}
+
+                </strong>
+
+            </div>
+
+            <a
+                href="/danh-muc/to-chuc/kho"
+                class="home-summary-card__link">
+
+                Xem chi tiết
+
+                <span aria-hidden="true">
+                    →
+                </span>
+
+            </a>
+
+        </article>
+
+
+        <article
+            class="home-summary-card"
+            data-summary-card="nhan-vien">
+
+            <div class="home-summary-card__icon">
+
+                <span aria-hidden="true">
+                    👥
+                </span>
+
+            </div>
+
+            <div class="home-summary-card__content">
+
+                <span class="home-summary-card__label">
+                    Nhân viên
+                </span>
+
+                <strong
+                    class="home-summary-card__value"
+                    data-summary-value="nhan-vien">
+
+                    {{#if summary.tongNhanVien}}
+
+                        {{summary.tongNhanVien}}
+
+                    {{else}}
+
+                        0
+
+                    {{/if}}
+
+                </strong>
+
+            </div>
+
+            <a
+                href="/danh-muc/nhan-su/nhan-vien"
+                class="home-summary-card__link">
+
+                Xem chi tiết
+
+                <span aria-hidden="true">
+                    →
+                </span>
+
+            </a>
+
+        </article>
+
+    </section>
+
+
+    <section class="home-content-grid">
+
+        <article class="home-panel">
+
+            <header class="home-panel__header">
+
+                <div>
+
+                    <p class="home-panel__eyebrow">
+                        Truy cập nhanh
+                    </p>
+
+                    <h2 class="home-panel__title">
+                        Danh mục thường dùng
+                    </h2>
+
+                </div>
+
+            </header>
+
+            <div class="home-quick-links">
+
+                <a
+                    href="/danh-muc/to-chuc/co-so"
+                    class="home-quick-link">
+
+                    <span
+                        class="home-quick-link__icon"
+                        aria-hidden="true">
+                        🏢
+                    </span>
+
+                    <span class="home-quick-link__content">
+
+                        <strong>
+                            Cơ sở
+                        </strong>
+
+                        <small>
+                            Quản lý danh sách cơ sở
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="/danh-muc/to-chuc/nha-an"
+                    class="home-quick-link">
+
+                    <span
+                        class="home-quick-link__icon"
+                        aria-hidden="true">
+                        🍽
+                    </span>
+
+                    <span class="home-quick-link__content">
+
+                        <strong>
+                            Nhà ăn
+                        </strong>
+
+                        <small>
+                            Quản lý nhà ăn theo cơ sở
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="/danh-muc/to-chuc/kho"
+                    class="home-quick-link">
+
+                    <span
+                        class="home-quick-link__icon"
+                        aria-hidden="true">
+                        📦
+                    </span>
+
+                    <span class="home-quick-link__content">
+
+                        <strong>
+                            Kho
+                        </strong>
+
+                        <small>
+                            Quản lý kho và vị trí lưu trữ
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="/danh-muc/suat-an/thuc-pham"
+                    class="home-quick-link">
+
+                    <span
+                        class="home-quick-link__icon"
+                        aria-hidden="true">
+                        🥬
+                    </span>
+
+                    <span class="home-quick-link__content">
+
+                        <strong>
+                            Thực phẩm
+                        </strong>
+
+                        <small>
+                            Quản lý thực phẩm và quy đổi
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="/danh-muc/suat-an/mon-an"
+                    class="home-quick-link">
+
+                    <span
+                        class="home-quick-link__icon"
+                        aria-hidden="true">
+                        🍲
+                    </span>
+
+                    <span class="home-quick-link__content">
+
+                        <strong>
+                            Món ăn
+                        </strong>
+
+                        <small>
+                            Quản lý danh sách món ăn
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="/danh-muc/nhan-su/tai-khoan"
+                    class="home-quick-link">
+
+                    <span
+                        class="home-quick-link__icon"
+                        aria-hidden="true">
+                        👤
+                    </span>
+
+                    <span class="home-quick-link__content">
+
+                        <strong>
+                            Tài khoản
+                        </strong>
+
+                        <small>
+                            Quản lý tài khoản hệ thống
+                        </small>
+
+                    </span>
+
+                </a>
+
+            </div>
+
+        </article>
+
+
+        <article class="home-panel">
+
+            <header class="home-panel__header">
+
+                <div>
+
+                    <p class="home-panel__eyebrow">
+                        Thông tin cá nhân
+                    </p>
+
+                    <h2 class="home-panel__title">
+                        Tài khoản đang đăng nhập
+                    </h2>
+
+                </div>
+
+            </header>
+
+            <div class="home-profile">
+
+                <div class="home-profile__avatar">
+
+                    {{#if currentUser.anhDaiDien}}
+
+                        <img
+                            src="{{currentUser.anhDaiDien}}"
+                            alt="Ảnh đại diện của {{currentUser.hoTen}}">
+
+                    {{else}}
+
+                        <span aria-hidden="true">
+                            👤
+                        </span>
+
+                    {{/if}}
+
+                </div>
+
+                <div class="home-profile__information">
+
+                    <strong class="home-profile__name">
+
+                        {{#if currentUser.hoTen}}
+
+                            {{currentUser.hoTen}}
+
+                        {{else}}
+
+                            Người dùng
+
+                        {{/if}}
+
+                    </strong>
+
+                    <span class="home-profile__username">
+
+                        {{#if currentUser.taiKhoan}}
+
+                            {{currentUser.taiKhoan}}
+
+                        {{else}}
+
+                            Chưa có thông tin tài khoản
+
+                        {{/if}}
+
+                    </span>
+
+                </div>
+
+                <dl class="home-profile__details">
+
+                    <div class="home-profile__detail">
+
+                        <dt>
+                            Mã nhân viên
+                        </dt>
+
+                        <dd>
+
+                            {{#if currentUser.maNhanVien}}
+
+                                {{currentUser.maNhanVien}}
+
+                            {{else}}
+
+                                —
+
+                            {{/if}}
+
+                        </dd>
+
+                    </div>
+
+                    <div class="home-profile__detail">
+
+                        <dt>
+                            Cơ sở
+                        </dt>
+
+                        <dd>
+
+                            {{#if currentUser.coSo.tenCoSo}}
+
+                                {{currentUser.coSo.tenCoSo}}
+
+                            {{else if currentUser.coSo.ten}}
+
+                                {{currentUser.coSo.ten}}
+
+                            {{else}}
+
+                                —
+
+                            {{/if}}
+
+                        </dd>
+
+                    </div>
+
+                    <div class="home-profile__detail">
+
+                        <dt>
+                            Phòng ban
+                        </dt>
+
+                        <dd>
+
+                            {{#if currentUser.phongBan.tenPhongBan}}
+
+                                {{currentUser.phongBan.tenPhongBan}}
+
+                            {{else if currentUser.phongBan.ten}}
+
+                                {{currentUser.phongBan.ten}}
+
+                            {{else}}
+
+                                —
+
+                            {{/if}}
+
+                        </dd>
+
+                    </div>
+
+                    <div class="home-profile__detail">
+
+                        <dt>
+                            Chức vụ
+                        </dt>
+
+                        <dd>
+
+                            {{#if currentUser.chucVu.tenChucVu}}
+
+                                {{currentUser.chucVu.tenChucVu}}
+
+                            {{else if currentUser.chucVu.ten}}
+
+                                {{currentUser.chucVu.ten}}
+
+                            {{else}}
+
+                                —
+
+                            {{/if}}
+
+                        </dd>
+
+                    </div>
+
+                </dl>
+
+                <div class="home-profile__actions">
+
+                    <button
+                        type="button"
+                        class="home-profile__button"
+                        id="homeChangePasswordButton">
+
+                        Đổi mật khẩu
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <section class="home-system-information">
+
+        <div class="home-system-information__content">
+
+            <p>
+                Bạn đang sử dụng
+            </p>
+
+            <strong>
+                MCS KITCHENFLOW
+            </strong>
+
+            <span>
+                Hệ thống quản lý nhà ăn và suất ăn tập trung.
+            </span>
+
+        </div>
+
+        {{#if appVersion}}
+
+            <div class="home-system-information__version">
+
+                <span>
+                    Phiên bản
+                </span>
+
+                <strong>
+                    {{appVersion}}
+                </strong>
+
+            </div>
+
+        {{/if}}
+
+    </section>
+
+</section>
+
+
+{{!-- JavaScript dùng chung --}}
+
+<script defer src="/assets/js/home/home.js"></script>

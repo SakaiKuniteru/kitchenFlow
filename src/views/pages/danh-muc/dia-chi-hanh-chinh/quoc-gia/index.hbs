@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="quoc-gia"
+    apiBase="/api/mcs/v1/dm-quoc-gia"
+    title="Danh mục quốc gia"
+    description="Quản lý danh sách quốc gia."
+    searchPlaceholder="Tìm theo mã hoặc tên quốc gia..."
+    createButtonLabel="Thêm quốc gia"
+    createButtonId="btnCreateQuocGia"
+    searchInputId="searchQuocGia"
+    tableId="quocGiaTable"
+    tableBodyId="quocGiaTableBody"
+    paginationId="quocGiaPagination"
+    detailPanelId="quocGiaDetailPanel"
+    detailContentId="quocGiaDetailContent"
+    formId="quocGiaForm"
+    formPartial="catalog/forms/quoc-gia-form"
+    detailTitle="Thông tin quốc gia"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="quocGiaMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="quoc-gia"}}

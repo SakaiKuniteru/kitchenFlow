@@ -1,0 +1,80 @@
+<tr
+    class="catalog-table__filter-row"
+    data-table-filter-row>
+
+    {{#if selectable}}
+
+        <th class="catalog-table__filter-cell">
+        </th>
+
+    {{/if}}
+
+    {{#if showIndex}}
+
+        <th class="catalog-table__filter-cell">
+        </th>
+
+    {{/if}}
+
+    {{#each columns}}
+
+        <th class="catalog-table__filter-cell">
+
+            {{#if filterable}}
+
+                {{#if filterOptions}}
+
+                    <select
+                        class="catalog-table__filter-select"
+                        data-filter-key="{{key}}"
+                        aria-label="Lọc theo {{label}}">
+
+                        <option value="">
+                            Tất cả
+                        </option>
+
+                        {{#each filterOptions}}
+
+                            <option value="{{value}}">
+                                {{label}}
+                            </option>
+
+                        {{/each}}
+
+                    </select>
+
+                {{else}}
+
+                    <input
+                        type="{{#if filterType}}{{filterType}}{{else}}text{{/if}}"
+                        class="catalog-table__filter-input"
+                        placeholder="Lọc..."
+                        data-filter-key="{{key}}"
+                        autocomplete="off"
+                        aria-label="Lọc theo {{label}}">
+
+                {{/if}}
+
+            {{/if}}
+
+        </th>
+
+    {{/each}}
+
+    {{#if showActions}}
+
+        <th class="catalog-table__filter-cell">
+
+            <button
+                type="button"
+                class="catalog-table__clear-filter"
+                data-clear-table-filters
+                aria-label="Xóa tất cả bộ lọc">
+                ×
+            </button>
+
+        </th>
+
+    {{/if}}
+
+</tr>

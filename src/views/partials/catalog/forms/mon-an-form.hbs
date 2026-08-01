@@ -1,0 +1,105 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin món ăn
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maMonAn"
+            name="maMonAn"
+            label="Mã món ăn"
+            placeholder="Nhập mã món ăn"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenMonAn"
+            name="tenMonAn"
+            label="Tên món ăn"
+            placeholder="Nhập tên món ăn"
+            maxlength=150
+            required=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/select
+                id="nhomMonAnId"
+                name="nhomMonAnId"
+                label="Nhóm món ăn"
+                placeholder="Chọn nhóm món ăn"
+                required=true
+            }}
+
+        </div>
+
+        {{> forms/number
+            id="giaTien"
+            name="giaTien"
+            label="Giá tiền"
+            placeholder="Nhập giá tiền"
+            min=0
+            step="0.01"
+            suffix="VNĐ"
+        }}
+
+        {{> forms/number
+            id="giaDuKien"
+            name="giaDuKien"
+            label="Giá dự kiến"
+            placeholder="Nhập giá dự kiến"
+            min=0
+            step="0.01"
+            suffix="VNĐ"
+            required=true
+        }}
+
+        {{> forms/number
+            id="calories"
+            name="calories"
+            label="Calories"
+            placeholder="Nhập calories"
+            min=0
+            step=1
+            integer=true
+            suffix="kcal"
+        }}
+
+        {{> forms/input
+            id="hinhAnh"
+            name="hinhAnh"
+            label="Hình ảnh"
+            placeholder="/uploads/mon-an/hinh-anh.jpg"
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="moTa"
+                name="moTa"
+                label="Mô tả"
+                placeholder="Nhập mô tả món ăn"
+                maxlength=500
+                rows=4
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

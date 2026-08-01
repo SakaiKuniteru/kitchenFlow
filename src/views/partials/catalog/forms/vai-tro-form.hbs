@@ -1,0 +1,70 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin vai trò
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maVaiTro"
+            name="maVaiTro"
+            label="Mã vai trò"
+            placeholder="Nhập mã vai trò"
+            maxlength=50
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenVaiTro"
+            name="tenVaiTro"
+            label="Tên vai trò"
+            placeholder="Nhập tên vai trò"
+            maxlength=255
+            required=true
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="moTa"
+                name="moTa"
+                label="Mô tả"
+                placeholder="Nhập mô tả vai trò"
+                maxlength=500
+                rows=4
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Phân quyền
+    </h3>
+
+    {{> forms/select
+        id="dsQuyenId"
+        name="dsQuyenId"
+        label="Danh sách quyền"
+        description="Có thể chọn nhiều quyền cho vai trò."
+        multiple=true
+    }}
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

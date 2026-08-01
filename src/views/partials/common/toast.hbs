@@ -1,11 +1,48 @@
-<div id="toast-container">
+<div
+    id="toastContainer"
+    class="toast-container"
+    aria-live="polite"
+    aria-atomic="true">
 
-    {{!-- Success --}}
+    <template id="toastTemplate">
 
-    {{!-- Error --}}
+        <article
+            class="toast"
+            role="status">
 
-    {{!-- Warning --}}
+            <div class="toast__icon">
 
-    {{!-- Info --}}
+                <span
+                    data-toast-icon
+                    aria-hidden="true">
+                </span>
+
+            </div>
+
+            <div class="toast__content">
+
+                <strong
+                    class="toast__title"
+                    data-toast-title>
+                </strong>
+
+                <p
+                    class="toast__message"
+                    data-toast-message>
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="toast__close"
+                data-toast-close
+                aria-label="Đóng thông báo">
+                ×
+            </button>
+
+        </article>
+
+    </template>
 
 </div>

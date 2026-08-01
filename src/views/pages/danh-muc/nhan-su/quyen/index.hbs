@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="quyen"
+    apiBase="/api/mcs/v1/dm-quyen"
+    title="Danh mục quyền"
+    description="Quản lý quyền truy cập các chức năng."
+    searchPlaceholder="Tìm theo mã hoặc tên quyền..."
+    createButtonLabel="Thêm quyền"
+    createButtonId="btnCreateQuyen"
+    searchInputId="searchQuyen"
+    tableId="quyenTable"
+    tableBodyId="quyenTableBody"
+    paginationId="quyenPagination"
+    detailPanelId="quyenDetailPanel"
+    detailContentId="quyenDetailContent"
+    formId="quyenForm"
+    formPartial="catalog/forms/quyen-form"
+    detailTitle="Thông tin quyền"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="quyenMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="quyen"}}

@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="nhom-mon-an"
+    apiBase="/api/mcs/v1/dm-nhom-mon-an"
+    title="Danh mục nhóm món ăn"
+    description="Quản lý các nhóm phân loại món ăn."
+    searchPlaceholder="Tìm theo mã hoặc tên nhóm món ăn..."
+    createButtonLabel="Thêm nhóm món ăn"
+    createButtonId="btnCreateNhomMonAn"
+    searchInputId="searchNhomMonAn"
+    tableId="nhomMonAnTable"
+    tableBodyId="nhomMonAnTableBody"
+    paginationId="nhomMonAnPagination"
+    detailPanelId="nhomMonAnDetailPanel"
+    detailContentId="nhomMonAnDetailContent"
+    formId="nhomMonAnForm"
+    formPartial="catalog/forms/nhom-mon-an-form"
+    detailTitle="Thông tin nhóm món ăn"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="nhomMonAnMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    page="nhom-mon-an"}}
