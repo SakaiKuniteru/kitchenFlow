@@ -122,6 +122,7 @@ Ví dụ:
 psql -U quochuy -d kitchenflow
 ```
 
+➡️ **Xem tại:** **[`database/README.md`](database/README.md)**
 ---
 
 # Một số lệnh PostgreSQL thường dùng
