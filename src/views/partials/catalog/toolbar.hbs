@@ -48,34 +48,38 @@
 
         <div class="catalog-toolbar__search">
 
-            <label
-                for="{{#if searchInputId}}{{searchInputId}}{{else}}catalogSearchInput{{/if}}"
-                class="sr-only">
-                Tìm kiếm
-            </label>
-
             <span
                 class="catalog-toolbar__search-icon"
                 aria-hidden="true">
-                ⌕
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="7">
+                    </circle>
+
+                    <path d="m20 20-3.5-3.5">
+                    </path>
+
+                </svg>
+
             </span>
 
             <input
+                id="{{searchInputId}}"
                 type="search"
-                id="{{#if searchInputId}}{{searchInputId}}{{else}}catalogSearchInput{{/if}}"
                 class="catalog-toolbar__search-input"
-                placeholder="{{#if searchPlaceholder}}{{searchPlaceholder}}{{else}}Tìm kiếm dữ liệu...{{/if}}"
+                placeholder="{{#if searchPlaceholder}}{{searchPlaceholder}}{{else}}Tìm theo mã hoặc tên...{{/if}}"
                 autocomplete="off"
                 data-catalog-search>
-
-            <button
-                type="button"
-                class="catalog-toolbar__clear-search"
-                data-catalog-clear-search
-                aria-label="Xóa từ khóa tìm kiếm"
-                hidden>
-                ×
-            </button>
 
         </div>
 
@@ -144,20 +148,19 @@
 
             <button
                 type="button"
-                id="{{#if createButtonId}}{{createButtonId}}{{else}}catalogCreateButton{{/if}}"
-                class="catalog-toolbar__button catalog-toolbar__button--primary"
+                id="{{createButtonId}}"
+                class="
+                    catalog-toolbar__button
+                    catalog-toolbar__button--primary
+                "
                 data-catalog-create>
 
                 <span aria-hidden="true">
-                    ＋
+                    +
                 </span>
 
                 <span>
-                    {{#if createButtonLabel}}
-                        {{createButtonLabel}}
-                    {{else}}
-                        Thêm mới
-                    {{/if}}
+                    {{createButtonLabel}}
                 </span>
 
             </button>

@@ -1,97 +1,156 @@
 "use strict";
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+window.MCS.pages
+    .initializeCatalogPage({
 
-        await window.MCS.pages
-            .createCatalogPage({
+        moduleName:
+            "mon-an",
 
-                moduleName:
-                    "mon-an",
+        detailTitle:
+            "Thông tin món ăn",
 
-                detailTitle:
-                    "Thông tin món ăn",
+        createTitle:
+            "Thêm món ăn",
 
-                columns: [
-                    {
-                        key: "maMonAn",
-                        label: "Mã món ăn",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "tenMonAn",
-                        label: "Tên món ăn",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "nhomMonAn.ten",
-                        label: "Nhóm món ăn",
-                        filterable: true
-                    },
-                    {
-                        key: "giaTien",
-                        label: "Giá tiền",
-                        type: "currency",
-                        sortable: true
-                    },
-                    {
-                        key: "giaDuKien",
-                        label: "Giá dự kiến",
-                        type: "currency",
-                        sortable: true
-                    },
-                    {
-                        key: "calories",
-                        label: "Calories",
-                        type: "number"
-                    },
-                    {
-                        key: "active",
-                        label: "Trạng thái",
-                        render: createStatusBadge
-                    }
-                ],
+        updateTitle:
+            "Cập nhật món ăn",
 
-                transformPayload:
-                    data => ({
+        columns: [
+            {
+                key:
+                    "maMonAn",
 
-                        ...data,
+                label:
+                    "Mã món ăn",
 
-                        nhomMonAnId:
-                            Number(
-                                data.nhomMonAnId
-                            ),
+                sortable:
+                    true,
 
-                        giaTien:
-                            data.giaTien === null
-                                ? null
-                                : Number(
-                                    data.giaTien
-                                ),
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "tenMonAn",
 
-                        giaDuKien:
-                            Number(
-                                data.giaDuKien
-                            ),
+                label:
+                    "Tên món ăn",
 
-                        calories:
-                            data.calories === null
-                                ? null
-                                : Number(
-                                    data.calories
-                                )
+                sortable:
+                    true,
 
-                    }),
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "nhomMonAn.ten",
 
-                getRecordSubtitle:
-                    record =>
-                        record.maMonAn
+                label:
+                    "Nhóm món ăn",
 
-            });
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "giaTien",
 
-    }
-);
+                label:
+                    "Giá tiền",
+
+                type:
+                    "currency",
+
+                sortable:
+                    true
+            },
+            {
+                key:
+                    "giaDuKien",
+
+                label:
+                    "Giá dự kiến",
+
+                type:
+                    "currency",
+
+                sortable:
+                    true
+            },
+            {
+                key:
+                    "calories",
+
+                label:
+                    "Calories",
+
+                type:
+                    "number",
+
+                sortable:
+                    true
+            },
+            {
+                key:
+                    "active",
+
+                label:
+                    "Trạng thái",
+
+                sortable:
+                    true,
+
+                render:
+                    window.createStatusBadge
+            }
+        ],
+
+        transformPayload:
+            data => ({
+
+                ...data,
+
+                nhomMonAnId:
+                    Number(
+                        data.nhomMonAnId
+                    ),
+
+                giaTien:
+                    data.giaTien ===
+                        null ||
+                    data.giaTien ===
+                        ""
+                        ? null
+                        : Number(
+                            data.giaTien
+                        ),
+
+                giaDuKien:
+                    data.giaDuKien ===
+                        null ||
+                    data.giaDuKien ===
+                        ""
+                        ? null
+                        : Number(
+                            data.giaDuKien
+                        ),
+
+                calories:
+                    data.calories ===
+                        null ||
+                    data.calories ===
+                        ""
+                        ? null
+                        : Number(
+                            data.calories
+                        )
+
+            }),
+
+        getRecordSubtitle:
+            record =>
+                record.maMonAn
+
+    });

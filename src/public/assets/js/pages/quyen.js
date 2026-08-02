@@ -1,61 +1,87 @@
 "use strict";
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+window.MCS.pages
+    .initializeCatalogPage({
 
-        await window.MCS.pages
-            .createCatalogPage({
+        moduleName:
+            "quyen",
 
-                moduleName:
-                    "quyen",
+        detailTitle:
+            "Thông tin quyền",
 
-                detailTitle:
-                    "Thông tin quyền",
+        createTitle:
+            "Thêm quyền",
 
-                columns: [
-                    {
-                        key: "maQuyen",
-                        label: "Mã quyền",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "tenQuyen",
-                        label: "Tên quyền",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "nhomTinhNang.ten",
-                        label: "Nhóm tính năng",
-                        filterable: true
-                    },
-                    {
-                        key: "active",
-                        label: "Trạng thái",
-                        render: createStatusBadge
-                    }
-                ],
+        updateTitle:
+            "Cập nhật quyền",
 
-                transformPayload:
-                    data => ({
+        columns: [
+            {
+                key:
+                    "maQuyen",
 
-                        ...data,
+                label:
+                    "Mã quyền",
 
-                        nhomTinhNangId:
-                            Number(
-                                data.nhomTinhNangId
-                            )
+                sortable:
+                    true,
 
-                    }),
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "tenQuyen",
 
-                getRecordSubtitle:
-                    record =>
-                        record.maQuyen
+                label:
+                    "Tên quyền",
 
-            });
+                sortable:
+                    true,
 
-    }
-);
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "nhomTinhNang.ten",
+
+                label:
+                    "Nhóm tính năng",
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "active",
+
+                label:
+                    "Trạng thái",
+
+                sortable:
+                    true,
+
+                render:
+                    window.createStatusBadge
+            }
+        ],
+
+        transformPayload:
+            data => ({
+
+                ...data,
+
+                nhomTinhNangId:
+                    Number(
+                        data.nhomTinhNangId
+                    )
+
+            }),
+
+        getRecordSubtitle:
+            record =>
+                record.maQuyen
+
+    });

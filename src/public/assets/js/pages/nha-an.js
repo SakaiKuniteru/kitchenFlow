@@ -1,66 +1,97 @@
 "use strict";
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+window.MCS.pages
+    .initializeCatalogPage({
 
-        await window.MCS.pages
-            .createCatalogPage({
+        moduleName:
+            "nha-an",
 
-                moduleName:
-                    "nha-an",
+        detailTitle:
+            "Thông tin nhà ăn",
 
-                detailTitle:
-                    "Thông tin nhà ăn",
+        createTitle:
+            "Thêm nhà ăn",
 
-                columns: [
-                    {
-                        key: "maNhaAn",
-                        label: "Mã nhà ăn",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "tenNhaAn",
-                        label: "Tên nhà ăn",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "coSo.ten",
-                        label: "Cơ sở",
-                        filterable: true
-                    },
-                    {
-                        key: "diaChi",
-                        label: "Địa chỉ",
-                        filterable: true
-                    },
-                    {
-                        key: "active",
-                        label: "Trạng thái",
-                        render: createStatusBadge
-                    }
-                ],
+        updateTitle:
+            "Cập nhật nhà ăn",
 
-                transformPayload:
-                    data => ({
+        columns: [
+            {
+                key:
+                    "maNhaAn",
 
-                        ...data,
+                label:
+                    "Mã nhà ăn",
 
-                        coSoId:
-                            Number(
-                                data.coSoId
-                            )
+                sortable:
+                    true,
 
-                    }),
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "tenNhaAn",
 
-                getRecordSubtitle:
-                    record =>
-                        record.maNhaAn
+                label:
+                    "Tên nhà ăn",
 
-            });
+                sortable:
+                    true,
 
-    }
-);
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "coSo.ten",
+
+                label:
+                    "Cơ sở",
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "diaChi",
+
+                label:
+                    "Địa chỉ",
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "active",
+
+                label:
+                    "Trạng thái",
+
+                sortable:
+                    true,
+
+                render:
+                    window.createStatusBadge
+            }
+        ],
+
+        transformPayload:
+            data => ({
+
+                ...data,
+
+                coSoId:
+                    Number(
+                        data.coSoId
+                    )
+
+            }),
+
+        getRecordSubtitle:
+            record =>
+                record.maNhaAn
+
+    });

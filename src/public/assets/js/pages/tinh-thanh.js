@@ -1,66 +1,97 @@
 "use strict";
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+window.MCS.pages
+    .initializeCatalogPage({
 
-        await window.MCS.pages
-            .createCatalogPage({
+        moduleName:
+            "tinh-thanh",
 
-                moduleName:
-                    "tinh-thanh",
+        detailTitle:
+            "Thông tin tỉnh thành",
 
-                detailTitle:
-                    "Thông tin tỉnh thành",
+        createTitle:
+            "Thêm tỉnh thành",
 
-                columns: [
-                    {
-                        key: "maTinhThanh",
-                        label: "Mã tỉnh thành",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "tenTinhThanh",
-                        label: "Tên tỉnh thành",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "tenVietTat",
-                        label: "Tên viết tắt",
-                        filterable: true
-                    },
-                    {
-                        key: "quocGia.ten",
-                        label: "Quốc gia",
-                        filterable: true
-                    },
-                    {
-                        key: "active",
-                        label: "Trạng thái",
-                        render: createStatusBadge
-                    }
-                ],
+        updateTitle:
+            "Cập nhật tỉnh thành",
 
-                transformPayload:
-                    data => ({
+        columns: [
+            {
+                key:
+                    "maTinhThanh",
 
-                        ...data,
+                label:
+                    "Mã tỉnh thành",
 
-                        quocGiaId:
-                            Number(
-                                data.quocGiaId
-                            )
+                sortable:
+                    true,
 
-                    }),
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "tenTinhThanh",
 
-                getRecordSubtitle:
-                    record =>
-                        record.maTinhThanh
+                label:
+                    "Tên tỉnh thành",
 
-            });
+                sortable:
+                    true,
 
-    }
-);
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "tenVietTat",
+
+                label:
+                    "Tên viết tắt",
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "quocGia.ten",
+
+                label:
+                    "Quốc gia",
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "active",
+
+                label:
+                    "Trạng thái",
+
+                sortable:
+                    true,
+
+                render:
+                    window.createStatusBadge
+            }
+        ],
+
+        transformPayload:
+            data => ({
+
+                ...data,
+
+                quocGiaId:
+                    Number(
+                        data.quocGiaId
+                    )
+
+            }),
+
+        getRecordSubtitle:
+            record =>
+                record.maTinhThanh
+
+    });

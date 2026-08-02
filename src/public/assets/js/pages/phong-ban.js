@@ -1,63 +1,90 @@
 "use strict";
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+window.MCS.pages
+    .initializeCatalogPage({
 
-        await window.MCS.pages
-            .createCatalogPage({
+        moduleName:
+            "phong-ban",
 
-                moduleName:
-                    "phong-ban",
+        detailTitle:
+            "Thông tin phòng ban",
 
-                detailTitle:
-                    "Thông tin phòng ban",
+        createTitle:
+            "Thêm phòng ban",
 
-                columns: [
-                    {
-                        key: "maPhongBan",
-                        label: "Mã phòng ban",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "tenPhongBan",
-                        label: "Tên phòng ban",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "coSo.ten",
-                        label: "Cơ sở",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "active",
-                        label: "Trạng thái",
-                        render: value =>
-                            createStatusBadge(value)
-                    }
-                ],
+        updateTitle:
+            "Cập nhật phòng ban",
 
-                getRecordSubtitle:
-                    record =>
-                        record.maPhongBan,
+        columns: [
+            {
+                key:
+                    "maPhongBan",
 
-                transformPayload:
-                    data => ({
+                label:
+                    "Mã phòng ban",
 
-                        ...data,
+                sortable:
+                    true,
 
-                        coSoId:
-                            Number(
-                                data.coSoId
-                            )
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "tenPhongBan",
 
-                    })
+                label:
+                    "Tên phòng ban",
 
-            });
+                sortable:
+                    true,
 
-    }
-);
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "coSo.ten",
+
+                label:
+                    "Cơ sở",
+
+                sortable:
+                    true,
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "active",
+
+                label:
+                    "Trạng thái",
+
+                sortable:
+                    true,
+
+                render:
+                    window.createStatusBadge
+            }
+        ],
+
+        getRecordSubtitle:
+            record =>
+                record.maPhongBan,
+
+        transformPayload:
+            data => ({
+
+                ...data,
+
+                coSoId:
+                    Number(
+                        data.coSoId
+                    )
+
+            })
+
+    });

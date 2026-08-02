@@ -13,24 +13,12 @@
 
     <div class="detail-panel__body">
 
-        <div
-            class="detail-panel__placeholder"
-            data-detail-placeholder>
-
-            {{> common/empty-state
-                emptyTitle="Chưa chọn dữ liệu"
-                emptyDescription="Chọn một dòng trong danh sách để xem thông tin chi tiết."
-            }}
-
-        </div>
-
         <form
             id="{{#if formId}}{{formId}}{{else}}catalogForm{{/if}}"
             class="detail-panel__form"
             data-catalog-form
             autocomplete="off"
-            novalidate
-            hidden>
+            novalidate>
 
             <input
                 type="hidden"

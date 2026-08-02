@@ -64,6 +64,13 @@ const routes = [
     ],
 
     [
+        "/dm-dia-chi",
+        require(
+            "../../modules/dia-chi/dia-chi.route"
+        )
+    ],
+
+    [
         "/dm-nhom-tinh-nang",
         require(
             "../../modules/nhom-tinh-nang/nhom-tinh-nang.route"

@@ -241,7 +241,7 @@
 }
 
 .catalog-table__empty-cell {
-    height: 300px;
+    height: 360px;
     padding: 0 !important;
     border-bottom: 0 !important;
     background: var(--color-surface);
@@ -253,9 +253,9 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    min-height: 300px;
-    padding: 42px 20px;
-    color: #c3cad5;
+    min-height: 360px;
+    padding: 40px 20px;
+    color: #b8c0cc;
     text-align: center;
 }
 
@@ -289,6 +289,7 @@
     color: #b4bbc5;
     font-size: 13px;
     line-height: 1.5;
+    display: none;
 }
 
 @keyframes catalog-table-spin {

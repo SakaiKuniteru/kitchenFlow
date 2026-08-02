@@ -1,81 +1,151 @@
 "use strict";
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+window.MCS.pages
+    .initializeCatalogPage({
 
-        await window.MCS.pages
-            .createCatalogPage({
+        moduleName:
+            "kho",
 
-                moduleName:
-                    "kho",
+        detailTitle:
+            "Thông tin kho",
 
-                detailTitle:
-                    "Thông tin kho",
+        createTitle:
+            "Thêm kho",
 
-                columns: [
-                    {
-                        key: "maKho",
-                        label: "Mã kho",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "tenKho",
-                        label: "Tên kho",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "nhaAn.ten",
-                        label: "Nhà ăn",
-                        filterable: true
-                    },
-                    {
-                        key: "loaiKho",
-                        label: "Loại kho",
-                        sortable: true
-                    },
-                    {
-                        key: "nhietDoToiThieu",
-                        label: "Nhiệt độ tối thiểu",
-                        type: "number"
-                    },
-                    {
-                        key: "nhietDoToiDa",
-                        label: "Nhiệt độ tối đa",
-                        type: "number"
-                    },
-                    {
-                        key: "active",
-                        label: "Trạng thái",
-                        render: createStatusBadge
-                    }
-                ],
+        updateTitle:
+            "Cập nhật kho",
 
-                transformPayload:
-                    data => ({
+        columns: [
+            {
+                key:
+                    "maKho",
 
-                        ...data,
+                label:
+                    "Mã kho",
 
-                        nhaAnId:
-                            Number(
-                                data.nhaAnId
-                            ),
+                sortable:
+                    true,
 
-                        loaiKho:
-                            Number(
-                                data.loaiKho
-                            )
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "tenKho",
 
-                    }),
+                label:
+                    "Tên kho",
 
-                getRecordSubtitle:
-                    record =>
-                        record.maKho
+                sortable:
+                    true,
 
-            });
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "nhaAn.ten",
 
-    }
-);
+                label:
+                    "Nhà ăn",
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "loaiKho",
+
+                label:
+                    "Loại kho",
+
+                sortable:
+                    true,
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "nhietDoToiThieu",
+
+                label:
+                    "Nhiệt độ tối thiểu",
+
+                type:
+                    "number",
+
+                sortable:
+                    true
+            },
+            {
+                key:
+                    "nhietDoToiDa",
+
+                label:
+                    "Nhiệt độ tối đa",
+
+                type:
+                    "number",
+
+                sortable:
+                    true
+            },
+            {
+                key:
+                    "active",
+
+                label:
+                    "Trạng thái",
+
+                sortable:
+                    true,
+
+                render:
+                    window.createStatusBadge
+            }
+        ],
+
+        transformPayload:
+            data => ({
+
+                ...data,
+
+                nhaAnId:
+                    Number(
+                        data.nhaAnId
+                    ),
+
+                loaiKho:
+                    Number(
+                        data.loaiKho
+                    ),
+
+                nhietDoToiThieu:
+                    data.nhietDoToiThieu ===
+                        null ||
+                    data.nhietDoToiThieu ===
+                        ""
+                        ? null
+                        : Number(
+                            data.nhietDoToiThieu
+                        ),
+
+                nhietDoToiDa:
+                    data.nhietDoToiDa ===
+                        null ||
+                    data.nhietDoToiDa ===
+                        ""
+                        ? null
+                        : Number(
+                            data.nhietDoToiDa
+                        )
+
+            }),
+
+        getRecordSubtitle:
+            record =>
+                record.maKho
+
+    });

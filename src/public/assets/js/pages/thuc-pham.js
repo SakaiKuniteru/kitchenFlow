@@ -1,98 +1,146 @@
 "use strict";
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+window.MCS.pages
+    .initializeCatalogPage({
 
-        await window.MCS.pages
-            .createCatalogPage({
+        moduleName:
+            "thuc-pham",
 
-                moduleName:
-                    "thuc-pham",
+        detailTitle:
+            "Thông tin thực phẩm",
 
-                detailTitle:
-                    "Thông tin thực phẩm",
+        createTitle:
+            "Thêm thực phẩm",
 
-                columns: [
-                    {
-                        key: "maThucPham",
-                        label: "Mã thực phẩm",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "tenThucPham",
-                        label: "Tên thực phẩm",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "quyCach",
-                        label: "Quy cách",
-                        filterable: true
-                    },
-                    {
-                        key: "giaNhap",
-                        label: "Giá nhập",
-                        type: "currency",
-                        sortable: true,
-                        className:
-                            "catalog-table__cell--right"
-                    },
-                    {
-                        key: "haoHutDuKien",
-                        label: "Hao hụt dự kiến",
-                        type: "number"
-                    },
-                    {
-                        key: "active",
-                        label: "Trạng thái",
-                        render: createStatusBadge
-                    }
-                ],
+        updateTitle:
+            "Cập nhật thực phẩm",
 
-                transformPayload:
-                    data => ({
+        columns: [
+            {
+                key:
+                    "maThucPham",
 
-                        ...data,
+                label:
+                    "Mã thực phẩm",
 
-                        donViSoCapId:
-                            Number(
-                                data.donViSoCapId
-                            ),
+                sortable:
+                    true,
 
-                        donViSuDungId:
-                            Number(
-                                data.donViSuDungId
-                            ),
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "tenThucPham",
 
-                        heSoQuyDoi:
-                            Number(
-                                data.heSoQuyDoi
-                            ),
+                label:
+                    "Tên thực phẩm",
 
-                        giaNhap:
-                            data.giaNhap === null
-                                ? null
-                                : Number(
-                                    data.giaNhap
-                                ),
+                sortable:
+                    true,
 
-                        haoHutDuKien:
-                            data.haoHutDuKien === null
-                                ? null
-                                : Number(
-                                    data.haoHutDuKien
-                                )
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "quyCach",
 
-                    }),
+                label:
+                    "Quy cách",
 
-                getRecordSubtitle:
-                    record =>
-                        record.maThucPham
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "giaNhap",
 
-            });
+                label:
+                    "Giá nhập",
 
-    }
-);
+                type:
+                    "currency",
+
+                sortable:
+                    true,
+
+                className:
+                    "catalog-table__cell--right"
+            },
+            {
+                key:
+                    "haoHutDuKien",
+
+                label:
+                    "Hao hụt dự kiến",
+
+                type:
+                    "number",
+
+                sortable:
+                    true
+            },
+            {
+                key:
+                    "active",
+
+                label:
+                    "Trạng thái",
+
+                sortable:
+                    true,
+
+                render:
+                    window.createStatusBadge
+            }
+        ],
+
+        transformPayload:
+            data => ({
+
+                ...data,
+
+                donViSoCapId:
+                    Number(
+                        data.donViSoCapId
+                    ),
+
+                donViSuDungId:
+                    Number(
+                        data.donViSuDungId
+                    ),
+
+                heSoQuyDoi:
+                    Number(
+                        data.heSoQuyDoi
+                    ),
+
+                giaNhap:
+                    data.giaNhap ===
+                        null ||
+                    data.giaNhap ===
+                        ""
+                        ? null
+                        : Number(
+                            data.giaNhap
+                        ),
+
+                haoHutDuKien:
+                    data.haoHutDuKien ===
+                        null ||
+                    data.haoHutDuKien ===
+                        ""
+                        ? null
+                        : Number(
+                            data.haoHutDuKien
+                        )
+
+            }),
+
+        getRecordSubtitle:
+            record =>
+                record.maThucPham
+
+    });

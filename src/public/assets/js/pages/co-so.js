@@ -1,106 +1,103 @@
 "use strict";
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+window.MCS.pages
+    .initializeCatalogPage({
 
-        await window.MCS.pages
-            .createCatalogPage({
+        moduleName:
+            "co-so",
 
-                moduleName:
-                    "co-so",
+        detailTitle:
+            "Thông tin cơ sở",
 
-                detailTitle:
-                    "Thông tin cơ sở",
+        createTitle:
+            "Thêm cơ sở",
 
-                createTitle:
-                    "Thêm cơ sở",
+        updateTitle:
+            "Cập nhật cơ sở",
 
-                updateTitle:
-                    "Cập nhật cơ sở",
+        columns: [
+            {
+                key:
+                    "maCoSo",
 
-                columns: [
-                    {
-                        key: "maCoSo",
-                        label: "Mã cơ sở",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "tenCoSo",
-                        label: "Tên cơ sở",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "diaChi",
-                        label: "Địa chỉ",
-                        filterable: true
-                    },
-                    {
-                        key: "active",
-                        label: "Trạng thái",
-                        sortable: true,
-                        filterable: true,
-                        render: renderTrangThai
-                    }
-                ],
+                label:
+                    "Mã cơ sở",
 
-                getRecordSubtitle:
-                    record =>
-                        record.maCoSo,
+                sortable:
+                    true,
 
-                transformPayload:
-                    data => ({
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "tenCoSo",
 
-                        ...data,
+                label:
+                    "Tên cơ sở",
 
-                        quocGiaId:
-                            data.quocGiaId || null,
+                sortable:
+                    true,
 
-                        tinhThanhId:
-                            data.tinhThanhId || null,
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "diaChi",
 
-                        xaPhuongId:
-                            data.xaPhuongId || null
+                label:
+                    "Địa chỉ",
 
-                    })
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "active",
 
-            });
+                label:
+                    "Trạng thái",
 
-    }
-);
+                sortable:
+                    true,
 
-
-function renderTrangThai(
-    value
-) {
-
-    const badge =
-        document.createElement(
-            "span"
-        );
-
-    badge.className =
-        value
-            ? "status-badge status-badge--success"
-            : "status-badge status-badge--danger";
-
-    badge.innerHTML = `
-        <span
-            class="status-badge__dot">
-        </span>
-
-        <span>
-            ${
-                value
-                    ? "Đang hoạt động"
-                    : "Đã khóa"
+                render:
+                    window.createStatusBadge
             }
-        </span>
-    `;
+        ],
 
-    return badge;
+        getRecordSubtitle:
+            record =>
+                record.maCoSo,
 
-}
+        transformPayload:
+            data => ({
+
+                ...data,
+
+                quocGiaId:
+                    data.quocGiaId
+                        ? Number(
+                            data.quocGiaId
+                        )
+                        : null,
+
+                tinhThanhId:
+                    data.tinhThanhId
+                        ? Number(
+                            data.tinhThanhId
+                        )
+                        : null,
+
+                xaPhuongId:
+                    data.xaPhuongId
+                        ? Number(
+                            data.xaPhuongId
+                        )
+                        : null
+
+            })
+
+    });

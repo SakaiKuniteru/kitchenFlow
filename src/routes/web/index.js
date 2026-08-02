@@ -1,5 +1,10 @@
+"use strict";
+
+
 const express =
-    require("express");
+    require(
+        "express"
+    );
 
 
 const router =
@@ -7,7 +12,9 @@ const router =
 
 
 const webRoutes =
-    require("./config");
+    require(
+        "./config"
+    );
 
 
 router.get(
@@ -23,6 +30,7 @@ router.get(
             return res.render(
                 "pages/home/index",
                 {
+
                     layout:
                         "app",
 
@@ -34,7 +42,8 @@ router.get(
                             .getFullYear(),
 
                     currentUser:
-                        req.user || null,
+                        req.user ||
+                        null,
 
                     appVersion:
                         process.env
@@ -47,12 +56,17 @@ router.get(
                                 "Trang chủ"
                         }
                     ]
+
                 }
             );
 
-        } catch (error) {
+        } catch (
+            error
+        ) {
 
-            next(error);
+            next(
+                error
+            );
 
         }
 
@@ -73,6 +87,7 @@ router.get(
             return res.render(
                 "pages/auth/login",
                 {
+
                     layout:
                         "auth",
 
@@ -87,12 +102,17 @@ router.get(
                         process.env
                             .APP_VERSION ||
                         "1.0.0"
+
                 }
             );
 
-        } catch (error) {
+        } catch (
+            error
+        ) {
 
-            next(error);
+            next(
+                error
+            );
 
         }
 
@@ -104,10 +124,29 @@ webRoutes.forEach(
     route => {
 
         const method =
-            route.method ||
-            "get";
+            String(
+                route.method ||
+                "get"
+            )
+                .toLowerCase();
 
-        router[method](
+
+        if (
+            typeof router[
+                method
+            ] !== "function"
+        ) {
+
+            throw new Error(
+                `HTTP method không hợp lệ: ${method}`
+            );
+
+        }
+
+
+        router[
+            method
+        ](
             route.path,
             route.handler
         );

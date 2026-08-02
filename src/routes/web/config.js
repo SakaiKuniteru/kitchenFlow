@@ -1,16 +1,227 @@
+"use strict";
+
+
 const danhMucWebController =
     require(
         "../../controllers/web/danh-muc.controller"
     );
 
 
+function textColumn(
+    key,
+    label,
+    options = {}
+) {
+
+    return {
+
+        key,
+
+        label,
+
+        sortable:
+            options.sortable !==
+            false,
+
+        searchable:
+            options.searchable !==
+            false,
+
+        filterable:
+            options.filterable !==
+            false,
+
+        isBoolean:
+            false,
+
+        className:
+            options.className ||
+            "",
+
+        width:
+            options.width ||
+            ""
+
+    };
+
+}
+
+
+function booleanColumn(
+    key = "active",
+    label = "Hiệu lực"
+) {
+
+    return {
+
+        key,
+
+        label,
+
+        sortable:
+            true,
+
+        searchable:
+            false,
+
+        filterable:
+            true,
+
+        filterOptions: [
+            {
+                value: "true",
+                label: "Đang hoạt động"
+            },
+            {
+                value: "false",
+                label: "Đã khóa"
+            }
+        ],
+
+        className:
+            "catalog-table__cell--center",
+
+        width:
+            "140px"
+
+    };
+
+}
+
+function numberColumn(
+    key,
+    label,
+    options = {}
+) {
+
+    return {
+
+        key,
+
+        label,
+
+        sortable:
+            options.sortable !==
+            false,
+
+        searchable:
+            options.searchable ===
+            true,
+
+        filterable:
+            options.filterable !==
+            false,
+
+        isBoolean:
+            false,
+
+        type:
+            "number",
+
+        className:
+            options.className ||
+            "catalog-table__cell--right",
+
+        width:
+            options.width ||
+            "130px"
+
+    };
+
+}
+
+
+function createBreadcrumbs(
+    group,
+    page
+) {
+
+    return [
+        {
+            label:
+                "Trang chủ",
+
+            href:
+                "/"
+        },
+        {
+            label:
+                "Danh mục"
+        },
+        {
+            label:
+                group
+        },
+        {
+            label:
+                page
+        }
+    ];
+
+}
+
+
+function createPage({
+    path,
+    view,
+    title,
+    description,
+    group,
+    page,
+    activeSubmenu,
+    columns,
+    searchPlaceholder,
+    showActions = true,
+    showFilterRow = true,
+    hideCreateButton = false
+}) {
+
+    return {
+
+        path,
+
+        view,
+
+        title,
+
+        description,
+
+        activeMenu:
+            "danh-muc",
+
+        activeSubmenu,
+
+        columns,
+
+        searchPlaceholder,
+
+        showActions,
+
+        showFilterRow,
+
+        hideCreateButton,
+
+        breadcrumbs:
+            createBreadcrumbs(
+                group,
+                page
+            )
+
+    };
+
+}
+
+
 const danhMucPages = [
 
-    // =====================================================
-    // TỔ CHỨC
-    // =====================================================
+    /*
+     * =====================================================
+     * TỔ CHỨC
+     * =====================================================
+     */
 
-    {
+    createPage({
+
         path:
             "/danh-muc/to-chuc/co-so",
 
@@ -23,36 +234,43 @@ const danhMucPages = [
         description:
             "Quản lý danh sách cơ sở trong hệ thống.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Tổ chức",
+
+        page:
+            "Cơ sở",
 
         activeSubmenu:
             "co-so",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
+        searchPlaceholder:
+            "Tìm theo mã, tên hoặc địa chỉ...",
 
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Tổ chức"
-            },
-            {
-                label:
-                    "Cơ sở"
-            }
+        columns: [
+            textColumn(
+                "maCoSo",
+                "Mã cơ sở",
+                {
+                    width:
+                        "150px"
+                }
+            ),
+            textColumn(
+                "tenCoSo",
+                "Tên cơ sở"
+            ),
+            textColumn(
+                "diaChi",
+                "Địa chỉ"
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/to-chuc/phong-ban",
 
@@ -65,36 +283,43 @@ const danhMucPages = [
         description:
             "Quản lý phòng ban theo từng cơ sở.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Tổ chức",
+
+        page:
+            "Phòng ban",
 
         activeSubmenu:
             "phong-ban",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
+        searchPlaceholder:
+            "Tìm theo mã hoặc tên phòng ban...",
 
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Tổ chức"
-            },
-            {
-                label:
-                    "Phòng ban"
-            }
+        columns: [
+            textColumn(
+                "maPhongBan",
+                "Mã phòng ban",
+                {
+                    width:
+                        "160px"
+                }
+            ),
+            textColumn(
+                "tenPhongBan",
+                "Tên phòng ban"
+            ),
+            textColumn(
+                "tenCoSo",
+                "Cơ sở"
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/to-chuc/chuc-vu",
 
@@ -107,36 +332,40 @@ const danhMucPages = [
         description:
             "Quản lý các chức vụ của nhân viên.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Tổ chức",
+
+        page:
+            "Chức vụ",
 
         activeSubmenu:
             "chuc-vu",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Tổ chức"
-            },
-            {
-                label:
-                    "Chức vụ"
-            }
+        columns: [
+            textColumn(
+                "maChucVu",
+                "Mã chức vụ",
+                {
+                    width:
+                        "160px"
+                }
+            ),
+            textColumn(
+                "tenChucVu",
+                "Tên chức vụ"
+            ),
+            textColumn(
+                "ghiChu",
+                "Ghi chú"
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/to-chuc/nha-an",
 
@@ -149,36 +378,44 @@ const danhMucPages = [
         description:
             "Quản lý danh sách nhà ăn theo cơ sở.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Tổ chức",
+
+        page:
+            "Nhà ăn",
 
         activeSubmenu:
             "nha-an",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Tổ chức"
-            },
-            {
-                label:
-                    "Nhà ăn"
-            }
+        columns: [
+            textColumn(
+                "maNhaAn",
+                "Mã nhà ăn",
+                {
+                    width:
+                        "150px"
+                }
+            ),
+            textColumn(
+                "tenNhaAn",
+                "Tên nhà ăn"
+            ),
+            textColumn(
+                "tenCoSo",
+                "Cơ sở"
+            ),
+            numberColumn(
+                "sucChua",
+                "Sức chứa"
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/to-chuc/kho",
 
@@ -191,40 +428,50 @@ const danhMucPages = [
         description:
             "Quản lý kho theo từng nhà ăn.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Tổ chức",
+
+        page:
+            "Kho",
 
         activeSubmenu:
             "kho",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Tổ chức"
-            },
-            {
-                label:
-                    "Kho"
-            }
+        columns: [
+            textColumn(
+                "maKho",
+                "Mã kho",
+                {
+                    width:
+                        "140px"
+                }
+            ),
+            textColumn(
+                "tenKho",
+                "Tên kho"
+            ),
+            textColumn(
+                "tenNhaAn",
+                "Nhà ăn"
+            ),
+            textColumn(
+                "viTri",
+                "Vị trí"
+            ),
+            booleanColumn()
         ]
-    },
 
-    // =====================================================
-    // ĐỊA CHỈ HÀNH CHÍNH
-    // =====================================================
+    }),
 
-    {
+
+    /*
+     * =====================================================
+     * ĐỊA CHỈ HÀNH CHÍNH
+     * =====================================================
+     */
+
+    createPage({
+
         path:
             "/danh-muc/dia-chi-hanh-chinh/tong-hop",
 
@@ -237,36 +484,71 @@ const danhMucPages = [
         description:
             "Tra cứu tổng hợp quốc gia, tỉnh thành và xã phường.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Địa chỉ hành chính",
+
+        page:
+            "Tổng hợp",
 
         activeSubmenu:
             "tong-hop-dia-chi",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
+        hideCreateButton:
+            true,
 
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Địa chỉ hành chính"
-            },
-            {
-                label:
-                    "Tổng hợp"
-            }
+        columns: [
+            textColumn(
+                "loaiDiaChi",
+                "Loại",
+                {
+                    width:
+                        "120px"
+                }
+            ),
+
+            textColumn(
+                "maDiaChi",
+                "Mã",
+                {
+                    width:
+                        "130px"
+                }
+            ),
+
+            textColumn(
+                "tenDiaChi",
+                "Tên địa chỉ"
+            ),
+
+            textColumn(
+                "tenTinhThanh",
+                "Tỉnh/Thành phố",
+                {
+                    width:
+                        "220px"
+                }
+            ),
+
+            textColumn(
+                "tenQuocGia",
+                "Quốc gia",
+                {
+                    width:
+                        "150px"
+                }
+            ),
+
+            booleanColumn(
+                "active",
+                "Hiệu lực"
+            )
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/dia-chi-hanh-chinh/quoc-gia",
 
@@ -279,36 +561,56 @@ const danhMucPages = [
         description:
             "Quản lý danh sách quốc gia.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Địa chỉ hành chính",
+
+        page:
+            "Quốc gia",
 
         activeSubmenu:
             "quoc-gia",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Địa chỉ hành chính"
-            },
-            {
-                label:
-                    "Quốc gia"
-            }
+        columns: [
+            textColumn(
+                "maQuocGia",
+                "Mã quốc gia",
+                {
+                    width:
+                        "150px"
+                }
+            ),
+            textColumn(
+                "tenQuocGia",
+                "Tên quốc gia"
+            ),
+            textColumn(
+                "tenTiengAnh",
+                "Tên tiếng Anh"
+            ),
+            textColumn(
+                "maIso2",
+                "ISO2",
+                {
+                    width:
+                        "100px"
+                }
+            ),
+            textColumn(
+                "maIso3",
+                "ISO3",
+                {
+                    width:
+                        "100px"
+                }
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/dia-chi-hanh-chinh/tinh-thanh",
 
@@ -321,36 +623,44 @@ const danhMucPages = [
         description:
             "Quản lý tỉnh thành theo quốc gia.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Địa chỉ hành chính",
+
+        page:
+            "Tỉnh thành",
 
         activeSubmenu:
             "tinh-thanh",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Địa chỉ hành chính"
-            },
-            {
-                label:
-                    "Tỉnh thành"
-            }
+        columns: [
+            textColumn(
+                "maTinhThanh",
+                "Mã tỉnh thành",
+                {
+                    width:
+                        "160px"
+                }
+            ),
+            textColumn(
+                "tenTinhThanh",
+                "Tên tỉnh thành"
+            ),
+            textColumn(
+                "tenVietTat",
+                "Tên viết tắt"
+            ),
+            textColumn(
+                "tenQuocGia",
+                "Quốc gia"
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/dia-chi-hanh-chinh/xa-phuong",
 
@@ -363,40 +673,50 @@ const danhMucPages = [
         description:
             "Quản lý xã phường theo tỉnh thành.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Địa chỉ hành chính",
+
+        page:
+            "Xã phường",
 
         activeSubmenu:
             "xa-phuong",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Địa chỉ hành chính"
-            },
-            {
-                label:
-                    "Xã phường"
-            }
+        columns: [
+            textColumn(
+                "maXaPhuong",
+                "Mã xã phường",
+                {
+                    width:
+                        "160px"
+                }
+            ),
+            textColumn(
+                "tenXaPhuong",
+                "Tên xã phường"
+            ),
+            textColumn(
+                "tenVietTat",
+                "Tên viết tắt"
+            ),
+            textColumn(
+                "tenTinhThanh",
+                "Tỉnh thành"
+            ),
+            booleanColumn()
         ]
-    },
 
-    // =====================================================
-    // SUẤT ĂN
-    // =====================================================
+    }),
 
-    {
+
+    /*
+     * =====================================================
+     * SUẤT ĂN
+     * =====================================================
+     */
+
+    createPage({
+
         path:
             "/danh-muc/suat-an/ca-an",
 
@@ -409,36 +729,52 @@ const danhMucPages = [
         description:
             "Quản lý các ca ăn trong hệ thống.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Suất ăn",
+
+        page:
+            "Ca ăn",
 
         activeSubmenu:
             "ca-an",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Suất ăn"
-            },
-            {
-                label:
-                    "Ca ăn"
-            }
+        columns: [
+            textColumn(
+                "maCaAn",
+                "Mã ca ăn",
+                {
+                    width:
+                        "140px"
+                }
+            ),
+            textColumn(
+                "tenCaAn",
+                "Tên ca ăn"
+            ),
+            textColumn(
+                "gioBatDau",
+                "Giờ bắt đầu",
+                {
+                    width:
+                        "130px"
+                }
+            ),
+            textColumn(
+                "gioKetThuc",
+                "Giờ kết thúc",
+                {
+                    width:
+                        "130px"
+                }
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/suat-an/nhom-mon-an",
 
@@ -451,36 +787,36 @@ const danhMucPages = [
         description:
             "Quản lý các nhóm phân loại món ăn.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Suất ăn",
+
+        page:
+            "Nhóm món ăn",
 
         activeSubmenu:
             "nhom-mon-an",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Suất ăn"
-            },
-            {
-                label:
-                    "Nhóm món ăn"
-            }
+        columns: [
+            textColumn(
+                "maNhomMonAn",
+                "Mã nhóm món ăn"
+            ),
+            textColumn(
+                "tenNhomMonAn",
+                "Tên nhóm món ăn"
+            ),
+            textColumn(
+                "moTa",
+                "Mô tả"
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/suat-an/mon-an",
 
@@ -493,36 +829,40 @@ const danhMucPages = [
         description:
             "Quản lý danh sách món ăn.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Suất ăn",
+
+        page:
+            "Món ăn",
 
         activeSubmenu:
             "mon-an",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Suất ăn"
-            },
-            {
-                label:
-                    "Món ăn"
-            }
+        columns: [
+            textColumn(
+                "maMonAn",
+                "Mã món ăn"
+            ),
+            textColumn(
+                "tenMonAn",
+                "Tên món ăn"
+            ),
+            textColumn(
+                "tenNhomMonAn",
+                "Nhóm món ăn"
+            ),
+            numberColumn(
+                "donGia",
+                "Đơn giá"
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/suat-an/thuc-pham",
 
@@ -535,36 +875,40 @@ const danhMucPages = [
         description:
             "Quản lý thực phẩm, đơn vị và quy cách.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Suất ăn",
+
+        page:
+            "Thực phẩm",
 
         activeSubmenu:
             "thuc-pham",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Suất ăn"
-            },
-            {
-                label:
-                    "Thực phẩm"
-            }
+        columns: [
+            textColumn(
+                "maThucPham",
+                "Mã thực phẩm"
+            ),
+            textColumn(
+                "tenThucPham",
+                "Tên thực phẩm"
+            ),
+            textColumn(
+                "tenDonViTinh",
+                "Đơn vị tính"
+            ),
+            textColumn(
+                "quyCach",
+                "Quy cách"
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/suat-an/don-vi-tinh",
 
@@ -577,40 +921,46 @@ const danhMucPages = [
         description:
             "Quản lý đơn vị tính và loại đơn vị.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Suất ăn",
+
+        page:
+            "Đơn vị tính",
 
         activeSubmenu:
             "don-vi-tinh",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Suất ăn"
-            },
-            {
-                label:
-                    "Đơn vị tính"
-            }
+        columns: [
+            textColumn(
+                "maDonViTinh",
+                "Mã đơn vị tính"
+            ),
+            textColumn(
+                "tenDonViTinh",
+                "Tên đơn vị tính"
+            ),
+            textColumn(
+                "loaiDonViText",
+                "Loại đơn vị"
+            ),
+            textColumn(
+                "kyHieu",
+                "Ký hiệu"
+            ),
+            booleanColumn()
         ]
-    },
 
-    // =====================================================
-    // NHÂN SỰ VÀ PHÂN QUYỀN
-    // =====================================================
+    }),
 
-    {
+
+    /*
+     * =====================================================
+     * NHÂN SỰ
+     * =====================================================
+     */
+
+    createPage({
+
         path:
             "/danh-muc/nhan-su/nhan-vien",
 
@@ -623,36 +973,44 @@ const danhMucPages = [
         description:
             "Quản lý hồ sơ và thông tin nhân viên.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Nhân sự",
+
+        page:
+            "Nhân viên",
 
         activeSubmenu:
             "nhan-vien",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Nhân sự"
-            },
-            {
-                label:
-                    "Nhân viên"
-            }
+        columns: [
+            textColumn(
+                "maNhanVien",
+                "Mã nhân viên"
+            ),
+            textColumn(
+                "hoTen",
+                "Họ tên"
+            ),
+            textColumn(
+                "tenCoSo",
+                "Cơ sở"
+            ),
+            textColumn(
+                "tenPhongBan",
+                "Phòng ban"
+            ),
+            textColumn(
+                "tenChucVu",
+                "Chức vụ"
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/nhan-su/tai-khoan",
 
@@ -665,36 +1023,40 @@ const danhMucPages = [
         description:
             "Quản lý tài khoản đăng nhập và vai trò.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Nhân sự",
+
+        page:
+            "Tài khoản",
 
         activeSubmenu:
             "tai-khoan",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Nhân sự"
-            },
-            {
-                label:
-                    "Tài khoản"
-            }
+        columns: [
+            textColumn(
+                "tenDangNhap",
+                "Tên đăng nhập"
+            ),
+            textColumn(
+                "hoTenNhanVien",
+                "Nhân viên"
+            ),
+            textColumn(
+                "tenVaiTro",
+                "Vai trò"
+            ),
+            textColumn(
+                "lanDangNhapCuoi",
+                "Đăng nhập cuối"
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/nhan-su/vai-tro",
 
@@ -707,36 +1069,40 @@ const danhMucPages = [
         description:
             "Quản lý vai trò và danh sách quyền.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Nhân sự",
+
+        page:
+            "Vai trò",
 
         activeSubmenu:
             "vai-tro",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Nhân sự"
-            },
-            {
-                label:
-                    "Vai trò"
-            }
+        columns: [
+            textColumn(
+                "maVaiTro",
+                "Mã vai trò"
+            ),
+            textColumn(
+                "tenVaiTro",
+                "Tên vai trò"
+            ),
+            textColumn(
+                "moTa",
+                "Mô tả"
+            ),
+            numberColumn(
+                "soLuongQuyen",
+                "Số quyền"
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/nhan-su/quyen",
 
@@ -749,36 +1115,40 @@ const danhMucPages = [
         description:
             "Quản lý quyền truy cập chức năng.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Nhân sự",
+
+        page:
+            "Quyền",
 
         activeSubmenu:
             "quyen",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Nhân sự"
-            },
-            {
-                label:
-                    "Quyền"
-            }
+        columns: [
+            textColumn(
+                "maQuyen",
+                "Mã quyền"
+            ),
+            textColumn(
+                "tenQuyen",
+                "Tên quyền"
+            ),
+            textColumn(
+                "tenNhomTinhNang",
+                "Nhóm tính năng"
+            ),
+            textColumn(
+                "moTa",
+                "Mô tả"
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/nhan-su/nhom-tinh-nang",
 
@@ -791,40 +1161,46 @@ const danhMucPages = [
         description:
             "Phân nhóm các quyền và chức năng hệ thống.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Nhân sự",
+
+        page:
+            "Nhóm tính năng",
 
         activeSubmenu:
             "nhom-tinh-nang",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Nhân sự"
-            },
-            {
-                label:
-                    "Nhóm tính năng"
-            }
+        columns: [
+            textColumn(
+                "maNhomTinhNang",
+                "Mã nhóm"
+            ),
+            textColumn(
+                "tenNhomTinhNang",
+                "Tên nhóm tính năng"
+            ),
+            textColumn(
+                "moTa",
+                "Mô tả"
+            ),
+            numberColumn(
+                "thuTu",
+                "Thứ tự"
+            ),
+            booleanColumn()
         ]
-    },
 
-    // =====================================================
-    // CHÍNH SÁCH
-    // =====================================================
+    }),
 
-    {
+
+    /*
+     * =====================================================
+     * CHÍNH SÁCH
+     * =====================================================
+     */
+
+    createPage({
+
         path:
             "/danh-muc/chinh-sach/voucher",
 
@@ -837,36 +1213,44 @@ const danhMucPages = [
         description:
             "Quản lý voucher và giá trị miễn giảm.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Chính sách",
+
+        page:
+            "Voucher",
 
         activeSubmenu:
             "voucher",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Chính sách"
-            },
-            {
-                label:
-                    "Voucher"
-            }
+        columns: [
+            textColumn(
+                "maVoucher",
+                "Mã voucher"
+            ),
+            textColumn(
+                "tenVoucher",
+                "Tên voucher"
+            ),
+            textColumn(
+                "loaiVoucherText",
+                "Loại voucher"
+            ),
+            numberColumn(
+                "giaTri",
+                "Giá trị"
+            ),
+            textColumn(
+                "ngayKetThuc",
+                "Ngày kết thúc"
+            ),
+            booleanColumn()
         ]
-    },
 
-    {
+    }),
+
+
+    createPage({
+
         path:
             "/danh-muc/chinh-sach/chinh-sach",
 
@@ -879,40 +1263,50 @@ const danhMucPages = [
         description:
             "Quản lý các chính sách trong hệ thống.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Chính sách",
+
+        page:
+            "Chính sách",
 
         activeSubmenu:
             "chinh-sach",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Chính sách"
-            },
-            {
-                label:
-                    "Chính sách"
-            }
+        columns: [
+            textColumn(
+                "maChinhSach",
+                "Mã chính sách"
+            ),
+            textColumn(
+                "tenChinhSach",
+                "Tên chính sách"
+            ),
+            textColumn(
+                "loaiChinhSachText",
+                "Loại chính sách"
+            ),
+            textColumn(
+                "ngayBatDau",
+                "Ngày bắt đầu"
+            ),
+            textColumn(
+                "ngayKetThuc",
+                "Ngày kết thúc"
+            ),
+            booleanColumn()
         ]
-    },
 
-    // =====================================================
-    // HỆ THỐNG
-    // =====================================================
+    }),
 
-    {
+
+    /*
+     * =====================================================
+     * HỆ THỐNG
+     * =====================================================
+     */
+
+    createPage({
+
         path:
             "/danh-muc/he-thong/thiet-lap",
 
@@ -925,34 +1319,40 @@ const danhMucPages = [
         description:
             "Quản lý các tham số cấu hình của MCS KitchenFlow.",
 
-        activeMenu:
-            "danh-muc",
+        group:
+            "Hệ thống",
+
+        page:
+            "Thiết lập",
 
         activeSubmenu:
             "thiet-lap",
 
-        breadcrumbs: [
-            {
-                label:
-                    "Trang chủ",
-
-                href:
-                    "/"
-            },
-            {
-                label:
-                    "Danh mục"
-            },
-            {
-                label:
-                    "Hệ thống"
-            },
-            {
-                label:
-                    "Thiết lập"
-            }
+        columns: [
+            textColumn(
+                "maThietLap",
+                "Mã thiết lập"
+            ),
+            textColumn(
+                "tenThietLap",
+                "Tên thiết lập"
+            ),
+            textColumn(
+                "giaTri",
+                "Giá trị"
+            ),
+            textColumn(
+                "kieuDuLieu",
+                "Kiểu dữ liệu"
+            ),
+            textColumn(
+                "moTa",
+                "Mô tả"
+            ),
+            booleanColumn()
         ]
-    }
+
+    })
 
 ];
 
@@ -969,10 +1369,13 @@ const webRoutes =
 
             handler:
                 danhMucWebController
-                    .renderPage(page)
+                    .renderPage(
+                        page
+                    )
 
         })
     );
 
 
-module.exports = webRoutes;
+module.exports =
+    webRoutes;

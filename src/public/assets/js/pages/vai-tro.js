@@ -1,70 +1,100 @@
 "use strict";
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+window.MCS.pages
+    .initializeCatalogPage({
 
-        await window.MCS.pages
-            .createCatalogPage({
+        moduleName:
+            "vai-tro",
 
-                moduleName:
-                    "vai-tro",
+        detailTitle:
+            "Thông tin vai trò",
 
-                detailTitle:
-                    "Thông tin vai trò",
+        createTitle:
+            "Thêm vai trò",
 
-                columns: [
-                    {
-                        key: "maVaiTro",
-                        label: "Mã vai trò",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "tenVaiTro",
-                        label: "Tên vai trò",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "moTa",
-                        label: "Mô tả",
-                        filterable: true
-                    },
-                    {
-                        key: "dsQuyenId",
-                        label: "Số quyền",
-                        render:
-                            value =>
-                                Array.isArray(value)
-                                    ? value.length
-                                    : 0
-                    },
-                    {
-                        key: "active",
-                        label: "Trạng thái",
-                        render: createStatusBadge
-                    }
-                ],
+        updateTitle:
+            "Cập nhật vai trò",
 
-                transformPayload:
-                    data => ({
+        columns: [
+            {
+                key:
+                    "maVaiTro",
 
-                        ...data,
+                label:
+                    "Mã vai trò",
 
-                        dsQuyenId:
-                            normalizeNumberArray(
-                                data.dsQuyenId
-                            )
+                sortable:
+                    true,
 
-                    }),
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "tenVaiTro",
 
-                getRecordSubtitle:
-                    record =>
-                        record.maVaiTro
+                label:
+                    "Tên vai trò",
 
-            });
+                sortable:
+                    true,
 
-    }
-);
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "moTa",
+
+                label:
+                    "Mô tả",
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "dsQuyenId",
+
+                label:
+                    "Số quyền",
+
+                render:
+                    value =>
+                        Array.isArray(value)
+                            ? value.length
+                            : 0
+            },
+            {
+                key:
+                    "active",
+
+                label:
+                    "Trạng thái",
+
+                sortable:
+                    true,
+
+                render:
+                    window.createStatusBadge
+            }
+        ],
+
+        transformPayload:
+            data => ({
+
+                ...data,
+
+                dsQuyenId:
+                    window.normalizeNumberArray(
+                        data.dsQuyenId
+                    )
+
+            }),
+
+        getRecordSubtitle:
+            record =>
+                record.maVaiTro
+
+    });

@@ -22,7 +22,8 @@ window.MCS.pages.createCatalogPage =
             moduleName,
             columns = [],
             defaultValues = {
-                active: true
+                active:
+                    true
             },
             detailTitle,
             createTitle,
@@ -70,7 +71,8 @@ window.MCS.pages.createCatalogPage =
             );
 
 
-        let pageConfig = {};
+        let pageConfig =
+            {};
 
 
         if (configElement) {
@@ -158,26 +160,24 @@ window.MCS.pages.createCatalogPage =
                     mapListResponse ||
                     (
                         result =>
-                            result?.data || []
+                            result?.data ||
+                            []
                     ),
 
                 mapDetailResponse:
                     mapDetailResponse ||
                     (
                         result =>
-                            result?.data || null
+                            result?.data ||
+                            null
                     ),
 
                 table: {
-
                     actions
-
                 },
 
                 form: {
-
                     transformPayload
-
                 },
 
                 onRecordLoaded,
@@ -189,7 +189,8 @@ window.MCS.pages.createCatalogPage =
 
         window.MCS.pages.instances[
             moduleName
-        ] = catalog;
+        ] =
+            catalog;
 
 
         await catalog.initialize();
@@ -199,7 +200,45 @@ window.MCS.pages.createCatalogPage =
 
     };
 
-    window.createStatusBadge =
+
+window.MCS.pages.initializeCatalogPage =
+    function initializeCatalogPage(
+        options = {}
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async () => {
+
+                try {
+
+                    await window.MCS.pages
+                        .createCatalogPage(
+                            options
+                        );
+
+                } catch (error) {
+
+                    console.error(
+                        `Không thể khởi tạo trang ${options.moduleName}.`,
+                        error
+                    );
+
+                    window.MCS.toast
+                        ?.error(
+                            error.message ||
+                            "Không thể khởi tạo màn hình danh mục."
+                        );
+
+                }
+
+            }
+        );
+
+    };
+
+
+window.createStatusBadge =
     function createStatusBadge(
         value
     ) {
@@ -209,10 +248,12 @@ window.MCS.pages.createCatalogPage =
                 "span"
             );
 
+
         badge.className =
             value
                 ? "status-badge status-badge--success"
                 : "status-badge status-badge--danger";
+
 
         badge.innerHTML = `
             <span
@@ -228,6 +269,7 @@ window.MCS.pages.createCatalogPage =
                 }
             </span>
         `;
+
 
         return badge;
 
@@ -251,6 +293,7 @@ window.normalizeNumberArray =
 
         }
 
+
         if (
             value === null ||
             value === undefined ||
@@ -260,6 +303,7 @@ window.normalizeNumberArray =
             return [];
 
         }
+
 
         return String(value)
             .split(",")

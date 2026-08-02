@@ -244,13 +244,36 @@ class MCSTable {
 
         this.data =
             Array.isArray(data)
-                ? data
+                ? data.filter(
+                    record => {
+
+                        if (
+                            !record ||
+                            typeof record !==
+                                "object"
+                        ) {
+                            return false;
+                        }
+
+                        const id =
+                            record[
+                                this.options
+                                    .rowKey
+                            ];
+
+                        return (
+                            id !== null &&
+                            id !== undefined &&
+                            id !== ""
+                        );
+
+                    }
+                )
                 : [];
 
         this.render();
 
     }
-
 
     getData() {
 

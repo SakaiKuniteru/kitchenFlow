@@ -1,54 +1,85 @@
 "use strict";
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+window.MCS.pages
+    .initializeCatalogPage({
 
-        await window.MCS.pages
-            .createCatalogPage({
+        moduleName:
+            "thiet-lap",
 
-                moduleName:
-                    "thiet-lap",
+        detailTitle:
+            "Thông tin thiết lập",
 
-                detailTitle:
-                    "Thông tin thiết lập",
+        createTitle:
+            "Thêm thiết lập",
 
-                columns: [
-                    {
-                        key: "maThietLap",
-                        label: "Mã thiết lập",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "tenThietLap",
-                        label: "Tên thiết lập",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "giaTri",
-                        label: "Giá trị",
-                        filterable: true
-                    },
-                    {
-                        key: "moTa",
-                        label: "Mô tả",
-                        filterable: true
-                    },
-                    {
-                        key: "active",
-                        label: "Trạng thái",
-                        render: createStatusBadge
-                    }
-                ],
+        updateTitle:
+            "Cập nhật thiết lập",
 
-                getRecordSubtitle:
-                    record =>
-                        record.maThietLap
+        columns: [
+            {
+                key:
+                    "maThietLap",
 
-            });
+                label:
+                    "Mã thiết lập",
 
-    }
-);
+                sortable:
+                    true,
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "tenThietLap",
+
+                label:
+                    "Tên thiết lập",
+
+                sortable:
+                    true,
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "giaTri",
+
+                label:
+                    "Giá trị",
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "moTa",
+
+                label:
+                    "Mô tả",
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "active",
+
+                label:
+                    "Trạng thái",
+
+                sortable:
+                    true,
+
+                render:
+                    window.createStatusBadge
+            }
+        ],
+
+        getRecordSubtitle:
+            record =>
+                record.maThietLap
+
+    });

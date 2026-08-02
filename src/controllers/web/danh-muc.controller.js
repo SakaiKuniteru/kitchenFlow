@@ -1,6 +1,11 @@
+"use strict";
+
+
 class DanhMucWebController {
 
-    renderPage(config) {
+    renderPage(
+        config
+    ) {
 
         return async (
             req,
@@ -14,8 +19,11 @@ class DanhMucWebController {
                     new Date()
                         .getFullYear();
 
+
                 const currentUser =
-                    req.user || null;
+                    req.user ||
+                    null;
+
 
                 return res.render(
                     config.view,
@@ -31,7 +39,8 @@ class DanhMucWebController {
                             config.title,
 
                         pageDescription:
-                            config.description || "",
+                            config.description ||
+                            "",
 
                         currentYear,
 
@@ -46,20 +55,64 @@ class DanhMucWebController {
                             true,
 
                         activeMenu:
-                            config.activeMenu,
+                            config.activeMenu ||
+                            "danh-muc",
 
                         activeSubmenu:
                             config.activeSubmenu,
 
                         breadcrumbs:
-                            config.breadcrumbs || []
+                            config.breadcrumbs ||
+                            [],
+
+                        /*
+                         * Cấu hình bảng.
+                         */
+                        columns:
+                            config.columns ||
+                            [],
+
+                        showActions:
+                            config.showActions !==
+                            false,
+
+                        showIndex:
+                            config.showIndex !==
+                            false,
+
+                        showFilterRow:
+                            config.showFilterRow !==
+                            false,
+
+                        selectable:
+                            config.selectable ===
+                            true,
+
+                        /*
+                         * Cấu hình giao diện.
+                         */
+                        searchPlaceholder:
+                            config.searchPlaceholder ||
+                            "Tìm theo mã hoặc tên...",
+
+                        hideCreateButton:
+                            config.hideCreateButton ===
+                            true,
+
+                        showExportButton:
+                            config.showExportButton ===
+                            true
 
                     }
                 );
 
-            } catch (error) {
+            } catch (
+                error
+            ) {
 
-                next(error);
+                next(
+                    error
+                );
 
             }
 
@@ -68,6 +121,7 @@ class DanhMucWebController {
     }
 
 }
+
 
 module.exports =
     new DanhMucWebController();

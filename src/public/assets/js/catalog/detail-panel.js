@@ -23,7 +23,9 @@ class MCSDetailPanel {
                 )
                 : root;
 
+
         this.options = {
+
             mobileBreakpoint:
                 820,
 
@@ -37,7 +39,9 @@ class MCSDetailPanel {
                 null,
 
             ...options
+
         };
+
 
         this.panel =
             this.root?.querySelector(
@@ -45,30 +49,30 @@ class MCSDetailPanel {
             ) ||
             this.root;
 
-        this.placeholder =
-            this.panel?.querySelector(
-                "[data-detail-placeholder]"
-            );
 
         this.form =
             this.panel?.querySelector(
                 "[data-catalog-form]"
             );
 
+
         this.title =
             this.panel?.querySelector(
                 "[data-detail-title]"
             );
+
 
         this.subtitle =
             this.panel?.querySelector(
                 "[data-detail-subtitle]"
             );
 
+
         this.editButton =
             this.panel?.querySelector(
                 "[data-detail-edit]"
             );
+
 
         this.closeButtons =
             this.panel?.querySelectorAll(
@@ -78,11 +82,14 @@ class MCSDetailPanel {
                 ].join(",")
             );
 
+
         this.mode =
             "view";
 
+
         this.record =
             null;
+
 
         this.bindEvents();
 
@@ -94,7 +101,17 @@ class MCSDetailPanel {
         this.editButton
             ?.addEventListener(
                 "click",
-                () => {
+                event => {
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
+
+
+                    if (!this.record) {
+                        return;
+                    }
+
 
                     this.options
                         .onEdit?.(
@@ -105,15 +122,22 @@ class MCSDetailPanel {
                 }
             );
 
+
         this.closeButtons
             ?.forEach(
                 button => {
 
                     button.addEventListener(
                         "click",
-                        () => {
+                        event => {
+
+                            event.preventDefault();
+
+                            event.stopPropagation();
+
 
                             this.close();
+
 
                             this.options
                                 .onClose?.(
@@ -129,31 +153,67 @@ class MCSDetailPanel {
     }
 
 
-    showPlaceholder() {
+    showDefault({
+        title,
+        subtitle = ""
+    } = {}) {
 
-        if (this.placeholder) {
+        this.mode =
+            "view";
 
-            this.placeholder.hidden =
-                false;
-
-        }
-
-        if (this.form) {
-
-            this.form.hidden =
-                true;
-
-        }
 
         this.record =
             null;
 
+
+        if (this.form) {
+
+            this.form.hidden =
+                false;
+
+        }
+
+
+        if (this.panel) {
+
+            this.panel.dataset.mode =
+                "view";
+
+        }
+
+
         this.setTitle(
+            title ||
             this.options
                 .defaultTitle
         );
 
+
+        this.setSubtitle(
+            subtitle
+        );
+
+
+        if (this.editButton) {
+
+            this.editButton.hidden =
+                true;
+
+        }
+
+
         this.closeMobile();
+
+    }
+
+
+    showPlaceholder(
+        options = {}
+    ) {
+
+        this.showDefault(
+            options
+        );
 
     }
 
@@ -162,21 +222,16 @@ class MCSDetailPanel {
         mode = "view",
         record = null,
         title,
-        subtitle
+        subtitle = ""
     } = {}) {
 
         this.mode =
             mode;
 
+
         this.record =
             record;
 
-        if (this.placeholder) {
-
-            this.placeholder.hidden =
-                true;
-
-        }
 
         if (this.form) {
 
@@ -185,12 +240,14 @@ class MCSDetailPanel {
 
         }
 
+
         if (this.panel) {
 
             this.panel.dataset.mode =
                 mode;
 
         }
+
 
         this.setTitle(
             title ||
@@ -199,35 +256,75 @@ class MCSDetailPanel {
             )
         );
 
+
         this.setSubtitle(
             subtitle
         );
 
+
         if (this.editButton) {
 
             this.editButton.hidden =
-                mode !== "view" ||
-                !record;
+                (
+                    mode !== "view" ||
+                    !record
+                );
 
         }
+
 
         this.openMobile();
 
     }
 
 
-    getModeTitle(mode) {
+    setMode(
+        mode
+    ) {
+
+        this.mode =
+            mode;
+
+
+        if (this.panel) {
+
+            this.panel.dataset.mode =
+                mode;
+
+        }
+
+
+        if (this.editButton) {
+
+            this.editButton.hidden =
+                (
+                    mode !== "view" ||
+                    !this.record
+                );
+
+        }
+
+    }
+
+
+    getModeTitle(
+        mode
+    ) {
 
         const titles = {
+
             view:
-                "Thông tin chi tiết",
+                this.options
+                    .defaultTitle,
 
             create:
                 "Thêm mới",
 
             update:
                 "Cập nhật"
+
         };
+
 
         return (
             titles[mode] ||
@@ -238,28 +335,35 @@ class MCSDetailPanel {
     }
 
 
-    setTitle(value) {
+    setTitle(
+        value
+    ) {
 
-        if (this.title) {
-
-            this.title.textContent =
-                value ||
-                this.options
-                    .defaultTitle;
-
+        if (!this.title) {
+            return;
         }
+
+
+        this.title.textContent =
+            value ||
+            this.options
+                .defaultTitle;
 
     }
 
 
-    setSubtitle(value) {
+    setSubtitle(
+        value
+    ) {
 
         if (!this.subtitle) {
             return;
         }
 
+
         this.subtitle.textContent =
             value || "";
+
 
         this.subtitle.hidden =
             !value;
@@ -273,9 +377,11 @@ class MCSDetailPanel {
             return;
         }
 
+
         this.root?.classList.add(
             "is-open"
         );
+
 
         document.body
             .classList
@@ -291,6 +397,7 @@ class MCSDetailPanel {
         this.root?.classList.remove(
             "is-open"
         );
+
 
         document.body
             .classList
@@ -311,7 +418,8 @@ class MCSDetailPanel {
 
         }
 
-        this.showPlaceholder();
+
+        this.showDefault();
 
     }
 

@@ -1,49 +1,75 @@
 "use strict";
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+window.MCS.pages
+    .initializeCatalogPage({
 
-        await window.MCS.pages
-            .createCatalogPage({
+        moduleName:
+            "chuc-vu",
 
-                moduleName:
-                    "chuc-vu",
+        detailTitle:
+            "Thông tin chức vụ",
 
-                detailTitle:
-                    "Thông tin chức vụ",
+        createTitle:
+            "Thêm chức vụ",
 
-                columns: [
-                    {
-                        key: "maChucVu",
-                        label: "Mã chức vụ",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "tenChucVu",
-                        label: "Tên chức vụ",
-                        sortable: true,
-                        filterable: true
-                    },
-                    {
-                        key: "moTa",
-                        label: "Mô tả",
-                        filterable: true
-                    },
-                    {
-                        key: "active",
-                        label: "Trạng thái",
-                        render: createStatusBadge
-                    }
-                ],
+        updateTitle:
+            "Cập nhật chức vụ",
 
-                getRecordSubtitle:
-                    record =>
-                        record.maChucVu
+        columns: [
+            {
+                key:
+                    "maChucVu",
 
-            });
+                label:
+                    "Mã chức vụ",
 
-    }
-);
+                sortable:
+                    true,
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "tenChucVu",
+
+                label:
+                    "Tên chức vụ",
+
+                sortable:
+                    true,
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "moTa",
+
+                label:
+                    "Mô tả",
+
+                filterable:
+                    true
+            },
+            {
+                key:
+                    "active",
+
+                label:
+                    "Trạng thái",
+
+                sortable:
+                    true,
+
+                render:
+                    window.createStatusBadge
+            }
+        ],
+
+        getRecordSubtitle:
+            record =>
+                record.maChucVu
+
+    });
