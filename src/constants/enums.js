@@ -131,6 +131,25 @@ const LOAI_KHO = [
 
 ];
 
+const LOAI_XUAT_FILE = [
+
+    {
+        value: 10,
+        name: "PDF"
+    },
+
+    {
+        value: 20,
+        name: "Word"
+    },
+
+    {
+        value: 30,
+        name: "Excel"
+    }
+
+];
+
 const TRANG_THAI_PHIEU_THU = [
     {
         value: -10,
@@ -209,6 +228,8 @@ module.exports = {
     "loaiDonVi": LOAI_DON_VI,
 
     "loaiKho": LOAI_KHO,
+
+    "loaiXuatFile": LOAI_XUAT_FILE,
 
     "trangThaiPhieuThu": TRANG_THAI_PHIEU_THU,
 

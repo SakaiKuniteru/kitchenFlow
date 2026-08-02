@@ -168,6 +168,13 @@ const routes = [
         )
     ],
 
+    [
+        "/dm-bao-cao",
+        require(
+            "../../modules/bao-cao/bao-cao.route"
+        )
+    ],
+
 ];
 
 module.exports = routes;
