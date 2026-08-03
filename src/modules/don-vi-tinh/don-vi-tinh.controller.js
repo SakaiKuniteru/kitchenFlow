@@ -1,9 +1,8 @@
-const donViTinhService =
-    require("./don-vi-tinh.service");
+const fs = require("fs");
 
-const {
-    successResponse
-} = require("../../utils/response.util");
+const donViTinhService = require("./don-vi-tinh.service");
+
+const { successResponse } = require("../../utils/response.util");
 
 class DonViTinhController {
 
@@ -25,6 +24,166 @@ class DonViTinhController {
             );
 
         } catch (error) {
+
+            next(error);
+
+        }
+
+    }
+
+    async exportData(
+        req,
+        res,
+        next
+    ) {
+
+        let fileTam = null;
+
+        try {
+
+            const data =
+                await donViTinhService
+                    .exportData();
+
+            fileTam =
+                data.path;
+
+            res.setHeader(
+                "Content-Type",
+                data.contentType
+            );
+
+            return res.download(
+                data.path,
+                data.fileName,
+                error => {
+
+                    if (
+                        fileTam &&
+                        fs.existsSync(fileTam)
+                    ) {
+
+                        fs.unlinkSync(
+                            fileTam
+                        );
+
+                    }
+
+                    if (error) {
+                        next(error);
+                    }
+
+                }
+            );
+
+        } catch (error) {
+
+            if (
+                fileTam &&
+                fs.existsSync(fileTam)
+            ) {
+
+                fs.unlinkSync(
+                    fileTam
+                );
+
+            }
+
+            next(error);
+
+        }
+
+    }
+
+    async importData(
+        req,
+        res,
+        next
+    ) {
+
+        let duongDanFileTam =
+            null;
+
+        try {
+
+            const result =
+                await donViTinhService
+                    .importData(
+                        req.file
+                    );
+
+            duongDanFileTam =
+                result.path;
+
+            res.setHeader(
+                "Content-Type",
+                result.contentType
+            );
+
+            res.setHeader(
+                "X-Import-Status",
+                result.coLoi
+                    ? "error"
+                    : "success"
+            );
+
+            res.setHeader(
+                "X-Import-Total",
+                String(
+                    result.tongSoDong
+                )
+            );
+
+            res.setHeader(
+                "X-Import-Errors",
+                String(
+                    result.soDongLoi
+                )
+            );
+
+            return res.download(
+
+                result.path,
+
+                result.fileName,
+
+                error => {
+
+                    if (
+                        duongDanFileTam &&
+                        fs.existsSync(
+                            duongDanFileTam
+                        )
+                    ) {
+
+                        fs.unlinkSync(
+                            duongDanFileTam
+                        );
+
+                    }
+
+                    if (error) {
+                        next(error);
+                    }
+
+                }
+
+            );
+
+        } catch (error) {
+
+            if (
+                duongDanFileTam &&
+                fs.existsSync(
+                    duongDanFileTam
+                )
+            ) {
+
+                fs.unlinkSync(
+                    duongDanFileTam
+                );
+
+            }
 
             next(error);
 

@@ -138,8 +138,7 @@ class BaoCaoService {
             String(
                 maBaoCao || ""
             )
-                .trim()
-                .toUpperCase();
+                .trim();
 
         if (!maDaChuanHoa) {
 
@@ -458,8 +457,7 @@ class BaoCaoService {
 
                 maBaoCao:
                     duLieu.maBaoCao
-                        .trim()
-                        .toUpperCase(),
+                        .trim(),
 
                 tenBaoCao:
                     duLieu.tenBaoCao
@@ -564,7 +562,6 @@ class BaoCaoService {
                     data.maBaoCao !== undefined
                         ? data.maBaoCao
                             .trim()
-                            .toUpperCase()
                         : baoCao.maBaoCao,
 
                 tenBaoCao:
@@ -694,8 +691,7 @@ class BaoCaoService {
             baoCao =
                 await baoCaoRepository
                     .getChiTietByMa(
-                        giaTri
-                            .toUpperCase()
+                        giaTri.trim()
                     );
 
         }
