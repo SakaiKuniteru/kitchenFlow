@@ -3,175 +3,175 @@ const routes = [
     [
         "/enums",
         require(
-            "../../modules/enums/enum.route"
+            "../../modules/danh-muc/he-thong/enums/enum.route"
         )
     ],
 
     [
         "/auth",
         require(
-            "../../modules/xac-thuc/xac-thuc.route"
+            "../../modules/danh-muc/nhan-su/xac-thuc/xac-thuc.route"
         )
     ],
 
     [
         "/dm-nhan-vien",
         require(
-            "../../modules/nhan-vien/nhan-vien.route"
+            "../../modules/danh-muc/nhan-su/nhan-vien/nhan-vien.route"
         )
     ],
 
     [
         "/dm-co-so",
         require(
-            "../../modules/co-so/co-so.route"
+            "../../modules/danh-muc/to-chuc/co-so/co-so.route"
         )
     ],
 
     [
         "/dm-phong-ban",
         require(
-            "../../modules/phong-ban/phong-ban.route"
+            "../../modules/danh-muc/to-chuc/phong-ban/phong-ban.route"
         )
     ],
 
     [
         "/dm-chuc-vu",
         require(
-            "../../modules/chuc-vu/chuc-vu.route"
+            "../../modules/danh-muc/to-chuc/chuc-vu/chuc-vu.route"
         )
     ],
 
     [
         "/dm-quoc-gia",
         require(
-            "../../modules/quoc-gia/quoc-gia.route"
+            "../../modules/danh-muc/dia-chi-hanh-chinh/quoc-gia/quoc-gia.route"
         )
     ],
 
     [
         "/dm-tinh-thanh",
         require(
-            "../../modules/tinh-thanh/tinh-thanh.route"
+            "../../modules/danh-muc/dia-chi-hanh-chinh/tinh-thanh/tinh-thanh.route"
         )
     ],
 
     [
         "/dm-xa-phuong",
         require(
-            "../../modules/xa-phuong/xa-phuong.route"
+            "../../modules/danh-muc/dia-chi-hanh-chinh/xa-phuong/xa-phuong.route"
         )
     ],
 
     [
         "/dm-dia-chi",
         require(
-            "../../modules/dia-chi/dia-chi.route"
+            "../../modules/danh-muc/dia-chi-hanh-chinh/dia-chi/dia-chi.route"
         )
     ],
 
     [
         "/dm-nhom-tinh-nang",
         require(
-            "../../modules/nhom-tinh-nang/nhom-tinh-nang.route"
+            "../../modules/danh-muc/he-thong/nhom-tinh-nang/nhom-tinh-nang.route"
         )
     ],
 
     [
         "/dm-quyen",
         require(
-            "../../modules/quyen/quyen.route"
+            "../../modules/danh-muc/he-thong/quyen/quyen.route"
         )
     ],
 
     [
         "/dm-vai-tro",
         require(
-            "../../modules/vai-tro/vai-tro.route"
+            "../../modules/danh-muc/nhan-su/vai-tro/vai-tro.route"
         )
     ],
 
     [
         "/dm-thiet-lap",
         require(
-            "../../modules/thiet-lap/thiet-lap.route"
+            "../../modules/danh-muc/he-thong/thiet-lap/thiet-lap.route"
         )
     ],
 
     [
         "/dm-tai-khoan",
         require(
-            "../../modules/tai-khoan/tai-khoan.route"
+            "../../modules/danh-muc/nhan-su/tai-khoan/tai-khoan.route"
         )
     ],
 
     [
         "/dm-voucher",
         require(
-            "../../modules/voucher/voucher.route"
+            "../../modules/danh-muc/chinh-sach/voucher/voucher.route"
         )
     ],
 
     [
         "/dm-chinh-sach",
         require(
-            "../../modules/chinh-sach/chinh-sach.route"
+            "../../modules/danh-muc/chinh-sach/chinh-sach/chinh-sach.route"
         )
     ],
 
     [
         "/dm-don-vi-tinh",
         require(
-            "../../modules/don-vi-tinh/don-vi-tinh.route"
+            "../../modules/danh-muc/suat-an/don-vi-tinh/don-vi-tinh.route"
         )
     ],
 
     [
         "/dm-nha-an",
         require(
-            "../../modules/nha-an/nha-an.route"
+            "../../modules/danh-muc/to-chuc/nha-an/nha-an.route"
         )
     ],
 
     [
         "/dm-ca-an",
         require(
-            "../../modules/ca-an/ca-an.route"
+            "../../modules/danh-muc/suat-an/ca-an/ca-an.route"
         )
     ],
 
     [
         "/dm-nhom-mon-an",
         require(
-            "../../modules/nhom-mon-an/nhom-mon-an.route"
+            "../../modules/danh-muc/suat-an/nhom-mon-an/nhom-mon-an.route"
         )
     ],
 
     [
         "/dm-mon-an",
         require(
-            "../../modules/mon-an/mon-an.route"
+            "../../modules/danh-muc/suat-an/mon-an/mon-an.route"
         )
     ],
 
     [
         "/dm-thuc-pham",
         require(
-            "../../modules/thuc-pham/thuc-pham.route"
+            "../../modules/danh-muc/suat-an/thuc-pham/thuc-pham.route"
         )
     ],
 
     [
         "/dm-kho",
         require(
-            "../../modules/kho/kho.route"
+            "../../modules/danh-muc/to-chuc/kho/kho.route"
         )
     ],
 
     [
         "/dm-bao-cao",
         require(
-            "../../modules/bao-cao/bao-cao.route"
+            "../../modules/danh-muc/he-thong/bao-cao/bao-cao.route"
         )
     ],
 

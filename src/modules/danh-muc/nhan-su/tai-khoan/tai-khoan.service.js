@@ -1,0 +1,916 @@
+const crypto = require("crypto");
+
+const ApiError =
+    require("../../../../utils/api-error");
+
+const taiKhoanRepository =
+    require("./tai-khoan.repository");
+
+const thietLapRepository =
+    require("../../he-thong/thiet-lap/thiet-lap.repository");
+
+
+class TaiKhoanService {
+
+    parseId(id) {
+
+        const taiKhoanId =
+            Number(id);
+
+        if (
+            !Number.isInteger(taiKhoanId) ||
+            taiKhoanId <= 0
+        ) {
+
+            throw new ApiError(
+                400,
+                "ID tài khoản không hợp lệ."
+            );
+
+        }
+
+        return taiKhoanId;
+
+    }
+
+    hashMatKhau(matKhau) {
+
+        if (
+            typeof matKhau !== "string" ||
+            matKhau.length === 0
+        ) {
+
+            throw new ApiError(
+                400,
+                "Mật khẩu không hợp lệ."
+            );
+
+        }
+
+        return crypto
+            .createHash("md5")
+            .update(
+                matKhau,
+                "utf8"
+            )
+            .digest("hex");
+
+    }
+
+    compareMatKhau(
+        matKhau,
+        matKhauHash
+    ) {
+
+        if (
+            typeof matKhau !== "string" ||
+            typeof matKhauHash !== "string"
+        ) {
+            return false;
+        }
+
+        const hashNhapVao =
+            this.hashMatKhau(matKhau);
+
+        if (
+            hashNhapVao.length !==
+            matKhauHash.length
+        ) {
+            return false;
+        }
+
+        return crypto.timingSafeEqual(
+            Buffer.from(
+                hashNhapVao,
+                "utf8"
+            ),
+            Buffer.from(
+                matKhauHash,
+                "utf8"
+            )
+        );
+
+    }
+
+    async getMatKhauMacDinh() {
+
+        const matKhauMacDinh =
+            await thietLapRepository
+                .getGiaTriTheoMa(
+                    "MAT_KHAU_MAC_DINH"
+                );
+
+        if (
+            matKhauMacDinh === null ||
+            matKhauMacDinh === undefined ||
+            String(matKhauMacDinh).length === 0
+        ) {
+
+            throw new ApiError(
+                500,
+                "Chưa thiết lập mật khẩu mặc định của hệ thống."
+            );
+
+        }
+
+        return String(
+            matKhauMacDinh
+        );
+
+    }
+
+    async getTongHop(query) {
+
+        return await taiKhoanRepository
+            .getTongHop(query);
+
+    }
+
+    async getChiTiet(id) {
+
+        const taiKhoanId =
+            this.parseId(id);
+
+        const taiKhoan =
+            await taiKhoanRepository
+                .getChiTiet(
+                    taiKhoanId
+                );
+
+        if (!taiKhoan) {
+
+            throw new ApiError(
+                404,
+                "Tài khoản không tồn tại."
+            );
+
+        }
+
+        return taiKhoan;
+
+    }
+
+    async chuanHoaNhanVien(
+        data,
+        taiKhoanHienTai = null
+    ) {
+
+        const duLieu = {
+            ...data
+        };
+
+        if (
+            duLieu.maNhanVien !== undefined
+        ) {
+
+            const maNhanVien =
+                String(
+                    duLieu.maNhanVien
+                )
+                    .trim()
+                    .toUpperCase();
+
+            if (!maNhanVien) {
+
+                throw new ApiError(
+                    400,
+                    "Mã nhân viên không được để trống."
+                );
+
+            }
+
+            const nhanVien =
+                await taiKhoanRepository
+                    .findNhanVienByMa(
+                        maNhanVien
+                    );
+
+            if (!nhanVien) {
+
+                throw new ApiError(
+                    400,
+                    `Nhân viên có mã "${maNhanVien}" không tồn tại.`
+                );
+
+            }
+
+            if (!nhanVien.active) {
+
+                throw new ApiError(
+                    400,
+                    `Nhân viên "${nhanVien.hoTen}" đã bị khóa.`
+                );
+
+            }
+
+            duLieu.nhanVienId =
+                Number(
+                    nhanVien.id
+                );
+
+            duLieu.maNhanVien =
+                nhanVien.maNhanVien;
+
+        } else if (
+            taiKhoanHienTai
+        ) {
+
+            duLieu.nhanVienId =
+                Number(
+                    taiKhoanHienTai.nhanVienId
+                );
+
+        }
+
+        return duLieu;
+
+    }
+
+    async chuanHoaLienKet(data) {
+
+        const duLieu = {
+            ...data
+        };
+
+        if (
+            Array.isArray(
+                duLieu.dsMaVaiTro
+            )
+        ) {
+
+            const danhSachMa = [
+                ...new Set(
+                    duLieu.dsMaVaiTro
+                        .map(
+                            ma =>
+                                String(ma)
+                                    .trim()
+                                    .toUpperCase()
+                        )
+                        .filter(Boolean)
+                )
+            ];
+
+            const danhSachVaiTro =
+                await taiKhoanRepository
+                    .getDsVaiTroByMas(
+                        danhSachMa
+                    );
+
+            if (
+                danhSachVaiTro.length !==
+                danhSachMa.length
+            ) {
+
+                const maTimThay =
+                    danhSachVaiTro.map(
+                        item =>
+                            item.maVaiTro
+                                .toUpperCase()
+                    );
+
+                const maKhongTonTai =
+                    danhSachMa.filter(
+                        ma =>
+                            !maTimThay.includes(
+                                ma
+                            )
+                    );
+
+                throw new ApiError(
+                    400,
+                    `Mã vai trò không tồn tại: ${maKhongTonTai.join(", ")}.`
+                );
+
+            }
+
+            const vaiTroBiKhoa =
+                danhSachVaiTro.find(
+                    item => !item.active
+                );
+
+            if (vaiTroBiKhoa) {
+
+                throw new ApiError(
+                    400,
+                    `Vai trò "${vaiTroBiKhoa.tenVaiTro}" đã bị khóa.`
+                );
+
+            }
+
+            const idsTheoMa =
+                danhSachMa.map(
+                    ma => {
+
+                        const vaiTro =
+                            danhSachVaiTro.find(
+                                item =>
+                                    item.maVaiTro
+                                        .toUpperCase() ===
+                                    ma
+                            );
+
+                        return Number(
+                            vaiTro.id
+                        );
+
+                    }
+                );
+
+            if (
+                Array.isArray(
+                    duLieu.dsVaiTroId
+                )
+            ) {
+
+                const idsDaTruyen = [
+                    ...new Set(
+                        duLieu.dsVaiTroId.map(
+                            id => Number(id)
+                        )
+                    )
+                ];
+
+                const idsTheoMaSapXep =
+                    [...idsTheoMa].sort(
+                        (a, b) => a - b
+                    );
+
+                const idsDaTruyenSapXep =
+                    [...idsDaTruyen].sort(
+                        (a, b) => a - b
+                    );
+
+                if (
+                    JSON.stringify(
+                        idsTheoMaSapXep
+                    ) !==
+                    JSON.stringify(
+                        idsDaTruyenSapXep
+                    )
+                ) {
+
+                    throw new ApiError(
+                        400,
+                        "Danh sách ID và mã vai trò không khớp."
+                    );
+
+                }
+
+            }
+
+            duLieu.dsVaiTroId =
+                idsTheoMa;
+
+        } else if (
+            Array.isArray(
+                duLieu.dsVaiTroId
+            )
+        ) {
+
+            duLieu.dsVaiTroId = [
+                ...new Set(
+                    duLieu.dsVaiTroId.map(
+                        id => Number(id)
+                    )
+                )
+            ];
+
+        }
+
+        delete duLieu.dsMaVaiTro;
+
+        return duLieu;
+
+    }
+
+    async validateLienKet(data) {
+
+        if (
+            !Array.isArray(
+                data.dsVaiTroId
+            ) ||
+            data.dsVaiTroId.length === 0
+        ) {
+
+            throw new ApiError(
+                400,
+                "Phải chọn ít nhất một vai trò."
+            );
+
+        }
+
+        const danhSachId = [
+            ...new Set(
+                data.dsVaiTroId.map(
+                    id => Number(id)
+                )
+            )
+        ];
+
+        const idKhongHopLe =
+            danhSachId.some(
+                id =>
+                    !Number.isInteger(id) ||
+                    id <= 0
+            );
+
+        if (idKhongHopLe) {
+
+            throw new ApiError(
+                400,
+                "Danh sách vai trò không hợp lệ."
+            );
+
+        }
+
+        const danhSachVaiTro =
+            await taiKhoanRepository
+                .getDsVaiTroByIds(
+                    danhSachId
+                );
+
+        if (
+            danhSachVaiTro.length !==
+            danhSachId.length
+        ) {
+
+            throw new ApiError(
+                400,
+                "Có vai trò không tồn tại."
+            );
+
+        }
+
+        const vaiTroBiKhoa =
+            danhSachVaiTro.find(
+                item => !item.active
+            );
+
+        if (vaiTroBiKhoa) {
+
+            throw new ApiError(
+                400,
+                `Vai trò "${vaiTroBiKhoa.tenVaiTro}" đã bị khóa.`
+            );
+
+        }
+
+        data.dsVaiTroId =
+            danhSachId;
+
+    }
+
+    async validateNhanVien(
+        nhanVienId,
+        excludeId = null
+    ) {
+
+        const id =
+            Number(nhanVienId);
+
+        if (
+            !Number.isInteger(id) ||
+            id <= 0
+        ) {
+
+            throw new ApiError(
+                400,
+                "Nhân viên không hợp lệ."
+            );
+
+        }
+
+        const daCoTaiKhoan =
+            await taiKhoanRepository
+                .existsNhanVien(
+                    id,
+                    excludeId
+                );
+
+        if (daCoTaiKhoan) {
+
+            throw new ApiError(
+                409,
+                "Nhân viên đã được tạo tài khoản."
+            );
+
+        }
+
+    }
+
+    async validateTenDangNhap(
+        tenDangNhap,
+        excludeId = null
+    ) {
+
+        const trungTenDangNhap =
+            await taiKhoanRepository
+                .existsTenDangNhap(
+                    tenDangNhap,
+                    excludeId
+                );
+
+        if (trungTenDangNhap) {
+
+            throw new ApiError(
+                409,
+                "Tên đăng nhập đã tồn tại."
+            );
+
+        }
+
+    }
+
+    async validateTrungDuLieu(
+        data,
+        excludeId = null
+    ) {
+
+        await this.validateNhanVien(
+            data.nhanVienId,
+            excludeId
+        );
+
+        await this.validateTenDangNhap(
+            data.tenDangNhap,
+            excludeId
+        );
+
+    }
+
+    async create(data) {
+
+        let duLieu =
+            await this.chuanHoaNhanVien(
+                data
+            );
+
+        duLieu =
+            await this.chuanHoaLienKet(
+                duLieu
+            );
+
+        if (
+            !duLieu.nhanVienId
+        ) {
+
+            throw new ApiError(
+                400,
+                "Mã nhân viên không hợp lệ."
+            );
+
+        }
+
+        await this.validateLienKet(
+            duLieu
+        );
+
+        const tenDangNhap =
+            String(
+                duLieu.tenDangNhap
+            )
+                .trim();
+
+        if (!tenDangNhap) {
+
+            throw new ApiError(
+                400,
+                "Tên đăng nhập không được để trống."
+            );
+
+        }
+
+        const duLieuTao = {
+
+            nhanVienId:
+                duLieu.nhanVienId,
+
+            tenDangNhap,
+
+            dsVaiTroId:
+                duLieu.dsVaiTroId,
+
+            active:
+                duLieu.active !== undefined
+                    ? duLieu.active
+                    : true
+
+        };
+
+        await this.validateTrungDuLieu(
+            duLieuTao
+        );
+
+        const matKhauMacDinh =
+            await this.getMatKhauMacDinh();
+
+        duLieuTao.matKhauHash =
+            this.hashMatKhau(
+                matKhauMacDinh
+            );
+
+        const ketQua =
+            await taiKhoanRepository
+                .create(
+                    duLieuTao
+                );
+
+        if (!ketQua) {
+
+            throw new ApiError(
+                500,
+                "Không thể tạo tài khoản."
+            );
+
+        }
+
+        return ketQua;
+
+    }
+
+    async update(id, data) {
+
+        const taiKhoanId =
+            this.parseId(id);
+
+        const taiKhoan =
+            await taiKhoanRepository
+                .getChiTiet(
+                    taiKhoanId
+                );
+
+        if (!taiKhoan) {
+
+            throw new ApiError(
+                404,
+                "Tài khoản không tồn tại."
+            );
+
+        }
+
+        let duLieuCapNhat = {
+
+            maNhanVien:
+                data.maNhanVien !== undefined
+                    ? data.maNhanVien
+                    : undefined,
+
+            nhanVienId:
+                taiKhoan.nhanVienId,
+
+            tenDangNhap:
+                data.tenDangNhap !== undefined
+                    ? String(
+                        data.tenDangNhap
+                    ).trim()
+                    : taiKhoan.tenDangNhap,
+
+            dsVaiTroId:
+                data.dsVaiTroId !== undefined
+                    ? data.dsVaiTroId
+                    : (
+                        data.dsMaVaiTro !== undefined
+                            ? undefined
+                            : taiKhoan.dsVaiTroId
+                    ),
+
+            dsMaVaiTro:
+                data.dsMaVaiTro !== undefined
+                    ? data.dsMaVaiTro
+                    : undefined,
+
+            active:
+                data.active !== undefined
+                    ? data.active
+                    : taiKhoan.active
+
+        };
+
+        duLieuCapNhat =
+            await this.chuanHoaNhanVien(
+                duLieuCapNhat,
+                taiKhoan
+            );
+
+        duLieuCapNhat =
+            await this.chuanHoaLienKet(
+                duLieuCapNhat
+            );
+
+        if (
+            !duLieuCapNhat.tenDangNhap
+        ) {
+
+            throw new ApiError(
+                400,
+                "Tên đăng nhập không được để trống."
+            );
+
+        }
+
+        await this.validateLienKet(
+            duLieuCapNhat
+        );
+
+        await this.validateTrungDuLieu(
+            duLieuCapNhat,
+            taiKhoanId
+        );
+
+        const ketQua =
+            await taiKhoanRepository
+                .update(
+                    taiKhoanId,
+                    duLieuCapNhat
+                );
+
+        if (!ketQua) {
+
+            throw new ApiError(
+                404,
+                "Tài khoản không tồn tại."
+            );
+
+        }
+
+        return ketQua;
+
+    }
+
+    async doiMatKhau(
+        id,
+        data
+    ) {
+
+        const taiKhoanId =
+            this.parseId(id);
+
+        const taiKhoan =
+            await taiKhoanRepository
+                .getThongTinMatKhau(
+                    taiKhoanId
+                );
+
+        if (!taiKhoan) {
+
+            throw new ApiError(
+                404,
+                "Tài khoản không tồn tại."
+            );
+
+        }
+
+        if (!taiKhoan.active) {
+
+            throw new ApiError(
+                403,
+                "Tài khoản đã bị khóa."
+            );
+
+        }
+
+        const matKhauCu =
+            String(
+                data.matKhauCu || ""
+            );
+
+        const matKhauMoi =
+            String(
+                data.matKhauMoi || ""
+            );
+
+        const xacNhanMatKhau =
+            String(
+                data.xacNhanMatKhau || ""
+            );
+
+        if (
+            !matKhauCu ||
+            !matKhauMoi ||
+            !xacNhanMatKhau
+        ) {
+
+            throw new ApiError(
+                400,
+                "Mật khẩu cũ, mật khẩu mới và xác nhận mật khẩu không được để trống."
+            );
+
+        }
+
+        const dungMatKhauCu =
+            this.compareMatKhau(
+                matKhauCu,
+                taiKhoan.matKhauHash
+            );
+
+        if (!dungMatKhauCu) {
+
+            throw new ApiError(
+                400,
+                "Mật khẩu cũ không chính xác."
+            );
+
+        }
+
+        if (
+            matKhauMoi !==
+            xacNhanMatKhau
+        ) {
+
+            throw new ApiError(
+                400,
+                "Xác nhận mật khẩu không khớp."
+            );
+
+        }
+
+        if (
+            matKhauMoi ===
+            matKhauCu
+        ) {
+
+            throw new ApiError(
+                400,
+                "Mật khẩu mới không được trùng với mật khẩu cũ."
+            );
+
+        }
+
+        const matKhauHashMoi =
+            this.hashMatKhau(
+                matKhauMoi
+            );
+
+        const ketQua =
+            await taiKhoanRepository
+                .doiMatKhau(
+                    taiKhoanId,
+                    matKhauHashMoi
+                );
+
+        if (!ketQua) {
+
+            throw new ApiError(
+                404,
+                "Tài khoản không tồn tại."
+            );
+
+        }
+
+        return ketQua;
+
+    }
+
+    async datLaiMatKhau(id) {
+
+        const taiKhoanId =
+            this.parseId(id);
+
+        const taiKhoan =
+            await taiKhoanRepository
+                .getChiTiet(
+                    taiKhoanId
+                );
+
+        if (!taiKhoan) {
+
+            throw new ApiError(
+                404,
+                "Tài khoản không tồn tại."
+            );
+
+        }
+
+        const matKhauMacDinh =
+            await this.getMatKhauMacDinh();
+
+        const matKhauHash =
+            this.hashMatKhau(
+                matKhauMacDinh
+            );
+
+        const ketQua =
+            await taiKhoanRepository
+                .datLaiMatKhau(
+                    taiKhoanId,
+                    matKhauHash
+                );
+
+        if (!ketQua) {
+
+            throw new ApiError(
+                404,
+                "Tài khoản không tồn tại."
+            );
+
+        }
+
+        return ketQua;
+
+    }
+
+}
+
+module.exports =
+    new TaiKhoanService();
