@@ -50,7 +50,11 @@ class CoSoController {
 
     }
 
-    async create(req, res, next) {
+    async create(
+        req,
+        res,
+        next
+    ) {
 
         try {
 
@@ -74,7 +78,11 @@ class CoSoController {
 
     }
 
-    async update(req, res, next) {
+    async update(
+        req,
+        res,
+        next
+    ) {
 
         try {
 

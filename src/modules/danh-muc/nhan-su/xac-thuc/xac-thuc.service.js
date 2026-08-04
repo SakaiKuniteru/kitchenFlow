@@ -509,6 +509,47 @@ class XacThucService {
 
     }
 
+    async getThongTinNhanVien(
+        id
+    ) {
+
+        const nhanVienId =
+            Number(id);
+
+        if (
+            !Number.isInteger(
+                nhanVienId
+            )
+            ||
+            nhanVienId <= 0
+        ) {
+
+            throw new ApiError(
+                400,
+                "ID nhân viên không hợp lệ."
+            );
+
+        }
+
+        const nhanVien =
+            await authRepository
+                .getThongTinNhanVien(
+                    nhanVienId
+                );
+
+        if (!nhanVien) {
+
+            throw new ApiError(
+                404,
+                "Nhân viên không tồn tại."
+            );
+
+        }
+
+        return nhanVien;
+
+    }
+
 }
 
 module.exports = new XacThucService();

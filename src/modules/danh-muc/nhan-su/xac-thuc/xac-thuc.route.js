@@ -16,6 +16,18 @@ router.post(
     controller.login
 );
 
+router.get(
+    "/nhan-vien-hien-tai",
+    authenticate,
+    controller.getNhanVienHienTai
+);
+
+router.get(
+    "/nhan-vien/:id",
+    authenticate,
+    controller.getThongTinNhanVien
+);
+
 router.post(
     "/lam-moi-token",
     validate(refreshTokenSchema),

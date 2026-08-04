@@ -5,10 +5,20 @@ document.addEventListener(
     "DOMContentLoaded",
     () => {
 
+        const currentUser =
+            JSON.parse(
+                localStorage.getItem(
+                    "currentUser"
+                )
+            );
+
+        const nhanVienId =
+            currentUser?.nhanVienId;
+
         const CONFIG = {
 
             summaryEndpoint:
-                "/api/mcs/v1/dashboard/tong-hop",
+                `/api/mcs/v1/auth/nhan-vien/${nhanVienId}`,
 
             currentUserKey:
                 "currentUser",
@@ -191,11 +201,23 @@ document.addEventListener(
 
         function renderCurrentUser() {
 
+            // const user =
+            //     getCurrentUser();
+
+            // const hoTen =
+            //     user?.hoTen ||
+            //     CONFIG.fallbackUserName;
+
             const user =
                 getCurrentUser();
 
+            console.log(getCurrentUser());
+
+            const currentUser =
+                user?.nhanVien || user;
+
             const hoTen =
-                user?.hoTen ||
+                currentUser?.hoTen ||
                 CONFIG.fallbackUserName;
 
             if (
@@ -232,33 +254,34 @@ document.addEventListener(
 
             setTextContent(
                 "[data-home-profile-employee-code]",
-                user?.maNhanVien ||
+                currentUser?.maNhanVien ||
                 "—"
             );
 
             setTextContent(
                 "[data-home-profile-facility]",
                 getRelationName(
-                    user?.coSo
+                    currentUser?.coSo
                 )
             );
 
             setTextContent(
                 "[data-home-profile-department]",
                 getRelationName(
-                    user?.phongBan
+                    currentUser?.phongBan
                 )
             );
 
             setTextContent(
                 "[data-home-profile-position]",
                 getRelationName(
-                    user?.chucVu
+                    currentUser?.chucVu
                 )
             );
 
             renderAvatar(
-                user
+                // user
+                currentUser
             );
 
         }

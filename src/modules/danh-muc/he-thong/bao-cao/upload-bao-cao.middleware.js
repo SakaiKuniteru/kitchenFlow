@@ -13,7 +13,7 @@ const ApiError =
 const uploadDirectory =
     path.join(
         process.cwd(),
-        "src/public/uploads/bao-cao"
+        "src/public/uploads/danh-muc/bao-cao"
     );
 
 if (

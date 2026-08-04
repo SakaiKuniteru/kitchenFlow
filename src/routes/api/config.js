@@ -87,7 +87,7 @@ const routes = [
     [
         "/dm-vai-tro",
         require(
-            "../../modules/danh-muc/nhan-su/vai-tro/vai-tro.route"
+            "../../modules/danh-muc/he-thong/vai-tro/vai-tro.route"
         )
     ],
 
@@ -143,7 +143,7 @@ const routes = [
     [
         "/dm-nhom-mon-an",
         require(
-            "../../modules/danh-muc/suat-an/nhom-mon-an/nhom-mon-an.route"
+            "../../modules/danh-muc/he-thong/nhom-mon-an/nhom-mon-an.route"
         )
     ],
 

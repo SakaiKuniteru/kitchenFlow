@@ -2,6 +2,8 @@ const ApiError = require("../../../../utils/api-error");
 
 const xacThucService = require("./xac-thuc.service");
 
+const { successResponse } = require( "../../../../utils/response.util" );
+
 class XacThucController {
 
     async login(req, res, next) {
@@ -43,6 +45,64 @@ class XacThucController {
 
         }
         catch (error) {
+
+            next(error);
+
+        }
+
+    }
+
+    async getThongTinNhanVien(
+        req,
+        res,
+        next
+    ) {
+
+        try {
+
+            const data =
+                await xacThucService
+                    .getThongTinNhanVien(
+                        req.params.id
+                    );
+
+            return successResponse(
+                res,
+                "Lấy thông tin nhân viên thành công.",
+                data,
+                200
+            );
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
+
+    async getNhanVienHienTai(
+        req,
+        res,
+        next
+    ) {
+
+        try {
+
+            const data =
+                await xacThucService
+                    .getThongTinNhanVien(
+                        req.user.nhanVienId
+                    );
+
+            return successResponse(
+                res,
+                "Lấy thông tin nhân viên đang đăng nhập thành công.",
+                data,
+                200
+            );
+
+        } catch (error) {
 
             next(error);
 

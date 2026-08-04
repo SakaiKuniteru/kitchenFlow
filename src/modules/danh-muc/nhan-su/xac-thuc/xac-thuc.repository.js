@@ -181,16 +181,16 @@ class XacThucRepository {
                     ELSE
                         JSONB_BUILD_OBJECT(
                             'id',
-                            cs.id,
+                                cs.id,
 
                             'maCoSo',
-                            cs.ma_co_so,
+                                cs.ma_co_so,
 
                             'tenCoSo',
-                            cs.ten_co_so,
+                                cs.ten_co_so,
 
                             'active',
-                            cs.active
+                                cs.active
                         )
                 END AS co_so,
 
@@ -200,16 +200,16 @@ class XacThucRepository {
                     ELSE
                         JSONB_BUILD_OBJECT(
                             'id',
-                            pb.id,
+                                pb.id,
 
                             'maPhongBan',
-                            pb.ma_phong_ban,
+                                pb.ma_phong_ban,
 
                             'tenPhongBan',
-                            pb.ten_phong_ban,
+                                pb.ten_phong_ban,
 
                             'active',
-                            pb.active
+                                pb.active
                         )
                 END AS phong_ban,
 
@@ -973,6 +973,416 @@ class XacThucRepository {
         );
 
         return result.rows[0];
+
+    }
+
+    async getThongTinNhanVien(
+        nhanVienId
+    ) {
+
+        const sql = `
+            SELECT
+
+                nv.id AS nhan_vien_id,
+
+                tk.id AS tai_khoan_id,
+                tk.ten_dang_nhap,
+                tk.active AS tai_khoan_active,
+                tk.doi_mat_khau_lan_dau,
+                tk.so_lan_dang_nhap_sai,
+                tk.khoa_den,
+                tk.lan_dang_nhap_cuoi,
+
+                nv.ma_nhan_vien,
+                nv.ho_ten,
+                nv.email,
+                nv.so_dien_thoai,
+                nv.anh_dai_dien,
+                nv.ngay_sinh,
+                nv.gioi_tinh,
+                nv.dia_chi,
+                nv.ghi_chu,
+                nv.ma_the,
+                nv.ma_qr,
+                nv.ma_barcode,
+
+                nv.quoc_gia_id,
+                nv.tinh_thanh_id,
+                nv.xa_phuong_id,
+
+                nv.co_so_id,
+                nv.phong_ban_id,
+                nv.chuc_vu_id,
+
+                nv.active AS nhan_vien_active,
+                nv.created_at AS nhan_vien_created_at,
+                nv.updated_at AS nhan_vien_updated_at,
+
+                CASE
+                    WHEN cs.id IS NULL
+                        THEN NULL
+                    ELSE
+                        JSONB_BUILD_OBJECT(
+                            'id',
+                                cs.id,
+
+                            'maCoSo',
+                                cs.ma_co_so,
+
+                            'tenCoSo',
+                                cs.ten_co_so,
+
+                            'diaChi',
+                                cs.dia_chi,
+
+                            'logo',
+                                cs.logo,
+
+                            'favicon',
+                                cs.favicon,
+
+                            'active',
+                                cs.active
+                        )
+                END AS co_so,
+
+                CASE
+                    WHEN pb.id IS NULL
+                        THEN NULL
+                    ELSE
+                        JSONB_BUILD_OBJECT(
+                            'id',
+                                pb.id,
+
+                            'maPhongBan',
+                                pb.ma_phong_ban,
+
+                            'tenPhongBan',
+                                pb.ten_phong_ban,
+
+                            'active',
+                                pb.active
+                        )
+                END AS phong_ban,
+
+                CASE
+                    WHEN cv.id IS NULL
+                        THEN NULL
+                    ELSE
+                        JSONB_BUILD_OBJECT(
+                            'id',
+                                cv.id,
+
+                            'maChucVu',
+                                cv.ma_chuc_vu,
+
+                            'tenChucVu',
+                                cv.ten_chuc_vu,
+
+                            'active',
+                                cv.active
+                        )
+                END AS chuc_vu,
+
+                COALESCE(
+                    vai_tro.ds_vai_tro_id,
+                    ARRAY[]::INTEGER[]
+                ) AS ds_vai_tro_id,
+
+                COALESCE(
+                    vai_tro.vai_tros,
+                    ARRAY[]::VARCHAR[]
+                ) AS vai_tros,
+
+                COALESCE(
+                    vai_tro.ds_vai_tro,
+                    '[]'::JSONB
+                ) AS ds_vai_tro,
+
+                COALESCE(
+                    quyen.ds_quyen_id,
+                    ARRAY[]::INTEGER[]
+                ) AS ds_quyen_id,
+
+                COALESCE(
+                    quyen.ds_quyen,
+                    '[]'::JSONB
+                ) AS ds_quyen
+
+            FROM dm_nhan_vien nv
+
+            LEFT JOIN dm_tai_khoan tk
+                ON tk.nhan_vien_id = nv.id
+
+            LEFT JOIN dm_co_so cs
+                ON cs.id = nv.co_so_id
+
+            LEFT JOIN dm_phong_ban pb
+                ON pb.id = nv.phong_ban_id
+
+            LEFT JOIN dm_chuc_vu cv
+                ON cv.id = nv.chuc_vu_id
+
+            LEFT JOIN LATERAL
+            (
+                SELECT
+
+                    ARRAY_AGG(
+                        danh_sach.id
+                        ORDER BY danh_sach.id
+                    ) AS ds_vai_tro_id,
+
+                    ARRAY_AGG(
+                        danh_sach.ma_vai_tro
+                        ORDER BY danh_sach.id
+                    ) AS vai_tros,
+
+                    JSONB_AGG(
+                        JSONB_BUILD_OBJECT(
+                            'id',
+                                danh_sach.id,
+
+                            'maVaiTro',
+                                danh_sach.ma_vai_tro,
+
+                            'tenVaiTro',
+                                danh_sach.ten_vai_tro,
+
+                            'moTa',
+                                danh_sach.mo_ta,
+
+                            'active',
+                                danh_sach.active
+                        )
+                        ORDER BY danh_sach.id
+                    ) AS ds_vai_tro
+
+                FROM
+                (
+                    SELECT DISTINCT
+
+                        vt.id,
+                        vt.ma_vai_tro,
+                        vt.ten_vai_tro,
+                        vt.mo_ta,
+                        vt.active
+
+                    FROM dm_nhan_vien_vai_tro nvt
+
+                    INNER JOIN dm_vai_tro vt
+                        ON vt.id = nvt.vai_tro_id
+
+                    WHERE
+                        nvt.nhan_vien_id = nv.id
+                        AND nvt.active = TRUE
+                        AND vt.active = TRUE
+
+                ) danh_sach
+
+            ) vai_tro
+                ON TRUE
+
+            LEFT JOIN LATERAL
+            (
+                SELECT
+
+                    ARRAY_AGG(
+                        danh_sach.id
+                        ORDER BY danh_sach.id
+                    ) AS ds_quyen_id,
+
+                    JSONB_AGG(
+                        JSONB_BUILD_OBJECT(
+                            'id',
+                                danh_sach.id,
+
+                            'maQuyen',
+                                danh_sach.ma_quyen,
+
+                            'tenQuyen',
+                                danh_sach.ten_quyen,
+
+                            'moTa',
+                                danh_sach.mo_ta,
+
+                            'active',
+                                danh_sach.active
+                        )
+                        ORDER BY danh_sach.id
+                    ) AS ds_quyen
+
+                FROM
+                (
+                    SELECT DISTINCT
+
+                        q.id,
+                        q.ma_quyen,
+                        q.ten_quyen,
+                        q.mo_ta,
+                        q.active
+
+                    FROM dm_nhan_vien_vai_tro nvt
+
+                    INNER JOIN dm_vai_tro vt
+                        ON vt.id = nvt.vai_tro_id
+                        AND vt.active = TRUE
+
+                    INNER JOIN dm_vai_tro_quyen vtq
+                        ON vtq.vai_tro_id = vt.id
+                        AND vtq.active = TRUE
+
+                    INNER JOIN dm_quyen q
+                        ON q.id = vtq.quyen_id
+                        AND q.active = TRUE
+
+                    WHERE
+                        nvt.nhan_vien_id = nv.id
+                        AND nvt.active = TRUE
+
+                ) danh_sach
+
+            ) quyen
+                ON TRUE
+
+            WHERE nv.id = $1
+
+            LIMIT 1
+        `;
+
+        const result =
+            await pool.query(
+                sql,
+                [nhanVienId]
+            );
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
+        const row =
+            result.rows[0];
+
+        return {
+
+            id:
+                row.nhan_vien_id,
+
+            nhanVienId:
+                row.nhan_vien_id,
+
+            taiKhoanId:
+                row.tai_khoan_id,
+
+            tenDangNhap:
+                row.ten_dang_nhap,
+
+            maNhanVien:
+                row.ma_nhan_vien,
+
+            hoTen:
+                row.ho_ten,
+
+            email:
+                row.email,
+
+            soDienThoai:
+                row.so_dien_thoai,
+
+            anhDaiDien:
+                row.anh_dai_dien,
+
+            ngaySinh:
+                row.ngay_sinh,
+
+            gioiTinh:
+                row.gioi_tinh,
+
+            diaChi:
+                row.dia_chi,
+
+            ghiChu:
+                row.ghi_chu,
+
+            maThe:
+                row.ma_the,
+
+            maQr:
+                row.ma_qr,
+
+            maBarcode:
+                row.ma_barcode,
+
+            quocGiaId:
+                row.quoc_gia_id,
+
+            tinhThanhId:
+                row.tinh_thanh_id,
+
+            xaPhuongId:
+                row.xa_phuong_id,
+
+            coSoId:
+                row.co_so_id,
+
+            coSo:
+                row.co_so,
+
+            phongBanId:
+                row.phong_ban_id,
+
+            phongBan:
+                row.phong_ban,
+
+            chucVuId:
+                row.chuc_vu_id,
+
+            chucVu:
+                row.chuc_vu,
+
+            dsVaiTroId:
+                row.ds_vai_tro_id || [],
+
+            roles:
+                row.vai_tros || [],
+
+            dsVaiTro:
+                row.ds_vai_tro || [],
+
+            dsQuyenId:
+                row.ds_quyen_id || [],
+
+            dsQuyen:
+                row.ds_quyen || [],
+
+            active:
+                row.nhan_vien_active,
+
+            taiKhoanActive:
+                row.tai_khoan_active,
+
+            doiMatKhauLanDau:
+                row.doi_mat_khau_lan_dau,
+
+            soLanDangNhapSai:
+                row.so_lan_dang_nhap_sai,
+
+            khoaDen:
+                row.khoa_den,
+
+            lanDangNhapCuoi:
+                row.lan_dang_nhap_cuoi,
+
+            createdAt:
+                row.nhan_vien_created_at,
+
+            updatedAt:
+                row.nhan_vien_updated_at
+
+        };
 
     }
 

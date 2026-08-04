@@ -489,7 +489,7 @@
 
                 <div class="home-profile__information">
 
-                    <strong class="home-profile__name">
+                    <strong class="home-profile__name" data-home-profile-name>
 
                         {{#if currentUser.hoTen}}
 
@@ -503,7 +503,7 @@
 
                     </strong>
 
-                    <span class="home-profile__username">
+                    <span class="home-profile__username" data-home-profile-username>
 
                         {{#if currentUser.taiKhoan}}
 
@@ -527,7 +527,7 @@
                             Mã nhân viên
                         </dt>
 
-                        <dd>
+                        <dd data-home-profile-employee-code>
 
                             {{#if currentUser.maNhanVien}}
 
@@ -549,7 +549,7 @@
                             Cơ sở
                         </dt>
 
-                        <dd>
+                        <dd data-home-profile-facility>
 
                             {{#if currentUser.coSo.tenCoSo}}
 
@@ -575,7 +575,7 @@
                             Phòng ban
                         </dt>
 
-                        <dd>
+                        <dd data-home-profile-department>
 
                             {{#if currentUser.phongBan.tenPhongBan}}
 
@@ -601,7 +601,7 @@
                             Chức vụ
                         </dt>
 
-                        <dd>
+                        <dd data-home-profile-position>
 
                             {{#if currentUser.chucVu.tenChucVu}}
 
@@ -647,17 +647,9 @@
 
         <div class="home-system-information__content">
 
-            <p>
-                Bạn đang sử dụng
-            </p>
-
             <strong>
                 MCS KITCHENFLOW
             </strong>
-
-            <span>
-                Hệ thống quản lý nhà ăn và suất ăn tập trung.
-            </span>
 
         </div>
 
@@ -666,12 +658,8 @@
             <div class="home-system-information__version">
 
                 <span>
-                    Phiên bản
+                    Phiên bản <strong>{{appVersion}}</strong>
                 </span>
-
-                <strong>
-                    {{appVersion}}
-                </strong>
 
             </div>
 

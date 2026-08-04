@@ -15,7 +15,7 @@
 
         </button>
 
-        <div class="app-header__brand">
+        {{!-- <div class="app-header__brand">
 
             <span class="app-header__brand-name">
                 MCS KITCHENFLOW
@@ -28,6 +28,36 @@
                 </span>
 
             {{/if}}
+
+        </div> --}}
+
+        <div class="app-header__brand">
+
+            <img
+                class="app-header__brand-logo"
+                data-header-system-logo
+                src="/assets/images/logo/logo.png"
+                alt="Logo hệ thống">
+
+            <div class="app-header__brand-information">
+
+                <span
+                    class="app-header__brand-name"
+                    data-header-system-name>
+
+                    MCS KITCHENFLOW
+
+                </span>
+
+                {{#if pageSubtitle}}
+
+                    <span class="app-header__brand-subtitle">
+                        {{pageSubtitle}}
+                    </span>
+
+                {{/if}}
+
+            </div>
 
         </div>
 
@@ -91,7 +121,7 @@
                 aria-expanded="false"
                 aria-controls="headerUserMenu">
 
-                <span class="app-header__avatar">
+                <span class="app-header__avatar" data-header-user-avatar>
 
                     {{#if currentUser.anhDaiDien}}
 
@@ -111,7 +141,7 @@
 
                 <span class="app-header__user-information">
 
-                    <strong class="app-header__user-name">
+                    <strong class="app-header__user-name" data-header-user-name>
                         {{#if currentUser.hoTen}}
                             {{currentUser.hoTen}}
                         {{else}}
@@ -119,13 +149,25 @@
                         {{/if}}
                     </strong>
 
-                    {{#if currentUser.tenDangNhap}}
+                    <small
+                        class="app-header__username"
+                        data-header-account-name>
 
-                        <small class="app-header__username">
+                        {{#if currentUser.taiKhoan}}
+
+                            {{currentUser.taiKhoan}}
+
+                        {{else if currentUser.tenDangNhap}}
+
                             {{currentUser.tenDangNhap}}
-                        </small>
 
-                    {{/if}}
+                        {{else}}
+
+                            Chưa có tài khoản
+
+                        {{/if}}
+
+                    </small>
 
                 </span>
 
@@ -159,13 +201,13 @@
 
                 <div class="app-header__user-menu-header">
 
-                    <span class="app-header__user-menu-avatar">
+                    <span class="app-header__user-menu-avatar" data-header-user-avatar>
                         👤
                     </span>
 
                     <div class="app-header__user-menu-information">
 
-                        <strong>
+                        <strong data-header-user-name>
                             {{#if currentUser.hoTen}}
                                 {{currentUser.hoTen}}
                             {{else}}
@@ -173,12 +215,22 @@
                             {{/if}}
                         </strong>
 
-                        <small>
-                            {{#if currentUser.tenDangNhap}}
+                        <small data-header-account-name>
+
+                            {{#if currentUser.taiKhoan}}
+
+                                {{currentUser.taiKhoan}}
+
+                            {{else if currentUser.tenDangNhap}}
+
                                 {{currentUser.tenDangNhap}}
+
                             {{else}}
+
                                 Chưa có thông tin tài khoản
+
                             {{/if}}
+
                         </small>
 
                     </div>
