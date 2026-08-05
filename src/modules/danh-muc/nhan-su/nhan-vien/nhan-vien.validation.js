@@ -42,7 +42,7 @@ const createSchema = Joi.object({
 
     gioiTinh: Joi.number()
         .integer()
-        .valid(1, 2, 3)
+        .valid(0, 1, 2)
         .required()
         .messages({
             "number.base":
@@ -50,7 +50,7 @@ const createSchema = Joi.object({
             "number.integer":
                 "Giới tính phải là số nguyên.",
             "any.only":
-                "Giới tính chỉ nhận giá trị 1, 2 hoặc 3.",
+                "Giới tính chỉ nhận giá trị 0, 1 hoặc 2.",
             "any.required":
                 "Giới tính là bắt buộc."
         }),
@@ -385,7 +385,7 @@ const updateSchema = Joi.object({
 
     gioiTinh: Joi.number()
         .integer()
-        .valid(1, 2, 3)
+        .valid(0, 1, 2)
         .optional()
         .messages({
             "number.base":

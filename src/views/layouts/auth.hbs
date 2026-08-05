@@ -1,30 +1,46 @@
 <!DOCTYPE html>
 <html lang="vi">
 
-    <head>
+<head>
 
-        {{> common/head}}
+    {{> common/head}}
 
-    </head>
+    <link
+        rel="stylesheet"
+        href="/assets/css/common/modal.css">
 
-    <body>
+</head>
 
-        {{> common/loading}}
+<body>
 
-        <div id="auth-layout">
+    {{> common/loading}}
 
-            <main class="auth-content">
+    <div id="auth-layout">
 
-                {{{body}}}
+        <main class="auth-content">
 
-            </main>
+            {{{body}}}
 
-        </div>
+        </main>
 
-        {{> common/toast}}
+    </div>
 
-        {{> modals/alert}}
+    {{> common/toast}}
 
-    </body>
+    {{> modals/alert}}
+
+    {{> modals/change-password}}
+
+    <script
+        defer
+        src="/assets/js/common/modal.js">
+    </script>
+
+    <script
+        defer
+        src="/assets/js/common/change-password.js">
+    </script>
+
+</body>
 
 </html>

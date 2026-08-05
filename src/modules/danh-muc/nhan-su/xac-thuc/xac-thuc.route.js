@@ -43,8 +43,8 @@ router.post(
 router.post(
 
     "/doi-mat-khau",
-    validate(changeMatKhauSchema),
     authenticate,
+    validate(changeMatKhauSchema),
     controller.changeMatKhau
 
 );

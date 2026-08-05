@@ -17,9 +17,9 @@ document.addEventListener(
 
         const fields = {
 
-            matKhauHienTai:
+            matKhauCu:
                 form.querySelector(
-                    '[name="matKhauHienTai"]'
+                    '[name="matKhauCu"]'
                 ),
 
             matKhauMoi:
@@ -73,17 +73,11 @@ document.addEventListener(
                 '[type="submit"]'
             );
 
-
-        /*
-         * Mật khẩu tối thiểu 8 ký tự và bắt buộc có:
-         * - ít nhất 1 chữ thường
-         * - ít nhất 1 chữ hoa
-         * - ít nhất 1 chữ số
-         * - ít nhất 1 ký tự đặc biệt
-         * - không chứa khoảng trắng
-         */
         const PASSWORD_PATTERN =
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9\s])\S{8,}$/;
+
+        const CHANGE_PASSWORD_ENDPOINT =
+            "/api/mcs/v1/auth/doi-mat-khau";
 
 
         initializePasswordToggles();
@@ -185,7 +179,6 @@ document.addEventListener(
 
         }
 
-
         function initializeValidation() {
 
             form.addEventListener(
@@ -203,38 +196,94 @@ document.addEventListener(
                         return;
                     }
 
-                    const payload = {
-
-                        matKhauHienTai:
-                            fields
-                                .matKhauHienTai
-                                .value,
-
-                        matKhauMoi:
-                            fields
-                                .matKhauMoi
-                                .value,
-
-                        xacNhanMatKhauMoi:
-                            fields
-                                .xacNhanMatKhauMoi
-                                .value
-
-                    };
-
                     setSubmitting(
                         true
                     );
 
                     try {
 
-                        console.log(
-                            "Dữ liệu đổi mật khẩu hợp lệ:",
-                            payload
-                        );
+                        const accessToken =
+                            localStorage.getItem(
+                                "accessToken"
+                            );
+
+                        if (!accessToken) {
+
+                            throw new Error(
+                                "Phiên đăng nhập không tồn tại. Vui lòng đăng nhập lại."
+                            );
+
+                        }
+
+                        const response =
+                            await fetch(
+                                CHANGE_PASSWORD_ENDPOINT,
+                                {
+                                    method:
+                                        "POST",
+
+                                    headers: {
+
+                                        Accept:
+                                            "application/json",
+
+                                        "Content-Type":
+                                            "application/json",
+
+                                        Authorization:
+                                            `Bearer ${accessToken}`
+
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+
+                                            matKhauCu:
+                                                fields
+                                                    .matKhauCu
+                                                    .value,
+
+                                            matKhauMoi:
+                                                fields
+                                                    .matKhauMoi
+                                                    .value
+
+                                        })
+
+                                }
+                            );
+
+                        let result = null;
+
+                        try {
+
+                            result =
+                                await response.json();
+
+                        } catch {
+
+                            result = null;
+
+                        }
+
+                        if (!response.ok) {
+
+                            const error =
+                                new Error(
+                                    result?.message ||
+                                    "Không thể đổi mật khẩu."
+                                );
+
+                            error.status =
+                                response.status;
+
+                            throw error;
+
+                        }
 
                         window.MCS?.toast
                             ?.success(
+                                result?.message ||
                                 "Đổi mật khẩu thành công."
                             );
 
@@ -246,62 +295,93 @@ document.addEventListener(
                             ""
                         );
 
-                        form
-                            .querySelectorAll(
-                                "[data-password-toggle]"
-                            )
-                            .forEach(
-                                button => {
-
-                                    button.classList.remove(
-                                        "is-visible"
-                                    );
-
-                                    button.setAttribute(
-                                        "aria-pressed",
-                                        "false"
-                                    );
-
-                                    button.setAttribute(
-                                        "aria-label",
-                                        "Hiện mật khẩu"
-                                    );
-
-                                    const passwordField =
-                                        button.closest(
-                                            ".password-field"
-                                        );
-
-                                    const input =
-                                        passwordField
-                                            ?.querySelector(
-                                                "input"
-                                            );
-
-                                    if (input) {
-
-                                        input.type =
-                                            "password";
-
-                                    }
-
-                                }
-                            );
+                        resetPasswordToggles();
 
                         window.MCS.modal.close(
                             "changePasswordModal",
                             {
-                                force: true
+                                force:
+                                    true
                             }
+                        );
+
+                        window.setTimeout(
+                            () => {
+
+                                localStorage.removeItem(
+                                    "accessToken"
+                                );
+
+                                localStorage.removeItem(
+                                    "refreshToken"
+                                );
+
+                                localStorage.removeItem(
+                                    "currentUser"
+                                );
+
+                                sessionStorage.clear();
+
+                                window.location.replace(
+                                    "/auth/login"
+                                );
+
+                            },
+                            900
                         );
 
                     } catch (error) {
 
-                        window.MCS?.toast
-                            ?.error(
-                                error.message ||
-                                "Không thể đổi mật khẩu."
+                        console.error(
+                            "Lỗi đổi mật khẩu:",
+                            error
+                        );
+
+                        const message =
+                            error?.message ||
+                            "Không thể đổi mật khẩu.";
+
+                        if (
+                            message
+                                .toLowerCase()
+                                .includes(
+                                    "mật khẩu cũ"
+                                )
+                            ||
+                            message
+                                .toLowerCase()
+                                .includes(
+                                    "mật khẩu hiện tại"
+                                )
+                        ) {
+
+                            setFieldError(
+                                "matKhauCu",
+                                message
                             );
+
+                            fields.matKhauCu
+                                ?.focus();
+
+                        } else {
+
+                            if (
+                                window.MCS?.toast?.error
+                            ) {
+
+                                window.MCS.toast.error(
+                                    message
+                                );
+
+                            } else {
+
+                                window.alert(
+                                    message
+                                );
+
+                            }
+
+                        }
 
                     } finally {
 
@@ -446,9 +526,9 @@ document.addEventListener(
                 );
 
 
-            const matKhauHienTai =
+            const matKhauCu =
                 fields
-                    .matKhauHienTai
+                    .matKhauCu
                     .value;
 
             const matKhauMoi =
@@ -458,9 +538,9 @@ document.addEventListener(
 
 
             if (
-                matKhauHienTai &&
+                matKhauCu &&
                 matKhauMoi &&
-                matKhauHienTai ===
+                matKhauCu ===
                     matKhauMoi
             ) {
 
@@ -490,7 +570,6 @@ document.addEventListener(
 
         }
 
-
         function validateSingleField(
             fieldName
         ) {
@@ -512,7 +591,7 @@ document.addEventListener(
 
             if (
                 fieldName ===
-                "matKhauHienTai"
+                "matKhauCu"
             ) {
 
                 if (!value) {
@@ -583,7 +662,6 @@ document.addEventListener(
             return true;
 
         }
-
 
         function validateNewPassword(
             value
@@ -711,7 +789,6 @@ document.addEventListener(
 
         }
 
-
         function setFieldError(
             fieldName,
             message
@@ -761,7 +838,6 @@ document.addEventListener(
 
         }
 
-
         function clearFieldError(
             fieldName
         ) {
@@ -805,7 +881,6 @@ document.addEventListener(
 
         }
 
-
         function clearAllErrors() {
 
             Object.keys(fields)
@@ -820,7 +895,6 @@ document.addEventListener(
                 );
 
         }
-
 
         function setSubmitting(
             submitting
@@ -855,5 +929,50 @@ document.addEventListener(
 
         }
 
+        function resetPasswordToggles() {
+
+            form
+                .querySelectorAll(
+                    "[data-password-toggle]"
+                )
+                .forEach(
+                    button => {
+
+                        button.classList.remove(
+                            "is-visible"
+                        );
+
+                        button.setAttribute(
+                            "aria-pressed",
+                            "false"
+                        );
+
+                        button.setAttribute(
+                            "aria-label",
+                            "Hiện mật khẩu"
+                        );
+
+                        const passwordField =
+                            button.closest(
+                                ".password-field"
+                            );
+
+                        const input =
+                            passwordField
+                                ?.querySelector(
+                                    "input"
+                                );
+
+                        if (input) {
+
+                            input.type =
+                                "password";
+
+                        }
+
+                    }
+                );
+
+        }
     }
 );

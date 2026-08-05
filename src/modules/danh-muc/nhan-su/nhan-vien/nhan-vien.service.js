@@ -282,19 +282,35 @@ class NhanVienService {
             "chucVuId"
         ];
 
-        for (const tenTruong of cacTruongId) {
-
-            if (
-                duLieu[tenTruong] !== null &&
-                duLieu[tenTruong] !== undefined
+            for (
+                const tenTruong
+                of cacTruongId
             ) {
 
-                duLieu[tenTruong] =
-                    Number(duLieu[tenTruong]);
+                if (
+                    duLieu[tenTruong] === ""
+                ) {
+
+                    duLieu[tenTruong] =
+                        null;
+
+                    continue;
+
+                }
+
+                if (
+                    duLieu[tenTruong] !== null &&
+                    duLieu[tenTruong] !== undefined
+                ) {
+
+                    duLieu[tenTruong] =
+                        Number(
+                            duLieu[tenTruong]
+                        );
+
+                }
 
             }
-
-        }
 
         delete duLieu.maQuocGia;
         delete duLieu.maTinhThanh;
@@ -493,6 +509,18 @@ class NhanVienService {
 
     async create(data) {
 
+        if (
+            !data ||
+            typeof data !== "object"
+        ) {
+
+            throw new ApiError(
+                400,
+                "Dữ liệu nhân viên không hợp lệ."
+            );
+
+        }
+
         const duLieuDaChuanHoa =
             await this.chuanHoaLienKet(data);
 
@@ -518,6 +546,22 @@ class NhanVienService {
     async update(id, data) {
 
         const nhanVienId = this.parseId(id);
+
+        if (
+            !data ||
+            typeof data !==
+                "object" ||
+            Array.isArray(
+                data
+            )
+        ) {
+
+            throw new ApiError(
+                400,
+                "Dữ liệu cập nhật nhân viên không hợp lệ."
+            );
+
+        }
 
         const nhanVien =
             await nhanVienRepository.getChiTiet(

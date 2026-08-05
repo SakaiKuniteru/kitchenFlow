@@ -8,7 +8,7 @@ const multer =
     require("multer");
 
 const ApiError =
-    require("../utils/api-error");
+    require("../../../../utils/api-error");
 
 const uploadDirectory =
     path.join(

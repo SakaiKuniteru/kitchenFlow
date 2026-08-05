@@ -8,7 +8,7 @@ const validate = require("../../../../middlewares/validate.middleware");
 
 const authenticate = require("../../../../middlewares/authenticate.middleware");
 
-const uploadBaoCao = require("../../../../middlewares/upload-bao-cao.middleware");
+const uploadBaoCao = require("./upload-bao-cao.middleware");
 
 const controller = require("./bao-cao.controller");
 

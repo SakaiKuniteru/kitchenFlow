@@ -1,0 +1,489 @@
+<div
+    id="employeeProfileModal"
+    class="modal"
+    hidden>
+
+    <div class="modal__backdrop">
+    </div>
+
+    <section
+        class="modal__dialog employee-profile-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="employeeProfileTitle">
+
+        <header class="modal__header">
+
+            <div>
+
+                <h2
+                    id="employeeProfileTitle"
+                    class="modal__title">
+
+                    Thông tin nhân viên
+
+                </h2>
+
+                <p class="modal__subtitle">
+                    Xem và cập nhật thông tin cá nhân.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="modal__close"
+                data-modal-close
+                aria-label="Đóng">
+
+                ×
+
+            </button>
+
+        </header>
+
+        <form
+            id="employeeProfileForm"
+            class="employee-profile-form"
+            enctype="multipart/form-data"
+            novalidate>
+
+            <div class="modal__body">
+
+                <div class="employee-profile__avatar-section">
+
+                    <label
+                        class="employee-profile__avatar-picker"
+                        title="Nhấn để thay ảnh đại diện">
+
+                        <span
+                            class="employee-profile__avatar"
+                            data-employee-profile-avatar>
+
+                            <span aria-hidden="true">
+                                👤
+                            </span>
+
+                        </span>
+
+                        <span
+                            class="employee-profile__avatar-overlay"
+                            aria-hidden="true">
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round">
+
+                                <path
+                                    d="M14.5 4 16 6h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3l1.5-2h5Z">
+                                </path>
+
+                                <circle
+                                    cx="12"
+                                    cy="13"
+                                    r="3">
+                                </circle>
+
+                            </svg>
+
+                        </span>
+
+                        <input
+                            type="file"
+                            name="anhDaiDien"
+                            accept="image/png,image/jpeg,image/webp"
+                            data-employee-avatar-input
+                            hidden>
+
+                    </label>
+
+                    <span class="employee-profile__avatar-hint">
+                        Nhấn vào ảnh để thay đổi
+                    </span>
+
+                </div>
+
+                <div class="employee-profile__grid">
+
+                    <div class="form-field">
+
+                        <label class="form-field__label">
+                            Mã nhân viên
+                        </label>
+
+                        <input
+                            type="text"
+                            name="maNhanVien"
+                            class="form-input"
+                            disabled>
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <label class="form-field__label">
+                            Họ tên
+                        </label>
+
+                        <input
+                            type="text"
+                            name="hoTen"
+                            class="form-input"
+                            maxlength="255">
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <label class="form-field__label">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            class="form-input"
+                            maxlength="255">
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <label class="form-field__label">
+                            Số điện thoại
+                        </label>
+
+                        <input
+                            type="text"
+                            name="soDienThoai"
+                            class="form-input"
+                            maxlength="20">
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <label class="form-field__label">
+                            Cơ sở
+                        </label>
+
+                        <input
+                            type="text"
+                            name="coSo"
+                            class="form-input"
+                            disabled>
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <label class="form-field__label">
+                            Phòng ban
+                        </label>
+
+                        <input
+                            type="text"
+                            name="phongBan"
+                            class="form-input"
+                            disabled>
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <label class="form-field__label">
+                            Chức vụ
+                        </label>
+
+                        <input
+                            type="text"
+                            name="chucVu"
+                            class="form-input"
+                            disabled>
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <label class="form-field__label">
+                            Ngày sinh
+                        </label>
+
+                        <input
+                            type="date"
+                            name="ngaySinh"
+                            class="form-input">
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <label class="form-field__label">
+                            Giới tính
+                        </label>
+
+                        <select
+                            name="gioiTinh"
+                            class="form-input">
+
+                            <option value="0">
+                                Nam
+                            </option>
+
+                            <option value="1">
+                                Nữ
+                            </option>
+
+                            <option value="2">
+                                Khác
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <label class="form-field__label">
+                            Quốc gia
+                        </label>
+
+                        <div
+                            class="searchable-select"
+                            data-searchable-select="country">
+
+                            <input
+                                type="hidden"
+                                name="quocGiaId"
+                                data-searchable-value>
+
+                            <div class="searchable-select__control">
+
+                                <input
+                                    type="text"
+                                    class="searchable-select__input"
+                                    placeholder="Chọn quốc gia..."
+                                    autocomplete="off"
+                                    data-searchable-input>
+
+                                <button
+                                    type="button"
+                                    class="searchable-select__toggle"
+                                    data-searchable-toggle
+                                    aria-label="Mở danh sách quốc gia">
+
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round">
+
+                                        <path d="m6 9 6 6 6-6"></path>
+
+                                    </svg>
+
+                                </button>
+
+                            </div>
+
+                            <div
+                                class="searchable-select__dropdown"
+                                data-searchable-dropdown
+                                hidden>
+
+                                <div
+                                    class="searchable-select__options"
+                                    data-searchable-options>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <label class="form-field__label">
+                            Tỉnh thành
+                        </label>
+
+                        <div
+                            class="searchable-select is-disabled"
+                            data-searchable-select="province">
+
+                            <input
+                                type="hidden"
+                                name="tinhThanhId"
+                                data-searchable-value>
+
+                            <div class="searchable-select__control">
+
+                                <input
+                                    type="text"
+                                    class="searchable-select__input"
+                                    placeholder="Chọn quốc gia trước"
+                                    autocomplete="off"
+                                    data-searchable-input
+                                    disabled>
+
+                                <button
+                                    type="button"
+                                    class="searchable-select__toggle"
+                                    data-searchable-toggle
+                                    aria-label="Mở danh sách tỉnh thành"
+                                    disabled>
+
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round">
+
+                                        <path d="m6 9 6 6 6-6"></path>
+
+                                    </svg>
+
+                                </button>
+
+                            </div>
+
+                            <div
+                                class="searchable-select__dropdown"
+                                data-searchable-dropdown
+                                hidden>
+
+                                <div
+                                    class="searchable-select__options"
+                                    data-searchable-options>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <label class="form-field__label">
+                            Xã/phường
+                        </label>
+
+                        <div
+                            class="searchable-select is-disabled"
+                            data-searchable-select="ward">
+
+                            <input
+                                type="hidden"
+                                name="xaPhuongId"
+                                data-searchable-value>
+
+                            <div class="searchable-select__control">
+
+                                <input
+                                    type="text"
+                                    class="searchable-select__input"
+                                    placeholder="Chọn tỉnh thành trước"
+                                    autocomplete="off"
+                                    data-searchable-input
+                                    disabled>
+
+                                <button
+                                    type="button"
+                                    class="searchable-select__toggle"
+                                    data-searchable-toggle
+                                    aria-label="Mở danh sách xã/phường"
+                                    disabled>
+
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round">
+
+                                        <path d="m6 9 6 6 6-6"></path>
+
+                                    </svg>
+
+                                </button>
+
+                            </div>
+
+                            <div
+                                class="searchable-select__dropdown"
+                                data-searchable-dropdown
+                                hidden>
+
+                                <div
+                                    class="searchable-select__options"
+                                    data-searchable-options>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-field employee-profile__full-width">
+
+                        <label class="form-field__label">
+                            Địa chỉ
+                        </label>
+
+                        <textarea
+                            name="diaChi"
+                            class="form-input employee-profile__textarea"
+                            maxlength="500">
+                        </textarea>
+
+                    </div>
+
+                </div>
+
+                <div
+                    class="employee-profile__message"
+                    data-employee-profile-message
+                    hidden>
+                </div>
+
+            </div>
+
+            <footer class="modal__footer">
+
+                <button
+                    type="button"
+                    class="modal-button modal-button--secondary"
+                    data-modal-close>
+
+                    Hủy
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="modal-button modal-button--primary"
+                    data-employee-profile-submit>
+
+                    Cập nhật
+
+                </button>
+
+            </footer>
+
+        </form>
+
+    </section>
+
+</div>

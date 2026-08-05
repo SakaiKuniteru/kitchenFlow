@@ -15,22 +15,6 @@
 
         </button>
 
-        {{!-- <div class="app-header__brand">
-
-            <span class="app-header__brand-name">
-                MCS KITCHENFLOW
-            </span>
-
-            {{#if pageSubtitle}}
-
-                <span class="app-header__brand-subtitle">
-                    {{pageSubtitle}}
-                </span>
-
-            {{/if}}
-
-        </div> --}}
-
         <div class="app-header__brand">
 
             <img
@@ -199,45 +183,43 @@
                 data-header-user-menu
                 hidden>
 
-                <div class="app-header__user-menu-header">
+                <button
+                    type="button"
+                    class="app-header__user-menu-header app-header__user-menu-header--button"
+                    data-header-profile-open>
 
-                    <span class="app-header__user-menu-avatar" data-header-user-avatar>
-                        👤
+                    <span
+                        class="app-header__user-menu-avatar"
+                        data-header-user-avatar>
+
+                        <span aria-hidden="true">
+                            👤
+                        </span>
+
                     </span>
 
-                    <div class="app-header__user-menu-information">
+                    <span class="app-header__user-menu-information">
 
                         <strong data-header-user-name>
-                            {{#if currentUser.hoTen}}
-                                {{currentUser.hoTen}}
-                            {{else}}
-                                Người dùng
-                            {{/if}}
+                            Người dùng
                         </strong>
 
                         <small data-header-account-name>
-
-                            {{#if currentUser.taiKhoan}}
-
-                                {{currentUser.taiKhoan}}
-
-                            {{else if currentUser.tenDangNhap}}
-
-                                {{currentUser.tenDangNhap}}
-
-                            {{else}}
-
-                                Chưa có thông tin tài khoản
-
-                            {{/if}}
-
+                            Chưa có thông tin tài khoản
                         </small>
 
-                    </div>
+                    </span>
 
-                </div>
+                    <span
+                        class="app-header__profile-arrow"
+                        aria-hidden="true">
 
+                        ›
 
+                    </span>
+
+                </button>
+                
                 <div class="app-header__user-menu-divider">
                 </div>
 

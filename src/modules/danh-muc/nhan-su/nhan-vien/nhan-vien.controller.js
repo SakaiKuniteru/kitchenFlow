@@ -50,21 +50,44 @@ class NhanVienController {
 
     }
 
-    async create(req, res, next) {
+    async create(
+        req,
+        res,
+        next
+    ) {
 
         try {
 
-            const data =
+            const data = {
+
+                ...(req.body || {})
+
+            };
+
+            if (
+                req.file
+            ) {
+
+                data.anhDaiDien =
+                    `/uploads/nhan-vien/${req.file.filename}`;
+
+            }
+
+            const result =
                 await nhanVienService.create(
-                    req.body
+                    data
                 );
 
-            return successResponse(
-                res,
-                "Thêm nhân viên thành công.",
-                data,
-                201
-            );
+            return res.status(201).json({
+
+                success: true,
+
+                message:
+                    "Thêm nhân viên thành công.",
+
+                data: result
+
+            });
 
         } catch (error) {
 
@@ -74,26 +97,54 @@ class NhanVienController {
 
     }
 
-    async update(req, res, next) {
+    async update(
+        req,
+        res,
+        next
+    ) {
 
         try {
 
-            const data =
-                await nhanVienService.update(
-                    req.params.id,
-                    req.body
-                );
+            const data = {
 
-            return successResponse(
-                res,
-                "Cập nhật nhân viên thành công.",
-                data,
-                200
-            );
+                ...(req.body || {})
+
+            };
+
+            if (
+                req.file
+            ) {
+
+                data.anhDaiDien =
+                    `uploads/nhan-vien/${req.file.filename}`;
+
+            }
+
+            const result =
+                await nhanVienService
+                    .update(
+                        req.params.id,
+                        data
+                    );
+
+            return res.status(200).json({
+
+                success:
+                    true,
+
+                message:
+                    "Cập nhật nhân viên thành công.",
+
+                data:
+                    result
+
+            });
 
         } catch (error) {
 
-            next(error);
+            next(
+                error
+            );
 
         }
 
