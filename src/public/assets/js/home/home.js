@@ -415,12 +415,6 @@ document.addEventListener(
 
             } catch (error) {
 
-                /*
-                 * API dashboard có thể chưa được làm ở giai đoạn FE.
-                 * Không hiển thị lỗi làm gián đoạn trang chủ.
-                 * Các số liệu do server render vẫn được giữ nguyên.
-                 */
-
                 console.info(
                     "API thống kê trang chủ chưa sẵn sàng:",
                     error.message

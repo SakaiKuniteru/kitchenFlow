@@ -191,46 +191,90 @@
     background: var(--color-primary-soft);
 }
 
+/* =========================================================
+   Responsive toolbar
+   ========================================================= */
+
 @media (max-width: 1350px) {
-
-    .catalog-toolbar__search {
-        flex-basis: 100%;
-    }
-
-    .catalog-toolbar__actions {
-        width: 100%;
-        justify-content: flex-end;
-    }
-
-}
-
-@media (max-width: 1280px) {
 
     .catalog-toolbar {
         align-items: stretch;
         flex-direction: column;
-        gap: 14px;
+    }
+
+    .catalog-toolbar__heading {
+        width: 100%;
     }
 
     .catalog-toolbar__controls {
-        justify-content: flex-start;
+        width: 100%;
+        justify-content: space-between;
     }
 
     .catalog-toolbar__search {
-        flex: 1;
+        flex:
+            1 1 280px;
+
         width: auto;
+        min-width: 200px;
     }
 
 }
 
 @media (max-width: 820px) {
 
+    .catalog-toolbar {
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .catalog-toolbar__heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .catalog-toolbar__title {
+        width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .catalog-toolbar__description {
+        width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
     .catalog-toolbar__controls {
-        flex-wrap: wrap;
+        align-items: stretch;
+        flex-direction: column;
     }
 
     .catalog-toolbar__search {
-        flex-basis: 100%;
+        flex: none;
+
+        width: 100%;
+        min-width: 0;
+    }
+
+    .catalog-toolbar__actions {
+        display: grid;
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(0, 1fr)
+            );
+
+        width: 100%;
+    }
+
+    .catalog-toolbar__button {
+        width: 100%;
+        min-width: 0;
+        padding:
+            0
+            10px;
     }
 
 }
@@ -238,15 +282,37 @@
 @media (max-width: 520px) {
 
     .catalog-toolbar {
-        padding: 14px;
+        padding:
+            12px;
+    }
+
+    .catalog-toolbar__title {
+        font-size:
+            var(--font-size-lg);
+    }
+
+    .catalog-toolbar__actions {
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(0, 1fr)
+            );
+
+        gap: 7px;
     }
 
     .catalog-toolbar__button {
-        flex: 1;
+        min-height: 42px;
+
+        font-size: 13px;
     }
 
-    .catalog-toolbar__button span:not(:first-child) {
-        display: none;
+    .catalog-toolbar__button span:not(
+        [aria-hidden="true"]
+    ) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
 }

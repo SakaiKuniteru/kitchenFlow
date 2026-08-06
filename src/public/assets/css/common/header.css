@@ -478,3 +478,175 @@
     color: var(--color-text-muted);
     font-size: 22px;
 }
+
+/* =========================================================
+   Lỗi từng trường trong hồ sơ nhân viên
+   ========================================================= */
+
+.employee-profile-form
+.form-field {
+    min-width: 0;
+}
+
+.employee-profile-form
+.form-field.is-invalid
+.form-input {
+    border-color: var(--color-danger);
+    background: var(--color-danger-soft);
+    box-shadow:
+        0 0 0 3px
+        rgba(220, 38, 38, 0.08);
+}
+
+.employee-profile-form
+.form-field.is-invalid
+.form-input:focus {
+    border-color: var(--color-danger);
+    box-shadow:
+        0 0 0 3px
+        rgba(220, 38, 38, 0.12);
+}
+
+
+/* Date picker */
+
+.employee-profile-form
+.form-field.is-invalid
+.date-picker__input {
+    border-color: var(--color-danger);
+    background: var(--color-danger-soft);
+}
+
+.employee-profile-form
+.form-field.is-invalid
+.date-picker__toggle {
+    color: var(--color-danger);
+}
+
+
+/* Smart select */
+
+.employee-profile-form
+.smart-select.is-invalid
+.smart-select__control,
+.employee-profile-form
+.form-field.is-invalid
+.smart-select__control {
+    border-color: var(--color-danger);
+    background: var(--color-danger-soft);
+    box-shadow:
+        0 0 0 3px
+        rgba(220, 38, 38, 0.08);
+}
+
+.employee-profile-form
+.smart-select.is-invalid
+.smart-select__toggle,
+.employee-profile-form
+.form-field.is-invalid
+.smart-select__toggle {
+    color: var(--color-danger);
+}
+
+
+/* Nội dung lỗi */
+
+.employee-profile-form
+.form-field__error {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+
+    min-height: 18px;
+    margin-top: 7px;
+
+    color: var(--color-danger);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.employee-profile-form
+.form-field__error[hidden] {
+    display: none !important;
+}
+
+.employee-profile-form
+.form-field__error::before {
+    content: "!";
+
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+
+    border-radius: 50%;
+
+    color: #ffffff;
+    background: var(--color-danger);
+
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+
+/* Lỗi ảnh */
+
+.employee-profile__avatar-section.is-invalid
+.employee-profile__avatar {
+    border-color: var(--color-danger);
+    box-shadow:
+        0 0 0 4px
+        rgba(220, 38, 38, 0.1);
+}
+
+
+/* Lỗi hệ thống không thuộc trường nào */
+
+.employee-profile__message {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+
+    margin-top: 4px;
+    padding: 11px 13px;
+
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+
+    color: #b91c1c;
+    background: #fef2f2;
+
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.employee-profile__message[hidden] {
+    display: none !important;
+}
+
+.employee-profile__message::before {
+    content: "!";
+
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+
+    width: 18px;
+    height: 18px;
+
+    border-radius: 50%;
+
+    color: #ffffff;
+    background: #dc2626;
+
+    font-size: 11px;
+    font-weight: 800;
+}

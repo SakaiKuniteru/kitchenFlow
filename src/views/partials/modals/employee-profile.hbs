@@ -50,7 +50,7 @@
 
             <div class="modal__body">
 
-                <div class="employee-profile__avatar-section">
+                <div class="employee-profile__avatar-section" data-form-field="anhDaiDien">
 
                     <label
                         class="employee-profile__avatar-picker"
@@ -105,6 +105,13 @@
                         Nhấn vào ảnh để thay đổi
                     </span>
 
+                    <small
+                        id="anhDaiDienError"
+                        class="form-field__error"
+                        data-field-error="anhDaiDien"
+                        hidden>
+                    </small>
+
                 </div>
 
                 <div class="employee-profile__grid">
@@ -123,45 +130,90 @@
 
                     </div>
 
-                    <div class="form-field">
+                    <div
+                        class="form-field"
+                        data-form-field="hoTen">
 
-                        <label class="form-field__label">
+                        <label
+                            for="employeeHoTen"
+                            class="form-field__label">
+
                             Họ tên
+
                         </label>
 
                         <input
                             type="text"
+                            id="employeeHoTen"
                             name="hoTen"
                             class="form-input"
-                            maxlength="255">
+                            maxlength="255"
+                            autocomplete="name">
+
+                        <small
+                            id="hoTenError"
+                            class="form-field__error"
+                            data-field-error="hoTen"
+                            hidden>
+                        </small>
 
                     </div>
 
-                    <div class="form-field">
+                    <div
+                        class="form-field"
+                        data-form-field="email">
 
-                        <label class="form-field__label">
+                        <label
+                            for="employeeEmail"
+                            class="form-field__label">
+
                             Email
+
                         </label>
 
                         <input
                             type="email"
+                            id="employeeEmail"
                             name="email"
                             class="form-input"
-                            maxlength="255">
+                            maxlength="255"
+                            autocomplete="email">
+
+                        <small
+                            id="emailError"
+                            class="form-field__error"
+                            data-field-error="email"
+                            hidden>
+                        </small>
 
                     </div>
 
-                    <div class="form-field">
+                    <div
+                        class="form-field"
+                        data-form-field="soDienThoai">
 
-                        <label class="form-field__label">
+                        <label
+                            for="employeeSoDienThoai"
+                            class="form-field__label">
+
                             Số điện thoại
+
                         </label>
 
                         <input
-                            type="text"
+                            type="tel"
+                            id="employeeSoDienThoai"
                             name="soDienThoai"
                             class="form-input"
-                            maxlength="20">
+                            maxlength="20"
+                            autocomplete="tel">
+
+                        <small
+                            id="soDienThoaiError"
+                            class="form-field__error"
+                            data-field-error="soDienThoai"
+                            hidden>
+                        </small>
 
                     </div>
 
@@ -250,25 +302,46 @@
                         disabled=true
                     }}
 
-                    <div class="form-field employee-profile__full-width">
+                <div
+                    class="
+                        form-field
+                        employee-profile__full-width
+                    "
+                    data-form-field="diaChi">
 
-                        <label class="form-field__label">
-                            Địa chỉ
-                        </label>
+                    <label
+                        for="employeeDiaChi"
+                        class="form-field__label">
 
-                        <textarea
-                            name="diaChi"
-                            class="form-input employee-profile__textarea"
-                            maxlength="500">
-                        </textarea>
+                        Địa chỉ
 
-                    </div>
+                    </label>
+
+                    <textarea
+                        id="employeeDiaChi"
+                        name="diaChi"
+                        class="
+                            form-input
+                            employee-profile__textarea
+                        "
+                        maxlength="500">
+                    </textarea>
+
+                    <small
+                        id="diaChiError"
+                        class="form-field__error"
+                        data-field-error="diaChi"
+                        hidden>
+                    </small>
+
+                </div>
 
                 </div>
 
                 <div
                     class="employee-profile__message"
                     data-employee-profile-message
+                    role="alert"
                     hidden>
                 </div>
 

@@ -1,25 +1,14 @@
-/* =========================================================
-   MCS KITCHENFLOW
-   Trang chủ - Dashboard
-   ========================================================= */
-
-
-/* =========================================================
-   Khung trang chủ
-   ========================================================= */
-
 .home-page {
     display: flex;
     flex-direction: column;
     gap: 18px;
+
     width: 100%;
     min-width: 0;
+    max-width: none;
+
+    margin: 0;
 }
-
-
-/* =========================================================
-   Phần chào mừng
-   ========================================================= */
 
 .home-page__header {
     display: flex;
@@ -99,11 +88,6 @@
     text-align: right;
 }
 
-
-/* =========================================================
-   Các thẻ thống kê
-   ========================================================= */
-
 .home-summary {
     display: grid;
     grid-template-columns:
@@ -111,7 +95,11 @@
             4,
             minmax(0, 1fr)
         );
+
     gap: 16px;
+
+    width: 100%;
+    min-width: 0;
 }
 
 .home-summary-card {
@@ -224,17 +212,15 @@
     transform: translateX(3px);
 }
 
-
-/* =========================================================
-   Khối nội dung chính
-   ========================================================= */
-
 .home-content-grid {
     display: grid;
     grid-template-columns:
         minmax(0, 1.45fr)
         minmax(330px, 0.75fr);
+
     gap: 16px;
+
+    width: 100%;
     min-width: 0;
 }
 
@@ -270,11 +256,6 @@
     color: var(--color-text-primary);
     font-size: var(--font-size-lg);
 }
-
-
-/* =========================================================
-   Danh mục truy cập nhanh
-   ========================================================= */
 
 .home-quick-links {
     display: grid;
@@ -354,11 +335,6 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
 }
-
-
-/* =========================================================
-   Thông tin tài khoản
-   ========================================================= */
 
 .home-profile {
     display: flex;
@@ -471,11 +447,6 @@
     background: var(--color-primary);
 }
 
-
-/* =========================================================
-   Thông tin hệ thống
-   ========================================================= */
-
 .home-system-information {
     display: flex;
     align-items: center;
@@ -537,11 +508,6 @@
     font-size: var(--font-size-sm);
 }
 
-
-/* =========================================================
-   Trạng thái tải dữ liệu
-   ========================================================= */
-
 .home-summary-card.is-loading
 .home-summary-card__value {
     width: 62px;
@@ -571,11 +537,6 @@
     }
 
 }
-
-
-/* =========================================================
-   Responsive
-   ========================================================= */
 
 @media (max-width: 1280px) {
 

@@ -175,11 +175,47 @@ document.addEventListener(
 
         };
 
+        const PROFILE_FIELD_LABELS = {
+
+            hoTen:
+                "Họ tên",
+
+            email:
+                "Email",
+
+            soDienThoai:
+                "Số điện thoại",
+
+            ngaySinh:
+                "Ngày sinh",
+
+            gioiTinh:
+                "Giới tính",
+
+            quocGiaId:
+                "Quốc gia",
+
+            tinhThanhId:
+                "Tỉnh thành",
+
+            xaPhuongId:
+                "Xã/phường",
+
+            diaChi:
+                "Địa chỉ",
+
+            anhDaiDien:
+                "Ảnh đại diện"
+
+        };
+
         let avatarPreviewUrl = null;
 
         async function initialize() {
 
             initializeAddressSmartSelects();
+
+            initializeProfileFieldValidation();
 
             bindEvents();
 
@@ -521,6 +557,13 @@ document.addEventListener(
         ) {
 
             event.preventDefault();
+            
+            const formValid =
+                validateEmployeeProfileForm();
+
+            if (!formValid) {
+                return;
+            }
 
             const form =
                 elements.profileForm;
@@ -681,10 +724,19 @@ document.addEventListener(
 
             } catch (error) {
 
-                setProfileMessage(
-                    error.message ||
-                    "Không thể cập nhật thông tin nhân viên."
-                );
+                const handled =
+                    applyProfileApiErrors(
+                        error
+                    );
+
+                if (!handled) {
+
+                    setProfileMessage(
+                        error.message ||
+                        "Không thể cập nhật thông tin nhân viên."
+                    );
+
+                }
 
             } finally {
 
@@ -772,11 +824,372 @@ document.addEventListener(
                 error.status =
                     response.status;
 
+                error.data =
+                    result?.data;
+
+                error.errors =
+                    result?.errors ||
+                    result?.data?.errors ||
+                    null;
+
+                error.responseData =
+                    result;
+
                 throw error;
 
             }
 
             return result;
+
+        }
+
+        function applyProfileApiErrors(
+            error
+        ) {
+
+            clearAllProfileErrors();
+
+            const fieldErrors =
+                extractProfileApiFieldErrors(
+                    error
+                );
+
+            const entries =
+                Object.entries(
+                    fieldErrors
+                );
+
+            if (!entries.length) {
+                return false;
+            }
+
+            entries.forEach(
+                ([
+                    fieldName,
+                    message
+                ]) => {
+
+                    setProfileFieldError(
+                        fieldName,
+                        message
+                    );
+
+                }
+            );
+
+            focusFirstProfileError();
+
+            return true;
+
+        }
+
+        function extractProfileApiFieldErrors(
+            error
+        ) {
+
+            const errors = {};
+
+            const responseErrors =
+                error?.data?.errors ||
+                error?.errors ||
+                error?.response?.data?.errors;
+
+            if (
+                responseErrors &&
+                typeof responseErrors ===
+                    "object" &&
+                !Array.isArray(
+                    responseErrors
+                )
+            ) {
+
+                Object.entries(
+                    responseErrors
+                ).forEach(
+                    ([
+                        fieldName,
+                        message
+                    ]) => {
+
+                        const normalizedField =
+                            normalizeProfileFieldName(
+                                fieldName
+                            );
+
+                        if (
+                            normalizedField &&
+                            message
+                        ) {
+
+                            errors[normalizedField] =
+                                Array.isArray(message)
+                                    ? message.join(" ")
+                                    : String(message);
+
+                        }
+
+                    }
+                );
+
+            }
+
+            const message =
+                String(
+                    error?.message || ""
+                ).trim();
+
+            if (!message) {
+                return errors;
+            }
+
+            const messageParts =
+                message
+                    .split(
+                        /,|\n|;/
+                    )
+                    .map(
+                        item =>
+                            item.trim()
+                    )
+                    .filter(Boolean);
+
+            messageParts.forEach(
+                part => {
+
+                    const fieldName =
+                        detectProfileFieldFromMessage(
+                            part
+                        );
+
+                    if (
+                        fieldName &&
+                        !errors[fieldName]
+                    ) {
+
+                        errors[fieldName] =
+                            normalizeProfileErrorMessage(
+                                fieldName,
+                                part
+                            );
+
+                    }
+
+                }
+            );
+
+            return errors;
+
+        }
+
+        function normalizeProfileFieldName(
+            fieldName
+        ) {
+
+            const normalized =
+                String(fieldName || "")
+                    .trim()
+                    .toLowerCase()
+                    .replace(
+                        /[_\-\s]/g,
+                        ""
+                    );
+
+            const fieldMap = {
+
+                hoten:
+                    "hoTen",
+
+                email:
+                    "email",
+
+                sodienthoai:
+                    "soDienThoai",
+
+                ngaysinh:
+                    "ngaySinh",
+
+                gioitinh:
+                    "gioiTinh",
+
+                quocgiaid:
+                    "quocGiaId",
+
+                tinhthanhid:
+                    "tinhThanhId",
+
+                xaphuongid:
+                    "xaPhuongId",
+
+                diachi:
+                    "diaChi",
+
+                anhdaidien:
+                    "anhDaiDien"
+
+            };
+
+            return fieldMap[normalized] || null;
+
+        }
+
+        function detectProfileFieldFromMessage(
+            message
+        ) {
+
+            const normalized =
+                normalizeSearchText(
+                    message
+                );
+
+            if (
+                normalized.includes(
+                    "ho ten"
+                )
+            ) {
+                return "hoTen";
+            }
+
+            if (
+                normalized.includes(
+                    "email"
+                )
+            ) {
+                return "email";
+            }
+
+            if (
+                normalized.includes(
+                    "so dien thoai"
+                ) ||
+                normalized.includes(
+                    "dien thoai"
+                )
+            ) {
+                return "soDienThoai";
+            }
+
+            if (
+                normalized.includes(
+                    "ngay sinh"
+                )
+            ) {
+                return "ngaySinh";
+            }
+
+            if (
+                normalized.includes(
+                    "gioi tinh"
+                )
+            ) {
+                return "gioiTinh";
+            }
+
+            if (
+                normalized.includes(
+                    "quoc gia"
+                )
+            ) {
+                return "quocGiaId";
+            }
+
+            if (
+                normalized.includes(
+                    "tinh/thanh"
+                ) ||
+                normalized.includes(
+                    "tinh thanh"
+                ) ||
+                normalized.includes(
+                    "tinh/thanh pho"
+                )
+            ) {
+                return "tinhThanhId";
+            }
+
+            if (
+                normalized.includes(
+                    "xa/phuong"
+                ) ||
+                normalized.includes(
+                    "xa phuong"
+                )
+            ) {
+                return "xaPhuongId";
+            }
+
+            if (
+                normalized.includes(
+                    "dia chi"
+                )
+            ) {
+                return "diaChi";
+            }
+
+            if (
+                normalized.includes(
+                    "anh dai dien"
+                ) ||
+                normalized.includes(
+                    "jpg"
+                ) ||
+                normalized.includes(
+                    "png"
+                ) ||
+                normalized.includes(
+                    "webp"
+                )
+            ) {
+                return "anhDaiDien";
+            }
+
+            return null;
+
+        }
+
+        function normalizeProfileErrorMessage(
+            fieldName,
+            message
+        ) {
+
+            const normalized =
+                normalizeSearchText(
+                    message
+                );
+
+            if (
+                fieldName === "quocGiaId" &&
+                normalized.includes(
+                    "phai la so"
+                )
+            ) {
+
+                return "Vui lòng chọn quốc gia hợp lệ.";
+
+            }
+
+            if (
+                fieldName === "tinhThanhId" &&
+                normalized.includes(
+                    "phai la so"
+                )
+            ) {
+
+                return "Vui lòng chọn tỉnh thành hợp lệ.";
+
+            }
+
+            if (
+                fieldName === "xaPhuongId" &&
+                normalized.includes(
+                    "phai la so"
+                )
+            ) {
+
+                return "Vui lòng chọn xã/phường hợp lệ.";
+
+            }
+
+            return message;
 
         }
 
@@ -918,6 +1331,98 @@ document.addEventListener(
             );
 
         }
+
+        function initializeProfileFieldValidation() {
+
+            const form =
+                elements.profileForm;
+
+            if (!form) {
+                return;
+            }
+
+            form.addEventListener(
+                "input",
+                event => {
+
+                    const fieldName =
+                        getProfileFieldNameFromTarget(
+                            event.target
+                        );
+
+                    if (fieldName) {
+
+                        clearProfileFieldError(
+                            fieldName
+                        );
+
+                    }
+
+                }
+            );
+
+            form.addEventListener(
+                "change",
+                event => {
+
+                    const fieldName =
+                        getProfileFieldNameFromTarget(
+                            event.target
+                        );
+
+                    if (fieldName) {
+
+                        clearProfileFieldError(
+                            fieldName
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+function getProfileFieldNameFromTarget(
+    target
+) {
+
+    if (
+        !(target instanceof Element)
+    ) {
+        return null;
+    }
+
+    if (
+        target.matches(
+            "[data-date-input]"
+        )
+    ) {
+
+        return target.closest(
+            "[data-form-field]"
+        )?.dataset.formField || null;
+
+    }
+
+    const namedField =
+        target.closest(
+            "[name]"
+        );
+
+    if (
+        namedField?.name
+    ) {
+
+        return namedField.name;
+
+    }
+
+    return target.closest(
+        "[data-form-field]"
+    )?.dataset.formField || null;
+
+}
 
         function getProvinceCountryId(
             province
@@ -2010,7 +2515,8 @@ document.addEventListener(
                 event.target.value =
                     "";
 
-                setProfileMessage(
+                setProfileFieldError(
+                    "anhDaiDien",
                     "Ảnh đại diện chỉ hỗ trợ JPG, PNG hoặc WEBP."
                 );
 
@@ -2028,7 +2534,8 @@ document.addEventListener(
                 event.target.value =
                     "";
 
-                setProfileMessage(
+                setProfileFieldError(
+                    "anhDaiDien",
                     "Ảnh đại diện không được vượt quá 5 MB."
                 );
 
@@ -2036,7 +2543,9 @@ document.addEventListener(
 
             }
 
-            setProfileMessage("");
+            clearProfileFieldError(
+                "anhDaiDien"
+            );
 
             if (avatarPreviewUrl) {
 
@@ -2113,21 +2622,21 @@ document.addEventListener(
             setFormValue(
                 form,
                 "coSo",
-                employee.coSo?.tenCoSo ||
+                employee.coSo?.ten ||
                 ""
             );
 
             setFormValue(
                 form,
                 "phongBan",
-                employee.phongBan?.tenPhongBan ||
+                employee.phongBan?.ten ||
                 ""
             );
 
             setFormValue(
                 form,
                 "chucVu",
-                employee.chucVu?.tenChucVu ||
+                employee.chucVu?.ten ||
                 ""
             );
 
@@ -2726,6 +3235,603 @@ document.addEventListener(
             container.appendChild(
                 image
             );
+
+        }
+
+        function setProfileFieldError(
+            fieldName,
+            message
+        ) {
+
+            const form =
+                elements.profileForm;
+
+            if (!form) {
+                return;
+            }
+
+            const fieldContainer =
+                form.querySelector(
+                    `[data-form-field="${fieldName}"]`
+                );
+
+            const errorElement =
+                form.querySelector(
+                    `[data-field-error="${fieldName}"]`
+                );
+
+            const field =
+                form.elements.namedItem(
+                    fieldName
+                );
+
+            fieldContainer?.classList.add(
+                "is-invalid"
+            );
+
+            if (field) {
+
+                field.setAttribute(
+                    "aria-invalid",
+                    "true"
+                );
+
+                field.setAttribute(
+                    "aria-describedby",
+                    `${fieldName}Error`
+                );
+
+            }
+
+            /*
+            * Date picker dùng input hiển thị riêng.
+            */
+            const dateInput =
+                fieldContainer?.querySelector(
+                    "[data-date-input]"
+                );
+
+            if (dateInput) {
+
+                dateInput.setAttribute(
+                    "aria-invalid",
+                    "true"
+                );
+
+                dateInput.setAttribute(
+                    "aria-describedby",
+                    `${fieldName}Error`
+                );
+
+            }
+
+            /*
+            * Smart select dùng control riêng.
+            */
+            const smartSelect =
+                fieldContainer?.querySelector(
+                    "[data-smart-select]"
+                );
+
+            const smartSelectControl =
+                smartSelect?.querySelector(
+                    "[data-smart-select-control]"
+                );
+
+            if (smartSelect) {
+
+                smartSelect.classList.add(
+                    "is-invalid"
+                );
+
+            }
+
+            if (smartSelectControl) {
+
+                smartSelectControl.setAttribute(
+                    "aria-invalid",
+                    "true"
+                );
+
+                smartSelectControl.setAttribute(
+                    "aria-describedby",
+                    `${fieldName}Error`
+                );
+
+            }
+
+            if (errorElement) {
+
+                errorElement.id =
+                    `${fieldName}Error`;
+
+                errorElement.textContent =
+                    message;
+
+                errorElement.hidden =
+                    false;
+
+            }
+
+        }
+
+        function clearProfileFieldError(
+            fieldName
+        ) {
+
+            const form =
+                elements.profileForm;
+
+            if (!form) {
+                return;
+            }
+
+            const fieldContainer =
+                form.querySelector(
+                    `[data-form-field="${fieldName}"]`
+                );
+
+            const errorElement =
+                form.querySelector(
+                    `[data-field-error="${fieldName}"]`
+                );
+
+            const field =
+                form.elements.namedItem(
+                    fieldName
+                );
+
+            fieldContainer?.classList.remove(
+                "is-invalid"
+            );
+
+            field?.removeAttribute(
+                "aria-invalid"
+            );
+
+            field?.removeAttribute(
+                "aria-describedby"
+            );
+
+            const dateInput =
+                fieldContainer?.querySelector(
+                    "[data-date-input]"
+                );
+
+            dateInput?.removeAttribute(
+                "aria-invalid"
+            );
+
+            dateInput?.removeAttribute(
+                "aria-describedby"
+            );
+
+            const smartSelect =
+                fieldContainer?.querySelector(
+                    "[data-smart-select]"
+                );
+
+            const smartSelectControl =
+                smartSelect?.querySelector(
+                    "[data-smart-select-control]"
+                );
+
+            smartSelect?.classList.remove(
+                "is-invalid"
+            );
+
+            smartSelectControl?.removeAttribute(
+                "aria-invalid"
+            );
+
+            smartSelectControl?.removeAttribute(
+                "aria-describedby"
+            );
+
+            if (errorElement) {
+
+                errorElement.textContent =
+                    "";
+
+                errorElement.hidden =
+                    true;
+
+            }
+
+        }
+
+        function clearAllProfileErrors() {
+
+            Object.keys(
+                PROFILE_FIELD_LABELS
+            ).forEach(
+                fieldName => {
+
+                    clearProfileFieldError(
+                        fieldName
+                    );
+
+                }
+            );
+
+            setProfileMessage("");
+
+        }
+
+        function validateEmployeeProfileForm() {
+
+            const form =
+                elements.profileForm;
+
+            if (!form) {
+                return false;
+            }
+
+            clearAllProfileErrors();
+
+            let valid =
+                true;
+
+            const hoTen =
+                String(
+                    form.elements.namedItem(
+                        "hoTen"
+                    )?.value || ""
+                ).trim();
+
+            const email =
+                String(
+                    form.elements.namedItem(
+                        "email"
+                    )?.value || ""
+                ).trim();
+
+            const soDienThoai =
+                String(
+                    form.elements.namedItem(
+                        "soDienThoai"
+                    )?.value || ""
+                ).trim();
+
+            const ngaySinh =
+                String(
+                    form.elements.namedItem(
+                        "ngaySinh"
+                    )?.value || ""
+                ).trim();
+
+            const gioiTinh =
+                String(
+                    form.elements.namedItem(
+                        "gioiTinh"
+                    )?.value || ""
+                ).trim();
+
+            const quocGiaId =
+                String(
+                    form.elements.namedItem(
+                        "quocGiaId"
+                    )?.value || ""
+                ).trim();
+
+            const tinhThanhId =
+                String(
+                    form.elements.namedItem(
+                        "tinhThanhId"
+                    )?.value || ""
+                ).trim();
+
+            const xaPhuongId =
+                String(
+                    form.elements.namedItem(
+                        "xaPhuongId"
+                    )?.value || ""
+                ).trim();
+
+
+            if (!hoTen) {
+
+                setProfileFieldError(
+                    "hoTen",
+                    "Vui lòng nhập họ tên."
+                );
+
+                valid =
+                    false;
+
+            } else if (
+                hoTen.length < 2
+            ) {
+
+                setProfileFieldError(
+                    "hoTen",
+                    "Họ tên phải có ít nhất 2 ký tự."
+                );
+
+                valid =
+                    false;
+
+            } else if (
+                hoTen.length > 255
+            ) {
+
+                setProfileFieldError(
+                    "hoTen",
+                    "Họ tên không được vượt quá 255 ký tự."
+                );
+
+                valid =
+                    false;
+
+            }
+
+
+            if (!email) {
+
+                setProfileFieldError(
+                    "email",
+                    "Vui lòng nhập email."
+                );
+
+                valid =
+                    false;
+
+            } else if (
+                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+                    email
+                )
+            ) {
+
+                setProfileFieldError(
+                    "email",
+                    "Email không đúng định dạng."
+                );
+
+                valid =
+                    false;
+
+            }
+
+
+            if (!soDienThoai) {
+
+                setProfileFieldError(
+                    "soDienThoai",
+                    "Vui lòng nhập số điện thoại."
+                );
+
+                valid =
+                    false;
+
+            } else if (
+                !/^(0|\+84)[0-9]{8,10}$/.test(
+                    soDienThoai.replace(
+                        /[\s.-]/g,
+                        ""
+                    )
+                )
+            ) {
+
+                setProfileFieldError(
+                    "soDienThoai",
+                    "Số điện thoại không đúng định dạng."
+                );
+
+                valid =
+                    false;
+
+            }
+
+            if (!ngaySinh) {
+
+                setProfileFieldError(
+                    "ngaySinh",
+                    "Vui lòng chọn ngày sinh."
+                );
+
+                valid =
+                    false;
+
+            } else if (
+                !isValidDatabaseDate(
+                    ngaySinh
+                )
+            ) {
+
+                setProfileFieldError(
+                    "ngaySinh",
+                    "Ngày sinh không hợp lệ."
+                );
+
+                valid =
+                    false;
+
+            }
+
+            if (
+                gioiTinh &&
+                !["0", "1", "2"].includes(
+                    gioiTinh
+                )
+            ) {
+
+                setProfileFieldError(
+                    "gioiTinh",
+                    "Giới tính không hợp lệ."
+                );
+
+                valid =
+                    false;
+
+            }
+
+
+            if (!quocGiaId) {
+
+                setProfileFieldError(
+                    "quocGiaId",
+                    "Vui lòng chọn quốc gia."
+                );
+
+                valid =
+                    false;
+
+            } else if (
+                !toPositiveInteger(
+                    quocGiaId
+                )
+            ) {
+
+                setProfileFieldError(
+                    "quocGiaId",
+                    "Quốc gia không hợp lệ."
+                );
+
+                valid =
+                    false;
+
+            }
+
+
+            if (!tinhThanhId) {
+
+                setProfileFieldError(
+                    "tinhThanhId",
+                    "Vui lòng chọn tỉnh thành."
+                );
+
+                valid =
+                    false;
+
+            } else if (
+                !toPositiveInteger(
+                    tinhThanhId
+                )
+            ) {
+
+                setProfileFieldError(
+                    "tinhThanhId",
+                    "Tỉnh thành không hợp lệ."
+                );
+
+                valid =
+                    false;
+
+            }
+
+
+            if (!xaPhuongId) {
+
+                setProfileFieldError(
+                    "xaPhuongId",
+                    "Vui lòng chọn xã/phường."
+                );
+
+                valid =
+                    false;
+
+            } else if (
+                !toPositiveInteger(
+                    xaPhuongId
+                )
+            ) {
+
+                setProfileFieldError(
+                    "xaPhuongId",
+                    "Xã/phường không hợp lệ."
+                );
+
+                valid =
+                    false;
+
+            }
+
+
+            if (!valid) {
+
+                focusFirstProfileError();
+
+            }
+
+            return valid;
+
+        }
+
+        function isValidDatabaseDate(
+            value
+        ) {
+
+            const match =
+                String(value).match(
+                    /^(\d{4})-(\d{2})-(\d{2})$/
+                );
+
+            if (!match) {
+                return false;
+            }
+
+            const year =
+                Number(match[1]);
+
+            const month =
+                Number(match[2]);
+
+            const day =
+                Number(match[3]);
+
+            const date =
+                new Date(
+                    year,
+                    month - 1,
+                    day
+                );
+
+            return (
+                date.getFullYear() === year &&
+                date.getMonth() === month - 1 &&
+                date.getDate() === day
+            );
+
+        }
+
+        function focusFirstProfileError() {
+
+            const form =
+                elements.profileForm;
+
+            const invalidContainer =
+                form?.querySelector(
+                    ".form-field.is-invalid"
+                );
+
+            if (!invalidContainer) {
+                return;
+            }
+
+            const focusable =
+                invalidContainer.querySelector(
+                    [
+                        "[data-date-input]",
+                        "[data-smart-select-search]",
+                        "input:not([type='hidden']):not([disabled])",
+                        "select:not([disabled])",
+                        "textarea:not([disabled])",
+                        "button:not([disabled])"
+                    ].join(",")
+                );
+
+            focusable?.focus({
+                preventScroll:
+                    false
+            });
+
+            invalidContainer.scrollIntoView({
+                behavior:
+                    "smooth",
+
+                block:
+                    "center"
+            });
 
         }
 

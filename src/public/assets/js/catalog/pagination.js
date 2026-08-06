@@ -17,13 +17,16 @@ class MCSPagination {
     ) {
 
         this.root =
-            typeof root === "string"
+            typeof root ===
+                "string"
                 ? document.querySelector(
                     root
                 )
                 : root;
 
+
         this.options = {
+
             page:
                 1,
 
@@ -33,14 +36,13 @@ class MCSPagination {
             total:
                 0,
 
-            maxVisiblePages:
-                5,
-
             onChange:
                 null,
 
             ...options
+
         };
+
 
         this.elements = {
 
@@ -59,14 +61,19 @@ class MCSPagination {
                     "[data-pagination-total]"
                 ),
 
+            currentPage:
+                this.root?.querySelector(
+                    "[data-pagination-current-page]"
+                ),
+
+            totalPages:
+                this.root?.querySelector(
+                    "[data-pagination-total-pages]"
+                ),
+
             pageSize:
                 this.root?.querySelector(
                     "[data-pagination-size]"
-                ),
-
-            pages:
-                this.root?.querySelector(
-                    "[data-pagination-pages]"
                 ),
 
             first:
@@ -91,6 +98,7 @@ class MCSPagination {
 
         };
 
+
         if (
             this.elements.pageSize
         ) {
@@ -101,6 +109,7 @@ class MCSPagination {
                 );
 
         }
+
 
         this.bindEvents();
 
@@ -114,76 +123,88 @@ class MCSPagination {
         this.elements.first
             ?.addEventListener(
                 "click",
-                () =>
-                    this.goTo(1)
+                () => {
+
+                    this.goTo(
+                        1
+                    );
+
+                }
             );
+
 
         this.elements.previous
             ?.addEventListener(
                 "click",
-                () =>
+                () => {
+
                     this.goTo(
-                        this.options.page - 1
-                    )
+                        this.options.page -
+                        1
+                    );
+
+                }
             );
+
 
         this.elements.next
             ?.addEventListener(
                 "click",
-                () =>
+                () => {
+
                     this.goTo(
-                        this.options.page + 1
-                    )
+                        this.options.page +
+                        1
+                    );
+
+                }
             );
+
 
         this.elements.last
             ?.addEventListener(
                 "click",
-                () =>
+                () => {
+
                     this.goTo(
                         this.totalPages
-                    )
+                    );
+
+                }
             );
+
 
         this.elements.pageSize
             ?.addEventListener(
                 "change",
                 event => {
 
-                    this.options.pageSize =
+                    const pageSize =
                         Number(
                             event.target.value
                         );
 
+
+                    if (
+                        !Number.isFinite(
+                            pageSize
+                        ) ||
+                        pageSize <= 0
+                    ) {
+                        return;
+                    }
+
+
+                    this.options.pageSize =
+                        pageSize;
+
                     this.options.page =
                         1;
+
 
                     this.render();
 
                     this.emitChange();
-
-                }
-            );
-
-        this.elements.pages
-            ?.addEventListener(
-                "click",
-                event => {
-
-                    const button =
-                        event.target.closest(
-                            "[data-page]"
-                        );
-
-                    if (!button) {
-                        return;
-                    }
-
-                    this.goTo(
-                        Number(
-                            button.dataset.page
-                        )
-                    );
 
                 }
             );
@@ -217,10 +238,11 @@ class MCSPagination {
             this.options.page =
                 Math.max(
                     1,
-                    Number(page)
+                    Number(page) || 1
                 );
 
         }
+
 
         if (
             pageSize !== undefined
@@ -229,10 +251,11 @@ class MCSPagination {
             this.options.pageSize =
                 Math.max(
                     1,
-                    Number(pageSize)
+                    Number(pageSize) || 20
                 );
 
         }
+
 
         if (
             total !== undefined
@@ -241,10 +264,11 @@ class MCSPagination {
             this.options.total =
                 Math.max(
                     0,
-                    Number(total)
+                    Number(total) || 0
                 );
 
         }
+
 
         if (
             this.options.page >
@@ -256,6 +280,7 @@ class MCSPagination {
 
         }
 
+
         this.render();
 
     }
@@ -264,6 +289,7 @@ class MCSPagination {
     getState() {
 
         return {
+
             page:
                 this.options.page,
 
@@ -275,21 +301,25 @@ class MCSPagination {
 
             totalPages:
                 this.totalPages
+
         };
 
     }
 
 
-    goTo(page) {
+    goTo(
+        page
+    ) {
 
         const target =
             Math.min(
                 this.totalPages,
                 Math.max(
                     1,
-                    Number(page)
+                    Number(page) || 1
                 )
             );
+
 
         if (
             target ===
@@ -298,8 +328,10 @@ class MCSPagination {
             return;
         }
 
+
         this.options.page =
             target;
+
 
         this.render();
 
@@ -323,6 +355,7 @@ class MCSPagination {
             return;
         }
 
+
         const total =
             this.options.total;
 
@@ -332,266 +365,154 @@ class MCSPagination {
         const pageSize =
             this.options.pageSize;
 
+
         const from =
             total === 0
                 ? 0
                 : (
-                    (page - 1) *
+                    (
+                        page -
+                        1
+                    ) *
                     pageSize +
                     1
                 );
 
+
         const to =
             Math.min(
                 total,
-                page * pageSize
+                page *
+                pageSize
             );
 
-        if (this.elements.from) {
+
+        const numberFormatter =
+            new Intl.NumberFormat(
+                "vi-VN"
+            );
+
+
+        if (
+            this.elements.from
+        ) {
 
             this.elements.from.textContent =
-                from;
+                numberFormatter.format(
+                    from
+                );
 
         }
 
-        if (this.elements.to) {
+
+        if (
+            this.elements.to
+        ) {
 
             this.elements.to.textContent =
-                to;
+                numberFormatter.format(
+                    to
+                );
 
         }
 
-        if (this.elements.total) {
+
+        if (
+            this.elements.total
+        ) {
 
             this.elements.total.textContent =
-                new Intl
-                    .NumberFormat(
-                        "vi-VN"
-                    )
-                    .format(total);
+                numberFormatter.format(
+                    total
+                );
 
         }
+
+
+        if (
+            this.elements.currentPage
+        ) {
+
+            this.elements.currentPage
+                .textContent =
+                numberFormatter.format(
+                    page
+                );
+
+        }
+
+
+        if (
+            this.elements.totalPages
+        ) {
+
+            this.elements.totalPages
+                .textContent =
+                numberFormatter.format(
+                    this.totalPages
+                );
+
+        }
+
 
         if (
             this.elements.pageSize
         ) {
 
             this.elements.pageSize.value =
-                String(pageSize);
+                String(
+                    pageSize
+                );
 
         }
 
-        if (this.elements.first) {
 
-            this.elements.first.disabled =
-                page <= 1;
+        const isFirstPage =
+            page <= 1;
 
-        }
-
-        if (this.elements.previous) {
-
-            this.elements.previous.disabled =
-                page <= 1;
-
-        }
-
-        if (this.elements.next) {
-
-            this.elements.next.disabled =
-                page >= this.totalPages;
-
-        }
-
-        if (this.elements.last) {
-
-            this.elements.last.disabled =
-                page >= this.totalPages;
-
-        }
-
-        this.renderPages();
-
-    }
-
-
-    renderPages() {
-
-        if (!this.elements.pages) {
-            return;
-        }
-
-        this.elements.pages.innerHTML =
-            "";
-
-        const pages =
-            this.getVisiblePages();
-
-        pages.forEach(
-            item => {
-
-                if (
-                    item === "ellipsis"
-                ) {
-
-                    const ellipsis =
-                        document.createElement(
-                            "span"
-                        );
-
-                    ellipsis.className =
-                        "catalog-pagination__ellipsis";
-
-                    ellipsis.textContent =
-                        "…";
-
-                    this.elements.pages
-                        .appendChild(
-                            ellipsis
-                        );
-
-                    return;
-
-                }
-
-                const button =
-                    document.createElement(
-                        "button"
-                    );
-
-                button.type =
-                    "button";
-
-                button.className =
-                    "catalog-pagination__button";
-
-                button.dataset.page =
-                    item;
-
-                button.textContent =
-                    item;
-
-                if (
-                    item ===
-                    this.options.page
-                ) {
-
-                    button.classList.add(
-                        "is-active"
-                    );
-
-                    button.setAttribute(
-                        "aria-current",
-                        "page"
-                    );
-
-                }
-
-                this.elements.pages
-                    .appendChild(
-                        button
-                    );
-
-            }
-        );
-
-    }
-
-
-    getVisiblePages() {
-
-        const totalPages =
+        const isLastPage =
+            page >=
             this.totalPages;
 
-        const current =
-            this.options.page;
-
-        const maxVisible =
-            this.options
-                .maxVisiblePages;
 
         if (
-            totalPages <=
-            maxVisible + 2
+            this.elements.first
         ) {
 
-            return Array.from(
-                {
-                    length:
-                        totalPages
-                },
-                (
-                    _,
-                    index
-                ) =>
-                    index + 1
-            );
+            this.elements.first.disabled =
+                isFirstPage;
 
         }
 
-        const result =
-            [1];
-
-        const half =
-            Math.floor(
-                maxVisible / 2
-            );
-
-        let start =
-            Math.max(
-                2,
-                current - half
-            );
-
-        let end =
-            Math.min(
-                totalPages - 1,
-                start +
-                maxVisible -
-                1
-            );
-
-        start =
-            Math.max(
-                2,
-                end -
-                maxVisible +
-                1
-            );
-
-        if (start > 2) {
-
-            result.push(
-                "ellipsis"
-            );
-
-        }
-
-        for (
-            let page = start;
-            page <= end;
-            page += 1
-        ) {
-
-            result.push(page);
-
-        }
 
         if (
-            end <
-            totalPages - 1
+            this.elements.previous
         ) {
 
-            result.push(
-                "ellipsis"
-            );
+            this.elements.previous.disabled =
+                isFirstPage;
 
         }
 
-        result.push(
-            totalPages
-        );
 
-        return result;
+        if (
+            this.elements.next
+        ) {
+
+            this.elements.next.disabled =
+                isLastPage;
+
+        }
+
+
+        if (
+            this.elements.last
+        ) {
+
+            this.elements.last.disabled =
+                isLastPage;
+
+        }
 
     }
 
