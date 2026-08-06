@@ -42,6 +42,12 @@
         rel="stylesheet"
         href="/assets/css/common/loading.css">
 
+    <link rel="stylesheet" href="/assets/css/components/date-picker.css">
+
+    <link
+        rel="stylesheet"
+        href="/assets/css/components/smart-select.css">
+
 
     {{#if isCatalogPage}}
 
@@ -115,7 +121,8 @@
 
     {{> modals/change-password}}
 
-    {{> modals/employee-profile}}
+    {{> modals/employee-profile
+        formOptions=formOptions}}
 
 
     {{!-- ==================================================
@@ -123,6 +130,10 @@
          ================================================== --}}
 
     <script defer src="/assets/js/common/app.js"></script>
+    
+    <script defer src="/assets/js/components/date-picker.js"></script>
+
+    <script defer src="/assets/js/components/smart-select.js"></script>
     
     <script defer src="/assets/js/common/header.js"></script>
 

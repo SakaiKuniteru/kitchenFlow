@@ -207,234 +207,48 @@
 
                     </div>
 
-                    <div class="form-field">
+                    {{> forms/date
+                        id="ngaySinh"
+                        name="ngaySinh"
+                        label="Ngày sinh"
+                        placeholder="dd/mm/yyyy"
+                        required=false
+                    }}
 
-                        <label class="form-field__label">
-                            Ngày sinh
-                        </label>
+                    {{> forms/select
+                        id="gioiTinh"
+                        name="gioiTinh"
+                        label="Giới tính"
+                        mode="single"
+                        placeholder="Giới tính..."
+                        options=formOptions.gioiTinh
+                    }}
 
-                        <input
-                            type="date"
-                            name="ngaySinh"
-                            class="form-input">
+                    {{> forms/select
+                        id="quocGiaId"
+                        name="quocGiaId"
+                        label="Quốc gia"
+                        mode="single"
+                        placeholder="Quốc gia..."
+                    }}
 
-                    </div>
+                    {{> forms/select
+                        id="tinhThanhId"
+                        name="tinhThanhId"
+                        label="Tỉnh thành"
+                        mode="single"
+                        placeholder="Chọn quốc gia trước"
+                        disabled=true
+                    }}
 
-                    <div class="form-field">
-
-                        <label class="form-field__label">
-                            Giới tính
-                        </label>
-
-                        <select
-                            name="gioiTinh"
-                            class="form-input">
-
-                            <option value="0">
-                                Nam
-                            </option>
-
-                            <option value="1">
-                                Nữ
-                            </option>
-
-                            <option value="2">
-                                Khác
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                    <div class="form-field">
-
-                        <label class="form-field__label">
-                            Quốc gia
-                        </label>
-
-                        <div
-                            class="searchable-select"
-                            data-searchable-select="country">
-
-                            <input
-                                type="hidden"
-                                name="quocGiaId"
-                                data-searchable-value>
-
-                            <div class="searchable-select__control">
-
-                                <input
-                                    type="text"
-                                    class="searchable-select__input"
-                                    placeholder="Chọn quốc gia..."
-                                    autocomplete="off"
-                                    data-searchable-input>
-
-                                <button
-                                    type="button"
-                                    class="searchable-select__toggle"
-                                    data-searchable-toggle
-                                    aria-label="Mở danh sách quốc gia">
-
-                                    <svg
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round">
-
-                                        <path d="m6 9 6 6 6-6"></path>
-
-                                    </svg>
-
-                                </button>
-
-                            </div>
-
-                            <div
-                                class="searchable-select__dropdown"
-                                data-searchable-dropdown
-                                hidden>
-
-                                <div
-                                    class="searchable-select__options"
-                                    data-searchable-options>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="form-field">
-
-                        <label class="form-field__label">
-                            Tỉnh thành
-                        </label>
-
-                        <div
-                            class="searchable-select is-disabled"
-                            data-searchable-select="province">
-
-                            <input
-                                type="hidden"
-                                name="tinhThanhId"
-                                data-searchable-value>
-
-                            <div class="searchable-select__control">
-
-                                <input
-                                    type="text"
-                                    class="searchable-select__input"
-                                    placeholder="Chọn quốc gia trước"
-                                    autocomplete="off"
-                                    data-searchable-input
-                                    disabled>
-
-                                <button
-                                    type="button"
-                                    class="searchable-select__toggle"
-                                    data-searchable-toggle
-                                    aria-label="Mở danh sách tỉnh thành"
-                                    disabled>
-
-                                    <svg
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round">
-
-                                        <path d="m6 9 6 6 6-6"></path>
-
-                                    </svg>
-
-                                </button>
-
-                            </div>
-
-                            <div
-                                class="searchable-select__dropdown"
-                                data-searchable-dropdown
-                                hidden>
-
-                                <div
-                                    class="searchable-select__options"
-                                    data-searchable-options>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="form-field">
-
-                        <label class="form-field__label">
-                            Xã/phường
-                        </label>
-
-                        <div
-                            class="searchable-select is-disabled"
-                            data-searchable-select="ward">
-
-                            <input
-                                type="hidden"
-                                name="xaPhuongId"
-                                data-searchable-value>
-
-                            <div class="searchable-select__control">
-
-                                <input
-                                    type="text"
-                                    class="searchable-select__input"
-                                    placeholder="Chọn tỉnh thành trước"
-                                    autocomplete="off"
-                                    data-searchable-input
-                                    disabled>
-
-                                <button
-                                    type="button"
-                                    class="searchable-select__toggle"
-                                    data-searchable-toggle
-                                    aria-label="Mở danh sách xã/phường"
-                                    disabled>
-
-                                    <svg
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round">
-
-                                        <path d="m6 9 6 6 6-6"></path>
-
-                                    </svg>
-
-                                </button>
-
-                            </div>
-
-                            <div
-                                class="searchable-select__dropdown"
-                                data-searchable-dropdown
-                                hidden>
-
-                                <div
-                                    class="searchable-select__options"
-                                    data-searchable-options>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
+                    {{> forms/select
+                        id="xaPhuongId"
+                        name="xaPhuongId"
+                        label="Xã/phường"
+                        mode="single"
+                        placeholder="Chọn tỉnh thành trước"
+                        disabled=true
+                    }}
 
                     <div class="form-field employee-profile__full-width">
 

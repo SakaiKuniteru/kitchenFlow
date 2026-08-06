@@ -1,11 +1,14 @@
 <div
-    class="form-field {{#if fieldClass}}{{fieldClass}}{{/if}}"
+    class="
+        form-field
+        {{#if fieldClass}}{{fieldClass}}{{/if}}
+    "
     data-form-field="{{name}}">
 
     {{#if label}}
 
         <label
-            for="{{id}}"
+            for="{{id}}Search"
             class="form-field__label">
 
             <span>
@@ -26,12 +29,35 @@
 
     {{/if}}
 
-    <div class="form-field__control">
 
+    <div
+        class="
+            smart-select
+            {{#if disabled}}is-disabled{{/if}}
+        "
+        data-smart-select
+        data-select-mode="{{#if mode}}{{mode}}{{else}}single{{/if}}"
+        data-select-placeholder="{{#if placeholder}}{{placeholder}}{{else}}Chọn dữ liệu...{{/if}}"
+        data-select-all-label="{{#if allLabel}}{{allLabel}}{{else}}Tất cả{{/if}}">
+
+        {{!--
+            Select thật.
+
+            Đây là phần giữ:
+            - name gửi backend
+            - giá trị hiện tại
+            - danh sách options
+            - trạng thái disabled/required/multiple
+        --}}
         <select
             id="{{id}}"
             name="{{name}}"
-            class="form-select {{#if inputClass}}{{inputClass}}{{/if}}"
+            class="smart-select__native"
+            data-smart-select-native
+
+            {{#if multiple}}
+                multiple
+            {{/if}}
 
             {{#if required}}
                 required
@@ -42,33 +68,24 @@
                 disabled
             {{/if}}
 
-            {{#if multiple}}
-                multiple
-            {{/if}}
+            tabindex="-1"
+            aria-hidden="true">
 
-            {{#if error}}
-                aria-invalid="true"
-                aria-describedby="{{id}}Error"
-            {{else if description}}
-                aria-describedby="{{id}}Description"
-            {{/if}}>
-
-            {{#unless hidePlaceholder}}
+            {{#if allowAll}}
 
                 <option
-                    value=""
-                    {{#if placeholderDisabled}}disabled{{/if}}
-                    {{#if placeholderSelected}}selected{{/if}}>
+                    value="__ALL__"
+                    data-option-all="true">
 
-                    {{#if placeholder}}
-                        {{placeholder}}
+                    {{#if allLabel}}
+                        {{allLabel}}
                     {{else}}
-                        -- Chọn dữ liệu --
+                        Tất cả
                     {{/if}}
 
                 </option>
 
-            {{/unless}}
+            {{/if}}
 
             {{#each options}}
 
@@ -85,17 +102,110 @@
 
         </select>
 
+
+        <div
+            class="smart-select__control"
+            data-smart-select-control>
+
+            <div class="smart-select__content">
+
+                <div
+                    class="smart-select__selection"
+                    data-smart-select-selection>
+
+                    <span class="smart-select__placeholder">
+
+                        {{#if placeholder}}
+                            {{placeholder}}
+                        {{else}}
+                            Chọn dữ liệu...
+                        {{/if}}
+
+                    </span>
+
+                </div>
+
+                <input
+                    type="text"
+                    id="{{id}}Search"
+                    class="smart-select__search"
+                    placeholder=""
+                    autocomplete="off"
+                    spellcheck="false"
+                    data-smart-select-search
+
+                    {{#if disabled}}
+                        disabled
+                    {{/if}}>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="smart-select__toggle"
+                data-smart-select-toggle
+                aria-label="Mở danh sách"
+                aria-expanded="false"
+
+                {{#if disabled}}
+                    disabled
+                {{/if}}>
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true">
+
+                    <path d="m6 9 6 6 6-6"></path>
+
+                </svg>
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="smart-select__dropdown"
+            data-smart-select-dropdown
+            hidden>
+
+            <div
+                class="smart-select__options"
+                data-smart-select-options>
+            </div>
+
+            <div
+                class="smart-select__empty"
+                data-smart-select-empty
+                hidden>
+
+                Không tìm thấy dữ liệu.
+
+            </div>
+
+        </div>
+
     </div>
+
 
     {{#if description}}
 
         <small
             id="{{id}}Description"
             class="form-field__description">
+
             {{description}}
+
         </small>
 
     {{/if}}
+
 
     <small
         id="{{id}}Error"

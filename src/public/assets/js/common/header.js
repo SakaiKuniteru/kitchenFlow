@@ -145,25 +145,20 @@ document.addEventListener(
                 document.querySelector(
                     "[data-employee-profile-message]"
                 ),
-            
-            profileMessage:
-                document.querySelector(
-                    "[data-employee-profile-message]"
+
+            countrySelect:
+                document.getElementById(
+                    "quocGiaId"
                 ),
 
-            countryPicker:
-                document.querySelector(
-                    '[data-searchable-select="country"]'
+            provinceSelect:
+                document.getElementById(
+                    "tinhThanhId"
                 ),
 
-            provincePicker:
-                document.querySelector(
-                    '[data-searchable-select="province"]'
-                ),
-
-            wardPicker:
-                document.querySelector(
-                    '[data-searchable-select="ward"]'
+            wardSelect:
+                document.getElementById(
+                    "xaPhuongId"
                 )
         };
 
@@ -182,15 +177,9 @@ document.addEventListener(
 
         let avatarPreviewUrl = null;
 
-        let countryPicker = null;
-
-        let provincePicker = null;
-
-        let wardPicker = null;
-
         async function initialize() {
 
-            initializeSearchableAddress();
+            initializeAddressSmartSelects();
 
             bindEvents();
 
@@ -588,7 +577,7 @@ document.addEventListener(
 
                     formData.append(
                         fieldName,
-                        field.value
+                        field.value ?? ""
                     );
 
                 }
@@ -883,162 +872,49 @@ document.addEventListener(
 
 
             const currentCountryId =
-                Number(
-                    employee?.quocGiaId ||
-                    0
+                toPositiveInteger(
+                    employee?.quocGiaId
                 );
 
             const currentProvinceId =
-                Number(
-                    employee?.tinhThanhId ||
-                    0
+                toPositiveInteger(
+                    employee?.tinhThanhId
                 );
 
             const currentWardId =
-                Number(
-                    employee?.xaPhuongId ||
-                    0
+                toPositiveInteger(
+                    employee?.xaPhuongId
                 );
 
-
-            /*
-            * Quốc gia
-            */
-            countryPicker.setItems(
-
+            setSmartSelectOptions(
+                elements.countrySelect,
                 addressState.countries.map(
-                    item => ({
+                    country => ({
 
-                        ...item,
+                        value:
+                            String(country.id),
 
                         label:
                             getCountryLabel(
-                                item
-                            )
+                                country
+                            ),
+
+                        disabled:
+                            country.active === false
 
                     })
                 ),
-
-                currentCountryId || null
-
-            );
-
-
-            /*
-            * Tỉnh/thành thuộc quốc gia
-            */
-            const provinces =
-                addressState.provinces.filter(
-                    item => {
-
-                        return (
-                            getProvinceCountryId(
-                                item
-                            ) === currentCountryId
-                        );
-
-                    }
-                );
-
-
-            provincePicker.setItems(
-
-                provinces.map(
-                    item => ({
-
-                        ...item,
-
-                        label:
-                            getProvinceLabel(
-                                item
-                            )
-
-                    })
-                ),
-
-                currentProvinceId || null
-
-            );
-
-
-            provincePicker.setDisabled(
-
-                !currentCountryId,
-
                 currentCountryId
-                    ? "Chọn tỉnh thành..."
-                    : "Chọn quốc gia trước"
-
             );
 
-
-            /*
-            * Xã/phường thuộc tỉnh
-            */
-            const wards =
-                addressState.wards.filter(
-                    item => {
-
-                        return (
-                            getWardProvinceId(
-                                item
-                            ) === currentProvinceId
-                        );
-
-                    }
-                );
-
-
-            wardPicker.setItems(
-
-                wards.map(
-                    item => ({
-
-                        ...item,
-
-                        label:
-                            getWardLabel(
-                                item
-                            )
-
-                    })
-                ),
-
-                currentWardId || null
-
-            );
-
-
-            wardPicker.setDisabled(
-
-                !currentProvinceId,
-
+            renderProvinceOptions(
+                currentCountryId,
                 currentProvinceId
-                    ? "Chọn xã/phường..."
-                    : "Chọn tỉnh thành trước"
-
             );
 
-
-            console.log(
-                "Địa chỉ nhân viên:",
-                {
-                    currentCountryId,
-                    currentProvinceId,
-                    currentWardId
-                }
-            );
-
-            console.log(
-                "Số tỉnh phù hợp:",
-                provinces.length,
-                provinces[0]
-            );
-
-            console.log(
-                "Số xã/phường phù hợp:",
-                wards.length,
-                wards[0]
+            renderWardOptions(
+                currentProvinceId,
+                currentWardId
             );
 
         }
@@ -1119,212 +995,6 @@ document.addEventListener(
                 country?.name ||
                 `Quốc gia #${country?.id || ""}`
 
-            );
-
-        }
-
-        function renderProvinceOptions(
-            countryId,
-            selectedProvinceId = null
-        ) {
-
-            const id =
-                Number(countryId);
-
-            const provinces =
-                Number.isInteger(id) &&
-                id > 0
-                    ? addressState.provinces.filter(
-                        item =>
-                            getProvinceCountryId(
-                                item
-                            ) === id
-                    )
-                    : [];
-
-            fillSelectElement(
-                elements.provinceSelect,
-                provinces,
-                "tenTinhThanh",
-                selectedProvinceId,
-                id
-                    ? "Chưa chọn"
-                    : "Chọn quốc gia trước"
-            );
-
-            if (
-                elements.provinceSelect
-            ) {
-
-                elements.provinceSelect.disabled =
-                    !id;
-
-            }
-
-            if (
-                elements.provinceSearch
-            ) {
-
-                elements.provinceSearch.disabled =
-                    !id;
-
-            }
-        }
-
-        function renderWardOptions(
-            provinceId,
-            selectedWardId = null
-        ) {
-
-            const id =
-                Number(provinceId);
-
-            const wards =
-                Number.isInteger(id) &&
-                id > 0
-                    ? addressState.wards.filter(
-                        item =>
-                            getWardProvinceId(
-                                item
-                            ) === id
-                    )
-                    : [];
-
-            fillSelectElement(
-                elements.wardSelect,
-                wards,
-                "tenXaPhuong",
-                selectedWardId,
-                id
-                    ? "Chưa chọn"
-                    : "Chọn tỉnh thành trước"
-            );
-
-            if (
-                elements.wardSelect
-            ) {
-
-                elements.wardSelect.disabled =
-                    !id;
-
-            }
-
-            if (
-                elements.wardSearch
-            ) {
-
-                elements.wardSearch.disabled =
-                    !id;
-
-            }
-        }
-
-        function fillSelectElement(
-            select,
-            items,
-            labelKey,
-            selectedValue = null,
-            placeholder = "Chưa chọn"
-        ) {
-
-            if (!select) {
-                return;
-            }
-
-            select.innerHTML =
-                "";
-
-            const emptyOption =
-                document.createElement(
-                    "option"
-                );
-
-            emptyOption.value =
-                "";
-
-            emptyOption.textContent =
-                placeholder;
-
-            select.appendChild(
-                emptyOption
-            );
-
-            items.forEach(
-                item => {
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-                    option.value =
-                        item.id;
-
-                    option.textContent =
-                        item[labelKey] ||
-                        item.ten ||
-                        `ID ${item.id}`;
-
-                    option.selected =
-                        Number(item.id) ===
-                        Number(selectedValue);
-
-                    select.appendChild(
-                        option
-                    );
-
-                }
-            );
-
-        }
-
-        function fillSelect(
-            selector,
-            items,
-            valueKey,
-            labelKey,
-            selectedValue
-        ) {
-
-            const select =
-                document.querySelector(
-                    selector
-                );
-
-            if (!select) {
-                return;
-            }
-
-            select.innerHTML =
-                '<option value="">Chưa chọn</option>';
-
-            if (!Array.isArray(items)) {
-                return;
-            }
-
-            items.forEach(
-                item => {
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-                    option.value =
-                        item[valueKey];
-
-                    option.textContent =
-                        item[labelKey];
-
-                    option.selected =
-                        Number(item[valueKey]) ===
-                        Number(selectedValue);
-
-                    select.appendChild(
-                        option
-                    );
-
-                }
             );
 
         }
@@ -1611,6 +1281,122 @@ document.addEventListener(
 
                     }
                 );
+
+        }
+
+        function renderProvinceOptions(
+            countryId,
+            selectedProvinceId = null
+        ) {
+
+            const normalizedCountryId =
+                toPositiveInteger(
+                    countryId
+                );
+
+            const provinces =
+                normalizedCountryId
+                    ? addressState.provinces.filter(
+                        province =>
+                            getProvinceCountryId(
+                                province
+                            ) ===
+                            normalizedCountryId
+                    )
+                    : [];
+
+
+            setSmartSelectOptions(
+                elements.provinceSelect,
+                provinces.map(
+                    province => ({
+
+                        value:
+                            String(province.id),
+
+                        label:
+                            getProvinceLabel(
+                                province
+                            ),
+
+                        disabled:
+                            province.active === false
+
+                    })
+                ),
+                selectedProvinceId
+            );
+
+
+            setSmartSelectDisabled(
+                elements.provinceSelect,
+                !normalizedCountryId,
+                normalizedCountryId
+                    ? (
+                        provinces.length > 0
+                            ? "Tỉnh/Thành phố..."
+                            : "Quốc gia chưa có tỉnh thành"
+                    )
+                    : "Chọn quốc gia trước"
+            );
+
+        }
+
+        function renderWardOptions(
+            provinceId,
+            selectedWardId = null
+        ) {
+
+            const normalizedProvinceId =
+                toPositiveInteger(
+                    provinceId
+                );
+
+            const wards =
+                normalizedProvinceId
+                    ? addressState.wards.filter(
+                        ward =>
+                            getWardProvinceId(
+                                ward
+                            ) ===
+                            normalizedProvinceId
+                    )
+                    : [];
+
+
+            setSmartSelectOptions(
+                elements.wardSelect,
+                wards.map(
+                    ward => ({
+
+                        value:
+                            String(ward.id),
+
+                        label:
+                            getWardLabel(
+                                ward
+                            ),
+
+                        disabled:
+                            ward.active === false
+
+                    })
+                ),
+                selectedWardId
+            );
+
+
+            setSmartSelectDisabled(
+                elements.wardSelect,
+                !normalizedProvinceId,
+                normalizedProvinceId
+                    ? (
+                        wards.length > 0
+                            ? "Xã/Phường..."
+                            : "Tỉnh thành chưa có xã/phường"
+                    )
+                    : "Chọn tỉnh thành trước"
+            );
 
         }
 
@@ -1952,148 +1738,72 @@ document.addEventListener(
 
         }
 
-        function initializeSearchableAddress() {
+        function initializeAddressSmartSelects() {
 
-            countryPicker =
-                createSearchableSelect(
-                    elements.countryPicker,
-                    {
-                        onChange:
-                            country => {
-
-                                const countryId =
-                                    Number(
-                                        country?.id ||
-                                        0
-                                    );
-
-                                const provinces =
-                                    countryId
-                                        ? addressState.provinces
-                                            .filter(
-                                                item => {
-
-                                                    return (
-                                                        getProvinceCountryId(
-                                                            item
-                                                        ) ===
-                                                        countryId
-                                                    );
-
-                                                }
-                                            )
-                                            .map(
-                                                item => ({
-
-                                                    ...item,
-
-                                                    label:
-                                                        getProvinceLabel(
-                                                            item
-                                                        )
-
-                                                })
-                                            )
-                                        : [];
-
-
-                                provincePicker.setItems(
-                                    provinces
-                                );
-
-                                provincePicker.setDisabled(
-
-                                    !countryId,
-
-                                    countryId
-                                        ? "Chọn tỉnh thành..."
-                                        : "Chọn quốc gia trước"
-
-                                );
-
-
-                                wardPicker.setItems(
-                                    []
-                                );
-
-                                wardPicker.clear(
-                                    "Chọn tỉnh thành trước"
-                                );
-
-                                wardPicker.setDisabled(
-                                    true,
-                                    "Chọn tỉnh thành trước"
-                                );
-
-                            }
-                    }
+            elements.countrySelect
+                ?.addEventListener(
+                    "change",
+                    handleCountryChange
                 );
 
-            provincePicker =
-                createSearchableSelect(
-                    elements.provincePicker,
-                    {
-                        onChange:
-                            province => {
-
-                                const provinceId =
-                                    Number(
-                                        province?.id ||
-                                        0
-                                    );
-
-                                const wards =
-                                    provinceId
-                                        ? addressState.wards
-                                            .filter(
-                                                item => {
-
-                                                    return (
-                                                        getWardProvinceId(
-                                                            item
-                                                        ) ===
-                                                        provinceId
-                                                    );
-
-                                                }
-                                            )
-                                            .map(
-                                                item => ({
-
-                                                    ...item,
-
-                                                    label:
-                                                        getWardLabel(
-                                                            item
-                                                        )
-
-                                                })
-                                            )
-                                        : [];
-
-
-                                wardPicker.setItems(
-                                    wards
-                                );
-
-                                wardPicker.setDisabled(
-
-                                    !provinceId,
-
-                                    provinceId
-                                        ? "Chọn xã/phường..."
-                                        : "Chọn tỉnh thành trước"
-
-                                );
-
-                            }
-                    }
+            elements.provinceSelect
+                ?.addEventListener(
+                    "change",
+                    handleProvinceChange
                 );
 
-            wardPicker =
-                createSearchableSelect(
-                    elements.wardPicker
+            elements.wardSelect
+                ?.addEventListener(
+                    "change",
+                    handleWardChange
                 );
+
+        }
+
+        function handleCountryChange() {
+
+            const countryId =
+                toPositiveInteger(
+                    elements.countrySelect?.value
+                );
+
+            renderProvinceOptions(
+                countryId,
+                null
+            );
+
+            renderWardOptions(
+                null,
+                null
+            );
+
+        }
+
+        function handleProvinceChange() {
+
+            const provinceId =
+                toPositiveInteger(
+                    elements.provinceSelect?.value
+                );
+
+            renderWardOptions(
+                provinceId,
+                null
+            );
+
+        }
+
+        function handleWardChange() {
+
+            const wardId =
+                toPositiveInteger(
+                    elements.wardSelect?.value
+                );
+
+            console.log(
+                "Xã/phường đã chọn:",
+                wardId
+            );
 
         }
 
@@ -2113,7 +1823,6 @@ document.addEventListener(
                     }
                 );
 
-
             elements.notificationButton
                 ?.addEventListener(
                     "click",
@@ -2128,7 +1837,6 @@ document.addEventListener(
                     }
                 );
 
-
             elements.userMenu
                 ?.addEventListener(
                     "click",
@@ -2139,7 +1847,6 @@ document.addEventListener(
                     }
                 );
 
-
             elements.notificationMenu
                 ?.addEventListener(
                     "click",
@@ -2149,7 +1856,6 @@ document.addEventListener(
 
                     }
                 );
-
 
             elements.changePasswordButton
                 ?.addEventListener(
@@ -2164,7 +1870,6 @@ document.addEventListener(
 
                     }
                 );
-
 
             elements.logoutButton
                 ?.addEventListener(
@@ -2207,77 +1912,6 @@ document.addEventListener(
                     "change",
                     handleAvatarPreview
                 );
-
-            elements.countrySelect
-                ?.addEventListener(
-                    "change",
-                    () => {
-
-                        const countryId =
-                            elements.countrySelect
-                                .value;
-
-                        renderProvinceOptions(
-                            countryId
-                        );
-
-                        renderWardOptions(
-                            null
-                        );
-
-                        if (
-                            elements.provinceSearch
-                        ) {
-
-                            elements.provinceSearch.value =
-                                "";
-
-                        }
-
-                        if (
-                            elements.wardSearch
-                        ) {
-
-                            elements.wardSearch.value =
-                                "";
-
-                        }
-                    }
-                );
-
-            elements.provinceSelect
-                ?.addEventListener(
-                    "change",
-                    () => {
-
-                        const provinceId =
-                            elements.provinceSelect
-                                .value;
-
-                        renderWardOptions(
-                            provinceId
-                        );
-
-                        elements.wardSearch.value =
-                            "";
-
-                    }
-                );
-
-            bindSelectSearch(
-                elements.countrySearch,
-                elements.countrySelect
-            );
-
-            bindSelectSearch(
-                elements.provinceSearch,
-                elements.provinceSelect
-            );
-
-            bindSelectSearch(
-                elements.wardSearch,
-                elements.wardSelect
-            );
 
             document.addEventListener(
                 "click",
@@ -2348,19 +1982,6 @@ document.addEventListener(
                 }
             );
 
-            document.addEventListener(
-                "click",
-                () => {
-
-                    countryPicker?.close();
-
-                    provincePicker?.close();
-
-                    wardPicker?.close();
-
-                }
-            );
-
         }
 
         function handleAvatarPreview(
@@ -2450,686 +2071,6 @@ document.addEventListener(
                 )
                 .toLowerCase()
                 .trim();
-
-        }
-
-        function createSearchableSelect(
-            container,
-            {
-                onChange = null
-            } = {}
-        ) {
-
-            if (!container) {
-                return null;
-            }
-
-            const input =
-                container.querySelector(
-                    "[data-searchable-input]"
-                );
-
-            const hiddenInput =
-                container.querySelector(
-                    "[data-searchable-value]"
-                );
-
-            const toggleButton =
-                container.querySelector(
-                    "[data-searchable-toggle]"
-                );
-
-            const dropdown =
-                container.querySelector(
-                    "[data-searchable-dropdown]"
-                );
-
-            const optionsContainer =
-                container.querySelector(
-                    "[data-searchable-options]"
-                );
-
-            const state = {
-
-                items:
-                    [],
-
-                filteredItems:
-                    [],
-
-                selectedId:
-                    null,
-
-                selectedItem:
-                    null,
-
-                disabled:
-                    input?.disabled === true
-
-            };
-
-
-            function getItemLabel(
-                item
-            ) {
-
-                return item?.label ||
-                    item?.ten ||
-                    "";
-            }
-
-
-            function open() {
-
-                if (state.disabled) {
-                    return;
-                }
-
-                dropdown.hidden =
-                    false;
-
-                container.classList.add(
-                    "is-open"
-                );
-
-                renderOptions(
-                    input.value
-                );
-
-            }
-
-
-            function close() {
-
-                dropdown.hidden =
-                    true;
-
-                container.classList.remove(
-                    "is-open"
-                );
-
-                if (
-                    state.selectedItem
-                ) {
-
-                    input.value =
-                        getItemLabel(
-                            state.selectedItem
-                        );
-
-                }
-
-            }
-
-
-            function toggle() {
-
-                if (
-                    dropdown.hidden
-                ) {
-
-                    open();
-
-                } else {
-
-                    close();
-
-                }
-
-            }
-
-
-            function renderOptions(
-                keyword = ""
-            ) {
-
-                const normalizedKeyword =
-                    normalizeSearchText(
-                        keyword
-                    );
-
-                state.filteredItems =
-                    state.items.filter(
-                        item => {
-
-                            const label =
-                                normalizeSearchText(
-                                    getItemLabel(
-                                        item
-                                    )
-                                );
-
-                            return !normalizedKeyword ||
-                                label.includes(
-                                    normalizedKeyword
-                                );
-
-                        }
-                    );
-
-                optionsContainer.innerHTML =
-                    "";
-
-                if (
-                    state.filteredItems.length === 0
-                ) {
-
-                    const empty =
-                        document.createElement(
-                            "div"
-                        );
-
-                    empty.className =
-                        "searchable-select__empty";
-
-                    empty.textContent =
-                        "Không tìm thấy dữ liệu.";
-
-                    optionsContainer.appendChild(
-                        empty
-                    );
-
-                    return;
-
-                }
-
-                state.filteredItems.forEach(
-                    item => {
-
-                        const button =
-                            document.createElement(
-                                "button"
-                            );
-
-                        button.type =
-                            "button";
-
-                        button.className =
-                            "searchable-select__option";
-
-                        button.textContent =
-                            getItemLabel(
-                                item
-                            );
-
-                        if (
-                            Number(item.id) ===
-                            Number(state.selectedId)
-                        ) {
-
-                            button.classList.add(
-                                "is-selected"
-                            );
-
-                        }
-
-                        button.addEventListener(
-                            "click",
-                            () => {
-
-                                selectItem(
-                                    item
-                                );
-
-                            }
-                        );
-
-                        optionsContainer.appendChild(
-                            button
-                        );
-
-                    }
-                );
-
-            }
-
-
-            function selectItem(
-                item,
-                emitChange = true
-            ) {
-
-                state.selectedId =
-                    item?.id ?? null;
-
-                state.selectedItem =
-                    item || null;
-
-                hiddenInput.value =
-                    item?.id ?? "";
-
-                input.value =
-                    item
-                        ? getItemLabel(item)
-                        : "";
-
-                close();
-
-                if (
-                    emitChange &&
-                    typeof onChange ===
-                        "function"
-                ) {
-
-                    onChange(
-                        item
-                    );
-
-                }
-
-            }
-
-
-            function setItems(
-                items,
-                selectedId = null
-            ) {
-
-                state.items =
-                    Array.isArray(items)
-                        ? items
-                        : [];
-
-                const selectedItem =
-                    state.items.find(
-                        item =>
-                            Number(item.id) ===
-                            Number(selectedId)
-                    ) || null;
-
-                selectItem(
-                    selectedItem,
-                    false
-                );
-
-                renderOptions();
-
-            }
-
-
-            function setDisabled(
-                disabled,
-                placeholder = ""
-            ) {
-
-                state.disabled =
-                    Boolean(disabled);
-
-                input.disabled =
-                    state.disabled;
-
-                toggleButton.disabled =
-                    state.disabled;
-
-                container.classList.toggle(
-                    "is-disabled",
-                    state.disabled
-                );
-
-                if (
-                    placeholder
-                ) {
-
-                    input.placeholder =
-                        placeholder;
-
-                }
-
-                if (
-                    state.disabled
-                ) {
-
-                    close();
-
-                }
-
-            }
-
-
-            function clear(
-                placeholder = ""
-            ) {
-
-                selectItem(
-                    null,
-                    false
-                );
-
-                if (
-                    placeholder
-                ) {
-
-                    input.placeholder =
-                        placeholder;
-
-                }
-
-                renderOptions();
-
-            }
-
-
-            input.addEventListener(
-                "focus",
-                open
-            );
-
-
-            input.addEventListener(
-                "input",
-                () => {
-
-                    state.selectedId =
-                        null;
-
-                    state.selectedItem =
-                        null;
-
-                    hiddenInput.value =
-                        "";
-
-                    open();
-
-                    renderOptions(
-                        input.value
-                    );
-
-                }
-            );
-
-
-            toggleButton.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    event.stopPropagation();
-
-                    toggle();
-
-                }
-            );
-
-
-            container.addEventListener(
-                "click",
-                event => {
-
-                    event.stopPropagation();
-
-                }
-            );
-
-
-            return {
-
-                setItems,
-
-                setDisabled,
-
-                clear,
-
-                close,
-
-                getValue() {
-
-                    return hiddenInput.value;
-
-                }
-
-            };
-
-        }
-
-        function bindSelectSearch(
-            searchInput,
-            select
-        ) {
-
-            if (
-                !searchInput ||
-                !select
-            ) {
-                return;
-            }
-
-            searchInput.addEventListener(
-                "input",
-                () => {
-
-                    const keyword =
-                        normalizeSearchText(
-                            searchInput.value
-                        );
-
-                    Array.from(
-                        select.options
-                    )
-                        .forEach(
-                            (
-                                option,
-                                index
-                            ) => {
-
-                                if (
-                                    index === 0
-                                ) {
-
-                                    option.hidden =
-                                        false;
-
-                                    return;
-
-                                }
-
-                                const text =
-                                    normalizeSearchText(
-                                        option.textContent
-                                    );
-
-                                option.hidden =
-                                    Boolean(keyword) &&
-                                    !text.includes(
-                                        keyword
-                                    );
-
-                            }
-                        );
-
-                }
-            );
-
-        }
-
-        function clearAddressSearchFields() {
-
-            [
-                elements.countrySearch,
-                elements.provinceSearch,
-                elements.wardSearch
-            ].forEach(
-                input => {
-
-                    if (input) {
-
-                        input.value =
-                            "";
-
-                    }
-
-                }
-            );
-
-        }
-
-        function handleAvatarPreview(
-            event
-        ) {
-
-            const file =
-                event.target.files?.[0];
-
-            if (!file) {
-                return;
-            }
-
-            const allowedTypes = [
-                "image/jpeg",
-                "image/png",
-                "image/webp"
-            ];
-
-            if (
-                !allowedTypes.includes(
-                    file.type
-                )
-            ) {
-
-                event.target.value =
-                    "";
-
-                setProfileMessage(
-                    "Ảnh đại diện chỉ hỗ trợ JPG, PNG hoặc WEBP."
-                );
-
-                return;
-
-            }
-
-            const maxSize =
-                5 * 1024 * 1024;
-
-            if (
-                file.size > maxSize
-            ) {
-
-                event.target.value =
-                    "";
-
-                setProfileMessage(
-                    "Ảnh đại diện không được vượt quá 5 MB."
-                );
-
-                return;
-
-            }
-
-            setProfileMessage("");
-
-            if (avatarPreviewUrl) {
-
-                URL.revokeObjectURL(
-                    avatarPreviewUrl
-                );
-
-            }
-
-            avatarPreviewUrl =
-                URL.createObjectURL(
-                    file
-                );
-
-            renderProfileAvatar(
-                avatarPreviewUrl
-            );
-
-        }
-
-        function normalizeSearchText(
-            value
-        ) {
-
-            return String(
-                value || ""
-            )
-                .normalize("NFD")
-                .replace(
-                    /[\u0300-\u036f]/g,
-                    ""
-                )
-                .toLowerCase()
-                .trim();
-
-        }
-
-        function bindSelectSearch(
-            searchInput,
-            select
-        ) {
-
-            if (
-                !searchInput ||
-                !select
-            ) {
-                return;
-            }
-
-            searchInput.addEventListener(
-                "input",
-                () => {
-
-                    const keyword =
-                        normalizeSearchText(
-                            searchInput.value
-                        );
-
-                    Array.from(
-                        select.options
-                    ).forEach(
-                        (
-                            option,
-                            index
-                        ) => {
-
-                            if (
-                                index === 0
-                            ) {
-
-                                option.hidden =
-                                    false;
-
-                                return;
-
-                            }
-
-                            const text =
-                                normalizeSearchText(
-                                    option.textContent
-                                );
-
-                            option.hidden =
-                                Boolean(keyword) &&
-                                !text.includes(
-                                    keyword
-                                );
-
-                        }
-                    );
-
-                }
-            );
-
-        }
-
-        function clearAddressSearchFields() {
-
-            [
-                elements.countrySearch,
-                elements.provinceSearch,
-                elements.wardSearch
-            ].forEach(
-                input => {
-
-                    if (input) {
-
-                        input.value =
-                            "";
-
-                    }
-
-                }
-            );
 
         }
 
@@ -3139,6 +2080,11 @@ document.addEventListener(
 
             const form =
                 elements.profileForm;
+
+            if (!form) {
+                return;
+            }
+
 
             setFormValue(
                 form,
@@ -3167,40 +2113,69 @@ document.addEventListener(
             setFormValue(
                 form,
                 "coSo",
-                employee.coSo?.tenCoSo
+                employee.coSo?.tenCoSo ||
+                ""
             );
 
             setFormValue(
                 form,
                 "phongBan",
-                employee.phongBan?.tenPhongBan
+                employee.phongBan?.tenPhongBan ||
+                ""
             );
 
             setFormValue(
                 form,
                 "chucVu",
-                employee.chucVu?.tenChucVu
+                employee.chucVu?.tenChucVu ||
+                ""
             );
 
-            setFormValue(
+            setDatePickerValue(
                 form,
                 "ngaySinh",
-                formatDateInput(
-                    employee.ngaySinh
-                )
+                employee.ngaySinh
             );
 
-            setFormValue(
-                form,
-                "gioiTinh",
-                employee.gioiTinh
-            );
+            const genderNativeSelect =
+                form.elements.namedItem(
+                    "gioiTinh"
+                );
+
+            const genderSmartSelectRoot =
+                genderNativeSelect?.closest(
+                    "[data-smart-select]"
+                );
+
+
+            if (
+                genderSmartSelectRoot
+            ) {
+
+                window.MCS.smartSelect
+                    .initialize(
+                        genderSmartSelectRoot
+                    );
+
+                genderSmartSelectRoot
+                    .smartSelect
+                    .setValue(
+                        String(
+                            employee.gioiTinh ??
+                            ""
+                        ),
+                        false
+                    );
+
+            }
+
 
             setFormValue(
                 form,
                 "diaChi",
                 employee.diaChi
             );
+
 
             renderProfileAvatar(
                 employee.anhDaiDien
@@ -3228,7 +2203,355 @@ document.addEventListener(
 
         }
 
-        function formatDateInput(
+        function setDatePickerValue(
+            form,
+            fieldName,
+            value
+        ) {
+
+            const fieldContainer =
+                form.querySelector(
+                    `[data-form-field="${fieldName}"]`
+                );
+
+            if (!fieldContainer) {
+                return;
+            }
+
+            const hiddenInput =
+                fieldContainer.querySelector(
+                    "[data-date-value]"
+                );
+
+            const displayInput =
+                fieldContainer.querySelector(
+                    "[data-date-input]"
+                );
+
+            const databaseValue =
+                normalizeDateValue(
+                    value
+                );
+
+            const displayValue =
+                formatDateDisplay(
+                    databaseValue
+                );
+
+
+            /*
+            * Giá trị gửi backend: YYYY-MM-DD
+            */
+            if (hiddenInput) {
+
+                hiddenInput.value =
+                    databaseValue;
+
+            }
+
+
+            /*
+            * Giá trị hiển thị: DD/MM/YYYY
+            */
+            if (displayInput) {
+
+                displayInput.value =
+                    displayValue;
+
+            }
+
+
+            /*
+            * Đồng bộ với date-picker.js nếu component
+            * đã được khởi tạo.
+            */
+            const datePickerApi =
+                fieldContainer.datePicker ||
+                fieldContainer.querySelector(
+                    ".date-picker"
+                )?.datePicker;
+
+
+            if (
+                datePickerApi?.setValue
+            ) {
+
+                datePickerApi.setValue(
+                    databaseValue,
+                    false
+                );
+
+            }
+
+
+            hiddenInput?.dispatchEvent(
+                new Event(
+                    "change",
+                    {
+                        bubbles:
+                            true
+                    }
+                )
+            );
+
+        }
+
+        function setSmartSelectOptions(
+            nativeSelect,
+            options,
+            selectedValue = null
+        ) {
+
+            if (!nativeSelect) {
+                return;
+            }
+
+            const smartSelectRoot =
+                nativeSelect.closest(
+                    "[data-smart-select]"
+                );
+
+            const normalizedOptions =
+                Array.isArray(options)
+                    ? options
+                    : [];
+
+            const normalizedSelectedValue =
+                selectedValue === null ||
+                selectedValue === undefined ||
+                selectedValue === ""
+                    ? ""
+                    : String(selectedValue);
+
+            nativeSelect.innerHTML =
+                "";
+
+            const placeholderOption =
+                document.createElement(
+                    "option"
+                );
+
+            placeholderOption.value =
+                "";
+
+            placeholderOption.textContent =
+                "";
+
+            nativeSelect.appendChild(
+                placeholderOption
+            );
+
+            normalizedOptions.forEach(
+                option => {
+
+                    const optionElement =
+                        document.createElement(
+                            "option"
+                        );
+
+                    optionElement.value =
+                        String(
+                            option.value
+                        );
+
+                    optionElement.textContent =
+                        option.label || "";
+
+                    optionElement.disabled =
+                        option.disabled === true;
+
+                    optionElement.selected =
+                        String(option.value) ===
+                        normalizedSelectedValue;
+
+                    nativeSelect.appendChild(
+                        optionElement
+                    );
+
+                }
+            );
+
+
+            nativeSelect.value =
+                normalizedSelectedValue;
+
+
+            if (!smartSelectRoot) {
+                return;
+            }
+
+            window.MCS?.smartSelect
+                ?.initialize(
+                    smartSelectRoot
+                );
+
+            if (
+                typeof smartSelectRoot
+                    .smartSelect
+                    ?.setOptions ===
+                "function"
+            ) {
+
+                smartSelectRoot
+                    .smartSelect
+                    .setOptions(
+                        normalizedOptions,
+                        false
+                    );
+
+            }
+
+
+            if (
+                typeof smartSelectRoot
+                    .smartSelect
+                    ?.setValue ===
+                "function"
+            ) {
+
+                smartSelectRoot
+                    .smartSelect
+                    .setValue(
+                        normalizedSelectedValue,
+                        false
+                    );
+
+            } else {
+
+                nativeSelect.dispatchEvent(
+                    new Event(
+                        "change",
+                        {
+                            bubbles:
+                                true
+                        }
+                    )
+                );
+
+            }
+
+        }
+
+        function setSmartSelectDisabled(
+            nativeSelect,
+            disabled,
+            placeholder
+        ) {
+
+            if (!nativeSelect) {
+                return;
+            }
+
+            const smartSelectRoot =
+                nativeSelect.closest(
+                    "[data-smart-select]"
+                );
+
+            if (!smartSelectRoot) {
+                return;
+            }
+
+            const searchInput =
+                smartSelectRoot.querySelector(
+                    "[data-smart-select-search]"
+                );
+
+            const toggleButton =
+                smartSelectRoot.querySelector(
+                    "[data-smart-select-toggle]"
+                );
+
+            const isDisabled =
+                Boolean(disabled);
+
+
+            nativeSelect.disabled =
+                isDisabled;
+
+            if (searchInput) {
+
+                searchInput.disabled =
+                    isDisabled;
+
+                /*
+                * Không đặt placeholder trực tiếp lên ô tìm kiếm.
+                * Placeholder chính do Smart Select tự render.
+                */
+                searchInput.placeholder =
+                    "";
+
+            }
+
+            if (toggleButton) {
+
+                toggleButton.disabled =
+                    isDisabled;
+
+            }
+
+            smartSelectRoot.classList.toggle(
+                "is-disabled",
+                isDisabled
+            );
+
+            /*
+            * Cập nhật placeholder chính của component.
+            */
+            if (placeholder) {
+
+                smartSelectRoot.dataset
+                    .selectPlaceholder =
+                    placeholder;
+
+            }
+
+            const api =
+                smartSelectRoot.smartSelect;
+
+            if (
+                typeof api?.setDisabled ===
+                "function"
+            ) {
+
+                api.setDisabled(
+                    isDisabled
+                );
+
+            }
+
+            /*
+            * Render lại để placeholder và giá trị không chồng nhau.
+            */
+            if (
+                typeof api?.refresh ===
+                "function"
+            ) {
+
+                api.refresh();
+
+            }
+
+        }
+
+        function toPositiveInteger(
+            value
+        ) {
+
+            const number =
+                Number(value);
+
+            if (
+                !Number.isInteger(number) ||
+                number <= 0
+            ) {
+                return null;
+            }
+
+            return number;
+
+        }
+
+        function normalizeDateValue(
             value
         ) {
 
@@ -3236,8 +2559,55 @@ document.addEventListener(
                 return "";
             }
 
+            const rawValue =
+                String(value).trim();
+
+
+            /*
+            * API trả YYYY-MM-DD
+            */
+            const databaseMatch =
+                rawValue.match(
+                    /^(\d{4})-(\d{2})-(\d{2})/
+                );
+
+            if (databaseMatch) {
+
+                return [
+                    databaseMatch[1],
+                    databaseMatch[2],
+                    databaseMatch[3]
+                ].join("-");
+
+            }
+
+
+            /*
+            * API trả DD/MM/YYYY
+            */
+            const displayMatch =
+                rawValue.match(
+                    /^(\d{2})\/(\d{2})\/(\d{4})$/
+                );
+
+            if (displayMatch) {
+
+                return [
+                    displayMatch[3],
+                    displayMatch[2],
+                    displayMatch[1]
+                ].join("-");
+
+            }
+
+
+            /*
+            * Trường hợp API trả chuỗi ngày giờ đầy đủ.
+            */
             const date =
-                new Date(value);
+                new Date(
+                    rawValue
+                );
 
             if (
                 Number.isNaN(
@@ -3247,9 +2617,51 @@ document.addEventListener(
                 return "";
             }
 
-            return date
-                .toISOString()
-                .slice(0, 10);
+            const year =
+                date.getFullYear();
+
+            const month =
+                String(
+                    date.getMonth() + 1
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+            const day =
+                String(
+                    date.getDate()
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+            return `${year}-${month}-${day}`;
+
+        }
+
+        function formatDateDisplay(
+            databaseValue
+        ) {
+
+            if (!databaseValue) {
+                return "";
+            }
+
+            const match =
+                String(databaseValue).match(
+                    /^(\d{4})-(\d{2})-(\d{2})$/
+                );
+
+            if (!match) {
+                return "";
+            }
+
+            return [
+                match[3],
+                match[2],
+                match[1]
+            ].join("/");
 
         }
 

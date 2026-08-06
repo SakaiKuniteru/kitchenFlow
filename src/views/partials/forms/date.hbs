@@ -1,11 +1,12 @@
 <div
     class="form-field {{#if fieldClass}}{{fieldClass}}{{/if}}"
-    data-form-field="{{name}}">
+    data-form-field="{{name}}"
+    data-date-picker>
 
     {{#if label}}
 
         <label
-            for="{{id}}"
+            for="{{id}}Display"
             class="form-field__label">
 
             <span>
@@ -26,58 +27,215 @@
 
     {{/if}}
 
-    <div class="form-field__control">
 
+    <div class="date-picker">
+
+        {{!--
+            Giá trị thật gửi về backend:
+            YYYY-MM-DD
+        --}}
         <input
-            type="{{#if type}}{{type}}{{else}}date{{/if}}"
+            type="hidden"
             id="{{id}}"
             name="{{name}}"
-            class="form-input form-input--date {{#if inputClass}}{{inputClass}}{{/if}}"
             value="{{value}}"
+            data-date-value>
 
-            {{#if min}}
-                min="{{min}}"
-            {{/if}}
 
-            {{#if max}}
-                max="{{max}}"
-            {{/if}}
+        {{!--
+            Giá trị người dùng nhìn và nhập:
+            DD/MM/YYYY
+        --}}
+        <div class="date-picker__control">
 
-            {{#if step}}
-                step="{{step}}"
-            {{/if}}
+            <input
+                type="text"
+                id="{{id}}Display"
+                class="form-input date-picker__input {{#if inputClass}}{{inputClass}}{{/if}}"
+                placeholder="{{#if placeholder}}{{placeholder}}{{else}}dd/mm/yyyy{{/if}}"
+                inputmode="numeric"
+                autocomplete="off"
+                maxlength="10"
+                data-date-input
 
-            {{#if required}}
-                required
-                aria-required="true"
-            {{/if}}
+                {{#if required}}
+                    required
+                    aria-required="true"
+                {{/if}}
 
-            {{#if readonly}}
-                readonly
-            {{/if}}
+                {{#if readonly}}
+                    readonly
+                {{/if}}
 
-            {{#if disabled}}
-                disabled
-            {{/if}}
+                {{#if disabled}}
+                    disabled
+                {{/if}}
 
-            {{#if error}}
-                aria-invalid="true"
-                aria-describedby="{{id}}Error"
-            {{else if description}}
-                aria-describedby="{{id}}Description"
-            {{/if}}>
+                {{#if error}}
+                    aria-invalid="true"
+                    aria-describedby="{{id}}Error"
+                {{else if description}}
+                    aria-describedby="{{id}}Description"
+                {{/if}}>
+
+            <button
+                type="button"
+                class="date-picker__toggle"
+                data-date-toggle
+                aria-label="Mở lịch"
+                aria-expanded="false"
+
+                {{#if disabled}}
+                    disabled
+                {{/if}}>
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true">
+
+                    <rect
+                        x="3"
+                        y="5"
+                        width="18"
+                        height="16"
+                        rx="2">
+                    </rect>
+
+                    <path d="M16 3v4"></path>
+                    <path d="M8 3v4"></path>
+                    <path d="M3 11h18"></path>
+
+                </svg>
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="date-picker__dropdown"
+            data-date-dropdown
+            hidden>
+
+            <div class="date-picker__header">
+
+                <button
+                    type="button"
+                    class="date-picker__navigation"
+                    data-date-previous-large
+                    aria-label="Lùi nhanh">
+
+                    «
+
+                </button>
+
+                <button
+                    type="button"
+                    class="date-picker__navigation"
+                    data-date-previous
+                    aria-label="Lùi">
+
+                    ‹
+
+                </button>
+
+                <button
+                    type="button"
+                    class="date-picker__period"
+                    data-date-period>
+
+                    Tháng và năm
+
+                </button>
+
+                <button
+                    type="button"
+                    class="date-picker__navigation"
+                    data-date-next
+                    aria-label="Tiến">
+
+                    ›
+
+                </button>
+
+                <button
+                    type="button"
+                    class="date-picker__navigation"
+                    data-date-next-large
+                    aria-label="Tiến nhanh">
+
+                    »
+
+                </button>
+
+            </div>
+
+
+            <div
+                class="date-picker__weekdays"
+                data-date-weekdays>
+
+                <span>T2</span>
+                <span>T3</span>
+                <span>T4</span>
+                <span>T5</span>
+                <span>T6</span>
+                <span>T7</span>
+                <span>CN</span>
+
+            </div>
+
+
+            <div
+                class="date-picker__body"
+                data-date-body>
+            </div>
+
+
+            <div class="date-picker__footer">
+
+                <button
+                    type="button"
+                    class="date-picker__footer-button"
+                    data-date-clear>
+
+                    Xóa
+
+                </button>
+
+                <button
+                    type="button"
+                    class="date-picker__footer-button"
+                    data-date-today>
+
+                    Hôm nay
+
+                </button>
+
+            </div>
+
+        </div>
 
     </div>
+
 
     {{#if description}}
 
         <small
             id="{{id}}Description"
             class="form-field__description">
+
             {{description}}
+
         </small>
 
     {{/if}}
+
 
     <small
         id="{{id}}Error"

@@ -13,6 +13,10 @@ const webRoute = require("./routes/web/index");
 
 const apiRoute = require("./routes/api/index");
 
+const {
+    GIOI_TINH_OPTIONS
+} = require( "./constants/form-options" );
+
 const app = express();
 
 app.use(
@@ -49,6 +53,25 @@ app.use(
 );
 
 setupView(app);
+
+app.use(
+    (
+        req,
+        res,
+        next
+    ) => {
+
+        res.locals.formOptions = {
+
+            gioiTinh:
+                GIOI_TINH_OPTIONS
+
+        };
+
+        next();
+
+    }
+);
 
 app.use("/api/mcs/v1", apiRoute);
 

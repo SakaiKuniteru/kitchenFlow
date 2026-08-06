@@ -1,0 +1,457 @@
+/* =========================================================
+   Smart Select
+   ========================================================= */
+
+.smart-select {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+}
+
+
+/* =========================================================
+   Control
+   ========================================================= */
+
+.smart-select__control {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 5px 42px 5px 12px;
+
+    border: 1px solid #d8e0eb;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    cursor: text;
+
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        background-color 160ms ease;
+}
+
+.smart-select__control:hover {
+    border-color: #94a3b8;
+}
+
+.smart-select.is-open
+.smart-select__control,
+.smart-select__control:focus-within {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.12);
+}
+
+
+/* =========================================================
+   Content
+   ========================================================= */
+
+.smart-select__content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+
+    min-width: 0;
+}
+
+.smart-select__selection {
+    display: flex;
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+
+    min-width: 0;
+    max-width: 100%;
+}
+
+.smart-select__placeholder {
+    overflow: hidden;
+
+    color: #94a3b8;
+
+    font-size: 13px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.smart-select__single-value {
+    overflow: hidden;
+
+    max-width: 100%;
+
+    color: #1e293b;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   Search
+   ========================================================= */
+
+.smart-select__search {
+    flex: 1 1 60px;
+
+    width: auto;
+    min-width: 40px;
+    height: 30px;
+    padding: 0;
+
+    border: 0;
+    outline: 0;
+
+    color: #1e293b;
+    background: transparent;
+
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.smart-select__search::placeholder {
+    color: #94a3b8;
+}
+
+.smart-select.is-searching
+.smart-select__selection {
+    display: none;
+}
+
+.smart-select.is-searching
+.smart-select__search {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+}
+
+
+/* =========================================================
+   Toggle
+   ========================================================= */
+
+.smart-select__toggle {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+    padding: 0;
+
+    border: 0;
+    border-radius: 8px;
+
+    color: #64748b;
+    background: transparent;
+
+    cursor: pointer;
+
+    transform: translateY(-50%);
+
+    transition:
+        color 160ms ease,
+        background-color 160ms ease;
+}
+
+.smart-select__toggle:hover:not(:disabled) {
+    color: #2563eb;
+    background: #eff6ff;
+}
+
+.smart-select__toggle svg {
+    width: 16px;
+    height: 16px;
+
+    transition:
+        transform 160ms ease;
+}
+
+.smart-select.is-open
+.smart-select__toggle svg {
+    transform: rotate(180deg);
+}
+
+
+/* =========================================================
+   Dropdown
+   ========================================================= */
+
+.smart-select__dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    left: 0;
+    z-index: 3100;
+
+    overflow: hidden;
+
+    border: 1px solid #d8e0eb;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 18px 42px rgba(15, 23, 42, 0.16),
+        0 4px 12px rgba(15, 23, 42, 0.06);
+
+    transform-origin: top center;
+
+    animation:
+        smart-select-enter
+        150ms
+        ease-out;
+}
+
+.smart-select__dropdown[hidden] {
+    display: none !important;
+}
+
+.smart-select__options {
+    max-height: 240px;
+    padding: 5px;
+    overflow-y: auto;
+}
+
+
+/* =========================================================
+   Option
+   ========================================================= */
+
+.smart-select__option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 11px;
+
+    border: 0;
+    border-radius: 7px;
+
+    color: #1e293b;
+    background: transparent;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        color 130ms ease,
+        background-color 130ms ease;
+}
+
+.smart-select__option[hidden] {
+    display: none !important;
+}
+
+.smart-select__option:hover:not(:disabled),
+.smart-select__option.is-highlighted {
+    color: #1d4ed8;
+    background: #eff6ff;
+}
+
+.smart-select__option.is-selected {
+    color: #075985;
+    background: #e0f2fe;
+}
+
+.smart-select__option:disabled,
+.smart-select__option.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.smart-select__option-label {
+    min-width: 0;
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.smart-select__check {
+    flex: 0 0 auto;
+
+    color: #1681f7;
+
+    font-size: 17px;
+    font-weight: 800;
+
+    opacity: 0;
+}
+
+.smart-select__option.is-selected
+.smart-select__check {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   Multiple tags
+   ========================================================= */
+
+.smart-select__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    max-width: 210px;
+    min-height: 28px;
+    padding: 3px 7px;
+
+    border: 1px solid #dbe3ee;
+    border-radius: 6px;
+
+    color: #334155;
+    background: #f8fafc;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.smart-select__tag-label {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.smart-select__tag-remove {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+
+    width: 17px;
+    height: 17px;
+    padding: 0;
+
+    border: 0;
+    border-radius: 4px;
+
+    color: #94a3b8;
+    background: transparent;
+
+    font-size: 15px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.smart-select__tag-remove:hover {
+    color: #dc2626;
+    background: #fee2e2;
+}
+
+
+/* =========================================================
+   Empty
+   ========================================================= */
+
+.smart-select__empty {
+    padding: 18px 12px;
+
+    color: #94a3b8;
+
+    font-size: 13px;
+    text-align: center;
+}
+
+.smart-select__empty[hidden] {
+    display: none !important;
+}
+
+
+/* =========================================================
+   Disabled
+   ========================================================= */
+
+.smart-select.is-disabled {
+    pointer-events: none;
+}
+
+.smart-select.is-disabled
+.smart-select__control {
+    color: #94a3b8;
+    background: #f1f5f9;
+    cursor: not-allowed;
+}
+
+.smart-select.is-disabled
+.smart-select__toggle {
+    opacity: 0.5;
+}
+
+.smart-select__native {
+    display: none;
+}
+
+smart-select[data-select-mode="single"]
+.smart-select__search {
+    flex: 0 0 0;
+    width: 0;
+    min-width: 0;
+    padding: 0;
+    opacity: 0;
+}
+
+.smart-select[data-select-mode="single"].is-searching
+.smart-select__search,
+.smart-select[data-select-mode="single"].is-open
+.smart-select__search:focus {
+    flex: 1 1 100%;
+    width: auto;
+    min-width: 60px;
+    opacity: 1;
+}
+
+.smart-select[data-select-mode="single"].is-searching
+.smart-select__selection {
+    display: none;
+}
+
+@keyframes smart-select-enter {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(-4px)
+            scale(0.99);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+}
