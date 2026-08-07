@@ -14,7 +14,7 @@ const ApiError =
 const uploadDirectory =
     path.join(
         process.cwd(),
-        "src/public/uploads/danh-muc/co-so"
+        "src/public/uploads/temp/co-so"
     );
 
 
@@ -27,7 +27,8 @@ if (
     fs.mkdirSync(
         uploadDirectory,
         {
-            recursive: true
+            recursive:
+                true
         }
     );
 
@@ -68,6 +69,7 @@ const storage =
 
         },
 
+
         filename(
             req,
             file,
@@ -80,31 +82,12 @@ const storage =
                 )
                     .toLowerCase();
 
-            const baseName =
-                path.basename(
-                    file.originalname,
-                    extension
-                )
-                    .normalize("NFD")
-                    .replace(
-                        /[\u0300-\u036f]/g,
-                        ""
-                    )
-                    .replace(
-                        /[^a-zA-Z0-9-_]/g,
-                        "-"
-                    )
-                    .replace(
-                        /-+/g,
-                        "-"
-                    )
-                    .replace(
-                        /^-|-$/g,
-                        ""
-                    );
 
             const fileName =
-                `${Date.now()}-${baseName || "co-so"}${extension}`;
+                `temp-${Date.now()}-${Math.random()
+                    .toString(36)
+                    .slice(2, 10)}${extension}`;
+
 
             callback(
                 null,
@@ -128,19 +111,14 @@ function fileFilter(
         )
             .toLowerCase();
 
-    const extensionHopLe =
-        IMAGE_EXTENSIONS.includes(
-            extension
-        );
-
-    const mimeTypeHopLe =
-        IMAGE_MIME_TYPES.includes(
-            file.mimetype
-        );
 
     if (
-        !extensionHopLe ||
-        !mimeTypeHopLe
+        !IMAGE_EXTENSIONS.includes(
+            extension
+        ) ||
+        !IMAGE_MIME_TYPES.includes(
+            file.mimetype
+        )
     ) {
 
         return callback(
@@ -151,6 +129,7 @@ function fileFilter(
         );
 
     }
+
 
     return callback(
         null,

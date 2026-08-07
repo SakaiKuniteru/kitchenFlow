@@ -1,19 +1,6 @@
 "use strict";
 
 
-function getUploadedFilePath(
-    file
-) {
-
-    if (!file) {
-        return undefined;
-    }
-
-    return `uploads/danh-muc/co-so/${file.filename}`;
-
-}
-
-
 function normalizeMultipartBody(
     body
 ) {
@@ -22,14 +9,17 @@ function normalizeMultipartBody(
         ...(body || {})
     };
 
+
     const numberFields = [
         "quocGiaId",
         "tinhThanhId",
         "xaPhuongId"
     ];
 
+
     for (
-        const field of numberFields
+        const field of
+        numberFields
     ) {
 
         if (
@@ -42,6 +32,7 @@ function normalizeMultipartBody(
             continue;
 
         }
+
 
         if (
             result[field] !== undefined &&
@@ -57,6 +48,7 @@ function normalizeMultipartBody(
 
     }
 
+
     if (
         result.active !== undefined
     ) {
@@ -67,6 +59,7 @@ function normalizeMultipartBody(
             )
                 .trim()
                 .toLowerCase();
+
 
         if (
             activeValue === "true"
@@ -86,6 +79,7 @@ function normalizeMultipartBody(
 
     }
 
+
     return result;
 
 }
@@ -101,42 +95,8 @@ function mapCoSoUpload(
         normalizeMultipartBody(
             req.body
         );
-
-    const logo =
-        req.files?.logo?.[0];
-
-    const favicon =
-        req.files?.favicon?.[0];
-
-    const logoDoiTac =
-        req.files?.logoDoiTac?.[0];
-
-    if (logo) {
-
-        req.body.logo =
-            getUploadedFilePath(
-                logo
-            );
-
-    }
-
-    if (favicon) {
-
-        req.body.favicon =
-            getUploadedFilePath(
-                favicon
-            );
-
-    }
-
-    if (logoDoiTac) {
-
-        req.body.logoDoiTac =
-            getUploadedFilePath(
-                logoDoiTac
-            );
-
-    }
+console.log(req.body);
+console.log(req.files);
 
     next();
 

@@ -28,12 +28,6 @@ function successResponse(
 
 }
 
-
-/**
- * ==================================================
- * Trả response thất bại
- * ==================================================
- */
 function errorResponse(
     res,
     message,

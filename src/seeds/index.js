@@ -40,6 +40,7 @@ const seedVoucher = require("./chinh-sach/seed/voucher.seed");
 // ======================
 const seedThietLap = require("./he-thong/seed/thiet-lap.seed");
 const seedThietLapNhomTinhNang = require("./he-thong/seed/thiet-lap-nhom-tinh-nang.seed");
+const seedBaoCao = require("./he-thong/seed/bao-cao.seed");
 
 // ======================
 // ĐỊA CHỈ
@@ -85,7 +86,7 @@ async function runSeed() {
     await seedQuocGia();
     await seedTinhThanh();
     await seedXaPhuong();
-
+    await seedBaoCao();
 
     console.log("==========================");
     console.log("Seed Complete");

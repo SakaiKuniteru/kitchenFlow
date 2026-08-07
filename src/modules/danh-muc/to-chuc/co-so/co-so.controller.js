@@ -60,7 +60,8 @@ class CoSoController {
 
             const data =
                 await coSoService.create(
-                    req.body
+                    req.body,
+                    req.files
                 );
 
             return successResponse(
@@ -89,7 +90,8 @@ class CoSoController {
             const data =
                 await coSoService.update(
                     req.params.id,
-                    req.body
+                    req.body,
+                    req.files
                 );
 
             return successResponse(

@@ -287,6 +287,7 @@ class BaoCaoService {
 
         return path.posix.join(
             "uploads",
+            "danh-muc",
             "bao-cao",
             file.filename
         );
@@ -316,6 +317,66 @@ class BaoCaoService {
 
                 console.error(
                     "Không thể xóa file báo cáo đã tải lên:",
+                    error
+                );
+
+            }
+
+        }
+
+    }
+
+    async xoaFileMauCu(
+        fileMau
+    ) {
+
+        if (!fileMau) {
+            return;
+        }
+
+
+        const duongDanTuongDoi =
+            String(
+                fileMau
+            )
+                .trim()
+                .replace(
+                    /^\/+/,
+                    ""
+                );
+
+        if (
+            !duongDanTuongDoi.startsWith(
+                "uploads/"
+            )
+        ) {
+            return;
+        }
+
+
+        const duongDanFile =
+            path.join(
+                process.cwd(),
+                "src",
+                "public",
+                duongDanTuongDoi
+            );
+
+
+        try {
+
+            await fs.promises.unlink(
+                duongDanFile
+            );
+
+        } catch (error) {
+
+            if (
+                error.code !== "ENOENT"
+            ) {
+
+                console.error(
+                    `Không thể xóa file mẫu cũ: ${duongDanFile}`,
                     error
                 );
 
@@ -511,13 +572,17 @@ class BaoCaoService {
         try {
 
             const baoCaoId =
-                this.parseId(id);
+                this.parseId(
+                    id
+                );
+
 
             const baoCao =
                 await baoCaoRepository
                     .getChiTiet(
                         baoCaoId
                     );
+
 
             if (!baoCao) {
 
@@ -528,10 +593,12 @@ class BaoCaoService {
 
             }
 
+
             const coDuLieuCapNhat =
                 Object.keys(
                     data || {}
                 ).length > 0;
+
 
             if (
                 !coDuLieuCapNhat &&
@@ -545,6 +612,10 @@ class BaoCaoService {
 
             }
 
+            const fileMauCu =
+                baoCao.fileMau;
+
+
             this.validateFileUpload(
                 file
             );
@@ -555,6 +626,7 @@ class BaoCaoService {
                         file
                     )
                     : baoCao.fileMau;
+
 
             const duLieuCapNhat = {
 
@@ -602,14 +674,17 @@ class BaoCaoService {
 
             };
 
+
             await this.validateTrungDuLieu(
                 duLieuCapNhat,
                 baoCaoId
             );
 
+
             this.validateLoaiXuatFile(
                 duLieuCapNhat.loaiXuatFile
             );
+
 
             if (
                 duLieuCapNhat.fileMau
@@ -628,6 +703,7 @@ class BaoCaoService {
                         duLieuCapNhat
                     );
 
+
             if (!ketQua) {
 
                 throw new ApiError(
@@ -636,6 +712,21 @@ class BaoCaoService {
                 );
 
             }
+
+
+            if (
+                file &&
+                fileMauCu &&
+                fileMauCu !==
+                    ketQua.fileMau
+            ) {
+
+                await this.xoaFileMauCu(
+                    fileMauCu
+                );
+
+            }
+
 
             return ketQua;
 

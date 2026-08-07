@@ -11,6 +11,51 @@ const mapCoSoUpload = require( "./map-co-so-upload.middleware" );
 
 const controller = require("./co-so.controller");
 
+const validateUpdateCoSo = validate( updateSchema );
+
+
+function validateCoSoUpdate(
+    req,
+    res,
+    next
+) {
+
+    const hasBody =
+        Object.keys(
+            req.body || {}
+        ).length > 0;
+
+
+    const hasFile =
+        Object
+            .values(
+                req.files || {}
+            )
+            .some(
+                files =>
+                    Array.isArray(
+                        files
+                    ) &&
+                    files.length > 0
+            );
+
+    if (
+        !hasBody &&
+        hasFile
+    ) {
+
+        return next();
+
+    }
+
+    return validateUpdateCoSo(
+        req,
+        res,
+        next
+    );
+
+}
+
 router.get(
     "/tong-hop",
     authenticate,
@@ -90,7 +135,7 @@ router.patch(
 
     mapCoSoUpload,
 
-    validate(updateSchema),
+    validateCoSoUpdate,
 
     controller.update
 );

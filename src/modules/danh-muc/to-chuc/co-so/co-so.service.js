@@ -2,6 +2,8 @@ const ApiError = require("../../../../utils/api-error");
 
 const coSoRepository = require("./co-so.repository");
 
+const coSoFileService = require( "./co-so-file.service" );
+
 class CoSoService {
 
     parseId(id) {
@@ -410,160 +412,534 @@ class CoSoService {
 
     }
 
-    async create(data) {
+    async create(
+        data,
+        files
+    ) {
 
-        const duLieuDaChuanHoa =
-            await this.chuanHoaDiaChi(data);
+        const danhSachFileMoi = [];
 
-        await this.validateDuLieu(
-            duLieuDaChuanHoa
-        );
 
-        return await coSoRepository.create(
-            duLieuDaChuanHoa
-        );
+        try {
+
+            const duLieuDaChuanHoa =
+                await this.chuanHoaDiaChi(
+                    data
+                );
+
+
+            await this.validateDuLieu(
+                duLieuDaChuanHoa
+            );
+
+
+            const maCoSo =
+                duLieuDaChuanHoa
+                    .maCoSo
+                    .trim();
+
+
+            const duLieuTao = {
+
+                ...duLieuDaChuanHoa,
+
+                logo:
+                    null,
+
+                favicon:
+                    null,
+
+                logoDoiTac:
+                    null
+
+            };
+
+
+            const logo =
+                files?.logo?.[0];
+
+
+            if (logo) {
+
+                const fileMoi =
+                    await coSoFileService
+                        .saveFile(
+                            maCoSo,
+                            "logo",
+                            logo
+                        );
+
+
+                danhSachFileMoi.push(
+                    fileMoi
+                );
+
+
+                duLieuTao.logo =
+                    fileMoi.relativePath;
+
+            }
+
+            const favicon =
+                files?.favicon?.[0];
+
+
+            if (favicon) {
+
+                const fileMoi =
+                    await coSoFileService
+                        .saveFile(
+                            maCoSo,
+                            "favicon",
+                            favicon
+                        );
+
+
+                danhSachFileMoi.push(
+                    fileMoi
+                );
+
+
+                duLieuTao.favicon =
+                    fileMoi.relativePath;
+
+            }
+
+            const logoDoiTac =
+                files?.logoDoiTac?.[0];
+
+
+            if (logoDoiTac) {
+
+                const fileMoi =
+                    await coSoFileService
+                        .saveFile(
+                            maCoSo,
+                            "logoDoiTac",
+                            logoDoiTac
+                        );
+
+
+                danhSachFileMoi.push(
+                    fileMoi
+                );
+
+
+                duLieuTao.logoDoiTac =
+                    fileMoi.relativePath;
+
+            }
+
+
+            const ketQua =
+                await coSoRepository
+                    .create(
+                        duLieuTao
+                    );
+
+            if (logo) {
+
+                await coSoFileService
+                    .cleanupOldFiles(
+                        maCoSo,
+                        "logo",
+                        3
+                    );
+
+            }
+
+
+            if (favicon) {
+
+                await coSoFileService
+                    .cleanupOldFiles(
+                        maCoSo,
+                        "favicon",
+                        3
+                    );
+
+            }
+
+
+            if (logoDoiTac) {
+
+                await coSoFileService
+                    .cleanupOldFiles(
+                        maCoSo,
+                        "logoDoiTac",
+                        3
+                    );
+
+            }
+
+
+            return ketQua;
+
+        } catch (error) {
+
+
+            for (
+                const file of
+                danhSachFileMoi
+            ) {
+
+                await coSoFileService
+                    .deletePhysicalFile(
+                        file.fullPath
+                    );
+
+            }
+
+
+            await coSoFileService
+                .deleteTempFiles(
+                    files
+                );
+
+
+            throw error;
+
+        }
 
     }
 
-    async update(id, data) {
+    async update(
+        id,
+        data,
+        files
+    ) {
 
-        const coSoId = this.parseId(id);
+        const danhSachFileMoi = [];
 
-        const coSoHienTai =
-            await coSoRepository.getChiTiet(
+
+        try {
+
+            const coSoId =
+                this.parseId(
+                    id
+                );
+
+
+            const coSoHienTai =
+                await coSoRepository
+                    .getChiTiet(
+                        coSoId
+                    );
+
+
+            if (!coSoHienTai) {
+
+                throw new ApiError(
+                    404,
+                    "Cơ sở không tồn tại."
+                );
+
+            }
+
+
+            const maCoSoCu =
+                coSoHienTai.maCoSo;
+
+
+            const maCoSoMoi =
+                data.maCoSo !== undefined
+                    ? data.maCoSo.trim()
+                    : maCoSoCu;
+
+
+            /*
+            * Validate dữ liệu trước.
+            */
+            const duLieuCapNhat = {
+
+                maCoSo:
+                    maCoSoMoi,
+
+                tenCoSo:
+                    data.tenCoSo !== undefined
+                        ? data.tenCoSo.trim()
+                        : coSoHienTai.tenCoSo,
+
+                diaChi:
+                    data.diaChi !== undefined
+                        ? (
+                            data.diaChi === null
+                                ? null
+                                : data.diaChi.trim() || null
+                        )
+                        : coSoHienTai.diaChi,
+
+                logo:
+                    coSoHienTai.logo,
+
+                favicon:
+                    coSoHienTai.favicon,
+
+                logoDoiTac:
+                    coSoHienTai.logoDoiTac,
+
+                quocGiaId:
+                    data.quocGiaId !== undefined
+                        ? data.quocGiaId
+                        : (
+                            data.maQuocGia !== undefined
+                                ? undefined
+                                : coSoHienTai.quocGiaId
+                        ),
+
+                maQuocGia:
+                    data.maQuocGia !== undefined
+                        ? data.maQuocGia.trim()
+                        : undefined,
+
+                tinhThanhId:
+                    data.tinhThanhId !== undefined
+                        ? data.tinhThanhId
+                        : (
+                            data.maTinhThanh !== undefined
+                                ? undefined
+                                : coSoHienTai.tinhThanhId
+                        ),
+
+                maTinhThanh:
+                    data.maTinhThanh !== undefined
+                        ? data.maTinhThanh.trim()
+                        : undefined,
+
+                xaPhuongId:
+                    data.xaPhuongId !== undefined
+                        ? data.xaPhuongId
+                        : (
+                            data.maXaPhuong !== undefined
+                                ? undefined
+                                : coSoHienTai.xaPhuongId
+                        ),
+
+                maXaPhuong:
+                    data.maXaPhuong !== undefined
+                        ? data.maXaPhuong.trim()
+                        : undefined,
+
+                active:
+                    data.active !== undefined
+                        ? data.active
+                        : coSoHienTai.active
+
+            };
+
+
+            const duLieuDaChuanHoa =
+                await this.chuanHoaDiaChi(
+                    duLieuCapNhat
+                );
+
+
+            await this.validateDuLieu(
+                duLieuDaChuanHoa,
                 coSoId
             );
 
-        if (!coSoHienTai) {
 
-            throw new ApiError(
-                404,
-                "Cơ sở không tồn tại."
-            );
+            /*
+            * Nếu đổi mã cơ sở thì đổi tên folder trước.
+            */
+            if (
+                maCoSoCu !==
+                maCoSoMoi
+            ) {
 
-        }
+                await coSoFileService
+                    .renameCoSoDirectory(
+                        maCoSoCu,
+                        maCoSoMoi
+                    );
 
-        const duLieuCapNhat = {
 
-            maCoSo:
-                data.maCoSo !== undefined
-                    ? data.maCoSo.trim()
-                    : coSoHienTai.maCoSo,
+                duLieuDaChuanHoa.logo =
+                    coSoFileService
+                        .replaceMaCoSoInPath(
+                            duLieuDaChuanHoa.logo,
+                            maCoSoCu,
+                            maCoSoMoi
+                        );
 
-            tenCoSo:
-                data.tenCoSo !== undefined
-                    ? data.tenCoSo.trim()
-                    : coSoHienTai.tenCoSo,
 
-            diaChi:
-                data.diaChi !== undefined
-                    ? (
-                        data.diaChi === null
-                            ? null
-                            : data.diaChi.trim() || null
-                    )
-                    : coSoHienTai.diaChi,
+                duLieuDaChuanHoa.favicon =
+                    coSoFileService
+                        .replaceMaCoSoInPath(
+                            duLieuDaChuanHoa.favicon,
+                            maCoSoCu,
+                            maCoSoMoi
+                        );
 
-            logo:
-                data.logo !== undefined
-                    ? (
-                        data.logo === null
-                            ? null
-                            : data.logo.trim() || null
-                    )
-                    : coSoHienTai.logo,
 
-            favicon:
-                data.favicon !== undefined
-                    ? (
-                        data.favicon === null
-                            ? null
-                            : data.favicon.trim() || null
-                    )
-                    : coSoHienTai.favicon,
+                duLieuDaChuanHoa.logoDoiTac =
+                    coSoFileService
+                        .replaceMaCoSoInPath(
+                            duLieuDaChuanHoa.logoDoiTac,
+                            maCoSoCu,
+                            maCoSoMoi
+                        );
 
-            logoDoiTac:
-                data.logoDoiTac !== undefined
-                    ? (
-                        data.logoDoiTac === null
-                            ? null
-                            : data.logoDoiTac.trim() || null
-                    )
-                    : coSoHienTai.logoDoiTac,
+            }
 
-            quocGiaId:
-                data.quocGiaId !== undefined
-                    ? data.quocGiaId
-                    : (
-                        data.maQuocGia !== undefined
-                            ? undefined
-                            : coSoHienTai.quocGiaId
-                    ),
+            const logo =
+                files?.logo?.[0];
 
-            maQuocGia:
-                data.maQuocGia !== undefined
-                    ? data.maQuocGia.trim()
-                    : undefined,
 
-            tinhThanhId:
-                data.tinhThanhId !== undefined
-                    ? data.tinhThanhId
-                    : (
-                        data.maTinhThanh !== undefined
-                            ? undefined
-                            : coSoHienTai.tinhThanhId
-                    ),
+            if (logo) {
 
-            maTinhThanh:
-                data.maTinhThanh !== undefined
-                    ? data.maTinhThanh.trim()
-                    : undefined,
+                const fileMoi =
+                    await coSoFileService
+                        .saveFile(
+                            maCoSoMoi,
+                            "logo",
+                            logo
+                        );
 
-            xaPhuongId:
-                data.xaPhuongId !== undefined
-                    ? data.xaPhuongId
-                    : (
-                        data.maXaPhuong !== undefined
-                            ? undefined
-                            : coSoHienTai.xaPhuongId
-                    ),
 
-            maXaPhuong:
-                data.maXaPhuong !== undefined
-                    ? data.maXaPhuong.trim()
-                    : undefined,
-
-            active:
-                data.active !== undefined
-                    ? data.active
-                    : coSoHienTai.active
-        };
-
-        const duLieuDaChuanHoa =
-            await this.chuanHoaDiaChi(duLieuCapNhat);
-
-        await this.validateDuLieu(
-            duLieuDaChuanHoa,
-            coSoId
-        );
-
-        const ketQua =
-            await coSoRepository
-                .update(
-                    coSoId,
-                    duLieuDaChuanHoa
+                danhSachFileMoi.push(
+                    fileMoi
                 );
 
-        if (!ketQua) {
 
-            throw new ApiError(
-                404,
-                "Cơ sở không tồn tại."
-            );
+                duLieuDaChuanHoa.logo =
+                    fileMoi.relativePath;
+
+            }
+
+            const favicon =
+                files?.favicon?.[0];
+
+
+            if (favicon) {
+
+                const fileMoi =
+                    await coSoFileService
+                        .saveFile(
+                            maCoSoMoi,
+                            "favicon",
+                            favicon
+                        );
+
+
+                danhSachFileMoi.push(
+                    fileMoi
+                );
+
+
+                duLieuDaChuanHoa.favicon =
+                    fileMoi.relativePath;
+
+            }
+
+            const logoDoiTac =
+                files?.logoDoiTac?.[0];
+
+
+            if (logoDoiTac) {
+
+                const fileMoi =
+                    await coSoFileService
+                        .saveFile(
+                            maCoSoMoi,
+                            "logoDoiTac",
+                            logoDoiTac
+                        );
+
+
+                danhSachFileMoi.push(
+                    fileMoi
+                );
+
+
+                duLieuDaChuanHoa.logoDoiTac =
+                    fileMoi.relativePath;
+
+            }
+
+
+            const ketQua =
+                await coSoRepository
+                    .update(
+                        coSoId,
+                        duLieuDaChuanHoa
+                    );
+
+
+            if (!ketQua) {
+
+                throw new ApiError(
+                    404,
+                    "Cơ sở không tồn tại."
+                );
+
+            }
+
+            if (logo) {
+
+                await coSoFileService
+                    .cleanupOldFiles(
+                        maCoSoMoi,
+                        "logo",
+                        3
+                    );
+
+            }
+
+
+            if (favicon) {
+
+                await coSoFileService
+                    .cleanupOldFiles(
+                        maCoSoMoi,
+                        "favicon",
+                        3
+                    );
+
+            }
+
+
+            if (logoDoiTac) {
+
+                await coSoFileService
+                    .cleanupOldFiles(
+                        maCoSoMoi,
+                        "logoDoiTac",
+                        3
+                    );
+
+            }
+
+
+            return ketQua;
+
+        } catch (error) {
+
+
+            for (
+                const file of
+                danhSachFileMoi
+            ) {
+
+                await coSoFileService
+                    .deletePhysicalFile(
+                        file.fullPath
+                    );
+
+            }
+
+
+            await coSoFileService
+                .deleteTempFiles(
+                    files
+                );
+
+
+            throw error;
 
         }
 
-        return ketQua;
     }
 
 }

@@ -90,25 +90,31 @@ const storage =
                     extension
                 )
                     .normalize("NFD")
-                    .replace(
-                        /[\u0300-\u036f]/g,
-                        ""
-                    )
-                    .replace(
-                        /[^a-zA-Z0-9-_]/g,
-                        "-"
-                    )
-                    .replace(
-                        /-+/g,
-                        "-"
-                    )
-                    .replace(
-                        /^-|-$/g,
-                        ""
-                    );
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^a-zA-Z0-9-_]/g, "-")
+                    .replace(/-+/g, "-")
+                    .replace(/^-|-$/g, "");
 
-            const fileName =
-                `${Date.now()}-${baseName || "bao-cao"}${extension}`;
+            let fileName =
+                `${baseName}${extension}`;
+
+            let index = 1;
+
+            while (
+                fs.existsSync(
+                    path.join(
+                        uploadDirectory,
+                        fileName
+                    )
+                )
+            ) {
+
+                fileName =
+                    `${baseName}-${index}${extension}`;
+
+                index++;
+
+            }
 
             callback(
                 null,
