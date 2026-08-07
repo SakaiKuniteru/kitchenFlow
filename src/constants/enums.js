@@ -150,6 +150,44 @@ const LOAI_XUAT_FILE = [
 
 ];
 
+const TRANG_THAI_THUC_DON = [
+    {
+        value: 10,
+        label: "Nháp"
+    },
+    {
+        value: 20,
+        label: "Đang áp dụng"
+    },
+    {
+        value: 30,
+        label: "Kết thúc"
+    },
+    {
+        value: 40,
+        label: "Hủy"
+    }
+];
+
+const LOAI_THUC_DON = [
+    {
+        value: 10,
+        label: "Theo ngày"
+    },
+    {
+        value: 20,
+        label: "Theo tuần"
+    },
+    {
+        value: 30,
+        label: "Theo tháng"
+    },
+    {
+        value: 40,
+        label: "Từ ngày đến ngày"
+    }
+];
+
 const TRANG_THAI_PHIEU_THU = [
     {
         value: -10,
@@ -230,6 +268,10 @@ module.exports = {
     "loaiKho": LOAI_KHO,
 
     "loaiXuatFile": LOAI_XUAT_FILE,
+
+    "trangThaiThucDon": TRANG_THAI_THUC_DON,
+
+    "loaiThucDon": LOAI_THUC_DON,
 
     "trangThaiPhieuThu": TRANG_THAI_PHIEU_THU,
 

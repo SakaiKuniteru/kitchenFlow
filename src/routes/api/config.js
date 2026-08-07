@@ -175,6 +175,15 @@ const routes = [
         )
     ],
 
+    // NGHIỆP VỤ
+
+    [
+        "/thuc-don",
+        require(
+            "../../modules/nghiep-vu/thuc-don/thuc-don.route"
+        )
+    ],
+
 ];
 
 module.exports = routes;

@@ -126,6 +126,23 @@ CREATE TABLE ct_phieu_xuat (
     he_so_quy_doi NUMERIC(18, 3)
 );
 
+CREATE TABLE dm_bao_cao (
+    id BIGSERIAL PRIMARY KEY,
+    ma_bao_cao VARCHAR(100) NOT NULL,
+    ten_bao_cao VARCHAR(255) NOT NULL,
+    file_mau VARCHAR(500),
+    loai_xuat_file INTEGER,
+    mo_ta VARCHAR(500),
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL,
+    CONSTRAINT uq_dm_bao_cao_ma UNIQUE (ma_bao_cao),
+    CONSTRAINT chk_dm_bao_cao_loai_xuat_file CHECK (
+        loai_xuat_file IS NULL
+        OR loai_xuat_file IN (10, 20, 30)
+    )
+);
+
 CREATE TABLE dm_ca_an (
     id SERIAL NOT NULL,
     ma_ca_an VARCHAR(50) NOT NULL,
@@ -534,6 +551,70 @@ CREATE TABLE nv_refresh_token (
     updated_at TIMESTAMP DEFAULT now()
 );
 
+
+CREATE TABLE nv_thuc_don (
+    id BIGSERIAL NOT NULL,
+    ma_thuc_don VARCHAR(50) NOT NULL,
+    ten_thuc_don VARCHAR(255) NOT NULL,
+    loai_thuc_don INTEGER NOT NULL,
+    tu_ngay DATE NOT NULL,
+    den_ngay DATE NOT NULL,
+    co_so_id INTEGER NOT NULL,
+    nha_an_id INTEGER NOT NULL,
+    ca_an_id INTEGER,
+    trang_thai INTEGER DEFAULT 10 NOT NULL,
+    mo_ta VARCHAR(500),
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL,
+    CONSTRAINT chk_nv_thuc_don_loai CHECK (loai_thuc_don IN (10, 20, 30, 40)),
+    CONSTRAINT chk_nv_thuc_don_trang_thai CHECK (trang_thai IN (10, 20, 30, 40)),
+    CONSTRAINT chk_nv_thuc_don_ngay CHECK (tu_ngay <= den_ngay)
+);
+
+CREATE TABLE ct_thuc_don_ngay (
+    id BIGSERIAL NOT NULL,
+    thuc_don_id BIGINT NOT NULL,
+    ngay DATE NOT NULL,
+    ghi_chu VARCHAR(500),
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL
+);
+
+CREATE TABLE ct_thuc_don_nhom_mon_an (
+    id BIGSERIAL NOT NULL,
+    thuc_don_ngay_id BIGINT NOT NULL,
+    nhom_mon_an_id INTEGER NOT NULL,
+    thu_tu_hien_thi INTEGER,
+    ghi_chu VARCHAR(500),
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL,
+    CONSTRAINT chk_ct_thuc_don_nhom_mon_an_thu_tu CHECK (
+        thu_tu_hien_thi IS NULL OR thu_tu_hien_thi > 0
+    )
+);
+
+CREATE TABLE ct_thuc_don_mon_an (
+    id BIGSERIAL NOT NULL,
+    thuc_don_nhom_mon_an_id BIGINT NOT NULL,
+    mon_an_id INTEGER NOT NULL,
+    thu_tu_hien_thi INTEGER,
+    dinh_luong NUMERIC(12, 3),
+    don_vi_tinh_id INTEGER,
+    ghi_chu VARCHAR(500),
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL,
+    CONSTRAINT chk_ct_thuc_don_mon_an_thu_tu CHECK (
+        thu_tu_hien_thi IS NULL OR thu_tu_hien_thi > 0
+    ),
+    CONSTRAINT chk_ct_thuc_don_mon_an_dinh_luong CHECK (
+        dinh_luong IS NULL OR dinh_luong >= 0
+    )
+);
+
 CREATE TABLE ton_kho (
     id SERIAL NOT NULL,
     kho_id INTEGER NOT NULL,
@@ -637,6 +718,16 @@ ALTER TABLE nv_phieu_xuat
     ADD CONSTRAINT nv_phieu_xuat_pkey PRIMARY KEY (id);
 ALTER TABLE nv_refresh_token
     ADD CONSTRAINT nv_refresh_token_pkey PRIMARY KEY (id);
+
+ALTER TABLE nv_thuc_don
+    ADD CONSTRAINT nv_thuc_don_pkey PRIMARY KEY (id);
+ALTER TABLE ct_thuc_don_ngay
+    ADD CONSTRAINT ct_thuc_don_ngay_pkey PRIMARY KEY (id);
+ALTER TABLE ct_thuc_don_nhom_mon_an
+    ADD CONSTRAINT ct_thuc_don_nhom_mon_an_pkey PRIMARY KEY (id);
+ALTER TABLE ct_thuc_don_mon_an
+    ADD CONSTRAINT ct_thuc_don_mon_an_pkey PRIMARY KEY (id);
+
 ALTER TABLE ton_kho
     ADD CONSTRAINT ton_kho_pkey PRIMARY KEY (id);
 
@@ -721,6 +812,16 @@ ALTER TABLE nv_phieu_xuat
     ADD CONSTRAINT nv_phieu_xuat_ma_phieu_xuat_key UNIQUE (ma_phieu_xuat);
 ALTER TABLE nv_refresh_token
     ADD CONSTRAINT nv_refresh_token_token_key UNIQUE (token);
+
+ALTER TABLE nv_thuc_don
+    ADD CONSTRAINT uq_nv_thuc_don_ma UNIQUE (ma_thuc_don);
+ALTER TABLE ct_thuc_don_ngay
+    ADD CONSTRAINT uq_ct_thuc_don_ngay UNIQUE (thuc_don_id, ngay);
+ALTER TABLE ct_thuc_don_nhom_mon_an
+    ADD CONSTRAINT uq_ct_thuc_don_nhom_mon_an UNIQUE (thuc_don_ngay_id, nhom_mon_an_id);
+ALTER TABLE ct_thuc_don_mon_an
+    ADD CONSTRAINT uq_ct_thuc_don_mon_an UNIQUE (thuc_don_nhom_mon_an_id, mon_an_id);
+
 ALTER TABLE ton_kho
     ADD CONSTRAINT uq_ton_kho UNIQUE (kho_id, thuc_pham_id);
 
@@ -1015,6 +1116,47 @@ ALTER TABLE nv_refresh_token
     ADD CONSTRAINT fk_refresh_token_tai_khoan
     FOREIGN KEY (tai_khoan_id)
     REFERENCES dm_tai_khoan (id);
+
+ALTER TABLE nv_thuc_don
+    ADD CONSTRAINT fk_nv_thuc_don_co_so
+    FOREIGN KEY (co_so_id)
+    REFERENCES dm_co_so (id);
+ALTER TABLE nv_thuc_don
+    ADD CONSTRAINT fk_nv_thuc_don_nha_an
+    FOREIGN KEY (nha_an_id)
+    REFERENCES dm_nha_an (id);
+ALTER TABLE nv_thuc_don
+    ADD CONSTRAINT fk_nv_thuc_don_ca_an
+    FOREIGN KEY (ca_an_id)
+    REFERENCES dm_ca_an (id);
+ALTER TABLE ct_thuc_don_ngay
+    ADD CONSTRAINT fk_ct_thuc_don_ngay_thuc_don
+    FOREIGN KEY (thuc_don_id)
+    REFERENCES nv_thuc_don (id)
+    ON DELETE CASCADE;
+ALTER TABLE ct_thuc_don_nhom_mon_an
+    ADD CONSTRAINT fk_ct_thuc_don_nhom_mon_an_ngay
+    FOREIGN KEY (thuc_don_ngay_id)
+    REFERENCES ct_thuc_don_ngay (id)
+    ON DELETE CASCADE;
+ALTER TABLE ct_thuc_don_nhom_mon_an
+    ADD CONSTRAINT fk_ct_thuc_don_nhom_mon_an_nhom
+    FOREIGN KEY (nhom_mon_an_id)
+    REFERENCES dm_nhom_mon_an (id);
+ALTER TABLE ct_thuc_don_mon_an
+    ADD CONSTRAINT fk_ct_thuc_don_mon_an_nhom
+    FOREIGN KEY (thuc_don_nhom_mon_an_id)
+    REFERENCES ct_thuc_don_nhom_mon_an (id)
+    ON DELETE CASCADE;
+ALTER TABLE ct_thuc_don_mon_an
+    ADD CONSTRAINT fk_ct_thuc_don_mon_an_mon_an
+    FOREIGN KEY (mon_an_id)
+    REFERENCES dm_mon_an (id);
+ALTER TABLE ct_thuc_don_mon_an
+    ADD CONSTRAINT fk_ct_thuc_don_mon_an_don_vi_tinh
+    FOREIGN KEY (don_vi_tinh_id)
+    REFERENCES dm_don_vi_tinh (id);
+
 ALTER TABLE ton_kho
     ADD CONSTRAINT fk_ton_kho
     FOREIGN KEY (kho_id)
@@ -1031,6 +1173,46 @@ ALTER TABLE ton_kho
     ADD CONSTRAINT fk_ton_kho_last_px
     FOREIGN KEY (last_phieu_xuat_id)
     REFERENCES nv_phieu_xuat (id);
+
+CREATE OR REPLACE VIEW dm_dia_chi AS
+SELECT
+    xp.id AS id,
+    xp.ma_xa_phuong AS ma_dia_chi,
+    CONCAT_WS(
+        ', ',
+        xp.ten_xa_phuong,
+        tt.ten_tinh_thanh,
+        qg.ten_quoc_gia
+    ) AS ten_dia_chi,
+    qg.id AS quoc_gia_id,
+    qg.ma_quoc_gia,
+    qg.ten_quoc_gia,
+    qg.ten_tieng_anh,
+    qg.ten_viet_tat AS quoc_gia_ten_viet_tat,
+    qg.ma_dien_thoai,
+    qg.ma_iso2,
+    qg.ma_iso3,
+    qg.active AS quoc_gia_active,
+    tt.id AS tinh_thanh_id,
+    tt.ma_tinh_thanh,
+    tt.ten_tinh_thanh,
+    tt.ten_viet_tat AS tinh_thanh_ten_viet_tat,
+    tt.active AS tinh_thanh_active,
+    xp.id AS xa_phuong_id,
+    xp.ma_xa_phuong,
+    xp.ten_xa_phuong,
+    xp.ten_viet_tat AS xa_phuong_ten_viet_tat,
+    xp.active AS xa_phuong_active,
+    (
+        qg.active = true
+        AND tt.active = true
+        AND xp.active = true
+    ) AS active
+FROM dm_xa_phuong xp
+INNER JOIN dm_tinh_thanh tt
+    ON tt.id = xp.tinh_thanh_id
+INNER JOIN dm_quoc_gia qg
+    ON qg.id = tt.quoc_gia_id;
 
 -- Index hỗ trợ truy vấn
 CREATE INDEX idx_ct_cscv_chuc_vu
@@ -1066,7 +1248,56 @@ CREATE INDEX idx_quyen_nhom_nhom_tinh_nang_id
 CREATE INDEX idx_quyen_nhom_quyen_id
     ON dm_quyen_nhom_tinh_nang (quyen_id);
 
+
+CREATE INDEX idx_nv_thuc_don_co_so_id
+    ON nv_thuc_don (co_so_id);
+CREATE INDEX idx_nv_thuc_don_nha_an_id
+    ON nv_thuc_don (nha_an_id);
+CREATE INDEX idx_nv_thuc_don_ca_an_id
+    ON nv_thuc_don (ca_an_id);
+CREATE INDEX idx_nv_thuc_don_tu_ngay
+    ON nv_thuc_don (tu_ngay);
+CREATE INDEX idx_nv_thuc_don_den_ngay
+    ON nv_thuc_don (den_ngay);
+CREATE INDEX idx_nv_thuc_don_trang_thai
+    ON nv_thuc_don (trang_thai);
+CREATE INDEX idx_ct_thuc_don_ngay_thuc_don_id
+    ON ct_thuc_don_ngay (thuc_don_id);
+CREATE INDEX idx_ct_thuc_don_ngay_ngay
+    ON ct_thuc_don_ngay (ngay);
+CREATE INDEX idx_ct_thuc_don_nhom_mon_an_ngay_id
+    ON ct_thuc_don_nhom_mon_an (thuc_don_ngay_id);
+CREATE INDEX idx_ct_thuc_don_nhom_mon_an_nhom_id
+    ON ct_thuc_don_nhom_mon_an (nhom_mon_an_id);
+CREATE INDEX idx_ct_thuc_don_mon_an_nhom_id
+    ON ct_thuc_don_mon_an (thuc_don_nhom_mon_an_id);
+CREATE INDEX idx_ct_thuc_don_mon_an_mon_an_id
+    ON ct_thuc_don_mon_an (mon_an_id);
+CREATE INDEX idx_ct_thuc_don_mon_an_don_vi_tinh_id
+    ON ct_thuc_don_mon_an (don_vi_tinh_id);
+
 -- Trigger tự động cập nhật updated_at
+
+CREATE TRIGGER trg_nv_thuc_don_updated_at
+BEFORE UPDATE ON nv_thuc_don
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_ct_thuc_don_ngay_updated_at
+BEFORE UPDATE ON ct_thuc_don_ngay
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_ct_thuc_don_nhom_mon_an_updated_at
+BEFORE UPDATE ON ct_thuc_don_nhom_mon_an
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_ct_thuc_don_mon_an_updated_at
+BEFORE UPDATE ON ct_thuc_don_mon_an
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
 CREATE TRIGGER trg_ct_phieu_nhap_updated_at
 BEFORE UPDATE ON ct_phieu_nhap
 FOR EACH ROW
