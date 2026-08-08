@@ -105,11 +105,17 @@ class ChucVuService {
 
     }
 
-    async update(id, data) {
+    async update(
+        id,
+        data
+    ) {
 
         const chucVu =
             await chucVuRepository
-                .getChiTiet(id);
+                .getChiTiet(
+                    id
+                );
+
 
         if (!chucVu) {
 
@@ -119,15 +125,6 @@ class ChucVuService {
             );
 
         }
-
-        const duLieu = {
-            ...data
-        };
-
-        await this.validateTrungDuLieu(
-            duLieu,
-            id
-        );
 
         const duLieuCapNhat = {
 
@@ -157,12 +154,19 @@ class ChucVuService {
 
         };
 
+        await this.validateTrungDuLieu(
+            duLieuCapNhat,
+            id
+        );
+
+
         const ketQua =
             await chucVuRepository
                 .update(
                     id,
                     duLieuCapNhat
                 );
+
 
         if (!ketQua) {
 
@@ -172,6 +176,7 @@ class ChucVuService {
             );
 
         }
+
 
         return ketQua;
 

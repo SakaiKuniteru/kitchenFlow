@@ -181,6 +181,47 @@ class ChucVuRepository {
 
     }
 
+    async getChiTietByMa(
+        maChucVu
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(cv.ma_chuc_vu)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maChucVu
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapChucVu(
+            result.rows[0]
+        );
+
+    }
+
     async create(data) {
 
         const sql = `

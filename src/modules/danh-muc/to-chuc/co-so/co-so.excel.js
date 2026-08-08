@@ -404,7 +404,12 @@ class CoSoExcel {
                 columnNumber
             ] of headerMap
         ) {
-            
+
+            /*
+            * Key trong Excel không phải
+            * field hệ thống hỗ trợ export
+            * => bỏ qua.
+            */
             if (
                 !Object.prototype
                     .hasOwnProperty
@@ -419,12 +424,33 @@ class CoSoExcel {
             }
 
 
+            const value =
+                data[field];
+
+
+            /*
+            * Không có giá trị
+            * => bỏ qua.
+            *
+            * false và 0 vẫn được xuất.
+            */
+            if (
+                value === undefined ||
+                value === null ||
+                value === ""
+            ) {
+
+                continue;
+
+            }
+
+
             row
                 .getCell(
                     columnNumber
                 )
                 .value =
-                data[field] ?? null;
+                value;
 
         }
 
@@ -737,6 +763,10 @@ class CoSoExcel {
             );
 
 
+        /*
+        * Phải có một field mã
+        * để xác định cách xử lý import.
+        */
         if (
             !hasMaKey &&
             !hasMaNormal
@@ -750,6 +780,12 @@ class CoSoExcel {
         }
 
 
+        /*
+        * Không được tồn tại đồng thời:
+        *
+        * maCoSo
+        * maCoSo/k
+        */
         if (
             hasMaKey &&
             hasMaNormal
@@ -763,61 +799,29 @@ class CoSoExcel {
         }
 
 
-        const requiredFields = [
-
-            "tenCoSo",
-
-            "diaChi",
-
-            "quocGiaId",
-
-            "maQuocGia",
-
-            "tinhThanhId",
-
-            "maTinhThanh",
-
-            "xaPhuongId",
-
-            "maXaPhuong",
-
-            "active"
-
-        ];
-
-
-        for (
-            const field of
-            requiredFields
-        ) {
-
-            if (
-                !headerMap.has(
-                    field
-                )
-            ) {
-
-                throw new ApiError(
-                    400,
-                    `File import thiếu field: ${field}.`
-                );
-
-            }
-
-        }
-
-
         return {
 
             hasIdKey,
 
             hasMaKey,
 
-            hasMaNormal
+            hasMaNormal,
+
+            /*
+            * Lưu lại chính xác các key
+            * thực sự có trong file.
+            */
+            fieldsCoTrongFile:
+                new Set(
+                    [
+                        ...headerMap.keys()
+                    ]
+                )
 
         };
 
     }
+
     async docDuLieuImport(
         file
     ) {
@@ -843,9 +847,176 @@ class CoSoExcel {
             );
 
 
+        const {
+            fieldsCoTrongFile
+        } =
+            cauHinhKhoa;
+
+
         const danhSach =
             [];
 
+
+        /*
+        * =========================================================
+        * HELPER
+        * =========================================================
+        */
+
+        const getOptionalValue =
+            (
+                row,
+                field
+            ) => {
+
+                /*
+                * File không có key
+                * => bỏ qua.
+                */
+                if (
+                    !fieldsCoTrongFile
+                        .has(
+                            field
+                        )
+                ) {
+
+                    return undefined;
+
+                }
+
+
+                const value =
+                    getValue(
+                        row,
+                        field
+                    );
+
+
+                /*
+                * Có key nhưng ô trống
+                * => bỏ qua.
+                */
+                if (
+                    this.isBlank(
+                        value
+                    )
+                ) {
+
+                    return undefined;
+
+                }
+
+
+                if (
+                    typeof value ===
+                    "string"
+                ) {
+
+                    return value.trim();
+
+                }
+
+
+                return value;
+
+            };
+
+
+        const getOptionalNumber =
+            (
+                row,
+                field,
+                label
+            ) => {
+
+                const value =
+                    getOptionalValue(
+                        row,
+                        field
+                    );
+
+
+                if (
+                    value === undefined
+                ) {
+
+                    return undefined;
+
+                }
+
+
+                const number =
+                    toNumber(
+                        value
+                    );
+
+
+                /*
+                * Ô có dữ liệu nhưng không đổi
+                * được thành số.
+                */
+                if (
+                    number === null
+                ) {
+
+                    throw new ApiError(
+                        400,
+                        `${label} không hợp lệ.`
+                    );
+
+                }
+
+
+                return number;
+
+            };
+
+
+        const getOptionalBoolean =
+            (
+                row,
+                field
+            ) => {
+
+                const value =
+                    getOptionalValue(
+                        row,
+                        field
+                    );
+
+
+                if (
+                    value === undefined
+                ) {
+
+                    return undefined;
+
+                }
+
+
+                try {
+
+                    return toBoolean(
+                        value
+                    );
+
+                } catch (error) {
+
+                    throw new ApiError(
+                        400,
+                        "Trạng thái không hợp lệ. Chỉ chấp nhận TRUE hoặc FALSE."
+                    );
+
+                }
+
+            };
+
+
+        /*
+        * =========================================================
+        * ĐỌC TỪNG DÒNG
+        * =========================================================
+        */
 
         for (
             let rowNumber =
@@ -861,117 +1032,32 @@ class CoSoExcel {
                 );
 
 
-            const idRaw =
-                cauHinhKhoa.hasIdKey
-                    ? getValue(
-                        row,
-                        "id/k"
-                    )
-                    : null;
-
-
-            const maCoSoRaw =
-                cauHinhKhoa.hasMaKey
-                    ? getValue(
-                        row,
-                        "maCoSo/k"
-                    )
-                    : getValue(
-                        row,
-                        "maCoSo"
+            /*
+            * Không quét theo cột 1, 2, 3...
+            *
+            * Chỉ đọc những key thực sự
+            * tồn tại trong file.
+            */
+            const rawValues =
+                [
+                    ...fieldsCoTrongFile
+                ]
+                    .map(
+                        field =>
+                            getValue(
+                                row,
+                                field
+                            )
                     );
 
 
-            const tenCoSoRaw =
-                getValue(
-                    row,
-                    "tenCoSo"
-                );
-
-
-            const diaChiRaw =
-                getValue(
-                    row,
-                    "diaChi"
-                );
-
-
-            const quocGiaIdRaw =
-                getValue(
-                    row,
-                    "quocGiaId"
-                );
-
-
-            const maQuocGiaRaw =
-                getValue(
-                    row,
-                    "maQuocGia"
-                );
-
-
-            const tinhThanhIdRaw =
-                getValue(
-                    row,
-                    "tinhThanhId"
-                );
-
-
-            const maTinhThanhRaw =
-                getValue(
-                    row,
-                    "maTinhThanh"
-                );
-
-
-            const xaPhuongIdRaw =
-                getValue(
-                    row,
-                    "xaPhuongId"
-                );
-
-
-            const maXaPhuongRaw =
-                getValue(
-                    row,
-                    "maXaPhuong"
-                );
-
-
-            const activeRaw =
-                getValue(
-                    row,
-                    "active"
-                );
-
-
-            const rawValues = [
-
-                idRaw,
-
-                maCoSoRaw,
-
-                tenCoSoRaw,
-
-                diaChiRaw,
-
-                quocGiaIdRaw,
-
-                maQuocGiaRaw,
-
-                tinhThanhIdRaw,
-
-                maTinhThanhRaw,
-
-                xaPhuongIdRaw,
-
-                maXaPhuongRaw,
-
-                activeRaw
-
-            ];
-
-
+            /*
+            * Bỏ dòng template:
+            *
+            * [[dmCoSo.id]]
+            * [[dmCoSo.maCoSo]]
+            * ...
+            */
             if (
                 rawValues.some(
                     value =>
@@ -986,6 +1072,9 @@ class CoSoExcel {
             }
 
 
+            /*
+            * Cả dòng không có dữ liệu.
+            */
             if (
                 rawValues.every(
                     value =>
@@ -1000,39 +1089,47 @@ class CoSoExcel {
             }
 
 
-            let active =
-                true;
+            /*
+            * =====================================================
+            * KHÓA
+            * =====================================================
+            */
+
+            const id =
+                cauHinhKhoa.hasIdKey
+                    ? getOptionalNumber(
+                        row,
+                        "id/k",
+                        "ID cơ sở"
+                    )
+                    : undefined;
 
 
-            if (
-                !this.isBlank(
-                    activeRaw
-                )
-            ) {
-
-                try {
-
-                    active =
-                        toBoolean(
-                            activeRaw,
-                            true
-                        );
-
-                } catch (error) {
-
-                    active =
-                        activeRaw;
-
-                }
-
-            }
+            const maCoSo =
+                cauHinhKhoa.hasMaKey
+                    ? getOptionalValue(
+                        row,
+                        "maCoSo/k"
+                    )
+                    : getOptionalValue(
+                        row,
+                        "maCoSo"
+                    );
 
 
-            danhSach.push({
+            /*
+            * =====================================================
+            * FIELD NGHIỆP VỤ
+            * =====================================================
+            */
+
+            const item = {
 
                 rowNumbers: [
                     rowNumber
                 ],
+
+                fieldsCoTrongFile,
 
                 idLaKhoa:
                     cauHinhKhoa.hasIdKey,
@@ -1040,99 +1137,172 @@ class CoSoExcel {
                 maLaKhoa:
                     cauHinhKhoa.hasMaKey,
 
-                id:
-                    this.isBlank(
-                        idRaw
-                    )
-                        ? null
-                        : toNumber(
-                            idRaw
-                        ),
+                id,
 
-                maCoSo:
-                    this.isBlank(
-                        maCoSoRaw
-                    )
-                        ? null
-                        : String(
-                            maCoSoRaw
-                        ).trim(),
+                maCoSo
 
-                tenCoSo:
-                    this.isBlank(
-                        tenCoSoRaw
-                    )
-                        ? null
-                        : String(
-                            tenCoSoRaw
-                        ).trim(),
+            };
 
-                diaChi:
-                    this.isBlank(
-                        diaChiRaw
-                    )
-                        ? null
-                        : String(
-                            diaChiRaw
-                        ).trim(),
 
-                quocGiaId:
-                    this.isBlank(
-                        quocGiaIdRaw
-                    )
-                        ? null
-                        : toNumber(
-                            quocGiaIdRaw
-                        ),
+            const tenCoSo =
+                getOptionalValue(
+                    row,
+                    "tenCoSo"
+                );
 
-                maQuocGia:
-                    this.isBlank(
-                        maQuocGiaRaw
-                    )
-                        ? null
-                        : String(
-                            maQuocGiaRaw
-                        ).trim(),
 
-                tinhThanhId:
-                    this.isBlank(
-                        tinhThanhIdRaw
-                    )
-                        ? null
-                        : toNumber(
-                            tinhThanhIdRaw
-                        ),
+            if (
+                tenCoSo !== undefined
+            ) {
 
-                maTinhThanh:
-                    this.isBlank(
-                        maTinhThanhRaw
-                    )
-                        ? null
-                        : String(
-                            maTinhThanhRaw
-                        ).trim(),
+                item.tenCoSo =
+                    tenCoSo;
 
-                xaPhuongId:
-                    this.isBlank(
-                        xaPhuongIdRaw
-                    )
-                        ? null
-                        : toNumber(
-                            xaPhuongIdRaw
-                        ),
+            }
 
-                maXaPhuong:
-                    this.isBlank(
-                        maXaPhuongRaw
-                    )
-                        ? null
-                        : String(
-                            maXaPhuongRaw
-                        ).trim(),
 
-                active
+            const diaChi =
+                getOptionalValue(
+                    row,
+                    "diaChi"
+                );
 
-            });
+
+            if (
+                diaChi !== undefined
+            ) {
+
+                item.diaChi =
+                    diaChi;
+
+            }
+
+
+            const quocGiaId =
+                getOptionalNumber(
+                    row,
+                    "quocGiaId",
+                    "ID quốc gia"
+                );
+
+
+            if (
+                quocGiaId !== undefined
+            ) {
+
+                item.quocGiaId =
+                    quocGiaId;
+
+            }
+
+
+            const maQuocGia =
+                getOptionalValue(
+                    row,
+                    "maQuocGia"
+                );
+
+
+            if (
+                maQuocGia !== undefined
+            ) {
+
+                item.maQuocGia =
+                    maQuocGia;
+
+            }
+
+
+            const tinhThanhId =
+                getOptionalNumber(
+                    row,
+                    "tinhThanhId",
+                    "ID tỉnh thành"
+                );
+
+
+            if (
+                tinhThanhId !== undefined
+            ) {
+
+                item.tinhThanhId =
+                    tinhThanhId;
+
+            }
+
+
+            const maTinhThanh =
+                getOptionalValue(
+                    row,
+                    "maTinhThanh"
+                );
+
+
+            if (
+                maTinhThanh !== undefined
+            ) {
+
+                item.maTinhThanh =
+                    maTinhThanh;
+
+            }
+
+
+            const xaPhuongId =
+                getOptionalNumber(
+                    row,
+                    "xaPhuongId",
+                    "ID xã/phường"
+                );
+
+
+            if (
+                xaPhuongId !== undefined
+            ) {
+
+                item.xaPhuongId =
+                    xaPhuongId;
+
+            }
+
+
+            const maXaPhuong =
+                getOptionalValue(
+                    row,
+                    "maXaPhuong"
+                );
+
+
+            if (
+                maXaPhuong !== undefined
+            ) {
+
+                item.maXaPhuong =
+                    maXaPhuong;
+
+            }
+
+
+            const active =
+                getOptionalBoolean(
+                    row,
+                    "active"
+                );
+
+
+            if (
+                active !== undefined
+            ) {
+
+                item.active =
+                    active;
+
+            }
+
+
+            danhSach.push(
+                item
+            );
 
         }
 
@@ -1628,33 +1798,13 @@ class CoSoExcel {
         isCreate
     ) {
 
-        if (
-            isCreate &&
-            !item.maCoSo
-        ) {
-
-            throw new ApiError(
-                400,
-                "Thêm mới cơ sở phải có mã cơ sở."
-            );
-
-        }
-
+        /*
+        * =========================================================
+        * ID CƠ SỞ
+        * =========================================================
+        */
 
         if (
-            !item.tenCoSo
-        ) {
-
-            throw new ApiError(
-                400,
-                "Tên cơ sở không được để trống."
-            );
-
-        }
-
-
-        if (
-            item.id !== null &&
             item.id !== undefined &&
             (
                 !Number.isInteger(
@@ -1675,6 +1825,12 @@ class CoSoExcel {
 
         }
 
+
+        /*
+        * =========================================================
+        * CÁC ID LIÊN KẾT
+        * =========================================================
+        */
 
         const idFields = [
 
@@ -1710,19 +1866,29 @@ class CoSoExcel {
             idFields
         ) {
 
+            /*
+            * Không nhập
+            * => bỏ qua.
+            */
             if (
-                field.value !== null &&
-                field.value !== undefined &&
-                (
-                    !Number.isInteger(
-                        Number(
-                            field.value
-                        )
-                    ) ||
+                field.value ===
+                undefined
+            ) {
+
+                continue;
+
+            }
+
+
+            if (
+                !Number.isInteger(
                     Number(
                         field.value
-                    ) <= 0
-                )
+                    )
+                ) ||
+                Number(
+                    field.value
+                ) <= 0
             ) {
 
                 throw new ApiError(
@@ -1735,7 +1901,14 @@ class CoSoExcel {
         }
 
 
+        /*
+        * =========================================================
+        * ACTIVE
+        * =========================================================
+        */
+
         if (
+            item.active !== undefined &&
             ![
                 true,
                 false
@@ -1751,29 +1924,78 @@ class CoSoExcel {
 
         }
 
+
+        /*
+        * =========================================================
+        * CREATE
+        * =========================================================
+        */
+
+        if (
+            isCreate &&
+            !item.maCoSo
+        ) {
+
+            throw new ApiError(
+                400,
+                "Thêm mới cơ sở phải có mã cơ sở."
+            );
+
+        }
+
     }
 
     taoDuLieuNghiepVu(
         item
     ) {
 
-        const data = {
+        const data =
+            {};
 
-            tenCoSo:
-                item.tenCoSo,
 
-            diaChi:
-                item.diaChi,
-
-            active:
-                item.active
-
-        };
-
+        /*
+        * =========================================================
+        * TÊN CƠ SỞ
+        * =========================================================
+        */
 
         if (
-            item.quocGiaId !== null &&
-            item.quocGiaId !== undefined
+            item.tenCoSo !==
+            undefined
+        ) {
+
+            data.tenCoSo =
+                item.tenCoSo;
+
+        }
+
+
+        /*
+        * =========================================================
+        * ĐỊA CHỈ
+        * =========================================================
+        */
+
+        if (
+            item.diaChi !==
+            undefined
+        ) {
+
+            data.diaChi =
+                item.diaChi;
+
+        }
+
+
+        /*
+        * =========================================================
+        * QUỐC GIA
+        * =========================================================
+        */
+
+        if (
+            item.quocGiaId !==
+            undefined
         ) {
 
             data.quocGiaId =
@@ -1783,7 +2005,8 @@ class CoSoExcel {
 
 
         if (
-            item.maQuocGia
+            item.maQuocGia !==
+            undefined
         ) {
 
             data.maQuocGia =
@@ -1792,9 +2015,15 @@ class CoSoExcel {
         }
 
 
+        /*
+        * =========================================================
+        * TỈNH THÀNH
+        * =========================================================
+        */
+
         if (
-            item.tinhThanhId !== null &&
-            item.tinhThanhId !== undefined
+            item.tinhThanhId !==
+            undefined
         ) {
 
             data.tinhThanhId =
@@ -1804,7 +2033,8 @@ class CoSoExcel {
 
 
         if (
-            item.maTinhThanh
+            item.maTinhThanh !==
+            undefined
         ) {
 
             data.maTinhThanh =
@@ -1812,10 +2042,9 @@ class CoSoExcel {
 
         }
 
-
         if (
-            item.xaPhuongId !== null &&
-            item.xaPhuongId !== undefined
+            item.xaPhuongId !==
+            undefined
         ) {
 
             data.xaPhuongId =
@@ -1825,11 +2054,22 @@ class CoSoExcel {
 
 
         if (
-            item.maXaPhuong
+            item.maXaPhuong !==
+            undefined
         ) {
 
             data.maXaPhuong =
                 item.maXaPhuong;
+
+        }
+
+        if (
+            item.active !==
+            undefined
+        ) {
+
+            data.active =
+                item.active;
 
         }
 
@@ -1878,10 +2118,12 @@ class CoSoExcel {
 
             try {
 
+
                 const xuLy =
-                    await this.timCoSoImport(
-                        item
-                    );
+                    await this
+                        .timCoSoImport(
+                            item
+                        );
 
 
                 const isCreate =
@@ -1895,42 +2137,62 @@ class CoSoExcel {
                 );
 
 
+                /*
+                * Chỉ tạo object từ những ô
+                * thực sự có dữ liệu.
+                */
                 const dataNghiepVu =
                     this.taoDuLieuNghiepVu(
                         item
                     );
 
-
-                /*
-                 * =================================================
-                 * UPDATE
-                 * =================================================
-                 */
                 if (
                     xuLy.hanhDong ===
                     "CAP_NHAT"
                 ) {
-
                     if (
-                        xuLy.choPhepSuaMa
+                        xuLy.choPhepSuaMa &&
+                        item.maCoSo !==
+                            undefined
                     ) {
 
-                        dataNghiepVu.maCoSo =
-                            item.maCoSo;
+                        /*
+                        * Chỉ truyền mã xuống
+                        * nếu thực sự khác mã hiện tại.
+                        */
+                        if (
+                            String(
+                                item.maCoSo
+                            )
+                                .trim()
+                                .toUpperCase() !==
+                            String(
+                                xuLy.coSo.maCoSo
+                            )
+                                .trim()
+                                .toUpperCase()
+                        ) {
+
+                            dataNghiepVu.maCoSo =
+                                item.maCoSo;
+
+                        }
 
                     }
 
+                    if (
+                        Object.keys(
+                            dataNghiepVu
+                        ).length === 0
+                    ) {
 
-                    /*
-                     * Không hề truyền:
-                     *
-                     * logo
-                     * favicon
-                     * logoDoiTac
-                     *
-                     * nên ảnh hiện tại được giữ nguyên
-                     * nếu service update đúng kiểu PATCH.
-                     */
+                        throw new ApiError(
+                            400,
+                            "Không có dữ liệu cần cập nhật."
+                        );
+
+                    }
+
                     const result =
                         await coSoService
                             .update(
@@ -1964,15 +2226,21 @@ class CoSoExcel {
                 }
 
 
-                /*
-                 * =================================================
-                 * CREATE
-                 * =================================================
-                 */
+                if (
+                    item.maCoSo ===
+                    undefined
+                ) {
+
+                    throw new ApiError(
+                        400,
+                        "Thêm mới cơ sở phải có mã cơ sở."
+                    );
+
+                }
+
 
                 dataNghiepVu.maCoSo =
                     item.maCoSo;
-
 
                 const result =
                     await coSoService
@@ -2002,10 +2270,6 @@ class CoSoExcel {
 
             } catch (error) {
 
-                /*
-                 * Dòng lỗi không làm rollback
-                 * những dòng đã thành công trước đó.
-                 */
                 errors.push({
 
                     rowNumbers:

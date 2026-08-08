@@ -28,7 +28,6 @@ class ThucPhamService {
 
     }
 
-
     async getTongHop(query) {
 
         return await thucPhamRepository
