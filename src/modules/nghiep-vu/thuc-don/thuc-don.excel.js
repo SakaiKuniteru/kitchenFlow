@@ -650,12 +650,7 @@ class ThucDonExcel {
 
         return {
 
-            fileName:
-                `${
-                    baoCao.maBaoCao
-                }_${
-                    Date.now()
-                }.xlsx`,
+            fileName: `${baoCao.maBaoCao}.xlsx`,
 
             buffer
 
@@ -696,20 +691,51 @@ class ThucDonExcel {
         headerMap
     ) {
 
-        /*
-        * Các field cấu trúc bắt buộc phải tồn tại
-        * trong file mẫu.
-        *
-        * maThucDon được xử lý riêng vì chấp nhận:
-        *
-        * maThucDon/k
-        * hoặc
-        * maThucDon
-        */
+        const hasIdKey =
+            headerMap.has(
+                "id/k"
+            );
+
+
+        const hasMaKey =
+            headerMap.has(
+                "maThucDon/k"
+            );
+
+
+        const hasMaNormal =
+            headerMap.has(
+                "maThucDon"
+            );
+
+
+        if (
+            !hasMaKey &&
+            !hasMaNormal
+        ) {
+
+            throw new ApiError(
+                400,
+                "File import phải có field maThucDon hoặc maThucDon/k."
+            );
+
+        }
+
+
+        if (
+            hasMaKey &&
+            hasMaNormal
+        ) {
+
+            throw new ApiError(
+                400,
+                "File import không được đồng thời có maThucDon và maThucDon/k."
+            );
+
+        }
+
 
         const requiredHeaders = [
-
-            "id/k",
 
             "tenThucDon",
 
@@ -720,12 +746,15 @@ class ThucDonExcel {
             "denNgay",
 
             "coSoId",
+
             "maCoSo",
 
             "nhaAnId",
+
             "maNhaAn",
 
             "caAnId",
+
             "maCaAn",
 
             "trangThai",
@@ -796,55 +825,16 @@ class ThucDonExcel {
         }
 
 
-        const coMaKhoa =
-            headerMap.has(
-                "maThucDon/k"
-            );
-
-        const coMaThuong =
-            headerMap.has(
-                "maThucDon"
-            );
-
-
-        if (
-            !coMaKhoa &&
-            !coMaThuong
-        ) {
-
-            throw new ApiError(
-                400,
-                "File import phải có field maThucDon/k hoặc maThucDon."
-            );
-
-        }
-
-
-        /*
-        * Không cho tồn tại cả hai cùng lúc
-        * vì sẽ gây mơ hồ nghiệp vụ.
-        */
-
-        if (
-            coMaKhoa &&
-            coMaThuong
-        ) {
-
-            throw new ApiError(
-                400,
-                "File import chỉ được dùng một trong hai field maThucDon/k hoặc maThucDon."
-            );
-
-        }
-
-
         return {
 
+            idLaKhoa:
+                hasIdKey,
+
             maThucDonLaKhoa:
-                coMaKhoa,
+                hasMaKey,
 
             fieldMaThucDon:
-                coMaKhoa
+                hasMaKey
                     ? "maThucDon/k"
                     : "maThucDon"
 
@@ -859,6 +849,7 @@ class ThucDonExcel {
     ) {
 
         const {
+            idLaKhoa,
             maThucDonLaKhoa,
             fieldMaThucDon
         } = cauHinhHeader;
@@ -939,13 +930,14 @@ class ThucDonExcel {
 
 
             const id =
-                toNumber(
-                    getValue(
-                        row,
-                        "id/k"
+                idLaKhoa
+                    ? toNumber(
+                        getValue(
+                            row,
+                            "id/k"
+                        )
                     )
-                );
-
+                    : null;
 
             const maThucDonRaw =
                 getValue(
@@ -1033,6 +1025,8 @@ class ThucDonExcel {
                             [],
 
                         id,
+
+                        idLaKhoa,
 
                         maThucDon,
 
@@ -1456,59 +1450,63 @@ class ThucDonExcel {
         item
     ) {
 
+        const coId =
+            item.id !== null &&
+            item.id !== undefined;
+
+
+        const coMa =
+            Boolean(
+                item.maThucDon
+            );
+
         if (
+            item.idLaKhoa &&
             item.maThucDonLaKhoa
         ) {
 
-            let theoId =
-                null;
-
-            let theoMa =
-                null;
-
-
             if (
-                item.id
+                coId &&
+                coMa
             ) {
 
-                theoId =
+                const theoId =
                     await thucDonRepository
                         .getChiTiet(
-                            item.id
+                            Number(
+                                item.id
+                            )
                         );
 
 
                 if (!theoId) {
 
                     throw new ApiError(
-                        400,
-                        `Không tìm thấy thực đơn ID ${item.id}.`
+                        404,
+                        `Không tìm thấy thực đơn có ID ${item.id}.`
                     );
 
                 }
 
-            }
 
-
-            if (
-                item.maThucDon
-            ) {
-
-                theoMa =
+                const theoMa =
                     await thucDonRepository
                         .getChiTietByMa(
                             item.maThucDon
                         );
 
-            }
 
-            if (
-                item.id &&
-                item.maThucDon
-            ) {
+                if (!theoMa) {
+
+                    throw new ApiError(
+                        404,
+                        `Không tìm thấy thực đơn có mã "${item.maThucDon}".`
+                    );
+
+                }
+
 
                 if (
-                    !theoMa ||
                     Number(
                         theoId.id
                     ) !==
@@ -1519,7 +1517,7 @@ class ThucDonExcel {
 
                     throw new ApiError(
                         400,
-                        `ID ${item.id} và mã "${item.maThucDon}" không khớp.`
+                        `ID ${item.id} và mã "${item.maThucDon}" không cùng một thực đơn.`
                     );
 
                 }
@@ -1541,8 +1539,27 @@ class ThucDonExcel {
             }
 
             if (
-                theoId
+                coId
             ) {
+
+                const theoId =
+                    await thucDonRepository
+                        .getChiTiet(
+                            Number(
+                                item.id
+                            )
+                        );
+
+
+                if (!theoId) {
+
+                    throw new ApiError(
+                        404,
+                        `Không tìm thấy thực đơn có ID ${item.id}.`
+                    );
+
+                }
+
 
                 return {
 
@@ -1558,6 +1575,203 @@ class ThucDonExcel {
                 };
 
             }
+
+            if (
+                coMa
+            ) {
+
+                const theoMa =
+                    await thucDonRepository
+                        .getChiTietByMa(
+                            item.maThucDon
+                        );
+
+
+                if (
+                    theoMa
+                ) {
+
+                    return {
+
+                        banGhi:
+                            theoMa,
+
+                        hanhDong:
+                            "CAP_NHAT",
+
+                        choPhepCapNhatMa:
+                            false
+
+                    };
+
+                }
+
+
+                return {
+
+                    banGhi:
+                        null,
+
+                    hanhDong:
+                        "THEM_MOI",
+
+                    choPhepCapNhatMa:
+                        false
+
+                };
+
+            }
+
+
+            throw new ApiError(
+                400,
+                "Phải nhập ID hoặc mã thực đơn."
+            );
+
+        }
+
+        if (
+            item.idLaKhoa &&
+            !item.maThucDonLaKhoa
+        ) {
+
+            if (
+                coId
+            ) {
+
+                const theoId =
+                    await thucDonRepository
+                        .getChiTiet(
+                            Number(
+                                item.id
+                            )
+                        );
+
+
+                if (!theoId) {
+
+                    throw new ApiError(
+                        404,
+                        `Không tìm thấy thực đơn có ID ${item.id}.`
+                    );
+
+                }
+
+                if (
+                    coMa
+                ) {
+
+                    const theoMa =
+                        await thucDonRepository
+                            .getChiTietByMa(
+                                item.maThucDon
+                            );
+
+
+                    if (
+                        theoMa &&
+                        Number(
+                            theoMa.id
+                        ) !==
+                        Number(
+                            theoId.id
+                        )
+                    ) {
+
+                        throw new ApiError(
+                            409,
+                            `Mã thực đơn "${item.maThucDon}" đã tồn tại.`
+                        );
+
+                    }
+
+                }
+
+
+                return {
+
+                    banGhi:
+                        theoId,
+
+                    hanhDong:
+                        "CAP_NHAT",
+
+                    choPhepCapNhatMa:
+                        true
+
+                };
+
+            }
+
+            if (
+                !coMa
+            ) {
+
+                throw new ApiError(
+                    400,
+                    "Thêm mới thực đơn phải có mã thực đơn."
+                );
+
+            }
+
+
+            const theoMa =
+                await thucDonRepository
+                    .getChiTietByMa(
+                        item.maThucDon
+                    );
+
+
+            if (
+                theoMa
+            ) {
+
+                throw new ApiError(
+                    409,
+                    `Mã thực đơn "${item.maThucDon}" đã tồn tại.`
+                );
+
+            }
+
+
+            return {
+
+                banGhi:
+                    null,
+
+                hanhDong:
+                    "THEM_MOI",
+
+                choPhepCapNhatMa:
+                    true
+
+            };
+
+        }
+
+        if (
+            !item.idLaKhoa &&
+            item.maThucDonLaKhoa
+        ) {
+
+            if (
+                !coMa
+            ) {
+
+                throw new ApiError(
+                    400,
+                    "Mã thực đơn không được để trống."
+                );
+
+            }
+
+
+            const theoMa =
+                await thucDonRepository
+                    .getChiTietByMa(
+                        item.maThucDon
+                    );
+
 
             if (
                 theoMa
@@ -1578,6 +1792,58 @@ class ThucDonExcel {
 
             }
 
+
+            return {
+
+                banGhi:
+                    null,
+
+                hanhDong:
+                    "THEM_MOI",
+
+                choPhepCapNhatMa:
+                    false
+
+            };
+
+        }
+
+        if (
+            !item.idLaKhoa &&
+            !item.maThucDonLaKhoa
+        ) {
+
+            if (
+                !coMa
+            ) {
+
+                throw new ApiError(
+                    400,
+                    "Mã thực đơn không được để trống."
+                );
+
+            }
+
+
+            const theoMa =
+                await thucDonRepository
+                    .getChiTietByMa(
+                        item.maThucDon
+                    );
+
+
+            if (
+                theoMa
+            ) {
+
+                throw new ApiError(
+                    409,
+                    `Mã thực đơn "${item.maThucDon}" đã tồn tại.`
+                );
+
+            }
+
+
             return {
 
                 banGhi:
@@ -1593,85 +1859,11 @@ class ThucDonExcel {
 
         }
 
-        if (
-            item.id
-        ) {
 
-            const theoId =
-                await thucDonRepository
-                    .getChiTiet(
-                        item.id
-                    );
-
-
-            if (!theoId) {
-
-                throw new ApiError(
-                    400,
-                    `Không tìm thấy thực đơn ID ${item.id}.`
-                );
-
-            }
-
-
-            return {
-
-                banGhi:
-                    theoId,
-
-                hanhDong:
-                    "CAP_NHAT",
-
-                choPhepCapNhatMa:
-                    true
-
-            };
-
-        }
-
-        if (
-            !item.maThucDon
-        ) {
-
-            throw new ApiError(
-                400,
-                "Thêm mới thực đơn phải có mã thực đơn."
-            );
-
-        }
-
-
-        const trungMa =
-            await thucDonRepository
-                .getChiTietByMa(
-                    item.maThucDon
-                );
-
-
-        if (
-            trungMa
-        ) {
-
-            throw new ApiError(
-                409,
-                `Mã thực đơn "${item.maThucDon}" đã tồn tại.`
-            );
-
-        }
-
-
-        return {
-
-            banGhi:
-                null,
-
-            hanhDong:
-                "THEM_MOI",
-
-            choPhepCapNhatMa:
-                true
-
-        };
+        throw new ApiError(
+            400,
+            "Không xác định được cách xử lý dòng import thực đơn."
+        );
 
     }
 
@@ -1752,6 +1944,8 @@ class ThucDonExcel {
 
             delete data.rowNumbers;
 
+            delete data.idLaKhoa;
+
             delete data.maThucDonLaKhoa;
 
             if (
@@ -1777,7 +1971,6 @@ class ThucDonExcel {
                             data
                         );
 
-
                 ketQua.push({
 
                     id:
@@ -1790,12 +1983,33 @@ class ThucDonExcel {
                         "CAP_NHAT",
 
                     rowNumbers:
-                        item.rowNumbers
+                        item.rowNumbers,
+
+                    message:
+                        `Cập nhật thành công - ID ${result.id}`
+
+                });
+                continue;
+
+                ketQua.push({
+
+                    id:
+                        result.id,
+
+                    maThucDon:
+                        result.maThucDon,
+
+                    hanhDong:
+                        "THEM_MOI",
+
+                    rowNumbers:
+                        item.rowNumbers,
+
+                    message:
+                        `Thêm mới thành công - ID ${result.id}`
 
                 });
 
-
-                continue;
 
             }
 
@@ -1875,15 +2089,8 @@ class ThucDonExcel {
         const resultColumn =
             worksheet.columnCount + 1;
 
-        worksheet
-            .getRow(
-                HEADER_ROW
-            )
-            .getCell(
-                resultColumn
-            )
-            .value =
-            "ketQuaImport";
+        const errorColumn =
+            worksheet.columnCount + 2;
 
         worksheet
             .getRow(2)
@@ -1893,14 +2100,52 @@ class ThucDonExcel {
             .value =
             "Text";
 
+
+        worksheet
+            .getRow(2)
+            .getCell(
+                errorColumn
+            )
+            .value =
+            "Text";
+
+        worksheet
+            .getRow(
+                HEADER_ROW
+            )
+            .getCell(
+                resultColumn
+            )
+            .value =
+            "ketQua";
+
+
+        worksheet
+            .getRow(
+                HEADER_ROW
+            )
+            .getCell(
+                errorColumn
+            )
+            .value =
+            "baoLoi";
+
         worksheet
             .getRow(4)
             .getCell(
                 resultColumn
             )
             .value =
-            "Kết quả import\nThành công hoặc lỗi";
+            "Kết quả xử lý import";
 
+
+        worksheet
+            .getRow(4)
+            .getCell(
+                errorColumn
+            )
+            .value =
+            "Thông báo lỗi import";
 
         for (
             const item of
@@ -1908,12 +2153,13 @@ class ThucDonExcel {
         ) {
 
             const noiDung =
-                item.hanhDong ===
+                item.message ||
+                (
+                    item.hanhDong ===
                     "THEM_MOI"
-                    ?
-                    `Thành công - Thêm mới - ID: ${item.id}`
-                    :
-                    `Thành công - Cập nhật - ID: ${item.id}`;
+                        ? `Thêm mới thành công - ID ${item.id}`
+                        : `Cập nhật thành công - ID ${item.id}`
+                );
 
 
             for (
@@ -1978,12 +2224,12 @@ class ThucDonExcel {
                             rowNumber
                         )
                         .getCell(
-                            resultColumn
+                            errorColumn
                         );
 
 
                 cell.value =
-                    `Lỗi - ${error.message}`;
+                    error.message;
 
 
                 cell.font = {
@@ -2019,6 +2265,14 @@ class ThucDonExcel {
                 resultColumn
             )
             .width =
+            40;
+
+
+        worksheet
+            .getColumn(
+                errorColumn
+            )
+            .width =
             55;
 
 
@@ -2033,7 +2287,7 @@ class ThucDonExcel {
                 errors.length > 0,
 
             fileName:
-                `thuc_don_import_ket_qua_${Date.now()}.xlsx`,
+                `${MA_BAO_CAO}.xlsx`,
 
             buffer,
 

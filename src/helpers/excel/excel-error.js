@@ -40,7 +40,6 @@ async function createErrorFile(
         .value =
         "baoLoi";
 
-
     for (
         const success of
         successes
@@ -60,8 +59,7 @@ async function createErrorFile(
                 )
                 .value =
                 success.message ||
-                success.hanhDong ||
-                "Thành công";
+                "Thành công.";
 
         }
 

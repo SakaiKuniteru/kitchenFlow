@@ -1,54 +1,97 @@
-const fs = require("fs");
+const fs =
+    require("fs");
 
-const path = require("path");
+const path =
+    require("path");
 
-const ExcelJS = require("exceljs");
+const ExcelJS =
+    require("exceljs");
 
-const ApiError = require( "../../../../utils/api-error" );
+const ApiError =
+    require(
+        "../../../../utils/api-error"
+    );
 
-const pool = require( "../../../../config/database" );
+const pool =
+    require(
+        "../../../../config/database"
+    );
 
-const phongBanRepository = require( "./phong-ban.repository" );
+const nhaAnRepository =
+    require(
+        "./nha-an.repository"
+    );
 
-const phongBanService = require( "./phong-ban.service" );
+const nhaAnService =
+    require(
+        "./nha-an.service"
+    );
 
-const { readExcel } = require( "../../../../helpers/excel/excel-reader" );
+const {
+    readExcel
+} =
+    require(
+        "../../../../helpers/excel/excel-reader"
+    );
 
-const { createErrorFile } = require( "../../../../helpers/excel/excel-error" );
+const {
+    createErrorFile
+} =
+    require(
+        "../../../../helpers/excel/excel-error"
+    );
 
-const { sendExcel } = require( "../../../../helpers/excel/excel-response" );
+const {
+    sendExcel
+} =
+    require(
+        "../../../../helpers/excel/excel-response"
+    );
 
-const { toNumber, toBoolean } = require( "../../../../helpers/excel/excel-value" );
+const {
+    toNumber,
+    toBoolean
+} =
+    require(
+        "../../../../helpers/excel/excel-value"
+    );
 
-const HEADER_ROW = 3;
 
-const TEMPLATE_ROW = 5;
+const HEADER_ROW =
+    3;
 
-const DATA_START_ROW = 5;
+const TEMPLATE_ROW =
+    5;
 
-const MA_BAO_CAO = "dm_phong_ban";
+const DATA_START_ROW =
+    5;
+
+const MA_BAO_CAO =
+    "dm_nha_an";
 
 
 const FIELDS = [
 
     "id/k",
 
-    "maPhongBan/k",
+    "maNhaAn/k",
 
-    "tenPhongBan",
-
-    "moTa",
+    "tenNhaAn",
 
     "coSoId",
 
     "maCoSo",
+
+    "dsNvQuanLyId",
+
+    "dsMaNvQuanLy",
 
     "active"
 
 ];
 
 
-class PhongBanExcel {
+class NhaAnExcel {
 
     async getFileMau() {
 
@@ -95,9 +138,7 @@ class PhongBanExcel {
             result.rows[0];
 
 
-        if (
-            !row.active
-        ) {
+        if (!row.active) {
 
             throw new ApiError(
                 400,
@@ -107,9 +148,7 @@ class PhongBanExcel {
         }
 
 
-        if (
-            !row.file_mau
-        ) {
+        if (!row.file_mau) {
 
             throw new ApiError(
                 404,
@@ -185,6 +224,7 @@ class PhongBanExcel {
         };
 
     }
+
 
     isBlank(
         value
@@ -262,6 +302,97 @@ class PhongBanExcel {
         );
 
     }
+
+
+    /*
+     * Excel nhập danh sách:
+     *
+     * 1,2,3
+     * hoặc
+     * NV001,NV002,NV003
+     */
+    parseList(
+        value
+    ) {
+
+        if (
+            this.isBlank(
+                value
+            )
+        ) {
+
+            return undefined;
+
+        }
+
+
+        return String(
+            value
+        )
+            .split(
+                /[,;\n]+/
+            )
+            .map(
+                item =>
+                    item.trim()
+            )
+            .filter(
+                Boolean
+            );
+
+    }
+
+
+    parseIdList(
+        value
+    ) {
+
+        const danhSach =
+            this.parseList(
+                value
+            );
+
+
+        if (
+            danhSach === undefined
+        ) {
+
+            return undefined;
+
+        }
+
+
+        return danhSach.map(
+            item => {
+
+                const id =
+                    Number(
+                        item
+                    );
+
+
+                if (
+                    !Number.isInteger(
+                        id
+                    ) ||
+                    id <= 0
+                ) {
+
+                    throw new ApiError(
+                        400,
+                        `ID nhân viên quản lý "${item}" không hợp lệ.`
+                    );
+
+                }
+
+
+                return id;
+
+            }
+        );
+
+    }
+
 
     copyRowStyle(
         worksheet,
@@ -399,6 +530,11 @@ class PhongBanExcel {
 
     }
 
+
+    /* =========================================================
+       EXPORT
+       ========================================================= */
+
     taoDongExport(
         item
     ) {
@@ -408,24 +544,41 @@ class PhongBanExcel {
             id:
                 item.id,
 
-            maPhongBan:
-                item.maPhongBan,
+            maNhaAn:
+                item.maNhaAn,
 
-            tenPhongBan:
-                item.tenPhongBan,
-
-            moTa:
-                item.moTa,
+            tenNhaAn:
+                item.tenNhaAn,
 
             coSoId:
                 item.coSoId,
 
             maCoSo:
-                item.coSo
-                    ?.maCoSo ??
-                item.coSo
-                    ?.ma ??
+                item.coSo?.ma ??
                 null,
+
+            dsNvQuanLyId:
+                Array.isArray(
+                    item.dsNvQuanLyId
+                )
+                    ? item.dsNvQuanLyId
+                        .join(",")
+                    : "",
+
+            dsMaNvQuanLy:
+                Array.isArray(
+                    item.dsNvQuanLy
+                )
+                    ? item.dsNvQuanLy
+                        .map(
+                            nv =>
+                                nv.maNhanVien
+                        )
+                        .filter(
+                            Boolean
+                        )
+                        .join(",")
+                    : "",
 
             active:
                 item.active
@@ -433,6 +586,7 @@ class PhongBanExcel {
         };
 
     }
+
 
     exportData =
         async (
@@ -466,7 +620,7 @@ class PhongBanExcel {
 
                     throw new ApiError(
                         400,
-                        "Không thể đọc file mẫu phòng ban."
+                        "Không thể đọc file mẫu nhà ăn."
                     );
 
                 }
@@ -480,20 +634,18 @@ class PhongBanExcel {
 
                     throw new ApiError(
                         400,
-                        "File mẫu phòng ban không có sheet dữ liệu."
+                        "File mẫu nhà ăn không có sheet dữ liệu."
                     );
 
                 }
 
 
                 const danhSach =
-                    await phongBanRepository
+                    await nhaAnRepository
                         .getTongHop(
                             req.query
                         );
 
-                const templateStyleRow =
-                    TEMPLATE_ROW;
 
                 for (
                     let index = 0;
@@ -509,12 +661,12 @@ class PhongBanExcel {
 
                     if (
                         rowNumber !==
-                        templateStyleRow
+                        TEMPLATE_ROW
                     ) {
 
                         this.copyRowStyle(
                             worksheet,
-                            templateStyleRow,
+                            TEMPLATE_ROW,
                             rowNumber
                         );
 
@@ -539,21 +691,24 @@ class PhongBanExcel {
                         item.id;
 
                     row.getCell(2).value =
-                        item.maPhongBan;
+                        item.maNhaAn;
 
                     row.getCell(3).value =
-                        item.tenPhongBan;
+                        item.tenNhaAn;
 
                     row.getCell(4).value =
-                        item.moTa;
-
-                    row.getCell(5).value =
                         item.coSoId;
 
-                    row.getCell(6).value =
+                    row.getCell(5).value =
                         item.maCoSo;
 
+                    row.getCell(6).value =
+                        item.dsNvQuanLyId;
+
                     row.getCell(7).value =
+                        item.dsMaNvQuanLy;
+
+                    row.getCell(8).value =
                         Boolean(
                             item.active
                         );
@@ -562,6 +717,7 @@ class PhongBanExcel {
                     row.commit();
 
                 }
+
 
                 if (
                     danhSach.length === 0
@@ -588,6 +744,7 @@ class PhongBanExcel {
                     }
 
                 }
+
 
                 const lastDataRow =
                     DATA_START_ROW +
@@ -647,10 +804,12 @@ class PhongBanExcel {
                 return sendExcel(
                     res,
                     {
+
                         fileName:
                             `${baoCao.maBaoCao}.xlsx`,
 
                         buffer
+
                     }
                 );
 
@@ -664,6 +823,11 @@ class PhongBanExcel {
 
         };
 
+
+    /* =========================================================
+       HEADER
+       ========================================================= */
+
     validateHeaders(
         headerMap
     ) {
@@ -676,14 +840,15 @@ class PhongBanExcel {
 
         const hasMaKey =
             headerMap.has(
-                "maPhongBan/k"
+                "maNhaAn/k"
             );
 
 
         const hasMaNormal =
             headerMap.has(
-                "maPhongBan"
+                "maNhaAn"
             );
+
 
         if (
             !hasMaKey &&
@@ -692,10 +857,11 @@ class PhongBanExcel {
 
             throw new ApiError(
                 400,
-                "File import phải có field maPhongBan hoặc maPhongBan/k."
+                "File import phải có field maNhaAn hoặc maNhaAn/k."
             );
 
         }
+
 
         if (
             hasMaKey &&
@@ -704,7 +870,7 @@ class PhongBanExcel {
 
             throw new ApiError(
                 400,
-                "File import không được đồng thời có maPhongBan và maPhongBan/k."
+                "File import không được đồng thời có maNhaAn và maNhaAn/k."
             );
 
         }
@@ -712,13 +878,15 @@ class PhongBanExcel {
 
         const requiredFields = [
 
-            "tenPhongBan",
-
-            "moTa",
+            "tenNhaAn",
 
             "coSoId",
 
             "maCoSo",
+
+            "dsNvQuanLyId",
+
+            "dsMaNvQuanLy",
 
             "active"
 
@@ -757,6 +925,11 @@ class PhongBanExcel {
         };
 
     }
+
+
+    /* =========================================================
+       READ
+       ========================================================= */
 
     async docDuLieuImport(
         file
@@ -810,29 +983,22 @@ class PhongBanExcel {
                     : null;
 
 
-            const maPhongBanRaw =
+            const maNhaAnRaw =
                 cauHinhKhoa.hasMaKey
                     ? getValue(
                         row,
-                        "maPhongBan/k"
+                        "maNhaAn/k"
                     )
                     : getValue(
                         row,
-                        "maPhongBan"
+                        "maNhaAn"
                     );
 
 
-            const tenPhongBanRaw =
+            const tenNhaAnRaw =
                 getValue(
                     row,
-                    "tenPhongBan"
-                );
-
-
-            const moTaRaw =
-                getValue(
-                    row,
-                    "moTa"
+                    "tenNhaAn"
                 );
 
 
@@ -850,6 +1016,20 @@ class PhongBanExcel {
                 );
 
 
+            const dsNvQuanLyIdRaw =
+                getValue(
+                    row,
+                    "dsNvQuanLyId"
+                );
+
+
+            const dsMaNvQuanLyRaw =
+                getValue(
+                    row,
+                    "dsMaNvQuanLy"
+                );
+
+
             const activeRaw =
                 getValue(
                     row,
@@ -857,16 +1037,29 @@ class PhongBanExcel {
                 );
 
 
+            const rawValues = [
+
+                idRaw,
+
+                maNhaAnRaw,
+
+                tenNhaAnRaw,
+
+                coSoIdRaw,
+
+                maCoSoRaw,
+
+                dsNvQuanLyIdRaw,
+
+                dsMaNvQuanLyRaw,
+
+                activeRaw
+
+            ];
+
+
             if (
-                [
-                    idRaw,
-                    maPhongBanRaw,
-                    tenPhongBanRaw,
-                    moTaRaw,
-                    coSoIdRaw,
-                    maCoSoRaw,
-                    activeRaw
-                ].some(
+                rawValues.some(
                     value =>
                         this.isTemplateValue(
                             value
@@ -879,25 +1072,13 @@ class PhongBanExcel {
             }
 
 
-            const isEmptyRow =
-                [
-                    idRaw,
-                    maPhongBanRaw,
-                    tenPhongBanRaw,
-                    moTaRaw,
-                    coSoIdRaw,
-                    maCoSoRaw,
-                    activeRaw
-                ].every(
+            if (
+                rawValues.every(
                     value =>
                         this.isBlank(
                             value
                         )
-                );
-
-
-            if (
-                isEmptyRow
+                )
             ) {
 
                 continue;
@@ -933,6 +1114,36 @@ class PhongBanExcel {
             }
 
 
+            let dsNvQuanLyId =
+                undefined;
+
+
+            try {
+
+                dsNvQuanLyId =
+                    this.parseIdList(
+                        dsNvQuanLyIdRaw
+                    );
+
+            } catch (error) {
+
+                /*
+                 * Giữ lại lỗi theo từng dòng.
+                 */
+                dsNvQuanLyId = {
+                    loi:
+                        error.message
+                };
+
+            }
+
+
+            const dsMaNvQuanLy =
+                this.parseList(
+                    dsMaNvQuanLyRaw
+                );
+
+
             danhSach.push({
 
                 rowNumbers: [
@@ -945,7 +1156,6 @@ class PhongBanExcel {
                 maLaKhoa:
                     cauHinhKhoa.hasMaKey,
 
-
                 id:
                     this.isBlank(
                         idRaw
@@ -955,31 +1165,22 @@ class PhongBanExcel {
                             idRaw
                         ),
 
-                maPhongBan:
+                maNhaAn:
                     this.isBlank(
-                        maPhongBanRaw
+                        maNhaAnRaw
                     )
                         ? null
                         : String(
-                            maPhongBanRaw
+                            maNhaAnRaw
                         ).trim(),
 
-                tenPhongBan:
+                tenNhaAn:
                     this.isBlank(
-                        tenPhongBanRaw
+                        tenNhaAnRaw
                     )
                         ? null
                         : String(
-                            tenPhongBanRaw
-                        ).trim(),
-
-                moTa:
-                    this.isBlank(
-                        moTaRaw
-                    )
-                        ? null
-                        : String(
-                            moTaRaw
+                            tenNhaAnRaw
                         ).trim(),
 
                 coSoId:
@@ -1000,6 +1201,10 @@ class PhongBanExcel {
                             maCoSoRaw
                         ).trim(),
 
+                dsNvQuanLyId,
+
+                dsMaNvQuanLy,
+
                 active
 
             });
@@ -1019,7 +1224,12 @@ class PhongBanExcel {
 
     }
 
-    async timPhongBanImport(
+
+    /* =========================================================
+       XÁC ĐỊNH CREATE / UPDATE
+       ========================================================= */
+
+    async timNhaAnImport(
         item
     ) {
 
@@ -1030,7 +1240,7 @@ class PhongBanExcel {
 
         const coMa =
             Boolean(
-                item.maPhongBan
+                item.maNhaAn
             );
 
         if (
@@ -1044,7 +1254,7 @@ class PhongBanExcel {
             ) {
 
                 const theoId =
-                    await phongBanRepository
+                    await nhaAnRepository
                         .getChiTiet(
                             Number(
                                 item.id
@@ -1056,16 +1266,16 @@ class PhongBanExcel {
 
                     throw new ApiError(
                         404,
-                        `Không tìm thấy phòng ban có ID ${item.id}.`
+                        `Không tìm thấy nhà ăn có ID ${item.id}.`
                     );
 
                 }
 
 
                 const theoMa =
-                    await phongBanRepository
+                    await nhaAnRepository
                         .getChiTietByMa(
-                            item.maPhongBan
+                            item.maNhaAn
                         );
 
 
@@ -1073,7 +1283,7 @@ class PhongBanExcel {
 
                     throw new ApiError(
                         404,
-                        `Không tìm thấy phòng ban có mã "${item.maPhongBan}".`
+                        `Không tìm thấy nhà ăn có mã "${item.maNhaAn}".`
                     );
 
                 }
@@ -1090,7 +1300,7 @@ class PhongBanExcel {
 
                     throw new ApiError(
                         400,
-                        `ID ${item.id} và mã "${item.maPhongBan}" không cùng một phòng ban.`
+                        `ID ${item.id} và mã "${item.maNhaAn}" không cùng một nhà ăn.`
                     );
 
                 }
@@ -1101,7 +1311,7 @@ class PhongBanExcel {
                     hanhDong:
                         "CAP_NHAT",
 
-                    phongBan:
+                    nhaAn:
                         theoId,
 
                     choPhepSuaMa:
@@ -1111,12 +1321,16 @@ class PhongBanExcel {
 
             }
 
+
+            /*
+             * Chỉ có ID.
+             */
             if (
                 coId
             ) {
 
                 const theoId =
-                    await phongBanRepository
+                    await nhaAnRepository
                         .getChiTiet(
                             Number(
                                 item.id
@@ -1128,7 +1342,7 @@ class PhongBanExcel {
 
                     throw new ApiError(
                         404,
-                        `Không tìm thấy phòng ban có ID ${item.id}.`
+                        `Không tìm thấy nhà ăn có ID ${item.id}.`
                     );
 
                 }
@@ -1139,7 +1353,7 @@ class PhongBanExcel {
                     hanhDong:
                         "CAP_NHAT",
 
-                    phongBan:
+                    nhaAn:
                         theoId,
 
                     choPhepSuaMa:
@@ -1149,14 +1363,18 @@ class PhongBanExcel {
 
             }
 
+
+            /*
+             * Chỉ mã khóa.
+             */
             if (
                 coMa
             ) {
 
                 const theoMa =
-                    await phongBanRepository
+                    await nhaAnRepository
                         .getChiTietByMa(
-                            item.maPhongBan
+                            item.maNhaAn
                         );
 
 
@@ -1169,7 +1387,7 @@ class PhongBanExcel {
                         hanhDong:
                             "CAP_NHAT",
 
-                        phongBan:
+                        nhaAn:
                             theoMa,
 
                         choPhepSuaMa:
@@ -1185,7 +1403,7 @@ class PhongBanExcel {
                     hanhDong:
                         "THEM_MOI",
 
-                    phongBan:
+                    nhaAn:
                         null,
 
                     choPhepSuaMa:
@@ -1198,7 +1416,7 @@ class PhongBanExcel {
 
             throw new ApiError(
                 400,
-                "Phải nhập ID hoặc mã phòng ban."
+                "Phải nhập ID hoặc mã nhà ăn."
             );
 
         }
@@ -1208,15 +1426,12 @@ class PhongBanExcel {
             !item.maLaKhoa
         ) {
 
-            /*
-            * Có ID -> cập nhật theo ID.
-            */
             if (
                 coId
             ) {
 
                 const theoId =
-                    await phongBanRepository
+                    await nhaAnRepository
                         .getChiTiet(
                             Number(
                                 item.id
@@ -1228,7 +1443,7 @@ class PhongBanExcel {
 
                     throw new ApiError(
                         404,
-                        `Không tìm thấy phòng ban có ID ${item.id}.`
+                        `Không tìm thấy nhà ăn có ID ${item.id}.`
                     );
 
                 }
@@ -1238,9 +1453,9 @@ class PhongBanExcel {
                 ) {
 
                     const theoMa =
-                        await phongBanRepository
+                        await nhaAnRepository
                             .getChiTietByMa(
-                                item.maPhongBan
+                                item.maNhaAn
                             );
 
 
@@ -1256,7 +1471,7 @@ class PhongBanExcel {
 
                         throw new ApiError(
                             409,
-                            `Mã phòng ban "${item.maPhongBan}" đã tồn tại.`
+                            `Mã nhà ăn "${item.maNhaAn}" đã tồn tại.`
                         );
 
                     }
@@ -1269,7 +1484,7 @@ class PhongBanExcel {
                     hanhDong:
                         "CAP_NHAT",
 
-                    phongBan:
+                    nhaAn:
                         theoId,
 
                     choPhepSuaMa:
@@ -1285,15 +1500,15 @@ class PhongBanExcel {
 
                 throw new ApiError(
                     400,
-                    "Thêm mới phòng ban phải có mã phòng ban."
+                    "Thêm mới nhà ăn phải có mã nhà ăn."
                 );
 
             }
 
             const theoMa =
-                await phongBanRepository
+                await nhaAnRepository
                     .getChiTietByMa(
-                        item.maPhongBan
+                        item.maNhaAn
                     );
 
 
@@ -1303,7 +1518,7 @@ class PhongBanExcel {
 
                 throw new ApiError(
                     409,
-                    `Mã phòng ban "${item.maPhongBan}" đã tồn tại.`
+                    `Mã nhà ăn "${item.maNhaAn}" đã tồn tại.`
                 );
 
             }
@@ -1314,7 +1529,7 @@ class PhongBanExcel {
                 hanhDong:
                     "THEM_MOI",
 
-                phongBan:
+                nhaAn:
                     null,
 
                 choPhepSuaMa:
@@ -1329,22 +1544,20 @@ class PhongBanExcel {
             item.maLaKhoa
         ) {
 
-            if (
-                !coMa
-            ) {
+            if (!coMa) {
 
                 throw new ApiError(
                     400,
-                    "Mã phòng ban không được để trống."
+                    "Mã nhà ăn không được để trống."
                 );
 
             }
 
 
             const theoMa =
-                await phongBanRepository
+                await nhaAnRepository
                     .getChiTietByMa(
-                        item.maPhongBan
+                        item.maNhaAn
                     );
 
 
@@ -1357,7 +1570,7 @@ class PhongBanExcel {
                     hanhDong:
                         "CAP_NHAT",
 
-                    phongBan:
+                    nhaAn:
                         theoMa,
 
                     choPhepSuaMa:
@@ -1373,7 +1586,7 @@ class PhongBanExcel {
                 hanhDong:
                     "THEM_MOI",
 
-                phongBan:
+                nhaAn:
                     null,
 
                 choPhepSuaMa:
@@ -1388,22 +1601,20 @@ class PhongBanExcel {
             !item.maLaKhoa
         ) {
 
-            if (
-                !coMa
-            ) {
+            if (!coMa) {
 
                 throw new ApiError(
                     400,
-                    "Mã phòng ban không được để trống."
+                    "Mã nhà ăn không được để trống."
                 );
 
             }
 
 
             const theoMa =
-                await phongBanRepository
+                await nhaAnRepository
                     .getChiTietByMa(
-                        item.maPhongBan
+                        item.maNhaAn
                     );
 
 
@@ -1413,7 +1624,7 @@ class PhongBanExcel {
 
                 throw new ApiError(
                     409,
-                    `Mã phòng ban "${item.maPhongBan}" đã tồn tại.`
+                    `Mã nhà ăn "${item.maNhaAn}" đã tồn tại.`
                 );
 
             }
@@ -1424,7 +1635,7 @@ class PhongBanExcel {
                 hanhDong:
                     "THEM_MOI",
 
-                phongBan:
+                nhaAn:
                     null,
 
                 choPhepSuaMa:
@@ -1442,129 +1653,6 @@ class PhongBanExcel {
 
     }
 
-    async chuanHoaCoSoImport(
-        item
-    ) {
-
-        const coCoSoId =
-            item.coSoId !== null &&
-            item.coSoId !== undefined;
-
-
-        const coMaCoSo =
-            Boolean(
-                item.maCoSo
-            );
-
-
-        if (
-            !coCoSoId &&
-            !coMaCoSo
-        ) {
-
-            throw new ApiError(
-                400,
-                "Phải truyền coSoId hoặc maCoSo."
-            );
-
-        }
-
-
-        /*
-         * Nếu có mã cơ sở,
-         * tìm ID từ mã.
-         */
-        if (
-            coMaCoSo
-        ) {
-
-            const coSo =
-                await phongBanRepository
-                    .getCoSoByMa(
-                        item.maCoSo
-                    );
-
-
-            if (!coSo) {
-
-                throw new ApiError(
-                    400,
-                    `Mã cơ sở "${item.maCoSo}" không tồn tại.`
-                );
-
-            }
-
-
-            if (!coSo.active) {
-
-                throw new ApiError(
-                    400,
-                    `Cơ sở "${item.maCoSo}" đã bị khóa.`
-                );
-
-            }
-
-
-            /*
-             * Có cả ID + mã cơ sở:
-             * phải khớp.
-             */
-            if (
-                coCoSoId &&
-                Number(
-                    item.coSoId
-                ) !==
-                Number(
-                    coSo.id
-                )
-            ) {
-
-                throw new ApiError(
-                    400,
-                    `coSoId ${item.coSoId} và maCoSo "${item.maCoSo}" không khớp.`
-                );
-
-            }
-
-
-            /*
-             * Chuyển hết về ID.
-             *
-             * Việc này tránh lỗi update hiện tại của
-             * PhongBanService khi maCoSo mới đi cùng coSoId cũ.
-             */
-            return Number(
-                coSo.id
-            );
-
-        }
-
-
-        const tonTai =
-            await phongBanRepository
-                .existsCoSo(
-                    Number(
-                        item.coSoId
-                    )
-                );
-
-
-        if (!tonTai) {
-
-            throw new ApiError(
-                400,
-                `Cơ sở có ID ${item.coSoId} không tồn tại hoặc đã bị khóa.`
-            );
-
-        }
-
-
-        return Number(
-            item.coSoId
-        );
-
-    }
-
     validateDongImport(
         item,
         isCreate
@@ -1572,24 +1660,24 @@ class PhongBanExcel {
 
         if (
             isCreate &&
-            !item.maPhongBan
+            !item.maNhaAn
         ) {
 
             throw new ApiError(
                 400,
-                "Thêm mới phòng ban phải có mã phòng ban."
+                "Thêm mới nhà ăn phải có mã nhà ăn."
             );
 
         }
 
 
         if (
-            !item.tenPhongBan
+            !item.tenNhaAn
         ) {
 
             throw new ApiError(
                 400,
-                "Tên phòng ban không được để trống."
+                "Tên nhà ăn không được để trống."
             );
 
         }
@@ -1612,7 +1700,7 @@ class PhongBanExcel {
 
             throw new ApiError(
                 400,
-                "ID phòng ban phải là số nguyên lớn hơn 0."
+                "ID nhà ăn phải là số nguyên lớn hơn 0."
             );
 
         }
@@ -1642,6 +1730,22 @@ class PhongBanExcel {
 
 
         if (
+            item.dsNvQuanLyId &&
+            !Array.isArray(
+                item.dsNvQuanLyId
+            )
+        ) {
+
+            throw new ApiError(
+                400,
+                item.dsNvQuanLyId.loi ||
+                "Danh sách ID nhân viên quản lý không hợp lệ."
+            );
+
+        }
+
+
+        if (
             ![
                 true,
                 false
@@ -1659,6 +1763,66 @@ class PhongBanExcel {
 
     }
 
+    taoDuLieuNghiepVu(
+        item
+    ) {
+
+        const data = {
+
+            tenNhaAn:
+                item.tenNhaAn,
+
+            active:
+                item.active
+
+        };
+
+        if (
+            item.coSoId !== null &&
+            item.coSoId !== undefined
+        ) {
+
+            data.coSoId =
+                item.coSoId;
+
+        }
+
+
+        if (
+            item.maCoSo
+        ) {
+
+            data.maCoSo =
+                item.maCoSo;
+
+        }
+
+        if (
+            item.dsNvQuanLyId !==
+            undefined
+        ) {
+
+            data.dsNvQuanLyId =
+                item.dsNvQuanLyId;
+
+        }
+
+
+        if (
+            item.dsMaNvQuanLy !==
+            undefined
+        ) {
+
+            data.dsMaNvQuanLy =
+                item.dsMaNvQuanLy;
+
+        }
+
+
+        return data;
+
+    }
+
     async xuLyImport(
         file
     ) {
@@ -1668,10 +1832,9 @@ class PhongBanExcel {
             worksheet,
             danhSach
         } =
-            await this
-                .docDuLieuImport(
-                    file
-                );
+            await this.docDuLieuImport(
+                file
+            );
 
 
         if (
@@ -1701,7 +1864,7 @@ class PhongBanExcel {
             try {
 
                 const xuLy =
-                    await this.timPhongBanImport(
+                    await this.timNhaAnImport(
                         item
                     );
 
@@ -1717,8 +1880,8 @@ class PhongBanExcel {
                 );
 
 
-                const coSoId =
-                    await this.chuanHoaCoSoImport(
+                const dataNghiepVu =
+                    this.taoDuLieuNghiepVu(
                         item
                     );
 
@@ -1728,36 +1891,21 @@ class PhongBanExcel {
                     "CAP_NHAT"
                 ) {
 
-                    const dataUpdate = {
-
-                        tenPhongBan:
-                            item.tenPhongBan,
-
-                        moTa:
-                            item.moTa,
-
-                        coSoId,
-
-                        active:
-                            item.active
-
-                    };
-
                     if (
                         xuLy.choPhepSuaMa
                     ) {
 
-                        dataUpdate.maPhongBan =
-                            item.maPhongBan;
+                        dataNghiepVu.maNhaAn =
+                            item.maNhaAn;
 
                     }
 
 
                     const result =
-                        await phongBanService
+                        await nhaAnService
                             .update(
-                                xuLy.phongBan.id,
-                                dataUpdate
+                                xuLy.nhaAn.id,
+                                dataNghiepVu
                             );
 
 
@@ -1769,8 +1917,8 @@ class PhongBanExcel {
                         id:
                             result.id,
 
-                        maPhongBan:
-                            result.maPhongBan,
+                        maNhaAn:
+                            result.maNhaAn,
 
                         hanhDong:
                             "CAP_NHAT",
@@ -1780,54 +1928,41 @@ class PhongBanExcel {
 
                     });
 
-                } else {
 
-                    const dataCreate = {
-
-                        maPhongBan:
-                            item.maPhongBan,
-
-                        tenPhongBan:
-                            item.tenPhongBan,
-
-                        moTa:
-                            item.moTa,
-
-                        coSoId,
-
-                        active:
-                            item.active
-
-                    };
-
-
-                    const result =
-                        await phongBanService
-                            .create(
-                                dataCreate
-                            );
-
-
-                    ketQua.push({
-
-                        rowNumbers:
-                            item.rowNumbers,
-
-                        id:
-                            result.id,
-
-                        maPhongBan:
-                            result.maPhongBan,
-
-                        hanhDong:
-                            "THEM_MOI",
-
-                        message:
-                            `Thêm mới thành công - ID ${result.id}`
-
-                    });
+                    continue;
 
                 }
+
+
+                dataNghiepVu.maNhaAn =
+                    item.maNhaAn;
+
+
+                const result =
+                    await nhaAnService
+                        .create(
+                            dataNghiepVu
+                        );
+
+
+                ketQua.push({
+
+                    rowNumbers:
+                        item.rowNumbers,
+
+                    id:
+                        result.id,
+
+                    maNhaAn:
+                        result.maNhaAn,
+
+                    hanhDong:
+                        "THEM_MOI",
+
+                    message:
+                        `Thêm mới thành công - ID ${result.id}`
+
+                });
 
             } catch (error) {
 
@@ -1851,7 +1986,7 @@ class PhongBanExcel {
                 workbook,
                 worksheet,
                 errors,
-                "dm_phong_ban.xlsx",
+                `dm_nha_an.xlsx`,
                 {
                     headerRowNumber:
                         HEADER_ROW,
@@ -1899,34 +2034,14 @@ class PhongBanExcel {
                         );
 
 
-                if (
-                    result.coLoi
-                ) {
-
-                    return sendExcel(
-                        res,
-                        result
-                    );
-
-                }
-
-
-                return res
-                    .status(
-                        200
-                    )
-                    .json({
-
-                        success:
-                            true,
-
-                        message:
-                            "Import phòng ban thành công.",
-
-                        data:
-                            result.data
-
-                    });
+                /*
+                * Import luôn trả file Excel kết quả,
+                * bất kể có lỗi hay không.
+                */
+                return sendExcel(
+                    res,
+                    result
+                );
 
             } catch (error) {
 
@@ -1942,4 +2057,4 @@ class PhongBanExcel {
 
 
 module.exports =
-    new PhongBanExcel();
+    new NhaAnExcel();

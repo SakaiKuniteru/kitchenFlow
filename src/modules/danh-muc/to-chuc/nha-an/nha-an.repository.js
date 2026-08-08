@@ -509,6 +509,48 @@ class NhaAnRepository {
         }));
 
     }
+
+    async getChiTietByMa(
+        maNhaAn
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(na.ma_nha_an)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maNhaAn
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapNhaAn(
+            result.rows[0]
+        );
+
+    }
+
     async create(data) {
 
         const client =

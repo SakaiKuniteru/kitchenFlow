@@ -9,10 +9,30 @@ const authenticate = require("../../../../middlewares/authenticate.middleware");
 
 const controller = require("./nha-an.controller");
 
+const uploadImportExcel = require( "../../../../middlewares/upload-import-excel.middleware" );
+
+const nhaAnExcel = require( "./nha-an.excel" );
+
 router.get(
     "/tong-hop",
     authenticate,
     controller.getTongHop
+);
+
+router.get(
+    "/xuat-du-lieu",
+    authenticate,
+    nhaAnExcel.exportData
+);
+
+
+router.post(
+    "/import-du-lieu",
+    authenticate,
+    uploadImportExcel.single(
+        "file"
+    ),
+    nhaAnExcel.importData
 );
 
 router.get(
