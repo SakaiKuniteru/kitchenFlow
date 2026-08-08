@@ -1,18 +1,55 @@
 const express = require("express");
 
+const multer = require("multer");
+
 const router = express.Router();
 
 const { createSchema, updateSchema } = require("./thuc-pham.validation");
 
 const validate = require("../../../../middlewares/validate.middleware");
+
 const authenticate = require("../../../../middlewares/authenticate.middleware");
 
 const controller = require("./thuc-pham.controller");
+
+const excelController = require( "./thuc-pham.excel" );
+
+const upload =
+    multer({
+
+        storage:
+            multer.memoryStorage(),
+
+        limits: {
+
+            fileSize:
+                10 * 1024 * 1024
+
+        }
+
+    });
+
 
 router.get(
     "/tong-hop",
     authenticate,
     controller.getTongHop
+);
+
+router.get(
+    "/xuat-du-lieu",
+    authenticate,
+    excelController.exportData
+);
+
+
+router.post(
+    "/import-du-lieu",
+    authenticate,
+    upload.single(
+        "file"
+    ),
+    excelController.importData
 );
 
 router.get(

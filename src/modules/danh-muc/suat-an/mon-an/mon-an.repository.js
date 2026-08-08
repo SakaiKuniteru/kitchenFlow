@@ -150,6 +150,48 @@ class MonAnRepository {
 
     }
 
+    async getChiTietByMa(
+        maMonAn
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(ma.ma_mon_an)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maMonAn
+                ]
+            );
+
+
+        if (
+            result.rows.length ===
+            0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapMonAn(
+            result.rows[0]
+        );
+
+    }
+
     async getNhomMonAnByMa(
         maNhomMonAn
     ) {

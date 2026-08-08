@@ -1,3 +1,5 @@
+"use strict";
+
 const ExcelJS =
     require(
         "exceljs"
@@ -9,9 +11,11 @@ const ApiError =
     );
 
 const {
-    getCellValue
+    createHeaderMap,
+    getFieldValue,
+    rowHasData
 } = require(
-    "./excel-value"
+    "./header-mapper"
 );
 
 
@@ -73,39 +77,23 @@ async function readExcel(
 
 
     const headerMap =
-        new Map();
-
-
-    worksheet
-        .getRow(
+        createHeaderMap(
+            worksheet,
             headerRowNumber
-        )
-        .eachCell(
-            (
-                cell,
-                columnNumber
-            ) => {
-
-                const header =
-                    String(
-                        getCellValue(
-                            cell.value
-                        ) || ""
-                    )
-                        .trim();
-
-
-                if (header) {
-
-                    headerMap.set(
-                        header,
-                        columnNumber
-                    );
-
-                }
-
-            }
         );
+
+
+    if (
+        headerMap.size ===
+        0
+    ) {
+
+        throw new ApiError(
+            400,
+            "File Excel không có field dữ liệu."
+        );
+
+    }
 
 
     function getValue(
@@ -113,25 +101,22 @@ async function readExcel(
         field
     ) {
 
-        const column =
-            headerMap.get(
-                field
-            );
+        return getFieldValue(
+            row,
+            headerMap,
+            field
+        );
+
+    }
 
 
-        if (!column) {
+    function hasData(
+        row
+    ) {
 
-            return null;
-
-        }
-
-
-        return getCellValue(
-            row
-                .getCell(
-                    column
-                )
-                .value
+        return rowHasData(
+            row,
+            headerMap
         );
 
     }
@@ -145,7 +130,9 @@ async function readExcel(
 
         headerMap,
 
-        getValue
+        getValue,
+
+        hasData
 
     };
 

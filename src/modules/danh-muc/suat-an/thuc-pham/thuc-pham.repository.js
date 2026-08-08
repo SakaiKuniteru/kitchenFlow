@@ -504,6 +504,48 @@ class ThucPhamRepository {
 
     }
 
+    async getChiTietByMa(
+        maThucPham
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(tp.ma_thuc_pham)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maThucPham
+                ]
+            );
+
+
+        if (
+            result.rows.length ===
+            0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapThucPham(
+            result.rows[0]
+        );
+
+    }
+
     async update(id, data) {
 
         const sql = `
