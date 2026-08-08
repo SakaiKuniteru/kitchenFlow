@@ -13,6 +13,44 @@ const uploadNhanVien = require( "./upload-nhan-vien.middleware" );
 
 const { createSchema, updateSchema } = require("./nhan-vien.validation");
 
+const validateUpdateNhanVien = validate( updateSchema );
+
+function validateNhanVienUpdate(
+    req,
+    res,
+    next
+) {
+
+    const hasBody =
+        Object.keys(
+            req.body || {}
+        ).length > 0;
+
+
+    const hasFile =
+        Boolean(
+            req.file
+        );
+
+
+    if (
+        !hasBody &&
+        hasFile
+    ) {
+
+        return next();
+
+    }
+
+
+    return validateUpdateNhanVien(
+        req,
+        res,
+        next
+    );
+
+}
+
 router.get(
 
     "/tong-hop",
@@ -48,15 +86,10 @@ router.post(
 );
 
 router.patch(
-
     "/cap-nhat/:id",
-
     authenticate,
-
     uploadNhanVien.single( "anhDaiDien" ),
-
-    validate(updateSchema),
-
+    validateNhanVienUpdate,
     controller.update
 
 );

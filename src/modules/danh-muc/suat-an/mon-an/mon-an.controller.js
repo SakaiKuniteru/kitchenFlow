@@ -85,8 +85,10 @@ class MonAnController {
             const data =
                 await monAnService
                     .create(
-                        req.body
+                        req.body,
+                        req.file
                     );
+
 
             return successResponse(
                 res,
@@ -103,7 +105,6 @@ class MonAnController {
 
     }
 
-
     async update(
         req,
         res,
@@ -116,12 +117,33 @@ class MonAnController {
                 id
             } = req.params;
 
+
+            console.log(
+                "CONTENT-TYPE:",
+                req.headers[
+                    "content-type"
+                ]
+            );
+
+            console.log(
+                "BODY:",
+                req.body
+            );
+
+            console.log(
+                "FILE:",
+                req.file
+            );
+
+
             const data =
                 await monAnService
                     .update(
                         id,
-                        req.body
+                        req.body || {},
+                        req.file || null
                     );
+
 
             return successResponse(
                 res,
@@ -132,7 +154,9 @@ class MonAnController {
 
         } catch (error) {
 
-            next(error);
+            next(
+                error
+            );
 
         }
 

@@ -58,40 +58,26 @@ class NhanVienController {
 
         try {
 
-            const data = {
-
-                ...(req.body || {})
-
-            };
-
-            if (
-                req.file
-            ) {
-
-                data.anhDaiDien =
-                    `/uploads/nhan-vien/${req.file.filename}`;
-
-            }
-
             const result =
-                await nhanVienService.create(
-                    data
-                );
+                await nhanVienService
+                    .create(
+                        req.body,
+                        req.file
+                    );
 
-            return res.status(201).json({
 
-                success: true,
-
-                message:
-                    "Thêm nhân viên thành công.",
-
-                data: result
-
-            });
+            return successResponse(
+                res,
+                "Thêm nhân viên thành công.",
+                result,
+                201
+            );
 
         } catch (error) {
 
-            next(error);
+            next(
+                error
+            );
 
         }
 
@@ -105,40 +91,21 @@ class NhanVienController {
 
         try {
 
-            const data = {
-
-                ...(req.body || {})
-
-            };
-
-            if (
-                req.file
-            ) {
-
-                data.anhDaiDien =
-                    `uploads/nhan-vien/${req.file.filename}`;
-
-            }
-
             const result =
                 await nhanVienService
                     .update(
                         req.params.id,
-                        data
+                        req.body,
+                        req.file
                     );
 
-            return res.status(200).json({
 
-                success:
-                    true,
-
-                message:
-                    "Cập nhật nhân viên thành công.",
-
-                data:
-                    result
-
-            });
+            return successResponse(
+                res,
+                "Cập nhật nhân viên thành công.",
+                result,
+                200
+            );
 
         } catch (error) {
 
@@ -149,7 +116,6 @@ class NhanVienController {
         }
 
     }
-
 }
 
 module.exports = new NhanVienController();

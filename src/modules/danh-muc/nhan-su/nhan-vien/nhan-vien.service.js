@@ -2,6 +2,8 @@ const ApiError = require("../../../../utils/api-error");
 
 const nhanVienRepository = require("./nhan-vien.repository");
 
+const nhanVienFileService = require( "./nhan-vien-file.service" );
+
 class NhanVienService {
 
     parseId(id) {
@@ -51,9 +53,6 @@ class NhanVienService {
             ...data
         };
 
-        /**
-         * Quốc gia
-         */
         if (duLieu.maQuocGia) {
 
             const quocGia =
@@ -87,9 +86,6 @@ class NhanVienService {
 
         }
 
-        /**
-         * Tỉnh/thành
-         */
         if (duLieu.maTinhThanh) {
 
             const tinhThanh =
@@ -124,9 +120,6 @@ class NhanVienService {
 
         }
 
-        /**
-         * Xã/phường
-         */
         if (duLieu.maXaPhuong) {
 
             const xaPhuong =
@@ -161,9 +154,6 @@ class NhanVienService {
 
         }
 
-        /**
-         * Cơ sở
-         */
         if (duLieu.maCoSo) {
 
             const coSo =
@@ -197,9 +187,6 @@ class NhanVienService {
 
         }
 
-        /**
-         * Phòng ban
-         */
         if (duLieu.maPhongBan) {
 
             const phongBan =
@@ -234,9 +221,6 @@ class NhanVienService {
 
         }
 
-        /**
-         * Chức vụ
-         */
         if (duLieu.maChucVu) {
 
             const chucVu =
@@ -270,9 +254,6 @@ class NhanVienService {
 
         }
 
-        /**
-         * Chuẩn hóa kiểu dữ liệu ID
-         */
         const cacTruongId = [
             "quocGiaId",
             "tinhThanhId",
@@ -507,290 +488,597 @@ class NhanVienService {
 
     }
 
-    async create(data) {
+    async create(
+        data,
+        file
+    ) {
 
-        if (
-            !data ||
-            typeof data !== "object"
-        ) {
+        let fileMoi = null;
 
-            throw new ApiError(
-                400,
-                "Dữ liệu nhân viên không hợp lệ."
-            );
 
-        }
+        try {
 
-        const duLieuDaChuanHoa =
-            await this.chuanHoaLienKet(data);
+            if (
+                !data ||
+                typeof data !== "object"
+            ) {
 
-        await this.validateTrungDuLieu(
-            duLieuDaChuanHoa
-        );
+                throw new ApiError(
+                    400,
+                    "Dữ liệu nhân viên không hợp lệ."
+                );
 
-        await this.validateLienKet(
-            duLieuDaChuanHoa
-        );
+            }
 
-        const result =
-            await nhanVienRepository.create(
+
+            const duLieuDaChuanHoa =
+                await this.chuanHoaLienKet(
+                    data
+                );
+
+
+            await this.validateTrungDuLieu(
                 duLieuDaChuanHoa
             );
 
-        return await nhanVienRepository.getChiTiet(
-            result.id
-        );
 
-    }
-
-    async update(id, data) {
-
-        const nhanVienId = this.parseId(id);
-
-        if (
-            !data ||
-            typeof data !==
-                "object" ||
-            Array.isArray(
-                data
-            )
-        ) {
-
-            throw new ApiError(
-                400,
-                "Dữ liệu cập nhật nhân viên không hợp lệ."
+            await this.validateLienKet(
+                duLieuDaChuanHoa
             );
+
+
+            /*
+            * Chuyển file temp thành file chính thức.
+            */
+            if (
+                file
+            ) {
+
+                fileMoi =
+                    await nhanVienFileService
+                        .saveFile(
+                            duLieuDaChuanHoa
+                                .maNhanVien,
+
+                            duLieuDaChuanHoa
+                                .hoTen,
+
+                            file
+                        );
+
+
+                duLieuDaChuanHoa
+                    .anhDaiDien =
+                    fileMoi.relativePath;
+
+            } else {
+
+                duLieuDaChuanHoa
+                    .anhDaiDien =
+                    null;
+
+            }
+
+
+            const result =
+                await nhanVienRepository
+                    .create(
+                        duLieuDaChuanHoa
+                    );
+
+
+            if (
+                file
+            ) {
+
+                await nhanVienFileService
+                    .cleanupOldFiles(
+                        duLieuDaChuanHoa
+                            .maNhanVien,
+                        3
+                    );
+
+            }
+
+
+            return await nhanVienRepository
+                .getChiTiet(
+                    result.id
+                );
+
+        } catch (error) {
+
+
+            if (
+                fileMoi
+            ) {
+
+                await nhanVienFileService
+                    .deletePhysicalFile(
+                        fileMoi.fullPath
+                    );
+
+            } else {
+
+                await nhanVienFileService
+                    .deleteTempFile(
+                        file
+                    );
+
+            }
+
+
+            throw error;
 
         }
 
-        const nhanVien =
-            await nhanVienRepository.getChiTiet(
+    }
+    
+    async update(
+        id,
+        data,
+        file
+    ) {
+
+        let fileMoi =
+            null;
+
+        let daDoiThuMuc =
+            false;
+
+        let maNhanVienCu =
+            null;
+
+        let maNhanVienMoi =
+            null;
+
+
+        try {
+
+            const nhanVienId =
+                this.parseId(
+                    id
+                );
+
+
+            if (
+                !data ||
+                typeof data !==
+                    "object" ||
+                Array.isArray(
+                    data
+                )
+            ) {
+
+                throw new ApiError(
+                    400,
+                    "Dữ liệu cập nhật nhân viên không hợp lệ."
+                );
+
+            }
+
+            const nhanVien =
+                await nhanVienRepository
+                    .getChiTiet(
+                        nhanVienId
+                    );
+
+
+            if (!nhanVien) {
+
+                throw new ApiError(
+                    404,
+                    "Nhân viên không tồn tại."
+                );
+
+            }
+
+
+            maNhanVienCu =
+                nhanVien.maNhanVien;
+
+
+            maNhanVienMoi =
+                data.maNhanVien !== undefined
+                    ? data.maNhanVien.trim()
+                    : nhanVien.maNhanVien;
+
+            const duLieuCapNhat = {
+
+                maNhanVien:
+                    maNhanVienMoi,
+
+                hoTen:
+                    data.hoTen !== undefined
+                        ? data.hoTen.trim()
+                        : nhanVien.hoTen,
+
+                ngaySinh:
+                    data.ngaySinh !== undefined
+                        ? data.ngaySinh
+                        : nhanVien.ngaySinh,
+
+                gioiTinh:
+                    data.gioiTinh !== undefined
+                        ? data.gioiTinh
+                        : nhanVien.gioiTinh,
+
+                soDienThoai:
+                    data.soDienThoai !== undefined
+                        ? (
+                            data.soDienThoai === null
+                                ? null
+                                : data.soDienThoai
+                                    .trim() || null
+                        )
+                        : nhanVien.soDienThoai,
+
+                email:
+                    data.email !== undefined
+                        ? (
+                            data.email === null
+                                ? null
+                                : data.email
+                                    .trim() || null
+                        )
+                        : nhanVien.email,
+
+                anhDaiDien:
+                    nhanVien.anhDaiDien,
+
+
+                diaChi:
+                    data.diaChi !== undefined
+                        ? (
+                            data.diaChi === null
+                                ? null
+                                : data.diaChi
+                                    .trim() || null
+                        )
+                        : nhanVien.diaChi,
+
+                ghiChu:
+                    data.ghiChu !== undefined
+                        ? (
+                            data.ghiChu === null
+                                ? null
+                                : data.ghiChu
+                                    .trim() || null
+                        )
+                        : nhanVien.ghiChu,
+
+                maThe:
+                    data.maThe !== undefined
+                        ? (
+                            data.maThe === null
+                                ? null
+                                : data.maThe
+                                    .trim() || null
+                        )
+                        : nhanVien.maThe,
+
+                maQr:
+                    data.maQr !== undefined
+                        ? (
+                            data.maQr === null
+                                ? null
+                                : data.maQr
+                                    .trim() || null
+                        )
+                        : nhanVien.maQr,
+
+                maBarcode:
+                    data.maBarcode !== undefined
+                        ? (
+                            data.maBarcode === null
+                                ? null
+                                : data.maBarcode
+                                    .trim() || null
+                        )
+                        : nhanVien.maBarcode,
+
+                quocGiaId:
+                    data.quocGiaId !== undefined
+                        ? data.quocGiaId
+                        : (
+                            data.maQuocGia !== undefined
+                                ? undefined
+                                : nhanVien.quocGiaId
+                        ),
+
+                maQuocGia:
+                    data.maQuocGia !== undefined
+                        ? (
+                            data.maQuocGia === null
+                                ? null
+                                : data.maQuocGia
+                                    .trim() || null
+                        )
+                        : undefined,
+
+
+                tinhThanhId:
+                    data.tinhThanhId !== undefined
+                        ? data.tinhThanhId
+                        : (
+                            data.maTinhThanh !== undefined
+                                ? undefined
+                                : nhanVien.tinhThanhId
+                        ),
+
+                maTinhThanh:
+                    data.maTinhThanh !== undefined
+                        ? (
+                            data.maTinhThanh === null
+                                ? null
+                                : data.maTinhThanh
+                                    .trim() || null
+                        )
+                        : undefined,
+
+
+                xaPhuongId:
+                    data.xaPhuongId !== undefined
+                        ? data.xaPhuongId
+                        : (
+                            data.maXaPhuong !== undefined
+                                ? undefined
+                                : nhanVien.xaPhuongId
+                        ),
+
+                maXaPhuong:
+                    data.maXaPhuong !== undefined
+                        ? (
+                            data.maXaPhuong === null
+                                ? null
+                                : data.maXaPhuong
+                                    .trim() || null
+                        )
+                        : undefined,
+
+                coSoId:
+                    data.coSoId !== undefined
+                        ? data.coSoId
+                        : (
+                            data.maCoSo !== undefined
+                                ? undefined
+                                : nhanVien.coSoId
+                        ),
+
+                maCoSo:
+                    data.maCoSo !== undefined
+                        ? (
+                            data.maCoSo === null
+                                ? null
+                                : data.maCoSo
+                                    .trim() || null
+                        )
+                        : undefined,
+
+
+                phongBanId:
+                    data.phongBanId !== undefined
+                        ? data.phongBanId
+                        : (
+                            data.maPhongBan !== undefined
+                                ? undefined
+                                : nhanVien.phongBanId
+                        ),
+
+                maPhongBan:
+                    data.maPhongBan !== undefined
+                        ? (
+                            data.maPhongBan === null
+                                ? null
+                                : data.maPhongBan
+                                    .trim() || null
+                        )
+                        : undefined,
+
+
+                chucVuId:
+                    data.chucVuId !== undefined
+                        ? data.chucVuId
+                        : (
+                            data.maChucVu !== undefined
+                                ? undefined
+                                : nhanVien.chucVuId
+                        ),
+
+                maChucVu:
+                    data.maChucVu !== undefined
+                        ? (
+                            data.maChucVu === null
+                                ? null
+                                : data.maChucVu
+                                    .trim() || null
+                        )
+                        : undefined,
+
+
+                active:
+                    data.active !== undefined
+                        ? data.active
+                        : nhanVien.active
+
+            };
+
+            const duLieuDaChuanHoa =
+                await this.chuanHoaLienKet(
+                    duLieuCapNhat
+                );
+
+            await this.validateTrungDuLieu(
+                duLieuDaChuanHoa,
                 nhanVienId
             );
 
-        if (!nhanVien) {
 
-            throw new ApiError(
-                404,
-                "Nhân viên không tồn tại."
+            await this.validateLienKet(
+                duLieuDaChuanHoa
             );
 
-        }
+            if (
+                maNhanVienCu !==
+                maNhanVienMoi
+            ) {
 
-        const duLieuCapNhat = {
+                await nhanVienFileService
+                    .renameNhanVienDirectory(
+                        maNhanVienCu,
+                        maNhanVienMoi
+                    );
 
-            maNhanVien:
-                data.maNhanVien !== undefined
-                    ? data.maNhanVien.trim()
-                    : nhanVien.maNhanVien,
 
-            hoTen:
-                data.hoTen !== undefined
-                    ? data.hoTen.trim()
-                    : nhanVien.hoTen,
+                daDoiThuMuc =
+                    true;
 
-            ngaySinh:
-                data.ngaySinh !== undefined
-                    ? data.ngaySinh
-                    : nhanVien.ngaySinh,
+                duLieuDaChuanHoa
+                    .anhDaiDien =
+                    nhanVienFileService
+                        .replaceMaNhanVienInPath(
+                            duLieuDaChuanHoa
+                                .anhDaiDien,
 
-            gioiTinh:
-                data.gioiTinh !== undefined
-                    ? data.gioiTinh
-                    : nhanVien.gioiTinh,
+                            maNhanVienCu,
 
-            soDienThoai:
-                data.soDienThoai !== undefined
-                    ? (
-                        data.soDienThoai === null
-                            ? null
-                            : data.soDienThoai.trim() || null
-                    )
-                    : nhanVien.soDienThoai,
+                            maNhanVienMoi
+                        );
 
-            email:
-                data.email !== undefined
-                    ? (
-                        data.email === null
-                            ? null
-                            : data.email.trim() || null
-                    )
-                    : nhanVien.email,
+            }
 
-            anhDaiDien:
-                data.anhDaiDien !== undefined
-                    ? (
-                        data.anhDaiDien === null
-                            ? null
-                            : data.anhDaiDien.trim() || null
-                    )
-                    : nhanVien.anhDaiDien,
+            if (
+                file
+            ) {
 
-            diaChi:
-                data.diaChi !== undefined
-                    ? (
-                        data.diaChi === null
-                            ? null
-                            : data.diaChi.trim() || null
-                    )
-                    : nhanVien.diaChi,
+                fileMoi =
+                    await nhanVienFileService
+                        .saveFile(
+                            maNhanVienMoi,
 
-            ghiChu:
-                data.ghiChu !== undefined
-                    ? (
-                        data.ghiChu === null
-                            ? null
-                            : data.ghiChu.trim() || null
-                    )
-                    : nhanVien.ghiChu,
+                            duLieuDaChuanHoa
+                                .hoTen,
 
-            maThe:
-                data.maThe !== undefined
-                    ? (
-                        data.maThe === null
-                            ? null
-                            : data.maThe.trim() || null
-                    )
-                    : nhanVien.maThe,
+                            file
+                        );
 
-            maQr:
-                data.maQr !== undefined
-                    ? (
-                        data.maQr === null
-                            ? null
-                            : data.maQr.trim() || null
-                    )
-                    : nhanVien.maQr,
 
-            maBarcode:
-                data.maBarcode !== undefined
-                    ? (
-                        data.maBarcode === null
-                            ? null
-                            : data.maBarcode.trim() || null
-                    )
-                    : nhanVien.maBarcode,
+                duLieuDaChuanHoa
+                    .anhDaiDien =
+                    fileMoi.relativePath;
 
-            quocGiaId:
-                data.quocGiaId !== undefined
-                    ? data.quocGiaId
-                    : nhanVien.quocGiaId,
+            }
 
-            maQuocGia:
-                data.maQuocGia !== undefined
-                    ? (
-                        data.maQuocGia === null
-                            ? null
-                            : data.maQuocGia.trim() || null
-                    )
-                    : undefined,
+            const ketQua =
+                await nhanVienRepository
+                    .update(
+                        nhanVienId,
+                        duLieuDaChuanHoa
+                    );
 
-            tinhThanhId:
-                data.tinhThanhId !== undefined
-                    ? data.tinhThanhId
-                    : nhanVien.tinhThanhId,
 
-            maTinhThanh:
-                data.maTinhThanh !== undefined
-                    ? (
-                        data.maTinhThanh === null
-                            ? null
-                            : data.maTinhThanh.trim() || null
-                    )
-                    : undefined,
+            if (!ketQua) {
 
-            xaPhuongId:
-                data.xaPhuongId !== undefined
-                    ? data.xaPhuongId
-                    : nhanVien.xaPhuongId,
-
-            maXaPhuong:
-                data.maXaPhuong !== undefined
-                    ? (
-                        data.maXaPhuong === null
-                            ? null
-                            : data.maXaPhuong.trim() || null
-                    )
-                    : undefined,
-
-            phongBanId:
-                data.phongBanId !== undefined
-                    ? data.phongBanId
-                    : nhanVien.phongBanId,
-
-            maPhongBan:
-                data.maPhongBan !== undefined
-                    ? (
-                        data.maPhongBan === null
-                            ? null
-                            : data.maPhongBan.trim() || null
-                    )
-                    : undefined,
-
-            chucVuId:
-                data.chucVuId !== undefined
-                    ? data.chucVuId
-                    : nhanVien.chucVuId,
-
-            maChucVu:
-                data.maChucVu !== undefined
-                    ? (
-                        data.maChucVu === null
-                            ? null
-                            : data.maChucVu.trim() || null
-                    )
-                    : undefined,
-
-            coSoId:
-                data.coSoId !== undefined
-                    ? data.coSoId
-                    : nhanVien.coSoId,
-
-            maCoSo:
-                data.maCoSo !== undefined
-                    ? (
-                        data.maCoSo === null
-                            ? null
-                            : data.maCoSo.trim() || null
-                    )
-                    : undefined,
-
-            active:
-                data.active !== undefined
-                    ? data.active
-                    : nhanVien.active
-
-        };
-
-        const duLieuDaChuanHoa =
-            await this.chuanHoaLienKet(duLieuCapNhat);
-
-        await this.validateTrungDuLieu(
-            duLieuDaChuanHoa,
-            nhanVienId
-        );
-
-        await this.validateLienKet(
-            duLieuDaChuanHoa
-        );
-
-        const ketQua =
-            await nhanVienRepository
-                .update(
-                    nhanVienId,
-                    duLieuDaChuanHoa
+                throw new ApiError(
+                    404,
+                    "Nhân viên không tồn tại."
                 );
 
-        if (!ketQua) {
+            }
 
-            throw new ApiError(
-                404,
-                "Nhân viên không tồn tại."
-            );
+            if (
+                file
+            ) {
+
+                await nhanVienFileService
+                    .cleanupOldFiles(
+                        maNhanVienMoi,
+                        3
+                    );
+
+            }
+
+
+            return ketQua;
+
+        } catch (error) {
+
+            if (
+                fileMoi
+            ) {
+
+                try {
+
+                    await nhanVienFileService
+                        .deletePhysicalFile(
+                            fileMoi.fullPath
+                        );
+
+                } catch (
+                    deleteError
+                ) {
+
+                    console.error(
+                        "Không thể xóa ảnh nhân viên mới:",
+                        deleteError
+                    );
+
+                }
+
+            } else {
+
+                try {
+
+                    await nhanVienFileService
+                        .deleteTempFile(
+                            file
+                        );
+
+                } catch (
+                    deleteTempError
+                ) {
+
+                    console.error(
+                        "Không thể xóa file temp nhân viên:",
+                        deleteTempError
+                    );
+
+                }
+
+            }
+
+            if (
+                daDoiThuMuc &&
+                maNhanVienCu &&
+                maNhanVienMoi
+            ) {
+
+                try {
+
+                    await nhanVienFileService
+                        .renameNhanVienDirectory(
+                            maNhanVienMoi,
+                            maNhanVienCu
+                        );
+
+                } catch (
+                    rollbackError
+                ) {
+
+                    console.error(
+                        "Không thể rollback thư mục ảnh nhân viên:",
+                        rollbackError
+                    );
+
+                }
+
+            }
+
+
+            throw error;
 
         }
 
-        return ketQua;
     }
 
 }

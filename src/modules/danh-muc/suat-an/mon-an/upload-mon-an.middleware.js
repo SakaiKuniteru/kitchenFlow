@@ -1,10 +1,10 @@
 "use strict";
 
-const path =
-    require("path");
-
 const fs =
     require("fs");
+
+const path =
+    require("path");
 
 const multer =
     require("multer");
@@ -16,7 +16,7 @@ const ApiError =
 const uploadDirectory =
     path.join(
         process.cwd(),
-        "src/public/uploads/temp/nhan-vien"
+        "src/public/uploads/temp/mon-an"
     );
 
 
@@ -109,27 +109,19 @@ function fileFilter(
             .toLowerCase();
 
 
-    const extensionHopLe =
-        IMAGE_EXTENSIONS.includes(
-            extension
-        );
-
-
-    const mimeTypeHopLe =
-        IMAGE_MIME_TYPES.includes(
-            file.mimetype
-        );
-
-
     if (
-        !extensionHopLe ||
-        !mimeTypeHopLe
+        !IMAGE_EXTENSIONS.includes(
+            extension
+        ) ||
+        !IMAGE_MIME_TYPES.includes(
+            file.mimetype
+        )
     ) {
 
         return callback(
             new ApiError(
                 400,
-                "Ảnh đại diện chỉ hỗ trợ JPG, JPEG, PNG hoặc WEBP."
+                "Hình ảnh món ăn chỉ hỗ trợ JPG, JPEG, PNG hoặc WEBP."
             )
         );
 
@@ -144,7 +136,7 @@ function fileFilter(
 }
 
 
-const uploadNhanVien =
+const uploadMonAn =
     multer({
 
         storage,
@@ -165,4 +157,4 @@ const uploadNhanVien =
 
 
 module.exports =
-    uploadNhanVien;
+    uploadMonAn;
