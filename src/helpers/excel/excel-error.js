@@ -7,12 +7,27 @@ async function createErrorFile(
 ) {
 
     const {
-        headerRowNumber = 1
+        headerRowNumber = 1,
+        successes = []
     } = options;
 
 
-    const errorColumn =
+    const resultColumn =
         worksheet.columnCount + 1;
+
+    const errorColumn =
+        worksheet.columnCount + 2;
+
+
+    worksheet
+        .getRow(
+            headerRowNumber
+        )
+        .getCell(
+            resultColumn
+        )
+        .value =
+        "ketQua";
 
 
     worksheet
@@ -25,6 +40,32 @@ async function createErrorFile(
         .value =
         "baoLoi";
 
+
+    for (
+        const success of
+        successes
+    ) {
+
+        for (
+            const rowNumber of
+            success.rowNumbers
+        ) {
+
+            worksheet
+                .getRow(
+                    rowNumber
+                )
+                .getCell(
+                    resultColumn
+                )
+                .value =
+                success.message ||
+                success.hanhDong ||
+                "Thành công";
+
+        }
+
+    }
 
     for (
         const error of
@@ -59,7 +100,7 @@ async function createErrorFile(
     return {
 
         coLoi:
-            true,
+            errors.length > 0,
 
         fileName,
 

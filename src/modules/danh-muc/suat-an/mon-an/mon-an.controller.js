@@ -164,6 +164,5 @@ class MonAnController {
 
 }
 
-
 module.exports =
     new MonAnController();

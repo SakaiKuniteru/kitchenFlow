@@ -262,14 +262,19 @@ class PhongBanService {
             coSoId:
                 data.coSoId !== undefined
                     ? data.coSoId
-                    : phongBan.coSoId,
+                    : (
+                        data.maCoSo !== undefined
+                            ? undefined
+                            : phongBan.coSoId
+                    ),
 
             maCoSo:
                 data.maCoSo !== undefined
                     ? (
                         data.maCoSo === null
                             ? null
-                            : data.maCoSo.trim() || null
+                            : data.maCoSo
+                                .trim() || null
                     )
                     : undefined,
 

@@ -260,6 +260,46 @@ class PhongBanRepository {
 
     }
 
+    async getChiTietByMa(
+        maPhongBan
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(pb.ma_phong_ban)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maPhongBan
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapPhongBan(
+            result.rows[0]
+        );
+
+    }
+
     async create(data) {
 
         const sql = `
