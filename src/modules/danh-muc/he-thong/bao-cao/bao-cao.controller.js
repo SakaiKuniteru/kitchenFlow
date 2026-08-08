@@ -73,9 +73,6 @@ class BaoCaoController {
 
         try {
 
-            console.log("BODY:", req.body);
-            console.log("FILE:", req.file);
-
             const data =
                 await baoCaoService
                     .create(
@@ -105,10 +102,6 @@ class BaoCaoController {
     ) {
 
         try {
-
-            console.log("BODY:", req.body);
-            console.log("FILE:", req.file);
-
             const data =
                 await baoCaoService
                     .update(

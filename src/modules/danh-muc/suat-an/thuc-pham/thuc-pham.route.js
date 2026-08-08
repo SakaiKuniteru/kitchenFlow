@@ -1,7 +1,5 @@
 const express = require("express");
 
-const multer = require("multer");
-
 const router = express.Router();
 
 const { createSchema, updateSchema } = require("./thuc-pham.validation");
@@ -11,6 +9,8 @@ const validate = require("../../../../middlewares/validate.middleware");
 const authenticate = require("../../../../middlewares/authenticate.middleware");
 
 const controller = require("./thuc-pham.controller");
+
+const multer = require("multer");
 
 const excelController = require( "./thuc-pham.excel" );
 

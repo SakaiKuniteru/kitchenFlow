@@ -103,6 +103,47 @@ class DonViTinhRepository {
 
     }
 
+    async getChiTietByMa(
+        maDonViTinh
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(dvt.ma_don_vi_tinh)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maDonViTinh
+                ]
+            );
+
+
+        if (
+            result.rows.length ===
+            0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapDonViTinh(
+            result.rows[0]
+        );
+
+    }
     async existsMaDonViTinh(
         maDonViTinh,
         excludeId = null
@@ -185,86 +226,6 @@ class DonViTinhRepository {
 
     }
 
-    async getByIdForImport(
-        client,
-        id
-    ) {
-
-        const sql = `
-            SELECT
-                id,
-                ma_don_vi_tinh,
-                ten_don_vi_tinh,
-                ky_hieu,
-                loai_don_vi,
-                active,
-                created_at,
-                updated_at
-            FROM dm_don_vi_tinh
-            WHERE id = $1
-            LIMIT 1
-        `;
-
-        const result =
-            await client.query(
-                sql,
-                [id]
-            );
-
-        if (
-            result.rows.length === 0
-        ) {
-            return null;
-        }
-
-        return this.mapDonViTinh(
-            result.rows[0]
-        );
-
-    }
-
-    async getByMaForImport(
-        client,
-        maDonViTinh
-    ) {
-
-        const sql = `
-            SELECT
-                id,
-                ma_don_vi_tinh,
-                ten_don_vi_tinh,
-                ky_hieu,
-                loai_don_vi,
-                active,
-                created_at,
-                updated_at
-            FROM dm_don_vi_tinh
-            WHERE UPPER(
-                TRIM(ma_don_vi_tinh)
-            ) = UPPER(
-                TRIM($1)
-            )
-            LIMIT 1
-        `;
-
-        const result =
-            await client.query(
-                sql,
-                [maDonViTinh]
-            );
-
-        if (
-            result.rows.length === 0
-        ) {
-            return null;
-        }
-
-        return this.mapDonViTinh(
-            result.rows[0]
-        );
-
-    }
-
     async create(data) {
 
         const sql = `
@@ -321,57 +282,6 @@ class DonViTinhRepository {
 
     }
 
-    async createImport(
-        client,
-        data
-    ) {
-
-        const sql = `
-            INSERT INTO dm_don_vi_tinh (
-                ma_don_vi_tinh,
-                ten_don_vi_tinh,
-                ky_hieu,
-                loai_don_vi,
-                active,
-                created_at,
-                updated_at
-            )
-            VALUES (
-                $1,
-                $2,
-                $3,
-                $4,
-                $5,
-                NOW(),
-                NOW()
-            )
-            RETURNING id
-        `;
-
-        const values = [
-
-            data.maDonViTinh,
-
-            data.tenDonViTinh,
-
-            data.kyHieu,
-
-            data.loaiDonVi,
-
-            data.active
-
-        ];
-
-        const result =
-            await client.query(
-                sql,
-                values
-            );
-
-        return result.rows[0].id;
-
-    }
-
     async update(
         id,
         data
@@ -425,123 +335,6 @@ class DonViTinhRepository {
 
     }
 
-    async updateImport(
-        client,
-        id,
-        data
-    ) {
-
-        const sets = [];
-
-        const values = [];
-
-        let paramIndex = 1;
-
-        if (
-            data.fields.tenDonViTinh
-        ) {
-
-            sets.push(
-                `ten_don_vi_tinh = $${paramIndex}`
-            );
-
-            values.push(
-                data.tenDonViTinh
-            );
-
-            paramIndex++;
-
-        }
-
-        if (
-            data.fields.kyHieu
-        ) {
-
-            sets.push(
-                `ky_hieu = $${paramIndex}`
-            );
-
-            values.push(
-                data.kyHieu
-            );
-
-            paramIndex++;
-
-        }
-
-        if (
-            data.fields.loaiDonVi
-        ) {
-
-            sets.push(
-                `loai_don_vi = $${paramIndex}`
-            );
-
-            values.push(
-                data.loaiDonVi
-            );
-
-            paramIndex++;
-
-        }
-
-        if (
-            data.fields.active
-        ) {
-
-            sets.push(
-                `active = $${paramIndex}`
-            );
-
-            values.push(
-                data.active
-            );
-
-            paramIndex++;
-
-        }
-
-        if (
-            sets.length === 0
-        ) {
-
-            return id;
-
-        }
-
-        sets.push(
-            "updated_at = NOW()"
-        );
-
-        values.push(
-            id
-        );
-
-        const sql = `
-            UPDATE dm_don_vi_tinh
-            SET
-                ${sets.join(",\n")}
-            WHERE id = $${paramIndex}
-            RETURNING id
-        `;
-
-        const result =
-            await client.query(
-                sql,
-                values
-            );
-
-        if (
-            result.rows.length === 0
-        ) {
-
-            return null;
-
-        }
-
-        return result.rows[0].id;
-
-    }
 }
 
 module.exports = new DonViTinhRepository();

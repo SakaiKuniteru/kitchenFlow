@@ -11,6 +11,25 @@ const uploadImportExcel = require("../../../../middlewares/upload-import-excel.m
 
 const controller = require("./don-vi-tinh.controller");
 
+const multer = require("multer");
+
+const excelController = require( "./don-vi-tinh.excel" );
+
+const upload =
+    multer({
+
+        storage:
+            multer.memoryStorage(),
+
+        limits: {
+
+            fileSize:
+                10 * 1024 * 1024
+
+        }
+
+    });
+
 router.get(
     "/tong-hop",
     authenticate,
@@ -20,16 +39,17 @@ router.get(
 router.get(
     "/xuat-du-lieu",
     authenticate,
-    controller.exportData
+    excelController.exportData
 );
+
 
 router.post(
     "/import-du-lieu",
     authenticate,
-    uploadImportExcel.single(
-        "fileImport"
+    upload.single(
+        "file"
     ),
-    controller.importData
+    excelController.importData
 );
 
 router.get(

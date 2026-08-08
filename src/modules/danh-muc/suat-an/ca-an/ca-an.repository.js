@@ -102,6 +102,48 @@ class CaAnRepository {
 
     }
 
+    async getChiTietByMa(
+        maCaAn
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(ca.ma_ca_an)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maCaAn
+                ]
+            );
+
+
+        if (
+            result.rows.length ===
+            0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapCaAn(
+            result.rows[0]
+        );
+
+    }
+
     async existsMaCaAn(
         maCaAn,
         excludeId = null

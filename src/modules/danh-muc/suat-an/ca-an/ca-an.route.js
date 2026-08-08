@@ -9,10 +9,45 @@ const authenticate = require("../../../../middlewares/authenticate.middleware");
 
 const controller = require("./ca-an.controller");
 
+const multer = require("multer");
+
+const excelController = require( "./ca-an.excel" );
+
+const upload =
+    multer({
+
+        storage:
+            multer.memoryStorage(),
+
+        limits: {
+
+            fileSize:
+                10 * 1024 * 1024
+
+        }
+
+    });
+
 router.get(
     "/tong-hop",
     authenticate,
     controller.getTongHop
+);
+
+router.get(
+    "/xuat-du-lieu",
+    authenticate,
+    excelController.exportData
+);
+
+
+router.post(
+    "/import-du-lieu",
+    authenticate,
+    upload.single(
+        "file"
+    ),
+    excelController.importData
 );
 
 router.get(
