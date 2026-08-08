@@ -528,6 +528,46 @@ class KhoRepository {
 
     }
 
+    async getChiTietByMa(
+        maKho
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(k.ma_kho)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maKho
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapKho(
+            result.rows[0]
+        );
+
+    }
 
     async create(data) {
 
