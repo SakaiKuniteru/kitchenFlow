@@ -1,73 +1,32 @@
-const fs =
-    require("fs");
+const fs = require("fs");
 
-const path =
-    require("path");
+const path = require("path");
 
-const ExcelJS =
-    require("exceljs");
+const ExcelJS = require("exceljs");
 
-const ApiError =
-    require(
-        "../../../../utils/api-error"
-    );
+const ApiError = require("../../../../utils/api-error");
 
-const pool =
-    require(
-        "../../../../config/database"
-    );
+const pool = require("../../../../config/database");
 
-const nhaAnRepository =
-    require(
-        "./nha-an.repository"
-    );
+const nhaAnRepository = require("./nha-an.repository");
 
-const nhaAnService =
-    require(
-        "./nha-an.service"
-    );
+const nhaAnService = require("./nha-an.service");
 
-const {
-    readExcel
-} =
-    require(
-        "../../../../helpers/excel/excel-reader"
-    );
+const { readExcel } = require("../../../../helpers/excel/excel-reader");
 
-const {
-    createErrorFile
-} =
-    require(
-        "../../../../helpers/excel/excel-error"
-    );
+const { createErrorFile } = require("../../../../helpers/excel/excel-error");
 
-const {
-    sendExcel
-} =
-    require(
-        "../../../../helpers/excel/excel-response"
-    );
+const { sendExcel } = require("../../../../helpers/excel/excel-response");
 
-const {
-    toNumber,
-    toBoolean
-} =
-    require(
-        "../../../../helpers/excel/excel-value"
-    );
+const { toNumber, toBoolean } = require("../../../../helpers/excel/excel-value");
 
+const HEADER_ROW = 3;
 
-const HEADER_ROW =
-    3;
+const TEMPLATE_ROW = 5;
 
-const TEMPLATE_ROW =
-    5;
+const DATA_START_ROW = 5;
 
-const DATA_START_ROW =
-    5;
-
-const MA_BAO_CAO =
-    "dm_nha_an";
+const MA_BAO_CAO = "dm_nha_an";
 
 
 const FIELDS = [
@@ -225,7 +184,6 @@ class NhaAnExcel {
 
     }
 
-
     isBlank(
         value
     ) {
@@ -239,7 +197,6 @@ class NhaAnExcel {
         );
 
     }
-
 
     isTemplateValue(
         value
@@ -269,7 +226,6 @@ class NhaAnExcel {
         );
 
     }
-
 
     cloneValue(
         value
@@ -302,15 +258,6 @@ class NhaAnExcel {
         );
 
     }
-
-
-    /*
-     * Excel nhập danh sách:
-     *
-     * 1,2,3
-     * hoặc
-     * NV001,NV002,NV003
-     */
     parseList(
         value
     ) {
@@ -341,7 +288,6 @@ class NhaAnExcel {
             );
 
     }
-
 
     parseIdList(
         value
@@ -392,7 +338,6 @@ class NhaAnExcel {
         );
 
     }
-
 
     copyRowStyle(
         worksheet,
@@ -530,10 +475,123 @@ class NhaAnExcel {
 
     }
 
+    getExportHeaderMap(
+        worksheet
+    ) {
 
-    /* =========================================================
-       EXPORT
-       ========================================================= */
+        const headerMap =
+            new Map();
+
+
+        const headerRow =
+            worksheet.getRow(
+                HEADER_ROW
+            );
+
+
+        headerRow.eachCell(
+            {
+                includeEmpty:
+                    false
+            },
+            (
+                cell,
+                columnNumber
+            ) => {
+
+                if (
+                    cell.value === undefined ||
+                    cell.value === null
+                ) {
+
+                    return;
+
+                }
+
+
+                const key =
+                    String(
+                        cell.value
+                    )
+                        .trim();
+
+
+                if (!key) {
+
+                    return;
+
+                }
+
+                const field =
+                    key.endsWith(
+                        "/k"
+                    )
+                        ? key.slice(
+                            0,
+                            -2
+                        )
+                        : key;
+
+
+                headerMap.set(
+                    field,
+                    columnNumber
+                );
+
+            }
+        );
+
+
+        return headerMap;
+
+    }
+
+    ghiDongExport(
+        row,
+        headerMap,
+        data
+    ) {
+
+        for (
+            const [
+                field,
+                columnNumber
+            ] of headerMap
+        ) {
+
+            if (
+                !Object.prototype
+                    .hasOwnProperty
+                    .call(
+                        data,
+                        field
+                    )
+            ) {
+
+                continue;
+
+            }
+
+
+            if (
+                data[field] === undefined
+            ) {
+
+                continue;
+
+            }
+
+
+            row
+                .getCell(
+                    columnNumber
+                )
+                .value =
+                data[field];
+
+        }
+
+    }
 
     taoDongExport(
         item
@@ -586,7 +644,6 @@ class NhaAnExcel {
         };
 
     }
-
 
     exportData =
         async (
@@ -823,11 +880,6 @@ class NhaAnExcel {
 
         };
 
-
-    /* =========================================================
-       HEADER
-       ========================================================= */
-
     validateHeaders(
         headerMap
     ) {
@@ -876,44 +928,6 @@ class NhaAnExcel {
         }
 
 
-        const requiredFields = [
-
-            "tenNhaAn",
-
-            "coSoId",
-
-            "maCoSo",
-
-            "dsNvQuanLyId",
-
-            "dsMaNvQuanLy",
-
-            "active"
-
-        ];
-
-
-        for (
-            const field of
-            requiredFields
-        ) {
-
-            if (
-                !headerMap.has(
-                    field
-                )
-            ) {
-
-                throw new ApiError(
-                    400,
-                    `File import thiếu field: ${field}.`
-                );
-
-            }
-
-        }
-
-
         return {
 
             hasIdKey,
@@ -925,11 +939,6 @@ class NhaAnExcel {
         };
 
     }
-
-
-    /* =========================================================
-       READ
-       ========================================================= */
 
     async docDuLieuImport(
         file
@@ -955,6 +964,12 @@ class NhaAnExcel {
                 headerMap
             );
 
+        const fieldsCoTrongFile =
+            new Set(
+                [
+                    ...headerMap.keys()
+                ]
+            );
 
         const danhSach =
             [];
@@ -1085,10 +1100,31 @@ class NhaAnExcel {
 
             }
 
-
             let active =
-                true;
+                undefined;
 
+
+            if (
+                !this.isBlank(
+                    activeRaw
+                )
+            ) {
+
+                try {
+
+                    active =
+                        toBoolean(
+                            activeRaw
+                        );
+
+                } catch (error) {
+
+                    active =
+                        activeRaw;
+
+                }
+
+            }
 
             if (
                 !this.isBlank(
@@ -1127,9 +1163,6 @@ class NhaAnExcel {
 
             } catch (error) {
 
-                /*
-                 * Giữ lại lỗi theo từng dòng.
-                 */
                 dsNvQuanLyId = {
                     loi:
                         error.message
@@ -1150,62 +1183,76 @@ class NhaAnExcel {
                     rowNumber
                 ],
 
+                fieldsCoTrongFile,
+
                 idLaKhoa:
                     cauHinhKhoa.hasIdKey,
 
                 maLaKhoa:
                     cauHinhKhoa.hasMaKey,
 
+
                 id:
                     this.isBlank(
                         idRaw
                     )
-                        ? null
+                        ? undefined
                         : toNumber(
                             idRaw
                         ),
+
 
                 maNhaAn:
                     this.isBlank(
                         maNhaAnRaw
                     )
-                        ? null
+                        ? undefined
                         : String(
                             maNhaAnRaw
                         ).trim(),
+
 
                 tenNhaAn:
                     this.isBlank(
                         tenNhaAnRaw
                     )
-                        ? null
+                        ? undefined
                         : String(
                             tenNhaAnRaw
                         ).trim(),
+
 
                 coSoId:
                     this.isBlank(
                         coSoIdRaw
                     )
-                        ? null
+                        ? undefined
                         : toNumber(
                             coSoIdRaw
                         ),
+
 
                 maCoSo:
                     this.isBlank(
                         maCoSoRaw
                     )
-                        ? null
+                        ? undefined
                         : String(
                             maCoSoRaw
                         ).trim(),
+
 
                 dsNvQuanLyId,
 
                 dsMaNvQuanLy,
 
-                active
+
+                active:
+                    this.isBlank(
+                        activeRaw
+                    )
+                        ? undefined
+                        : active
 
             });
 
@@ -1223,11 +1270,6 @@ class NhaAnExcel {
         };
 
     }
-
-
-    /* =========================================================
-       XÁC ĐỊNH CREATE / UPDATE
-       ========================================================= */
 
     async timNhaAnImport(
         item
@@ -1659,32 +1701,6 @@ class NhaAnExcel {
     ) {
 
         if (
-            isCreate &&
-            !item.maNhaAn
-        ) {
-
-            throw new ApiError(
-                400,
-                "Thêm mới nhà ăn phải có mã nhà ăn."
-            );
-
-        }
-
-
-        if (
-            !item.tenNhaAn
-        ) {
-
-            throw new ApiError(
-                400,
-                "Tên nhà ăn không được để trống."
-            );
-
-        }
-
-
-        if (
-            item.id !== null &&
             item.id !== undefined &&
             (
                 !Number.isInteger(
@@ -1705,9 +1721,7 @@ class NhaAnExcel {
 
         }
 
-
         if (
-            item.coSoId !== null &&
             item.coSoId !== undefined &&
             (
                 !Number.isInteger(
@@ -1730,7 +1744,8 @@ class NhaAnExcel {
 
 
         if (
-            item.dsNvQuanLyId &&
+            item.dsNvQuanLyId !==
+                undefined &&
             !Array.isArray(
                 item.dsNvQuanLyId
             )
@@ -1744,8 +1759,8 @@ class NhaAnExcel {
 
         }
 
-
         if (
+            item.active !== undefined &&
             ![
                 true,
                 false
@@ -1761,25 +1776,48 @@ class NhaAnExcel {
 
         }
 
+    if (
+        isCreate &&
+        !item.maNhaAn
+    ) {
+
+        throw new ApiError(
+            400,
+            "Thêm mới nhà ăn phải có mã nhà ăn."
+        );
+
     }
+
+}
 
     taoDuLieuNghiepVu(
         item
     ) {
 
-        const data = {
-
-            tenNhaAn:
-                item.tenNhaAn,
-
-            active:
-                item.active
-
-        };
+        const data = {};
 
         if (
-            item.coSoId !== null &&
-            item.coSoId !== undefined
+            item.fieldsCoTrongFile
+                .has(
+                    "tenNhaAn"
+                ) &&
+            item.tenNhaAn !==
+                undefined
+        ) {
+
+            data.tenNhaAn =
+                item.tenNhaAn;
+
+        }
+
+
+        if (
+            item.fieldsCoTrongFile
+                .has(
+                    "coSoId"
+                ) &&
+            item.coSoId !==
+                undefined
         ) {
 
             data.coSoId =
@@ -1789,7 +1827,12 @@ class NhaAnExcel {
 
 
         if (
-            item.maCoSo
+            item.fieldsCoTrongFile
+                .has(
+                    "maCoSo"
+                ) &&
+            item.maCoSo !==
+                undefined
         ) {
 
             data.maCoSo =
@@ -1797,9 +1840,14 @@ class NhaAnExcel {
 
         }
 
+
         if (
+            item.fieldsCoTrongFile
+                .has(
+                    "dsNvQuanLyId"
+                ) &&
             item.dsNvQuanLyId !==
-            undefined
+                undefined
         ) {
 
             data.dsNvQuanLyId =
@@ -1809,12 +1857,31 @@ class NhaAnExcel {
 
 
         if (
+            item.fieldsCoTrongFile
+                .has(
+                    "dsMaNvQuanLy"
+                ) &&
             item.dsMaNvQuanLy !==
-            undefined
+                undefined
         ) {
 
             data.dsMaNvQuanLy =
                 item.dsMaNvQuanLy;
+
+        }
+
+
+        if (
+            item.fieldsCoTrongFile
+                .has(
+                    "active"
+                ) &&
+            item.active !==
+                undefined
+        ) {
+
+            data.active =
+                item.active;
 
         }
 
@@ -1892,14 +1959,15 @@ class NhaAnExcel {
                 ) {
 
                     if (
-                        xuLy.choPhepSuaMa
+                        xuLy.choPhepSuaMa &&
+                        item.maNhaAn !==
+                            undefined
                     ) {
 
                         dataNghiepVu.maNhaAn =
                             item.maNhaAn;
 
                     }
-
 
                     const result =
                         await nhaAnService

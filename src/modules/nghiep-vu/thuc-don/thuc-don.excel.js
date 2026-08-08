@@ -36,7 +36,6 @@ const TEMPLATE_ROW = 5;
 
 const DATA_START_ROW = 5;
 
-const SO_COT = 34;
 
 class ThucDonExcel {
 
@@ -220,104 +219,136 @@ class ThucDonExcel {
         mon = null
     ) {
 
-        return [
+        return {
+            id:
+                thucDon.id,
 
-            thucDon.id ?? null,
+            maThucDon:
+                thucDon.maThucDon,
 
-            thucDon.maThucDon ?? null,
+            tenThucDon:
+                thucDon.tenThucDon,
 
-            thucDon.tenThucDon ?? null,
+            loaiThucDon:
+                thucDon.loaiThucDon,
 
-            thucDon.loaiThucDon ?? null,
+            tuNgay:
+                this.formatDate(
+                    thucDon.tuNgay
+                ),
 
-            this.formatDate(
-                thucDon.tuNgay
-            ),
+            denNgay:
+                this.formatDate(
+                    thucDon.denNgay
+                ),
 
-            this.formatDate(
-                thucDon.denNgay
-            ),
+            coSoId:
+                thucDon.coSoId,
 
-            thucDon.coSoId ?? null,
+            maCoSo:
+                thucDon.coSo
+                    ?.maCoSo,
 
-            thucDon.coSo
-                ?.maCoSo ??
-            null,
+            nhaAnId:
+                thucDon.nhaAnId,
 
-            thucDon.nhaAnId ?? null,
+            maNhaAn:
+                thucDon.nhaAn
+                    ?.maNhaAn,
 
-            thucDon.nhaAn
-                ?.maNhaAn ??
-            null,
+            caAnId:
+                thucDon.caAnId,
 
-            thucDon.caAnId ?? null,
+            maCaAn:
+                thucDon.caAn
+                    ?.maCaAn,
 
-            thucDon.caAn
-                ?.maCaAn ??
-            null,
+            trangThai:
+                thucDon.trangThai,
 
-            thucDon.trangThai ?? null,
+            moTa:
+                thucDon.moTa,
 
-            thucDon.moTa ?? null,
-
-            thucDon.active ?? true,
-
-
-            /* Ngày */
-
-            ngay?.id ?? null,
-
-            this.formatDate(
-                ngay?.ngay
-            ),
-
-            ngay?.ghiChu ?? null,
-
-            ngay?.active ?? true,
+            active:
+                thucDon.active,
 
 
-            /* Nhóm */
+            /*
+            * =====================================================
+            * NGÀY
+            * =====================================================
+            */
 
-            nhom?.id ?? null,
+            thucDonNgayId:
+                ngay?.id,
 
-            nhom?.nhomMonAnId ?? null,
+            ngay:
+                this.formatDate(
+                    ngay?.ngay
+                ),
 
-            nhom?.nhomMonAn
-                ?.maNhomMonAn ??
-            null,
+            ghiChuNgay:
+                ngay?.ghiChu,
 
-            nhom?.thuTuHienThi ?? null,
-
-            nhom?.ghiChu ?? null,
-
-            nhom?.active ?? true,
+            activeNgay:
+                ngay?.active,
 
 
-            /* Món */
+            /*
+            * =====================================================
+            * NHÓM MÓN ĂN
+            * =====================================================
+            */
 
-            mon?.id ?? null,
+            thucDonNhomMonAnId:
+                nhom?.id,
 
-            mon?.monAnId ?? null,
+            nhomMonAnId:
+                nhom?.nhomMonAnId,
 
-            mon?.monAn
-                ?.maMonAn ??
-            null,
+            maNhomMonAn:
+                nhom?.nhomMonAn
+                    ?.maNhomMonAn,
 
-            mon?.thuTuHienThi ?? null,
+            thuTuNhom:
+                nhom?.thuTuHienThi,
 
-            mon?.dinhLuong ?? null,
+            ghiChuNhom:
+                nhom?.ghiChu,
 
-            mon?.donViTinhId ?? null,
+            activeNhom:
+                nhom?.active,
 
-            mon?.donViTinh
-                ?.maDonViTinh ??
-            null,
+            thucDonMonAnId:
+                mon?.id,
 
-            mon?.ghiChu ?? null,
+            monAnId:
+                mon?.monAnId,
 
-            mon?.active ?? true
+            maMonAn:
+                mon?.monAn
+                    ?.maMonAn,
 
-        ];
+            thuTuMon:
+                mon?.thuTuHienThi,
+
+            dinhLuong:
+                mon?.dinhLuong,
+
+            donViTinhId:
+                mon?.donViTinhId,
+
+            maDonViTinh:
+                mon?.donViTinh
+                    ?.maDonViTinh,
+
+            ghiChuMon:
+                mon?.ghiChu,
+
+            activeMon:
+                mon?.active
+
+        };
 
     }
 
@@ -447,6 +478,7 @@ class ThucDonExcel {
                 sourceRowNumber
             );
 
+
         const targetRow =
             worksheet.getRow(
                 targetRowNumber
@@ -459,7 +491,8 @@ class ThucDonExcel {
 
         for (
             let columnNumber = 1;
-            columnNumber <= SO_COT;
+            columnNumber <=
+                worksheet.columnCount;
             columnNumber++
         ) {
 
@@ -467,6 +500,7 @@ class ThucDonExcel {
                 sourceRow.getCell(
                     columnNumber
                 );
+
 
             const targetCell =
                 targetRow.getCell(
@@ -499,6 +533,143 @@ class ThucDonExcel {
 
     }
 
+    getExportHeaderMap(
+        worksheet
+    ) {
+
+        const headerMap =
+            new Map();
+
+
+        worksheet
+            .getRow(
+                HEADER_ROW
+            )
+            .eachCell(
+                {
+                    includeEmpty:
+                        false
+                },
+                (
+                    cell,
+                    columnNumber
+                ) => {
+
+                    if (
+                        cell.value === undefined ||
+                        cell.value === null
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const key =
+                        String(
+                            getCellValue(
+                                cell.value
+                            )
+                        )
+                            .trim();
+
+
+                    if (!key) {
+
+                        return;
+
+                    }
+
+
+                    /*
+                    * id/k -> id
+                    *
+                    * maThucDon/k -> maThucDon
+                    */
+                    const field =
+                        key.endsWith(
+                            "/k"
+                        )
+                            ? key.slice(
+                                0,
+                                -2
+                            )
+                            : key;
+
+
+                    headerMap.set(
+                        field,
+                        columnNumber
+                    );
+
+                }
+            );
+
+
+        return headerMap;
+
+    }
+
+    ghiDongExport(
+        row,
+        headerMap,
+        data
+    ) {
+
+        for (
+            const [
+                field,
+                columnNumber
+            ] of headerMap
+        ) {
+
+            /*
+            * Không phải field mà hệ thống xuất
+            * => bỏ qua.
+            */
+            if (
+                !Object.prototype
+                    .hasOwnProperty
+                    .call(
+                        data,
+                        field
+                    )
+            ) {
+
+                continue;
+
+            }
+
+
+            const value =
+                data[field];
+
+
+            /*
+            * Không có dữ liệu
+            * => bỏ qua.
+            */
+            if (
+                value === undefined ||
+                value === null ||
+                value === ""
+            ) {
+
+                continue;
+
+            }
+
+
+            row
+                .getCell(
+                    columnNumber
+                )
+                .value =
+                value;
+
+        }
+
+    }
     async xuLyExport(
         query = {}
     ) {
@@ -709,6 +880,10 @@ class ThucDonExcel {
             );
 
 
+        /*
+        * Mã vẫn là field dùng xác định
+        * CREATE / UPDATE.
+        */
         if (
             !hasMaKey &&
             !hasMaNormal
@@ -735,7 +910,1337 @@ class ThucDonExcel {
         }
 
 
-        const requiredHeaders = [
+        return {
+
+            idLaKhoa:
+                hasIdKey,
+
+            maThucDonLaKhoa:
+                hasMaKey,
+
+            fieldMaThucDon:
+                hasMaKey
+                    ? "maThucDon/k"
+                    : "maThucDon",
+
+            /*
+            * Danh sách key thực tế
+            * đang tồn tại trong file.
+            */
+            fieldsCoTrongFile:
+                new Set(
+                    [
+                        ...headerMap.keys()
+                    ]
+                )
+
+        };
+
+    }
+
+    getOptionalValue(
+        row,
+        getValue,
+        field
+    ) {
+
+        const value =
+            getValue(
+                row,
+                field
+            );
+
+
+        if (
+            value === undefined ||
+            value === null ||
+            String(
+                value
+            ).trim() === ""
+        ) {
+
+            return undefined;
+
+        }
+
+
+        return value;
+
+    }
+
+    getOptionalNumber(
+        row,
+        getValue,
+        field
+    ) {
+
+        const value =
+            this.getOptionalValue(
+                row,
+                getValue,
+                field
+            );
+
+
+        if (
+            value === undefined
+        ) {
+
+            return undefined;
+
+        }
+
+
+        return toNumber(
+            value
+        );
+
+    }
+
+    getOptionalDate(
+        row,
+        getValue,
+        field
+    ) {
+
+        const value =
+            this.getOptionalValue(
+                row,
+                getValue,
+                field
+            );
+
+
+        if (
+            value === undefined
+        ) {
+
+            return undefined;
+
+        }
+
+
+        return this.formatDate(
+            value
+        );
+
+    }
+
+    getOptionalBoolean(
+        row,
+        getValue,
+        field,
+        rowNumber
+    ) {
+
+        const value =
+            this.getOptionalValue(
+                row,
+                getValue,
+                field
+            );
+
+
+        if (
+            value === undefined
+        ) {
+
+            return undefined;
+
+        }
+
+
+        try {
+
+            return toBoolean(
+                value
+            );
+
+        } catch (error) {
+
+            throw new ApiError(
+                400,
+                `Dòng ${rowNumber}: ${field} không hợp lệ.`
+            );
+
+        }
+
+    }
+
+    gomDuLieuImport(
+        worksheet,
+        getValue,
+        cauHinhHeader
+    ) {
+
+        const {
+            idLaKhoa,
+            maThucDonLaKhoa,
+            fieldMaThucDon,
+            fieldsCoTrongFile
+        } = cauHinhHeader;
+
+
+        const danhSach =
+            new Map();
+
+
+        /*
+        * =========================================================
+        * HELPER
+        * =========================================================
+        */
+
+        const isBlank =
+            value => {
+
+                return (
+                    value === undefined ||
+                    value === null ||
+                    String(
+                        value
+                    ).trim() === ""
+                );
+
+            };
+
+
+        const getOptionalValue =
+            (
+                row,
+                field
+            ) => {
+
+                /*
+                * File không có key này
+                * => bỏ qua.
+                */
+                if (
+                    !fieldsCoTrongFile.has(
+                        field
+                    )
+                ) {
+
+                    return undefined;
+
+                }
+
+
+                const value =
+                    getValue(
+                        row,
+                        field
+                    );
+
+
+                /*
+                * Có key nhưng ô trống
+                * => bỏ qua.
+                */
+                if (
+                    isBlank(
+                        value
+                    )
+                ) {
+
+                    return undefined;
+
+                }
+
+
+                if (
+                    typeof value ===
+                    "string"
+                ) {
+
+                    return value.trim();
+
+                }
+
+
+                return value;
+
+            };
+
+
+        const getOptionalNumber =
+            (
+                row,
+                field
+            ) => {
+
+                const value =
+                    getOptionalValue(
+                        row,
+                        field
+                    );
+
+
+                if (
+                    value === undefined
+                ) {
+
+                    return undefined;
+
+                }
+
+
+                return toNumber(
+                    value
+                );
+
+            };
+
+
+        const getOptionalDate =
+            (
+                row,
+                field
+            ) => {
+
+                const value =
+                    getOptionalValue(
+                        row,
+                        field
+                    );
+
+
+                if (
+                    value === undefined
+                ) {
+
+                    return undefined;
+
+                }
+
+
+                return this.formatDate(
+                    value
+                );
+
+            };
+
+
+        const getOptionalBoolean =
+            (
+                row,
+                field,
+                rowNumber
+            ) => {
+
+                const value =
+                    getOptionalValue(
+                        row,
+                        field
+                    );
+
+
+                if (
+                    value === undefined
+                ) {
+
+                    return undefined;
+
+                }
+
+
+                try {
+
+                    return toBoolean(
+                        value
+                    );
+
+                } catch (error) {
+
+                    throw new ApiError(
+                        400,
+                        `Dòng ${rowNumber}: ${field} không hợp lệ.`
+                    );
+
+                }
+
+            };
+
+
+        /*
+        * =========================================================
+        * DUYỆT TỪNG DÒNG
+        * =========================================================
+        */
+
+        for (
+            let rowNumber =
+                DATA_START_ROW;
+            rowNumber <=
+                worksheet.rowCount;
+            rowNumber++
+        ) {
+
+            const row =
+                worksheet.getRow(
+                    rowNumber
+                );
+
+
+            /*
+            * =====================================================
+            * KIỂM TRA DÒNG CÓ DỮ LIỆU KHÔNG
+            *
+            * Không quét theo số cột.
+            * Chỉ đọc những key thực sự tồn tại trong file.
+            * =====================================================
+            */
+
+            const values =
+                [
+                    ...fieldsCoTrongFile
+                ]
+                    .map(
+                        field =>
+                            getValue(
+                                row,
+                                field
+                            )
+                    );
+
+
+            const coTemplate =
+                values.some(
+                    value =>
+                        typeof value ===
+                            "string" &&
+                        value.includes(
+                            "[["
+                        )
+                );
+
+
+            if (
+                coTemplate
+            ) {
+
+                continue;
+
+            }
+
+
+            const coDuLieu =
+                values.some(
+                    value =>
+                        !isBlank(
+                            value
+                        )
+                );
+
+
+            if (
+                !coDuLieu
+            ) {
+
+                continue;
+
+            }
+
+
+            /*
+            * =====================================================
+            * KHÓA THỰC ĐƠN
+            * =====================================================
+            */
+
+            const id =
+                idLaKhoa
+                    ? getOptionalNumber(
+                        row,
+                        "id/k"
+                    )
+                    : undefined;
+
+
+            let maThucDon;
+
+
+            if (
+                fieldsCoTrongFile.has(
+                    fieldMaThucDon
+                )
+            ) {
+
+                const maRaw =
+                    getOptionalValue(
+                        row,
+                        fieldMaThucDon
+                    );
+
+
+                maThucDon =
+                    maRaw !== undefined
+                        ? String(
+                            maRaw
+                        ).trim()
+                        : undefined;
+
+            }
+
+
+            /*
+            * =====================================================
+            * KEY GROUP
+            * =====================================================
+            */
+
+            let key;
+
+
+            if (
+                id !== undefined
+            ) {
+
+                key =
+                    `ID:${id}`;
+
+            } else if (
+                maThucDon !==
+                    undefined
+            ) {
+
+                key =
+                    `MA:${
+                        String(
+                            maThucDon
+                        )
+                            .trim()
+                            .toLowerCase()
+                    }`;
+
+            } else {
+
+                key =
+                    `ROW:${rowNumber}`;
+
+            }
+
+
+            /*
+            * =====================================================
+            * TẠO THỰC ĐƠN GỐC
+            * =====================================================
+            */
+
+            if (
+                !danhSach.has(
+                    key
+                )
+            ) {
+
+                const thucDon = {
+
+                    rowNumbers:
+                        [],
+
+                    fieldsCoTrongFile,
+
+                    id,
+
+                    idLaKhoa,
+
+                    maThucDon,
+
+                    maThucDonLaKhoa,
+
+                    dsNgay:
+                        []
+
+                };
+
+
+                const tenThucDon =
+                    getOptionalValue(
+                        row,
+                        "tenThucDon"
+                    );
+
+                if (
+                    tenThucDon !==
+                    undefined
+                ) {
+
+                    thucDon.tenThucDon =
+                        tenThucDon;
+
+                }
+
+
+                const loaiThucDon =
+                    getOptionalNumber(
+                        row,
+                        "loaiThucDon"
+                    );
+
+                if (
+                    loaiThucDon !==
+                    undefined
+                ) {
+
+                    thucDon.loaiThucDon =
+                        loaiThucDon;
+
+                }
+
+
+                const tuNgay =
+                    getOptionalDate(
+                        row,
+                        "tuNgay"
+                    );
+
+                if (
+                    tuNgay !==
+                    undefined
+                ) {
+
+                    thucDon.tuNgay =
+                        tuNgay;
+
+                }
+
+
+                const denNgay =
+                    getOptionalDate(
+                        row,
+                        "denNgay"
+                    );
+
+                if (
+                    denNgay !==
+                    undefined
+                ) {
+
+                    thucDon.denNgay =
+                        denNgay;
+
+                }
+
+
+                const coSoId =
+                    getOptionalNumber(
+                        row,
+                        "coSoId"
+                    );
+
+                if (
+                    coSoId !==
+                    undefined
+                ) {
+
+                    thucDon.coSoId =
+                        coSoId;
+
+                }
+
+
+                const maCoSo =
+                    getOptionalValue(
+                        row,
+                        "maCoSo"
+                    );
+
+                if (
+                    maCoSo !==
+                    undefined
+                ) {
+
+                    thucDon.maCoSo =
+                        maCoSo;
+
+                }
+
+
+                const nhaAnId =
+                    getOptionalNumber(
+                        row,
+                        "nhaAnId"
+                    );
+
+                if (
+                    nhaAnId !==
+                    undefined
+                ) {
+
+                    thucDon.nhaAnId =
+                        nhaAnId;
+
+                }
+
+
+                const maNhaAn =
+                    getOptionalValue(
+                        row,
+                        "maNhaAn"
+                    );
+
+                if (
+                    maNhaAn !==
+                    undefined
+                ) {
+
+                    thucDon.maNhaAn =
+                        maNhaAn;
+
+                }
+
+
+                const caAnId =
+                    getOptionalNumber(
+                        row,
+                        "caAnId"
+                    );
+
+                if (
+                    caAnId !==
+                    undefined
+                ) {
+
+                    thucDon.caAnId =
+                        caAnId;
+
+                }
+
+
+                const maCaAn =
+                    getOptionalValue(
+                        row,
+                        "maCaAn"
+                    );
+
+                if (
+                    maCaAn !==
+                    undefined
+                ) {
+
+                    thucDon.maCaAn =
+                        maCaAn;
+
+                }
+
+
+                const trangThai =
+                    getOptionalNumber(
+                        row,
+                        "trangThai"
+                    );
+
+                if (
+                    trangThai !==
+                    undefined
+                ) {
+
+                    thucDon.trangThai =
+                        trangThai;
+
+                }
+
+
+                const moTa =
+                    getOptionalValue(
+                        row,
+                        "moTa"
+                    );
+
+                if (
+                    moTa !==
+                    undefined
+                ) {
+
+                    thucDon.moTa =
+                        moTa;
+
+                }
+
+
+                const active =
+                    getOptionalBoolean(
+                        row,
+                        "active",
+                        rowNumber
+                    );
+
+                if (
+                    active !==
+                    undefined
+                ) {
+
+                    thucDon.active =
+                        active;
+
+                }
+
+
+                danhSach.set(
+                    key,
+                    thucDon
+                );
+
+            }
+
+
+            const thucDon =
+                danhSach.get(
+                    key
+                );
+
+
+            thucDon
+                .rowNumbers
+                .push(
+                    rowNumber
+                );
+
+            const ngayValue =
+                getOptionalDate(
+                    row,
+                    "ngay"
+                );
+
+
+            if (
+                ngayValue ===
+                undefined
+            ) {
+
+                continue;
+
+            }
+
+
+            let ngay =
+                thucDon.dsNgay
+                    .find(
+                        item =>
+                            item.ngay ===
+                            ngayValue
+                    );
+
+
+            if (
+                !ngay
+            ) {
+
+                ngay = {
+
+                    ngay:
+                        ngayValue,
+
+                    dsNhomMonAn:
+                        []
+
+                };
+
+
+                const thucDonNgayId =
+                    getOptionalNumber(
+                        row,
+                        "thucDonNgayId"
+                    );
+
+                if (
+                    thucDonNgayId !==
+                    undefined
+                ) {
+
+                    ngay.id =
+                        thucDonNgayId;
+
+                }
+
+
+                const ghiChuNgay =
+                    getOptionalValue(
+                        row,
+                        "ghiChuNgay"
+                    );
+
+                if (
+                    ghiChuNgay !==
+                    undefined
+                ) {
+
+                    ngay.ghiChu =
+                        ghiChuNgay;
+
+                }
+
+
+                const activeNgay =
+                    getOptionalBoolean(
+                        row,
+                        "activeNgay",
+                        rowNumber
+                    );
+
+                if (
+                    activeNgay !==
+                    undefined
+                ) {
+
+                    ngay.active =
+                        activeNgay;
+
+                }
+
+
+                thucDon.dsNgay.push(
+                    ngay
+                );
+
+            }
+
+
+            /*
+            * =====================================================
+            * NHÓM MÓN ĂN
+            * =====================================================
+            */
+
+            const nhomMonAnId =
+                getOptionalNumber(
+                    row,
+                    "nhomMonAnId"
+                );
+
+
+            const maNhomMonAn =
+                getOptionalValue(
+                    row,
+                    "maNhomMonAn"
+                );
+
+
+            if (
+                nhomMonAnId ===
+                    undefined &&
+                maNhomMonAn ===
+                    undefined
+            ) {
+
+                continue;
+
+            }
+
+
+            let nhom =
+                ngay.dsNhomMonAn
+                    .find(
+                        item =>
+                            (
+                                nhomMonAnId !==
+                                    undefined &&
+                                item.nhomMonAnId !==
+                                    undefined &&
+                                Number(
+                                    item.nhomMonAnId
+                                ) ===
+                                Number(
+                                    nhomMonAnId
+                                )
+                            ) ||
+                            (
+                                maNhomMonAn !==
+                                    undefined &&
+                                item.maNhomMonAn !==
+                                    undefined &&
+                                String(
+                                    item.maNhomMonAn
+                                )
+                                    .trim()
+                                    .toUpperCase() ===
+                                String(
+                                    maNhomMonAn
+                                )
+                                    .trim()
+                                    .toUpperCase()
+                            )
+                    );
+
+
+            if (
+                !nhom
+            ) {
+
+                nhom = {
+
+                    dsMonAn:
+                        []
+
+                };
+
+
+                const thucDonNhomMonAnId =
+                    getOptionalNumber(
+                        row,
+                        "thucDonNhomMonAnId"
+                    );
+
+                if (
+                    thucDonNhomMonAnId !==
+                    undefined
+                ) {
+
+                    nhom.id =
+                        thucDonNhomMonAnId;
+
+                }
+
+
+                if (
+                    nhomMonAnId !==
+                    undefined
+                ) {
+
+                    nhom.nhomMonAnId =
+                        nhomMonAnId;
+
+                }
+
+
+                if (
+                    maNhomMonAn !==
+                    undefined
+                ) {
+
+                    nhom.maNhomMonAn =
+                        maNhomMonAn;
+
+                }
+
+
+                const thuTuNhom =
+                    getOptionalNumber(
+                        row,
+                        "thuTuNhom"
+                    );
+
+                if (
+                    thuTuNhom !==
+                    undefined
+                ) {
+
+                    nhom.thuTuHienThi =
+                        thuTuNhom;
+
+                }
+
+
+                const ghiChuNhom =
+                    getOptionalValue(
+                        row,
+                        "ghiChuNhom"
+                    );
+
+                if (
+                    ghiChuNhom !==
+                    undefined
+                ) {
+
+                    nhom.ghiChu =
+                        ghiChuNhom;
+
+                }
+
+
+                const activeNhom =
+                    getOptionalBoolean(
+                        row,
+                        "activeNhom",
+                        rowNumber
+                    );
+
+                if (
+                    activeNhom !==
+                    undefined
+                ) {
+
+                    nhom.active =
+                        activeNhom;
+
+                }
+
+
+                ngay
+                    .dsNhomMonAn
+                    .push(
+                        nhom
+                    );
+
+            }
+
+
+            /*
+            * =====================================================
+            * MÓN ĂN
+            * =====================================================
+            */
+
+            const monAnId =
+                getOptionalNumber(
+                    row,
+                    "monAnId"
+                );
+
+
+            const maMonAn =
+                getOptionalValue(
+                    row,
+                    "maMonAn"
+                );
+
+
+            if (
+                monAnId ===
+                    undefined &&
+                maMonAn ===
+                    undefined
+            ) {
+
+                continue;
+
+            }
+
+
+            const mon = {};
+
+
+            const thucDonMonAnId =
+                getOptionalNumber(
+                    row,
+                    "thucDonMonAnId"
+                );
+
+            if (
+                thucDonMonAnId !==
+                undefined
+            ) {
+
+                mon.id =
+                    thucDonMonAnId;
+
+            }
+
+
+            if (
+                monAnId !==
+                undefined
+            ) {
+
+                mon.monAnId =
+                    monAnId;
+
+            }
+
+
+            if (
+                maMonAn !==
+                undefined
+            ) {
+
+                mon.maMonAn =
+                    maMonAn;
+
+            }
+
+
+            const thuTuMon =
+                getOptionalNumber(
+                    row,
+                    "thuTuMon"
+                );
+
+            if (
+                thuTuMon !==
+                undefined
+            ) {
+
+                mon.thuTuHienThi =
+                    thuTuMon;
+
+            }
+
+
+            const dinhLuong =
+                getOptionalNumber(
+                    row,
+                    "dinhLuong"
+                );
+
+            if (
+                dinhLuong !==
+                undefined
+            ) {
+
+                mon.dinhLuong =
+                    dinhLuong;
+
+            }
+
+
+            const donViTinhId =
+                getOptionalNumber(
+                    row,
+                    "donViTinhId"
+                );
+
+            if (
+                donViTinhId !==
+                undefined
+            ) {
+
+                mon.donViTinhId =
+                    donViTinhId;
+
+            }
+
+
+            const maDonViTinh =
+                getOptionalValue(
+                    row,
+                    "maDonViTinh"
+                );
+
+            if (
+                maDonViTinh !==
+                undefined
+            ) {
+
+                mon.maDonViTinh =
+                    maDonViTinh;
+
+            }
+
+
+            const ghiChuMon =
+                getOptionalValue(
+                    row,
+                    "ghiChuMon"
+                );
+
+            if (
+                ghiChuMon !==
+                undefined
+            ) {
+
+                mon.ghiChu =
+                    ghiChuMon;
+
+            }
+
+
+            const activeMon =
+                getOptionalBoolean(
+                    row,
+                    "activeMon",
+                    rowNumber
+                );
+
+            if (
+                activeMon !==
+                undefined
+            ) {
+
+                mon.active =
+                    activeMon;
+
+            }
+
+
+            nhom.dsMonAn.push(
+                mon
+            );
+
+        }
+
+
+        return Array.from(
+            danhSach.values()
+        );
+
+    }
+
+    removeEmptyFields(
+        value
+    ) {
+
+        if (
+            Array.isArray(
+                value
+            )
+        ) {
+
+            return value
+                .map(
+                    item =>
+                        this.removeEmptyFields(
+                            item
+                        )
+                );
+
+        }
+
+
+        if (
+            value &&
+            typeof value ===
+                "object"
+        ) {
+
+            const result =
+                {};
+
+
+            for (
+                const [
+                    key,
+                    itemValue
+                ] of Object.entries(
+                    value
+                )
+            ) {
+
+                if (
+                    itemValue === undefined ||
+                    itemValue === null ||
+                    itemValue === ""
+                ) {
+
+                    continue;
+
+                }
+
+
+                result[key] =
+                    this.removeEmptyFields(
+                        itemValue
+                    );
+
+            }
+
+
+            return result;
+
+        }
+
+
+        return value;
+
+    }
+
+    taoDuLieuNghiepVu(
+        item
+    ) {
+
+        const data = {};
+
+
+        const fields = [
 
             "tenThucDon",
 
@@ -761,688 +2266,51 @@ class ThucDonExcel {
 
             "moTa",
 
-            "active",
-
-            "thucDonNgayId",
-
-            "ngay",
-
-            "ghiChuNgay",
-
-            "activeNgay",
-
-            "thucDonNhomMonAnId",
-
-            "nhomMonAnId",
-
-            "maNhomMonAn",
-
-            "thuTuNhom",
-
-            "ghiChuNhom",
-
-            "activeNhom",
-
-            "thucDonMonAnId",
-
-            "monAnId",
-
-            "maMonAn",
-
-            "thuTuMon",
-
-            "dinhLuong",
-
-            "donViTinhId",
-
-            "maDonViTinh",
-
-            "ghiChuMon",
-
-            "activeMon"
+            "active"
 
         ];
 
 
         for (
             const field of
-            requiredHeaders
+            fields
         ) {
 
             if (
-                !headerMap.has(
-                    field
-                )
+                item[field] !==
+                undefined &&
+                item[field] !==
+                null &&
+                item[field] !==
+                ""
             ) {
 
-                throw new ApiError(
-                    400,
-                    `File import thiếu field: ${field}.`
-                );
+                data[field] =
+                    item[field];
 
             }
 
         }
 
 
-        return {
-
-            idLaKhoa:
-                hasIdKey,
-
-            maThucDonLaKhoa:
-                hasMaKey,
-
-            fieldMaThucDon:
-                hasMaKey
-                    ? "maThucDon/k"
-                    : "maThucDon"
-
-        };
-
-    }
-
-    gomDuLieuImport(
-        worksheet,
-        getValue,
-        cauHinhHeader
-    ) {
-
-        const {
-            idLaKhoa,
-            maThucDonLaKhoa,
-            fieldMaThucDon
-        } = cauHinhHeader;
-
-        const danhSach =
-            new Map();
-
-
-        for (
-            let rowNumber =
-                DATA_START_ROW;
-            rowNumber <=
-                worksheet.rowCount;
-            rowNumber++
+        /*
+        * Chỉ truyền cấu trúc ngày
+        * nếu thực sự có dữ liệu ngày.
+        */
+        if (
+            Array.isArray(
+                item.dsNgay
+            ) &&
+            item.dsNgay.length > 0
         ) {
 
-            const row =
-                worksheet.getRow(
-                    rowNumber
-                );
-
-            const values =
-                [];
-
-            for (
-                let col = 1;
-                col <= SO_COT;
-                col++
-            ) {
-
-                values.push(
-                    getCellValue(
-                        row
-                            .getCell(
-                                col
-                            )
-                            .value
-                    )
-                );
-
-            }
-
-
-            const coTemplate =
-                values.some(
-                    value =>
-                        typeof value ===
-                            "string" &&
-                        value.includes(
-                            "[["
-                        )
-                );
-
-
-            if (coTemplate) {
-
-                continue;
-
-            }
-
-
-            const coDuLieu =
-                values.some(
-                    value =>
-                        value !== null &&
-                        value !== undefined &&
-                        String(
-                            value
-                        ).trim() !== ""
-                );
-
-
-            if (!coDuLieu) {
-
-                continue;
-
-            }
-
-
-            const id =
-                idLaKhoa
-                    ? toNumber(
-                        getValue(
-                            row,
-                            "id/k"
-                        )
-                    )
-                    : null;
-
-            const maThucDonRaw =
-                getValue(
-                    row,
-                    fieldMaThucDon
-                );
-
-
-            const maThucDon =
-                maThucDonRaw !== undefined &&
-                maThucDonRaw !== null &&
-                String(
-                    maThucDonRaw
-                ).trim() !== ""
-                    ? String(
-                        maThucDonRaw
-                    ).trim()
-                    : null;
-
-            let key;
-
-            if (
-                id
-            ) {
-
-                key =
-                    `ID:${id}`;
-
-            } else if (
-                maThucDon
-            ) {
-
-                key =
-                    `MA:${
-                        String(
-                            maThucDon
-                        )
-                            .trim()
-                            .toLowerCase()
-                    }`;
-
-            } else {
-
-                key =
-                    `ROW:${rowNumber}`;
-
-            }
-
-            if (
-                !danhSach.has(
-                    key
-                )
-            ) {
-
-                let active =
-                    true;
-
-
-                try {
-
-                    active =
-                        toBoolean(
-                            getValue(
-                                row,
-                                "active"
-                            ),
-                            true
-                        );
-
-                } catch (error) {
-
-                    throw new ApiError(
-                        400,
-                        `Dòng ${rowNumber}: Trạng thái active không hợp lệ.`
-                    );
-
-                }
-
-
-                danhSach.set(
-                    key,
-                    {
-
-                        rowNumbers:
-                            [],
-
-                        id,
-
-                        idLaKhoa,
-
-                        maThucDon,
-
-                        maThucDonLaKhoa,
-
-                        tenThucDon:
-                            getValue(
-                                row,
-                                "tenThucDon"
-                            ),
-
-                        loaiThucDon:
-                            toNumber(
-                                getValue(
-                                    row,
-                                    "loaiThucDon"
-                                )
-                            ),
-
-                        tuNgay:
-                            this.formatDate(
-                                getValue(
-                                    row,
-                                    "tuNgay"
-                                )
-                            ),
-
-                        denNgay:
-                            this.formatDate(
-                                getValue(
-                                    row,
-                                    "denNgay"
-                                )
-                            ),
-
-                        coSoId:
-                            toNumber(
-                                getValue(
-                                    row,
-                                    "coSoId"
-                                )
-                            ),
-
-                        maCoSo:
-                            getValue(
-                                row,
-                                "maCoSo"
-                            ),
-
-                        nhaAnId:
-                            toNumber(
-                                getValue(
-                                    row,
-                                    "nhaAnId"
-                                )
-                            ),
-
-                        maNhaAn:
-                            getValue(
-                                row,
-                                "maNhaAn"
-                            ),
-
-                        caAnId:
-                            toNumber(
-                                getValue(
-                                    row,
-                                    "caAnId"
-                                )
-                            ),
-
-                        maCaAn:
-                            getValue(
-                                row,
-                                "maCaAn"
-                            ),
-
-                        trangThai:
-                            toNumber(
-                                getValue(
-                                    row,
-                                    "trangThai"
-                                )
-                            ) ?? 10,
-
-                        moTa:
-                            getValue(
-                                row,
-                                "moTa"
-                            ),
-
-                        active,
-
-                        dsNgay:
-                            []
-
-                    }
-                );
-
-            }
-
-
-            const thucDon =
-                danhSach.get(
-                    key
-                );
-
-
-            thucDon
-                .rowNumbers
-                .push(
-                    rowNumber
-                );
-
-
-            const ngayValue =
-                this.formatDate(
-                    getValue(
-                        row,
-                        "ngay"
-                    )
-                );
-
-
-            if (!ngayValue) {
-
-                continue;
-
-            }
-
-
-            let ngay =
-                thucDon.dsNgay.find(
-                    item =>
-                        item.ngay ===
-                        ngayValue
-                );
-
-
-            if (!ngay) {
-
-                let activeNgay =
-                    true;
-
-
-                try {
-
-                    activeNgay =
-                        toBoolean(
-                            getValue(
-                                row,
-                                "activeNgay"
-                            ),
-                            true
-                        );
-
-                } catch (error) {
-
-                    throw new ApiError(
-                        400,
-                        `Dòng ${rowNumber}: activeNgay không hợp lệ.`
-                    );
-
-                }
-
-
-                ngay = {
-
-                    ngay:
-                        ngayValue,
-
-                    ghiChu:
-                        getValue(
-                            row,
-                            "ghiChuNgay"
-                        ),
-
-                    active:
-                        activeNgay,
-
-                    dsNhomMonAn:
-                        []
-
-                };
-
-
-                thucDon.dsNgay.push(
-                    ngay
-                );
-
-            }
-
-
-            const nhomMonAnId =
-                toNumber(
-                    getValue(
-                        row,
-                        "nhomMonAnId"
-                    )
-                );
-
-
-            const maNhomMonAn =
-                getValue(
-                    row,
-                    "maNhomMonAn"
-                );
-
-
-            if (
-                !nhomMonAnId &&
-                !maNhomMonAn
-            ) {
-
-                continue;
-
-            }
-
-
-            let nhom =
-                ngay.dsNhomMonAn
-                    .find(
-                        item =>
-                            (
-                                nhomMonAnId &&
-                                Number(
-                                    item.nhomMonAnId
-                                ) ===
-                                Number(
-                                    nhomMonAnId
-                                )
-                            ) ||
-                            (
-                                maNhomMonAn &&
-                                String(
-                                    item.maNhomMonAn ||
-                                    ""
-                                )
-                                    .toUpperCase() ===
-                                String(
-                                    maNhomMonAn
-                                )
-                                    .toUpperCase()
-                            )
-                    );
-
-
-            if (!nhom) {
-
-                let activeNhom =
-                    true;
-
-
-                try {
-
-                    activeNhom =
-                        toBoolean(
-                            getValue(
-                                row,
-                                "activeNhom"
-                            ),
-                            true
-                        );
-
-                } catch (error) {
-
-                    throw new ApiError(
-                        400,
-                        `Dòng ${rowNumber}: activeNhom không hợp lệ.`
-                    );
-
-                }
-
-
-                nhom = {
-
-                    nhomMonAnId,
-
-                    maNhomMonAn,
-
-                    thuTuHienThi:
-                        toNumber(
-                            getValue(
-                                row,
-                                "thuTuNhom"
-                            )
-                        ),
-
-                    ghiChu:
-                        getValue(
-                            row,
-                            "ghiChuNhom"
-                        ),
-
-                    active:
-                        activeNhom,
-
-                    dsMonAn:
-                        []
-
-                };
-
-
-                ngay
-                    .dsNhomMonAn
-                    .push(
-                        nhom
-                    );
-
-            }
-
-
-            const monAnId =
-                toNumber(
-                    getValue(
-                        row,
-                        "monAnId"
-                    )
-                );
-
-
-            const maMonAn =
-                getValue(
-                    row,
-                    "maMonAn"
-                );
-
-
-            if (
-                !monAnId &&
-                !maMonAn
-            ) {
-
-                continue;
-
-            }
-
-
-            let activeMon =
-                true;
-
-
-            try {
-
-                activeMon =
-                    toBoolean(
-                        getValue(
-                            row,
-                            "activeMon"
-                        ),
-                        true
-                    );
-
-            } catch (error) {
-
-                throw new ApiError(
-                    400,
-                    `Dòng ${rowNumber}: activeMon không hợp lệ.`
-                );
-
-            }
-
-
-            nhom.dsMonAn.push({
-
-                monAnId,
-
-                maMonAn,
-
-                thuTuHienThi:
-                    toNumber(
-                        getValue(
-                            row,
-                            "thuTuMon"
-                        )
-                    ),
-
-                dinhLuong:
-                    toNumber(
-                        getValue(
-                            row,
-                            "dinhLuong"
-                        )
-                    ),
-
-                donViTinhId:
-                    toNumber(
-                        getValue(
-                            row,
-                            "donViTinhId"
-                        )
-                    ),
-
-                maDonViTinh:
-                    getValue(
-                        row,
-                        "maDonViTinh"
-                    ),
-
-                ghiChu:
-                    getValue(
-                        row,
-                        "ghiChuMon"
-                    ),
-
-                active:
-                    activeMon
-
-            });
+            data.dsNgay =
+                item.dsNgay;
 
         }
 
 
-        return Array.from(
-            danhSach.values()
-        );
+        return data;
 
     }
 
@@ -1894,6 +2762,7 @@ class ThucDonExcel {
                 headerMap
             );
 
+
         const danhSach =
             this.gomDuLieuImport(
                 worksheet,
@@ -1921,111 +2790,151 @@ class ThucDonExcel {
             [];
 
 
-    for (
-        const item of
-        danhSach
-    ) {
+        for (
+            const item of
+            danhSach
+        ) {
 
-        try {
+            try {
 
-            const xuLy =
-                await this
-                    .timThucDonImport(
+                const xuLy =
+                    await this
+                        .timThucDonImport(
+                            item
+                        );
+
+
+                const data =
+                    this.taoDuLieuNghiepVu(
                         item
                     );
 
 
-            const data = {
-                ...item
-            };
-
-
-            delete data.id;
-
-            delete data.rowNumbers;
-
-            delete data.idLaKhoa;
-
-            delete data.maThucDonLaKhoa;
-
-            if (
-                xuLy.hanhDong ===
-                "CAP_NHAT"
-            ) {
-
+                /*
+                * =====================================================
+                * CẬP NHẬT
+                * =====================================================
+                */
                 if (
-                    !xuLy.choPhepCapNhatMa
+                    xuLy.hanhDong ===
+                    "CAP_NHAT"
                 ) {
 
-                    delete data.maThucDon;
+                    /*
+                    * Chỉ được sửa mã
+                    * khi maThucDon không phải /k.
+                    *
+                    * Nếu mã mới giống mã hiện tại
+                    * thì không cần truyền xuống service.
+                    */
+                    if (
+                        xuLy.choPhepCapNhatMa &&
+                        item.maThucDon !==
+                            undefined &&
+                        String(
+                            item.maThucDon
+                        )
+                            .trim()
+                            .toUpperCase() !==
+                        String(
+                            xuLy.banGhi.maThucDon
+                        )
+                            .trim()
+                            .toUpperCase()
+                    ) {
 
-                }
-
-                delete data.trangThai;
-
-
-                const result =
-                    await thucDonService
-                        .update(
-                            xuLy.banGhi.id,
-                            data
-                        );
-
-                ketQua.push({
-
-                    id:
-                        result.id,
-
-                    maThucDon:
-                        result.maThucDon,
-
-                    hanhDong:
-                        "CAP_NHAT",
-
-                    rowNumbers:
-                        item.rowNumbers,
-
-                    message:
-                        `Cập nhật thành công - ID ${result.id}`
-
-                });
-                continue;
-
-                ketQua.push({
-
-                    id:
-                        result.id,
-
-                    maThucDon:
-                        result.maThucDon,
-
-                    hanhDong:
-                        "THEM_MOI",
-
-                    rowNumbers:
-                        item.rowNumbers,
-
-                    message:
-                        `Thêm mới thành công - ID ${result.id}`
-
-                });
-
-
-            }
-
-            if (
-                !data.maThucDon
-            ) {
-
-                throw new ApiError(
-                    400,
-                    "Thêm mới thực đơn phải có mã thực đơn."
-                );
+                        data.maThucDon =
+                            item.maThucDon;
 
                     }
 
-                data.trangThai =
-                    10;
+
+                    /*
+                    * Không có field nào thực sự
+                    * được nhập để cập nhật.
+                    */
+                    if (
+                        Object.keys(
+                            data
+                        ).length === 0
+                    ) {
+
+                        throw new ApiError(
+                            400,
+                            "Không có dữ liệu cần cập nhật."
+                        );
+
+                    }
+
+
+                    const result =
+                        await thucDonService
+                            .update(
+                                xuLy.banGhi.id,
+                                data
+                            );
+
+
+                    ketQua.push({
+
+                        id:
+                            result.id,
+
+                        maThucDon:
+                            result.maThucDon,
+
+                        hanhDong:
+                            "CAP_NHAT",
+
+                        rowNumbers:
+                            item.rowNumbers,
+
+                        message:
+                            `Cập nhật thành công - ID ${result.id}`
+
+                    });
+
+
+                    continue;
+
+                }
+
+
+                /*
+                * =====================================================
+                * THÊM MỚI
+                * =====================================================
+                */
+
+                if (
+                    !item.maThucDon
+                ) {
+
+                    throw new ApiError(
+                        400,
+                        "Thêm mới thực đơn phải có mã thực đơn."
+                    );
+
+                }
+
+
+                data.maThucDon =
+                    item.maThucDon;
+
+
+                /*
+                * Default nghiệp vụ chỉ áp dụng
+                * khi tạo mới.
+                */
+                if (
+                    data.trangThai ===
+                    undefined
+                ) {
+
+                    data.trangThai =
+                        10;
+
+                }
 
 
                 const result =
@@ -2047,7 +2956,10 @@ class ThucDonExcel {
                         "THEM_MOI",
 
                     rowNumbers:
-                        item.rowNumbers
+                        item.rowNumbers,
+
+                    message:
+                        `Thêm mới thành công - ID ${result.id}`
 
                 });
 

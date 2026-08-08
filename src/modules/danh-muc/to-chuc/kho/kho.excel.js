@@ -99,11 +99,6 @@ const FIELDS = [
 
 class KhoExcel {
 
-
-    /* =========================================================
-       FILE MẪU
-       ========================================================= */
-
     async getFileMau() {
 
         const sql = `
@@ -240,11 +235,6 @@ class KhoExcel {
 
     }
 
-
-    /* =========================================================
-       HELPER
-       ========================================================= */
-
     isBlank(
         value
     ) {
@@ -258,7 +248,6 @@ class KhoExcel {
         );
 
     }
-
 
     isTemplateValue(
         value
@@ -288,7 +277,6 @@ class KhoExcel {
         );
 
     }
-
 
     cloneValue(
         value
@@ -321,7 +309,6 @@ class KhoExcel {
         );
 
     }
-
 
     copyRowStyle(
         worksheet,
@@ -447,10 +434,114 @@ class KhoExcel {
 
     }
 
+    getExportHeaderMap(
+        worksheet
+    ) {
 
-    /* =========================================================
-       EXPORT
-       ========================================================= */
+        const headerMap =
+            new Map();
+
+
+        const headerRow =
+            worksheet.getRow(
+                HEADER_ROW
+            );
+
+
+        headerRow.eachCell(
+            {
+                includeEmpty:
+                    false
+            },
+            (
+                cell,
+                columnNumber
+            ) => {
+
+                if (
+                    cell.value === undefined ||
+                    cell.value === null
+                ) {
+
+                    return;
+
+                }
+
+
+                const key =
+                    String(
+                        cell.value
+                    )
+                        .trim();
+
+
+                if (!key) {
+
+                    return;
+
+                }
+
+                const field =
+                    key.endsWith(
+                        "/k"
+                    )
+                        ? key.slice(
+                            0,
+                            -2
+                        )
+                        : key;
+
+
+                headerMap.set(
+                    field,
+                    columnNumber
+                );
+
+            }
+        );
+
+
+        return headerMap;
+
+    }
+
+    ghiDongExport(
+        row,
+        headerMap,
+        data
+    ) {
+
+        for (
+            const [
+                field,
+                columnNumber
+            ] of headerMap
+        ) {
+
+            if (
+                !Object.prototype
+                    .hasOwnProperty
+                    .call(
+                        data,
+                        field
+                    )
+            ) {
+
+                continue;
+
+            }
+
+
+            row
+                .getCell(
+                    columnNumber
+                )
+                .value =
+                data[field] ?? null;
+
+        }
+
+    }
 
     taoDongExport(
         item
@@ -495,7 +586,6 @@ class KhoExcel {
         };
 
     }
-
 
     exportData =
         async (
@@ -548,6 +638,11 @@ class KhoExcel {
 
                 }
 
+                const headerMap =
+                    this.getExportHeaderMap(
+                        worksheet
+                    );
+
 
                 const danhSach =
                     await khoRepository
@@ -559,7 +654,7 @@ class KhoExcel {
                 for (
                     let index = 0;
                     index <
-                    danhSach.length;
+                        danhSach.length;
                     index++
                 ) {
 
@@ -582,7 +677,7 @@ class KhoExcel {
                     }
 
 
-                    const item =
+                    const data =
                         this.taoDongExport(
                             danhSach[
                                 index
@@ -595,47 +690,16 @@ class KhoExcel {
                             rowNumber
                         );
 
-
-                    row.getCell(1).value =
-                        item.id;
-
-                    row.getCell(2).value =
-                        item.maKho;
-
-                    row.getCell(3).value =
-                        item.tenKho;
-
-                    row.getCell(4).value =
-                        item.nhaAnId;
-
-                    row.getCell(5).value =
-                        item.maNhaAn;
-
-                    row.getCell(6).value =
-                        item.loaiKho;
-
-                    row.getCell(7).value =
-                        item.diaDiem;
-
-                    row.getCell(8).value =
-                        item.nhietDoToiThieu;
-
-                    row.getCell(9).value =
-                        item.nhietDoToiDa;
-
-                    row.getCell(10).value =
-                        item.moTa;
-
-                    row.getCell(11).value =
-                        Boolean(
-                            item.active
-                        );
+                    this.ghiDongExport(
+                        row,
+                        headerMap,
+                        data
+                    );
 
 
                     row.commit();
 
                 }
-
 
                 if (
                     danhSach.length === 0
@@ -648,15 +712,15 @@ class KhoExcel {
 
 
                     for (
-                        let column = 1;
-                        column <=
-                            FIELDS.length;
-                        column++
+                        const columnNumber of
+                        headerMap.values()
                     ) {
 
-                        row.getCell(
-                            column
-                        ).value =
+                        row
+                            .getCell(
+                                columnNumber
+                            )
+                            .value =
                             null;
 
                     }
@@ -674,7 +738,7 @@ class KhoExcel {
                     {
 
                         fileName:
-                            `${baoCao.maBaoCao}.xlsx`,
+                            `${MA_BAO_CAO}.xlsx`,
 
                         buffer
 
@@ -690,11 +754,6 @@ class KhoExcel {
             }
 
         };
-
-
-    /* =========================================================
-       HEADER
-       ========================================================= */
 
     validateHeaders(
         headerMap
@@ -717,7 +776,6 @@ class KhoExcel {
                 "maKho"
             );
 
-
         if (
             !hasMaKey &&
             !hasMaNormal
@@ -730,7 +788,6 @@ class KhoExcel {
 
         }
 
-
         if (
             hasMaKey &&
             hasMaNormal
@@ -740,50 +797,6 @@ class KhoExcel {
                 400,
                 "File import không được đồng thời có maKho và maKho/k."
             );
-
-        }
-
-
-        const requiredFields = [
-
-            "tenKho",
-
-            "nhaAnId",
-
-            "maNhaAn",
-
-            "loaiKho",
-
-            "diaDiem",
-
-            "nhietDoToiThieu",
-
-            "nhietDoToiDa",
-
-            "moTa",
-
-            "active"
-
-        ];
-
-
-        for (
-            const field of
-            requiredFields
-        ) {
-
-            if (
-                !headerMap.has(
-                    field
-                )
-            ) {
-
-                throw new ApiError(
-                    400,
-                    `File import thiếu field: ${field}.`
-                );
-
-            }
 
         }
 
@@ -799,11 +812,6 @@ class KhoExcel {
         };
 
     }
-
-
-    /* =========================================================
-       ĐỌC DỮ LIỆU IMPORT
-       ========================================================= */
 
     async docDuLieuImport(
         file
@@ -1135,11 +1143,6 @@ class KhoExcel {
         };
 
     }
-
-
-    /* =========================================================
-       TÌM KHO IMPORT
-       ========================================================= */
 
     async timKhoImport(
         item
@@ -1616,11 +1619,6 @@ class KhoExcel {
 
     }
 
-
-    /* =========================================================
-       VALIDATE DÒNG
-       ========================================================= */
-
     validateDongImport(
         item,
         isCreate
@@ -1728,11 +1726,6 @@ class KhoExcel {
 
     }
 
-
-    /* =========================================================
-       DATA NGHIỆP VỤ
-       ========================================================= */
-
     taoDuLieuNghiepVu(
         item
     ) {
@@ -1787,11 +1780,6 @@ class KhoExcel {
         return data;
 
     }
-
-
-    /* =========================================================
-       IMPORT
-       ========================================================= */
 
     async xuLyImport(
         file

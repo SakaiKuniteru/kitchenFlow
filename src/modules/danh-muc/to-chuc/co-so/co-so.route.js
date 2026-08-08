@@ -5,14 +5,20 @@ const router = express.Router();
 const { createSchema, updateSchema } = require("./co-so.validation");
 
 const validate = require("../../../../middlewares/validate.middleware");
+
 const authenticate = require("../../../../middlewares/authenticate.middleware");
+
 const uploadCoSo = require( "./upload-co-so.middleware" );
+
 const mapCoSoUpload = require( "./map-co-so-upload.middleware" );
 
 const controller = require("./co-so.controller");
 
 const validateUpdateCoSo = validate( updateSchema );
 
+const uploadImportExcel = require( "../../../../middlewares/upload-import-excel.middleware" );
+
+const coSoExcel = require( "./co-so.excel" );
 
 function validateCoSoUpdate(
     req,
@@ -60,6 +66,22 @@ router.get(
     "/tong-hop",
     authenticate,
     controller.getTongHop
+);
+
+router.get(
+    "/xuat-du-lieu",
+    authenticate,
+    coSoExcel.exportData
+);
+
+
+router.post(
+    "/import-du-lieu",
+    authenticate,
+    uploadImportExcel.single(
+        "file"
+    ),
+    coSoExcel.importData
 );
 
 router.get(

@@ -340,6 +340,47 @@ class CoSoRepository {
 
     }
 
+    async getChiTietByMa(
+        maCoSo
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(cs.ma_co_so)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maCoSo
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapCoSo(
+            result.rows[0]
+        );
+
+    }
+
     async create(data) {
 
         const {
