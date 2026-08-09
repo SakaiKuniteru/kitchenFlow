@@ -15,46 +15,61 @@ const TEMPLATE_ROW = 5;
 
 const DATA_START_ROW = 5;
 
-
-function taoDongExport(item) {
+function taoDongExport(
+    thucDon,
+    ngay,
+    nhom,
+    mon
+) {
 
     return {
 
-        id: item.id,
+        id: thucDon.id,
 
-        maThucDon: item.maThucDon,
+        maThucDon: thucDon.maThucDon,
+        tenThucDon: thucDon.tenThucDon,
+        loaiThucDon: thucDon.loaiThucDon,
+        tuNgay: thucDon.tuNgay,
+        denNgay: thucDon.denNgay,
 
-        tenThucDon: item.tenThucDon,
+        coSoId: thucDon.coSoId,
+        maCoSo: thucDon.coSo?.maCoSo,
 
-        loaiThucDon: item.loaiThucDon,
+        nhaAnId: thucDon.nhaAnId,
+        maNhaAn: thucDon.nhaAn?.maNhaAn,
 
-        tuNgay: item.tuNgay,
+        caAnId: thucDon.caAnId,
+        maCaAn: thucDon.caAn?.maCaAn,
 
-        denNgay: item.denNgay,
+        trangThai: thucDon.trangThai,
+        moTa: thucDon.moTa,
+        active: thucDon.active,
 
-        coSoId: item.coSoId,
+        thucDonNgayId: ngay?.id,
+        ngay: ngay?.ngay,
+        ghiChuNgay: ngay?.ghiChu,
+        activeNgay: ngay?.active,
 
-        maCoSo: item.coSo?.maCoSo,
+        thucDonNhomMonAnId: nhom?.id,
+        nhomMonAnId: nhom?.nhomMonAnId,
+        maNhomMonAn: nhom?.nhomMonAn?.maNhomMonAn,
+        thuTuNhom: nhom?.thuTuHienThi,
+        ghiChuNhom: nhom?.ghiChu,
+        activeNhom: nhom?.active,
 
-        nhaAnId: item.nhaAnId,
-
-        maNhaAn: item.nhaAn?.maNhaAn,
-
-        caAnId: item.caAnId,
-
-        maCaAn: item.caAn?.maCaAn,
-
-        trangThai: item.trangThai,
-
-        moTa: item.moTa,
-
-        active: item.active
+        thucDonMonAnId: mon?.id,
+        monAnId: mon?.monAnId,
+        maMonAn: mon?.monAn?.maMonAn,
+        thuTuMon: mon?.thuTuHienThi,
+        dinhLuong: mon?.dinhLuong,
+        donViTinhId: mon?.donViTinhId,
+        maDonViTinh: mon?.donViTinh?.maDonViTinh,
+        ghiChuMon: mon?.ghiChu,
+        activeMon: mon?.active
 
     };
 
 }
-
-
 async function xuLyExport(query = {}) {
 
     const danhSach =
@@ -62,10 +77,88 @@ async function xuLyExport(query = {}) {
             query
         );
 
-    const data =
-        danhSach.map(
-            item => taoDongExport(item)
-        );
+    const data = [];
+
+    for (const item of danhSach) {
+
+        const chiTiet =
+            await thucDonRepository.getChiTiet(
+                item.id
+            );
+
+        if (
+            !chiTiet.dsNgay ||
+            chiTiet.dsNgay.length === 0
+        ) {
+
+            data.push(
+                taoDongExport(
+                    chiTiet,
+                    null,
+                    null,
+                    null
+                )
+            );
+
+            continue;
+        }
+
+        for (const ngay of chiTiet.dsNgay) {
+
+            if (
+                !ngay.dsNhomMonAn ||
+                ngay.dsNhomMonAn.length === 0
+            ) {
+
+                data.push(
+                    taoDongExport(
+                        chiTiet,
+                        ngay,
+                        null,
+                        null
+                    )
+                );
+
+                continue;
+            }
+
+            for (const nhom of ngay.dsNhomMonAn) {
+
+                if (
+                    !nhom.dsMonAn ||
+                    nhom.dsMonAn.length === 0
+                ) {
+
+                    data.push(
+                        taoDongExport(
+                            chiTiet,
+                            ngay,
+                            nhom,
+                            null
+                        )
+                    );
+
+                    continue;
+                }
+
+                for (const mon of nhom.dsMonAn) {
+
+                    data.push(
+                        taoDongExport(
+                            chiTiet,
+                            ngay,
+                            nhom,
+                            mon
+                        )
+                    );
+
+                }
+
+            }
+
+        }
+
+    }
 
     return await createExportFile({
         maBaoCao: MA_BAO_CAO,
