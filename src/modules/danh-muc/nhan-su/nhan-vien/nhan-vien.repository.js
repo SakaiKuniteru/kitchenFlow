@@ -194,6 +194,47 @@ class NhanVienRepository {
 
     }
 
+    async getChiTietByMa(
+        maNhanVien
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(nv.ma_nhan_vien)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maNhanVien
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapNhanVien(
+            result.rows[0]
+        );
+
+    }
+
     async getQuocGiaByMa(maQuocGia) {
 
         const sql = `

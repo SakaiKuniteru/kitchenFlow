@@ -1,32 +1,32 @@
 const seedHelper = require("../../helpers/seed.helper");
 
-const data = require("../data/nhan-vien-vai-tro.data");
+const data = require("../data/tai-khoan-vai-tro.data");
 
-async function seedNhanVienVaiTro() {
+async function seedTaiKhoanVaiTro() {
 
-    console.log("Seeding dm_nhan_vien_vai_tro...");
+    console.log("Seeding dm_tai_khoan_vai_tro...");
 
     await seedHelper({
 
-        table: "dm_nhan_vien_vai_tro",
+        table: "dm_tai_khoan_vai_tro",
 
-        unique: "nhan_vien_id,vai_tro_id",
+        unique: "tai_khoan_id,vai_tro_id",
 
         data,
 
         transform: async (client, item) => {
 
-            const nhanVien = await client.query(
+            const taiKhoan = await client.query(
                 `
                 SELECT id
-                FROM dm_nhan_vien
-                WHERE ma_nhan_vien = $1
+                FROM dm_tai_khoan
+                WHERE ten_dang_nhap = $1
                 `,
-                [item.ma_nhan_vien]
+                [item.ten_dang_nhap]
             );
 
-            if (nhanVien.rows.length === 0) {
-                throw new Error(`Không tìm thấy nhân viên: ${item.ma_nhan_vien}`);
+            if (taiKhoan.rows.length === 0) {
+                throw new Error(`Không tìm thấy tài khoản: ${item.ten_dang_nhap}`);
             }
 
             const vaiTro = await client.query(
@@ -44,7 +44,7 @@ async function seedNhanVienVaiTro() {
 
             return {
 
-                nhan_vien_id: nhanVien.rows[0].id,
+                tai_khoan_id: taiKhoan.rows[0].id,
 
                 vai_tro_id: vaiTro.rows[0].id,
 
@@ -56,8 +56,8 @@ async function seedNhanVienVaiTro() {
 
     });
 
-    console.log("✓ dm_nhan_vien_vai_tro completed");
+    console.log("✓ dm_tai_khoan_vai_tro completed");
 
 }
 
-module.exports = seedNhanVienVaiTro;
+module.exports = seedTaiKhoanVaiTro;

@@ -2,9 +2,9 @@
 
 const ApiError = require("../../../../utils/api-error");
 
-const chucVuRepository = require("./tai-khoan.repository");
+const taiKhoanRepository = require("./tai-khoan.repository");
 
-const chucVuService = require("./tai-khoan.service");
+const taiKhoanService = require("./tai-khoan.service");
 
 const { readExcel } = require("../../../../helpers/excel/excel-reader");
 
@@ -27,7 +27,7 @@ const {
 const { isTemplateValue } = require("../../../../helpers/excel/excel-template");
 
 
-const MA_BAO_CAO = "dm_chuc_vu";
+const MA_BAO_CAO = "dm_tai_khoan";
 
 const HEADER_ROW = 3;
 
@@ -40,13 +40,12 @@ function validateHeaders(headerMap) {
         headerMap,
         {
             idKey: "id/k",
-            codeKey: "maChucVu/k",
-            codeField: "maChucVu"
+            codeKey: "tenDangNhap/k",
+            codeField: "tenDangNhap"
         }
     );
 
 }
-
 
 function dongLaTemplate(
     row,
@@ -72,7 +71,6 @@ function dongLaTemplate(
     return false;
 
 }
-
 
 async function docDuLieuImport(file) {
 
@@ -136,22 +134,58 @@ async function docDuLieuImport(file) {
                 )
                 : undefined;
 
-        const maChucVu =
+        const tenDangNhap =
             getValue(
                 row,
                 fieldMa
             );
 
-        const tenChucVu =
+        const maNhanVien =
             getValue(
                 row,
-                "tenChucVu"
+                "maNhanVien"
             );
 
-        const moTa =
+        const hoTen =
             getValue(
                 row,
-                "moTa"
+                "hoTen"
+            );
+
+        const maCoSo =
+            getValue(
+                row,
+                "maCoSo"
+            );
+
+        const maPhongBan =
+            getValue(
+                row,
+                "maPhongBan"
+            );
+
+        const maChucVu =
+            getValue(
+                row,
+                "maChucVu"
+            );
+
+        const dsVaiTroIdRaw =
+            getValue(
+                row,
+                "dsVaiTroId"
+            );
+
+        const dsMaVaiTroRaw =
+            getValue(
+                row,
+                "dsMaVaiTro"
+            );
+
+        const khoaDen =
+            getValue(
+                row,
+                "khoaDen"
             );
 
         const activeRaw =
@@ -167,17 +201,45 @@ async function docDuLieuImport(file) {
             codeIsKey: cauHinh.hasCodeKey,
             id: idRaw !== undefined ? toNumber(idRaw) : undefined,
             idRaw,
-            code: maChucVu
+            code: tenDangNhap
         };
 
 
-        if (tenChucVu !== undefined) {
-            item.tenChucVu = tenChucVu;
+        if (tenDangNhap !== undefined) {
+            item.tenDangNhap = tenDangNhap;
         }
 
-        if (moTa !== undefined) {
-            item.moTa = moTa;
+        if (maNhanVien !== undefined)
+            item.maNhanVien = maNhanVien;
+
+        if (hoTen !== undefined)
+            item.hoTen = hoTen;
+
+        if (maCoSo !== undefined)
+            item.maCoSo = maCoSo;
+
+        if (maPhongBan !== undefined)
+            item.maPhongBan = maPhongBan;
+
+        if (maChucVu !== undefined)
+            item.maChucVu = maChucVu;
+        
+        if (dsVaiTroIdRaw !== undefined) {
+            item.dsVaiTroId =
+                tachDanhSachId(
+                    dsVaiTroIdRaw
+                );
         }
+
+        if (dsMaVaiTroRaw !== undefined) {
+            item.dsMaVaiTro =
+                tachDanhSachMa(
+                    dsMaVaiTroRaw
+                );
+        }
+
+        if (khoaDen !== undefined)
+            item.khoaDen = khoaDen;
 
         if (activeRaw !== undefined) {
 
@@ -203,6 +265,40 @@ async function docDuLieuImport(file) {
 
 }
 
+function tachDanhSachId(value) {
+
+    if (
+        value === undefined ||
+        value === null ||
+        value === ""
+    ) {
+        return undefined;
+    }
+
+    return String(value)
+        .split(",")
+        .map(item => Number(item.trim()))
+        .filter(item => Number.isInteger(item) && item > 0);
+
+}
+
+
+function tachDanhSachMa(value) {
+
+    if (
+        value === undefined ||
+        value === null ||
+        value === ""
+    ) {
+        return undefined;
+    }
+
+    return String(value)
+        .split(",")
+        .map(item => item.trim())
+        .filter(Boolean);
+
+}
 
 function validateDongImport(item) {
 
@@ -210,16 +306,38 @@ function validateDongImport(item) {
         item.idRaw !== undefined &&
         (
             item.id === null ||
-            !Number.isInteger(
-                Number(item.id)
-            ) ||
+            !Number.isInteger(Number(item.id)) ||
             Number(item.id) <= 0
         )
     ) {
 
         throw new ApiError(
             400,
-            "ID chức vụ phải là số nguyên lớn hơn 0."
+            "ID tài khoản phải là số nguyên lớn hơn 0."
+        );
+
+    }
+
+    if (
+        item.khoaDen !== undefined &&
+        Number.isNaN(Date.parse(item.khoaDen))
+    ) {
+
+        throw new ApiError(
+            400,
+            "Khóa đến không đúng định dạng ngày."
+        );
+
+    }
+
+    if (
+        item.dsMaVaiTro !== undefined &&
+        typeof item.dsMaVaiTro !== "string"
+    ) {
+
+        throw new ApiError(
+            400,
+            "Danh sách mã vai trò không hợp lệ."
         );
 
     }
@@ -245,62 +363,78 @@ function validateThemMoi(item) {
 
         throw new ApiError(
             400,
-            "Thêm mới chức vụ phải có mã chức vụ."
+            "Thêm mới tài khoản phải có mã tài khoản."
         );
 
     }
 
-    if (!item.tenChucVu) {
+    if (!item.maNhanVien) {
 
         throw new ApiError(
             400,
-            "Thêm mới chức vụ phải có tên chức vụ."
+            "Thêm mới tài khoản phải có mã nhân viên."
         );
 
     }
 
 }
-
 
 function taoDuLieuNghiepVu(item) {
 
     const data = {};
 
-    if (item.tenChucVu !== undefined) {
-        data.tenChucVu = item.tenChucVu;
-    }
+    if (item.tenDangNhap !== undefined)
+        data.tenDangNhap = item.tenDangNhap;
 
-    if (item.moTa !== undefined) {
-        data.moTa = item.moTa;
-    }
+    if (item.maNhanVien !== undefined)
+        data.maNhanVien = item.maNhanVien;
 
-    if (item.active !== undefined) {
+    if (item.hoTen !== undefined)
+        data.hoTen = item.hoTen;
+
+    if (item.maCoSo !== undefined)
+        data.maCoSo = item.maCoSo;
+
+    if (item.maPhongBan !== undefined)
+        data.maPhongBan = item.maPhongBan;
+
+    if (item.maChucVu !== undefined)
+        data.maChucVu = item.maChucVu;
+
+    if (item.dsVaiTroId !== undefined)
+        data.dsVaiTroId = item.dsVaiTroId;
+
+    if (item.dsMaVaiTro !== undefined)
+        data.dsMaVaiTro = item.dsMaVaiTro;
+
+    if (item.khoaDen !== undefined)
+        data.khoaDen = item.khoaDen;
+
+    if (item.active !== undefined)
         data.active = item.active;
-    }
 
     return data;
 
 }
 
-
-async function timChucVuImport(item) {
+async function timTaiKhoanImport(item) {
 
     return await resolveImportStrategy(
         item,
         {
             getById: id =>
-                chucVuRepository.getChiTiet(id),
+                taiKhoanRepository.getChiTiet(id),
 
-            getByCode: ma =>
-                chucVuRepository.getChiTietByMa(ma),
+            getByCode: tenDangNhap =>
+                taiKhoanRepository.getChiTietByTenDangNhap(tenDangNhap),
 
             getRecordId: record =>
                 record.id,
 
             getRecordCode: record =>
-                record.maChucVu,
+                record.tenDangNhap,
 
-            entityName: "chức vụ"
+            entityName: "tài khoản"
         }
     );
 
@@ -340,7 +474,7 @@ async function xuLyImport(file) {
             validateDongImport(item);
 
             const xuLy =
-                await timChucVuImport(
+                await timTaiKhoanImport(
                     item
                 );
 
@@ -357,11 +491,11 @@ async function xuLyImport(file) {
                     item.code !== undefined &&
                     shouldChangeCode(
                         item.code,
-                        xuLy.record.maChucVu
+                        xuLy.record.tenDangNhap
                     )
                 ) {
 
-                    data.maChucVu =
+                    data.tenDangNhap =
                         item.code;
 
                 }
@@ -380,7 +514,7 @@ async function xuLyImport(file) {
 
 
                 const result =
-                    await chucVuService.update(
+                    await taiKhoanService.update(
                         xuLy.record.id,
                         data
                     );
@@ -389,7 +523,7 @@ async function xuLyImport(file) {
                 successes.push({
                     rowNumbers: item.rowNumbers,
                     id: result.id,
-                    maChucVu: result.maChucVu,
+                    tenDangNhap: result.tenDangNhap,
                     hanhDong: "CAP_NHAT",
                     message: `Cập nhật thành công - ID ${result.id}`
                 });
@@ -401,12 +535,12 @@ async function xuLyImport(file) {
 
             validateThemMoi(item);
 
-            data.maChucVu =
+            data.tenDangNhap =
                 item.code;
 
 
             const result =
-                await chucVuService.create(
+                await taiKhoanService.create(
                     data
                 );
 
@@ -414,7 +548,7 @@ async function xuLyImport(file) {
             successes.push({
                 rowNumbers: item.rowNumbers,
                 id: result.id,
-                maChucVu: result.maChucVu,
+                tenDangNhap: result.tenDangNhap,
                 hanhDong: "THEM_MOI",
                 message: `Thêm mới thành công - ID ${result.id}`
             });
@@ -475,6 +609,6 @@ module.exports = {
     importData,
     xuLyImport,
     docDuLieuImport,
-    timChucVuImport,
+    timTaiKhoanImport,
     taoDuLieuNghiepVu
 };

@@ -185,6 +185,58 @@ class TaiKhoanService {
                         maNhanVien
                     );
 
+            if (
+                duLieu.hoTen !== undefined &&
+                duLieu.hoTen.trim().toLowerCase() !==
+                nhanVien.hoTen.trim().toLowerCase()
+            ) {
+
+                throw new ApiError(
+                    400,
+                    "Mã nhân viên và họ tên không khớp."
+                );
+
+            }
+
+            if (
+                duLieu.maCoSo !== undefined &&
+                duLieu.maCoSo.trim().toUpperCase() !==
+                nhanVien.coSo.maCoSo.toUpperCase()
+            ) {
+
+                throw new ApiError(
+                    400,
+                    "Mã cơ sở không khớp với nhân viên."
+                );
+
+            }
+
+            if (
+                duLieu.maPhongBan !== undefined &&
+                duLieu.maPhongBan.trim().toUpperCase() !==
+                nhanVien.phongBan.maPhongBan.toUpperCase()
+            ) {
+
+                throw new ApiError(
+                    400,
+                    "Mã phòng ban không khớp với nhân viên."
+                );
+
+            }
+
+            if (
+                duLieu.maChucVu !== undefined &&
+                duLieu.maChucVu.trim().toUpperCase() !==
+                nhanVien.chucVu.maChucVu.toUpperCase()
+            ) {
+
+                throw new ApiError(
+                    400,
+                    "Mã chức vụ không khớp với nhân viên."
+                );
+
+            }
+
             if (!nhanVien) {
 
                 throw new ApiError(

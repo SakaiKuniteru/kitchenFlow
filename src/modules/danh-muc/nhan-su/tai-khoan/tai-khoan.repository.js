@@ -402,6 +402,47 @@ class TaiKhoanRepository {
 
     }
 
+    async getChiTietByTenDangNhap(
+        tenDangNhap
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(tk.ten_dang_nhap)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    tenDangNhap
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapTaiKhoan(
+            result.rows[0]
+        );
+
+    }
+
     async findNhanVienByMa(
         maNhanVien
     ) {

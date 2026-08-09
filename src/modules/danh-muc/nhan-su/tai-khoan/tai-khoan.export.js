@@ -1,6 +1,6 @@
 "use strict";
 
-const chucVuRepository = require("./tai-khoan.repository");
+const taiKhoanRepository = require("./tai-khoan.repository");
 
 const {
     createExportFile
@@ -11,7 +11,7 @@ const {
 } = require("../../../../helpers/excel/excel-response");
 
 
-const MA_BAO_CAO = "dm_chuc_vu";
+const MA_BAO_CAO = "dm_tai_khoan";
 
 const HEADER_ROW = 3;
 
@@ -23,11 +23,43 @@ const DATA_START_ROW = 5;
 function taoDongExport(item) {
 
     return {
+
         id: item.id,
-        maChucVu: item.maChucVu,
-        tenChucVu: item.tenChucVu,
-        moTa: item.moTa,
+
+        tenDangNhap: item.tenDangNhap,
+
+        nhanVienId: item.nhanVienId,
+
+        maNhanVien: item.nhanVien?.maNhanVien,
+
+        hoTen: item.nhanVien?.hoTen,
+
+        maCoSo: item.nhanVien?.coSo?.maCoSo,
+
+        maPhongBan: item.nhanVien?.phongBan?.maPhongBan,
+
+        maChucVu: item.nhanVien?.chucVu?.maChucVu,
+
+        dsVaiTroId: item.dsVaiTroId?.join(","),
+
+        dsMaVaiTro: item.dsMaVaiTro?.join(","),
+
+        dsQuyenId: item.dsQuyenId?.join(","),
+
+        dsMaQuyen: item.dsMaQuyen?.join(","),
+
+        soLanDangNhapSai: item.soLanDangNhapSai,
+
+        khoaDen: item.khoaDen,
+
+        lanDangNhapCuoi: item.lanDangNhapCuoi,
+
+        doiMatKhauLanCuoi: item.doiMatKhauLanCuoi,
+
+        doiMatKhauLanDau: item.doiMatKhauLanDau,
+
         active: item.active
+
     };
 
 }
@@ -36,9 +68,11 @@ function taoDongExport(item) {
 async function xuLyExport(query = {}) {
 
     const danhSach =
-        await chucVuRepository.getTongHop(
+        await taiKhoanRepository.getTongHop(
             query
         );
+
+    console.log(danhSach[1]);
 
     const data =
         danhSach.map(

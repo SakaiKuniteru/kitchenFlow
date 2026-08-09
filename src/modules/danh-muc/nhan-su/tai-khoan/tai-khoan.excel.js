@@ -1,13 +1,13 @@
 "use strict";
 
-const chucVuExport =
+const taiKhoanExport =
     require("./tai-khoan.export");
 
-const chucVuImport =
+const taiKhoanImport =
     require("./tai-khoan.import");
 
 
 module.exports = {
-    exportData: chucVuExport.exportData,
-    importData: chucVuImport.importData
+    exportData: taiKhoanExport.exportData,
+    importData: taiKhoanImport.importData
 };

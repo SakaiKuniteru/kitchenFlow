@@ -2,9 +2,9 @@
 
 const ApiError = require("../../../../utils/api-error");
 
-const chucVuRepository = require("./nhan-vien.repository");
+const nhanVienRepository = require("./nhan-vien.repository");
 
-const chucVuService = require("./nhan-vien.service");
+const nhanVienService = require("./nhan-vien.service");
 
 const { readExcel } = require("../../../../helpers/excel/excel-reader");
 
@@ -27,7 +27,7 @@ const {
 const { isTemplateValue } = require("../../../../helpers/excel/excel-template");
 
 
-const MA_BAO_CAO = "dm_chuc_vu";
+const MA_BAO_CAO = "dm_nhan_vien";
 
 const HEADER_ROW = 3;
 
@@ -40,8 +40,8 @@ function validateHeaders(headerMap) {
         headerMap,
         {
             idKey: "id/k",
-            codeKey: "maChucVu/k",
-            codeField: "maChucVu"
+            codeKey: "maNhanVien/k",
+            codeField: "maNhanVien"
         }
     );
 
@@ -136,16 +136,16 @@ async function docDuLieuImport(file) {
                 )
                 : undefined;
 
-        const maChucVu =
+        const maNhanVien =
             getValue(
                 row,
                 fieldMa
             );
 
-        const tenChucVu =
+        const tenNhanVien =
             getValue(
                 row,
-                "tenChucVu"
+                "tenNhanVien"
             );
 
         const moTa =
@@ -167,12 +167,12 @@ async function docDuLieuImport(file) {
             codeIsKey: cauHinh.hasCodeKey,
             id: idRaw !== undefined ? toNumber(idRaw) : undefined,
             idRaw,
-            code: maChucVu
+            code: maNhanVien
         };
 
 
-        if (tenChucVu !== undefined) {
-            item.tenChucVu = tenChucVu;
+        if (tenNhanVien !== undefined) {
+            item.tenNhanVien = tenNhanVien;
         }
 
         if (moTa !== undefined) {
@@ -219,7 +219,7 @@ function validateDongImport(item) {
 
         throw new ApiError(
             400,
-            "ID chức vụ phải là số nguyên lớn hơn 0."
+            "ID tài khoản phải là số nguyên lớn hơn 0."
         );
 
     }
@@ -245,16 +245,16 @@ function validateThemMoi(item) {
 
         throw new ApiError(
             400,
-            "Thêm mới chức vụ phải có mã chức vụ."
+            "Thêm mới tài khoản phải có mã tài khoản."
         );
 
     }
 
-    if (!item.tenChucVu) {
+    if (!item.tenNhanVien) {
 
         throw new ApiError(
             400,
-            "Thêm mới chức vụ phải có tên chức vụ."
+            "Thêm mới tài khoản phải có tên tài khoản."
         );
 
     }
@@ -266,8 +266,8 @@ function taoDuLieuNghiepVu(item) {
 
     const data = {};
 
-    if (item.tenChucVu !== undefined) {
-        data.tenChucVu = item.tenChucVu;
+    if (item.tenNhanVien !== undefined) {
+        data.tenNhanVien = item.tenNhanVien;
     }
 
     if (item.moTa !== undefined) {
@@ -283,24 +283,24 @@ function taoDuLieuNghiepVu(item) {
 }
 
 
-async function timChucVuImport(item) {
+async function timNhanVienImport(item) {
 
     return await resolveImportStrategy(
         item,
         {
             getById: id =>
-                chucVuRepository.getChiTiet(id),
+                nhanVienRepository.getChiTiet(id),
 
             getByCode: ma =>
-                chucVuRepository.getChiTietByMa(ma),
+                nhanVienRepository.getChiTietByMa(ma),
 
             getRecordId: record =>
                 record.id,
 
             getRecordCode: record =>
-                record.maChucVu,
+                record.maNhanVien,
 
-            entityName: "chức vụ"
+            entityName: "tài khoản"
         }
     );
 
@@ -340,7 +340,7 @@ async function xuLyImport(file) {
             validateDongImport(item);
 
             const xuLy =
-                await timChucVuImport(
+                await timNhanVienImport(
                     item
                 );
 
@@ -357,11 +357,11 @@ async function xuLyImport(file) {
                     item.code !== undefined &&
                     shouldChangeCode(
                         item.code,
-                        xuLy.record.maChucVu
+                        xuLy.record.maNhanVien
                     )
                 ) {
 
-                    data.maChucVu =
+                    data.maNhanVien =
                         item.code;
 
                 }
@@ -380,7 +380,7 @@ async function xuLyImport(file) {
 
 
                 const result =
-                    await chucVuService.update(
+                    await nhanVienService.update(
                         xuLy.record.id,
                         data
                     );
@@ -389,7 +389,7 @@ async function xuLyImport(file) {
                 successes.push({
                     rowNumbers: item.rowNumbers,
                     id: result.id,
-                    maChucVu: result.maChucVu,
+                    maNhanVien: result.maNhanVien,
                     hanhDong: "CAP_NHAT",
                     message: `Cập nhật thành công - ID ${result.id}`
                 });
@@ -401,12 +401,12 @@ async function xuLyImport(file) {
 
             validateThemMoi(item);
 
-            data.maChucVu =
+            data.maNhanVien =
                 item.code;
 
 
             const result =
-                await chucVuService.create(
+                await nhanVienService.create(
                     data
                 );
 
@@ -414,7 +414,7 @@ async function xuLyImport(file) {
             successes.push({
                 rowNumbers: item.rowNumbers,
                 id: result.id,
-                maChucVu: result.maChucVu,
+                maNhanVien: result.maNhanVien,
                 hanhDong: "THEM_MOI",
                 message: `Thêm mới thành công - ID ${result.id}`
             });
@@ -475,6 +475,6 @@ module.exports = {
     importData,
     xuLyImport,
     docDuLieuImport,
-    timChucVuImport,
+    timNhanVienImport,
     taoDuLieuNghiepVu
 };

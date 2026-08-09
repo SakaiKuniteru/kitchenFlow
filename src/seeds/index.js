@@ -7,7 +7,7 @@ const seedQuyenNhomTinhNang = require("./xac-thuc/seed/quyen-nhom-tinh-nang.seed
 const seedVaiTro = require("./xac-thuc/seed/vai-tro.seed");
 const seedVaiTroQuyen = require("./xac-thuc/seed/vai-tro-quyen.seed");
 const seedTaiKhoan = require("./xac-thuc/seed/tai-khoan.seed");
-const seedNhanVienVaiTro = require("./xac-thuc/seed/nhan-vien-vai-tro.seed");
+const seedTaiKhoanVaiTro = require("./xac-thuc/seed/tai-khoan-vai-tro.seed");
 
 // ======================
 // ORGANIZATION
@@ -71,7 +71,7 @@ async function runSeed() {
     await seedThietLap();
     await seedThietLapNhomTinhNang();
     await seedTaiKhoan();
-    await seedNhanVienVaiTro();
+    await seedTaiKhoanVaiTro();
     await seedDonViTinh();
     await seedCaAn();
     await seedNhaAn();

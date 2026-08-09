@@ -1,7 +1,7 @@
 module.exports = [
 
     {
-        ma_nhan_vien: "admin",
+        ten_dang_nhap: "admin",
 
         ma_vai_tro: "SUPER_ADMIN",
 

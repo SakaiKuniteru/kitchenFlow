@@ -1,13 +1,13 @@
 "use strict";
 
-const chucVuExport =
+const nhanVienExport =
     require("./nhan-vien.export");
 
-const chucVuImport =
+const nhanVienImport =
     require("./nhan-vien.import");
 
 
 module.exports = {
-    exportData: chucVuExport.exportData,
-    importData: chucVuImport.importData
+    exportData: nhanVienExport.exportData,
+    importData: nhanVienImport.importData
 };
