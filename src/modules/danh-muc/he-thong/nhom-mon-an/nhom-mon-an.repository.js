@@ -99,6 +99,47 @@ class NhomMonAnRepository {
 
     }
 
+    async getChiTietByMa(
+        maNhomMonAn
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(nma.ma_nhom_mon_an)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maNhomMonAn
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapNhomMonAn(
+            result.rows[0]
+        );
+
+    }
+
     async existsMaNhomMonAn(
         maNhomMonAn,
         excludeId = null

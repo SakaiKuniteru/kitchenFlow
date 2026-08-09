@@ -97,11 +97,9 @@ class VaiTroRepository {
 
     }
 
-    async getTongHop() {
+    getGroupBy() {
 
-        const sql = `
-            ${this.getBaseQuery()}
-
+        return `
             GROUP BY
                 vt.id,
                 vt.ma_vai_tro,
@@ -110,6 +108,16 @@ class VaiTroRepository {
                 vt.active,
                 vt.created_at,
                 vt.updated_at
+        `;
+
+    }
+
+    async getTongHop() {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            ${this.getGroupBy()}
 
             ORDER BY vt.ma_vai_tro ASC
         `;
@@ -130,14 +138,7 @@ class VaiTroRepository {
 
             WHERE vt.id = $1
 
-            GROUP BY
-                vt.id,
-                vt.ma_vai_tro,
-                vt.ten_vai_tro,
-                vt.mo_ta,
-                vt.active,
-                vt.created_at,
-                vt.updated_at
+            ${this.getGroupBy()}
 
             LIMIT 1
         `;
@@ -151,6 +152,49 @@ class VaiTroRepository {
         if (result.rows.length === 0) {
             return null;
         }
+
+        return this.mapVaiTro(
+            result.rows[0]
+        );
+
+    }
+
+    async getChiTietByMa(
+        maVaiTro
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(vt.ma_vai_tro)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            ${this.getGroupBy()}
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maVaiTro
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
 
         return this.mapVaiTro(
             result.rows[0]

@@ -208,6 +208,49 @@ class ThietLapRepository {
 
     }
 
+    async getChiTietByMa(
+        maThietLap
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(tl.ma_thiet_lap)
+            ) = UPPER(
+                TRIM($1)
+            )
+            
+            ${this.getGroupBy()}
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maThietLap
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapThietLap(
+            result.rows[0]
+        );
+
+    }
+
     async getByGroup(nhom) {
 
         const sql = `
@@ -271,11 +314,9 @@ class ThietLapRepository {
 
     }
 
-    async getTongHop() {
+    getGroupBy() {
 
-        const sql = `
-            ${this.getBaseQuery()}
-
+        return `
             GROUP BY
                 tl.id,
                 tl.ma_thiet_lap,
@@ -291,6 +332,16 @@ class ThietLapRepository {
                 cs.ma_co_so,
                 cs.ten_co_so,
                 cs.dia_chi
+        `;
+
+    }
+
+    async getTongHop() {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            ${this.getGroupBy()}
 
             ORDER BY
                 tl.ma_thiet_lap ASC
@@ -312,21 +363,7 @@ class ThietLapRepository {
 
             WHERE tl.id = $1
 
-            GROUP BY
-                tl.id,
-                tl.ma_thiet_lap,
-                tl.ten_thiet_lap,
-                tl.gia_tri,
-                tl.mo_ta,
-                tl.co_so_id,
-                tl.active,
-                tl.created_at,
-                tl.updated_at,
-
-                cs.id,
-                cs.ma_co_so,
-                cs.ten_co_so,
-                cs.dia_chi
+            ${this.getGroupBy()}
 
             LIMIT 1
         `;

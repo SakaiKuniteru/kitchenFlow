@@ -5,14 +5,34 @@ const router = express.Router();
 const { createSchema,updateSchema } = require("./thiet-lap.validation");
 
 const validate = require("../../../../middlewares/validate.middleware");
+
 const authenticate = require("../../../../middlewares/authenticate.middleware");
 
 const controller = require("./thiet-lap.controller");
+
+const uploadImportExcel = require( "../../../../middlewares/upload-import-excel.middleware" );
+
+const chucVuExcel = require( "./thiet-lap.excel" );
 
 router.get(
     "/tong-hop",
     authenticate,
     controller.getTongHop
+);
+
+router.get(
+    "/xuat-du-lieu",
+    authenticate,
+    chucVuExcel.exportData
+);
+
+router.post(
+    "/import-du-lieu",
+    authenticate,
+    uploadImportExcel.single(
+        "file"
+    ),
+    chucVuExcel.importData
 );
 
 router.get(

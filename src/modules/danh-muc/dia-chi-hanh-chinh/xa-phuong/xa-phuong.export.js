@@ -1,48 +1,38 @@
 "use strict";
 
-const nhaAnRepository = require("./nha-an.repository");
+const xaPhuongRepository = require("./xa-phuong.repository");
 
-const { createExportFile } = require("../../../../helpers/excel/excel-export");
+const {
+    createExportFile
+} = require("../../../../helpers/excel/excel-export");
 
-const { sendExcel } = require("../../../../helpers/excel/excel-response");
+const {
+    sendExcel
+} = require("../../../../helpers/excel/excel-response");
 
-const MA_BAO_CAO = "dm_nha_an";
+const MA_BAO_CAO = "dm_xa_phuong";
 
 const HEADER_ROW = 3;
-
 const TEMPLATE_ROW = 5;
-
 const DATA_START_ROW = 5;
 
 
 function taoDongExport(item) {
 
     return {
-
         id: item.id,
 
-        maNhaAn: item.maNhaAn,
+        maXaPhuong: item.maXaPhuong,
+        tenXaPhuong: item.tenXaPhuong,
+        tenVietTat: item.tenVietTat,
 
-        tenNhaAn: item.tenNhaAn,
+        tinhThanhId: item.tinhThanhId,
+        maTinhThanh: item.tinhThanh?.ma,
 
-        coSoId: item.coSo?.id,
-
-        maCoSo: item.coSo?.ma,
-        
-        dsNvQuanLyId: Array.isArray(item.dsNvQuanLyId)
-            ? JSON.stringify(item.dsNvQuanLyId)
-            : "[]",
-
-        dsMaNhanVien: Array.isArray(item.dsNvQuanLy)
-            ? JSON.stringify(
-                item.dsNvQuanLy.map(
-                    nv => nv.maNhanVien
-                )
-            )
-            : "[]",
+        quocGiaId: item.tinhThanh?.quocGiaId,
+        maQuocGia: item.tinhThanh?.quocGia?.maQuocGia,
 
         active: item.active
-
     };
 
 }
@@ -51,7 +41,7 @@ function taoDongExport(item) {
 async function xuLyExport(query = {}) {
 
     const danhSach =
-        await nhaAnRepository.getTongHop(
+        await xaPhuongRepository.getTongHop(
             query
         );
 

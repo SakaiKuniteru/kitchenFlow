@@ -114,6 +114,47 @@ class QuocGiaRepository {
 
     }
 
+    async getChiTietByMa(
+        maQuocGia
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(qg.ma_quoc_gia)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maQuocGia
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapQuocGia(
+            result.rows[0]
+        );
+
+    }
+
     async existsMaQuocGia(
         maQuocGia,
         excludeId = null

@@ -56,10 +56,27 @@ class NhomTinhNangRepository {
 
     }
 
+    getGroupBy() {
+
+        return `
+            GROUP BY
+                ntn.id,
+                ntn.ma_nhom_tinh_nang,
+                ntn.ten_nhom_tinh_nang,
+                ntn.mo_ta,
+                ntn.active,
+                ntn.created_at,
+                ntn.updated_at
+        `;
+
+    }
+
     async getTongHop() {
 
         const sql = `
             ${this.getBaseQuery()}
+
+            ${this.getGroupBy()}
 
             ORDER BY ntn.ma_nhom_tinh_nang ASC
         `;
@@ -80,6 +97,8 @@ class NhomTinhNangRepository {
 
             WHERE ntn.id = $1
 
+            ${this.getGroupBy()}
+
             LIMIT 1
         `;
 
@@ -92,6 +111,49 @@ class NhomTinhNangRepository {
         if (result.rows.length === 0) {
             return null;
         }
+
+        return this.mapNhomTinhNang(
+            result.rows[0]
+        );
+
+    }
+
+    async getChiTietByMa(
+        maNhomTinhNang
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(ntn.ma_nhom_tinh_nang)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            ${this.getGroupBy()}
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maNhomTinhNang
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
 
         return this.mapNhomTinhNang(
             result.rows[0]

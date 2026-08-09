@@ -40,13 +40,21 @@ function taoDongExport(item) {
 
         maChucVu: item.nhanVien?.chucVu?.maChucVu,
 
-        dsVaiTroId: item.dsVaiTroId?.join(","),
+        dsVaiTroId: Array.isArray(item.dsVaiTroId)
+            ? JSON.stringify(item.dsVaiTroId)
+            : "[]",
+        
+        dsMaVaiTro: Array.isArray(item.dsMaVaiTro)
+            ? JSON.stringify(item.dsMaVaiTro)
+            : "[]",
 
-        dsMaVaiTro: item.dsMaVaiTro?.join(","),
-
-        dsQuyenId: item.dsQuyenId?.join(","),
-
-        dsMaQuyen: item.dsMaQuyen?.join(","),
+        dsQuyenId: Array.isArray(item.dsQuyenId)
+            ? JSON.stringify(item.dsQuyenId)
+            : "[]",
+        
+        dsMaQuyen: Array.isArray(item.dsMaQuyen)
+            ? JSON.stringify(item.dsMaQuyen)
+            : "[]",
 
         soLanDangNhapSai: item.soLanDangNhapSai,
 
@@ -71,8 +79,6 @@ async function xuLyExport(query = {}) {
         await taiKhoanRepository.getTongHop(
             query
         );
-
-    console.log(danhSach[1]);
 
     const data =
         danhSach.map(

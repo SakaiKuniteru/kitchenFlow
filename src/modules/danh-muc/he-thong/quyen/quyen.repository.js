@@ -97,11 +97,9 @@ class QuyenRepository {
 
     }
 
-    async getTongHop() {
+    getGroupBy() {
 
-        const sql = `
-            ${this.getBaseQuery()}
-
+        return `
             GROUP BY
                 q.id,
                 q.ma_quyen,
@@ -110,6 +108,16 @@ class QuyenRepository {
                 q.active,
                 q.created_at,
                 q.updated_at
+        `;
+
+    }
+
+    async getTongHop() {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            ${this.getGroupBy()}
 
             ORDER BY q.ma_quyen ASC
         `;
@@ -130,14 +138,7 @@ class QuyenRepository {
 
             WHERE q.id = $1
 
-            GROUP BY
-                q.id,
-                q.ma_quyen,
-                q.ten_quyen,
-                q.mo_ta,
-                q.active,
-                q.created_at,
-                q.updated_at
+            ${this.getGroupBy()}
 
             LIMIT 1
         `;
@@ -151,6 +152,49 @@ class QuyenRepository {
         if (result.rows.length === 0) {
             return null;
         }
+
+        return this.mapQuyen(
+            result.rows[0]
+        );
+
+    }
+
+    async getChiTietByMa(
+        maQuyen
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(q.ma_quyen)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            ${this.getGroupBy()}
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maQuyen
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
 
         return this.mapQuyen(
             result.rows[0]
@@ -377,7 +421,6 @@ class QuyenRepository {
                     ma_quyen,
                     ten_quyen,
                     mo_ta,
-                    nhom_tinh_nang_id,
                     active,
                     created_at,
                     updated_at
@@ -387,7 +430,6 @@ class QuyenRepository {
                     $2,
                     $3,
                     $4,
-                    $5,
                     NOW(),
                     NOW()
                 )
@@ -401,8 +443,6 @@ class QuyenRepository {
                 data.tenQuyen,
 
                 data.moTa || null,
-
-                data.dsNhomTinhNangId?.[0] || null,
 
                 data.active !== undefined
                     ? data.active
@@ -480,10 +520,9 @@ class QuyenRepository {
                     ma_quyen = $1,
                     ten_quyen = $2,
                     mo_ta = $3,
-                    nhom_tinh_nang_id = $4,
-                    active = $5,
+                    active = $4,
                     updated_at = NOW()
-                WHERE id = $6
+                WHERE id = $5
                 RETURNING id
             `;
 
@@ -494,8 +533,6 @@ class QuyenRepository {
                 data.tenQuyen,
 
                 data.moTa || null,
-
-                data.dsNhomTinhNangId?.[0] || null,
 
                 data.active,
 

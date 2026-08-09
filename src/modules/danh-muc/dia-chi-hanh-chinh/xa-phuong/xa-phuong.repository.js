@@ -151,6 +151,47 @@ class XaPhuongRepository {
 
     }
 
+    async getChiTietByMa(
+        maXaPhuong
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(xp.ma_xa_phuong)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maXaPhuong
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapXaPhuong(
+            result.rows[0]
+        );
+
+    }
+
     async getTinhThanhByMa(maTinhThanh) {
 
         const sql = `

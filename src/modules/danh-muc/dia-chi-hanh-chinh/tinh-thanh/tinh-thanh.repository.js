@@ -127,6 +127,47 @@ class TinhThanhRepository {
 
     }
 
+    async getChiTietByMa(
+        maTinhThanh
+    ) {
+
+        const sql = `
+            ${this.getBaseQuery()}
+
+            WHERE UPPER(
+                TRIM(tt.ma_tinh_thanh)
+            ) = UPPER(
+                TRIM($1)
+            )
+
+            LIMIT 1
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    maTinhThanh
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapTinhThanh(
+            result.rows[0]
+        );
+
+    }
+
     async getQuocGiaByMa(maQuocGia) {
 
         const sql = `
