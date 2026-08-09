@@ -1,6 +1,6 @@
 "use strict";
 
-const chucVuRepository = require("./nhan-vien.repository");
+const nhanVienRepository = require("./nhan-vien.repository");
 
 const {
     createExportFile
@@ -10,13 +10,10 @@ const {
     sendExcel
 } = require("../../../../helpers/excel/excel-response");
 
-
-const MA_BAO_CAO = "dm_chuc_vu";
+const MA_BAO_CAO = "dm_nhan_vien";
 
 const HEADER_ROW = 3;
-
 const TEMPLATE_ROW = 5;
-
 const DATA_START_ROW = 5;
 
 
@@ -24,9 +21,38 @@ function taoDongExport(item) {
 
     return {
         id: item.id,
-        maChucVu: item.maChucVu,
-        tenChucVu: item.tenChucVu,
-        moTa: item.moTa,
+        maNhanVien: item.maNhanVien,
+        hoTen: item.hoTen,
+
+        ngaySinh: item.ngaySinh,
+        gioiTinh: item.gioiTinh,
+        soDienThoai: item.soDienThoai,
+        email: item.email,
+        diaChi: item.diaChi,
+
+        quocGiaId: item.quocGiaId,
+        maQuocGia: item.quocGia?.ma,
+
+        tinhThanhId: item.tinhThanhId,
+        maTinhThanh: item.tinhThanh?.ma,
+
+        xaPhuongId: item.xaPhuongId,
+        maXaPhuong: item.xaPhuong?.ma,
+
+        coSoId: item.coSoId,
+        maCoSo: item.coSo?.ma,
+
+        phongBanId: item.phongBanId,
+        maPhongBan: item.phongBan?.ma,
+
+        chucVuId: item.chucVuId,
+        maChucVu: item.chucVu?.ma,
+
+        ghiChu: item.ghiChu,
+        maThe: item.maThe,
+        maQr: item.maQr,
+        maBarcode: item.maBarcode,
+
         active: item.active
     };
 
@@ -36,7 +62,7 @@ function taoDongExport(item) {
 async function xuLyExport(query = {}) {
 
     const danhSach =
-        await chucVuRepository.getTongHop(
+        await nhanVienRepository.getTongHop(
             query
         );
 

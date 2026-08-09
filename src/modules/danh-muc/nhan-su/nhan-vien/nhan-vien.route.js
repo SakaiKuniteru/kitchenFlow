@@ -13,6 +13,10 @@ const uploadNhanVien = require( "./upload-nhan-vien.middleware" );
 
 const { createSchema, updateSchema } = require("./nhan-vien.validation");
 
+const uploadImportExcel = require( "../../../../middlewares/upload-import-excel.middleware" );
+
+const chucVuExcel = require( "./nhan-vien.excel" );
+
 const validateUpdateNhanVien = validate( updateSchema );
 
 function validateNhanVienUpdate(
@@ -59,6 +63,21 @@ router.get(
 
     controller.getTongHop
 
+);
+
+router.get(
+    "/xuat-du-lieu",
+    authenticate,
+    chucVuExcel.exportData
+);
+
+router.post(
+    "/import-du-lieu",
+    authenticate,
+    uploadImportExcel.single(
+        "file"
+    ),
+    chucVuExcel.importData
 );
 
 router.get(

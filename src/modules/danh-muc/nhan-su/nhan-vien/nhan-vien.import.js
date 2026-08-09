@@ -3,7 +3,6 @@
 const ApiError = require("../../../../utils/api-error");
 
 const nhanVienRepository = require("./nhan-vien.repository");
-
 const nhanVienService = require("./nhan-vien.service");
 
 const { readExcel } = require("../../../../helpers/excel/excel-reader");
@@ -47,32 +46,33 @@ function validateHeaders(headerMap) {
 
 }
 
+function dongLaTemplate(row, getValue, headerMap) {
 
-function dongLaTemplate(
-    row,
-    getValue,
-    headerMap
-) {
+    const values = [];
 
     for (const field of headerMap.keys()) {
 
+        const value = getValue(row, field);
+
         if (
-            isTemplateValue(
-                getValue(
-                    row,
-                    field
-                )
-            )
+            value !== undefined &&
+            value !== null &&
+            value !== ""
         ) {
-            return true;
+            values.push(value);
         }
 
     }
 
-    return false;
+    if (values.length === 0) {
+        return false;
+    }
+
+    return values.every(
+        value => isTemplateValue(value)
+    );
 
 }
-
 
 async function docDuLieuImport(file) {
 
@@ -89,52 +89,46 @@ async function docDuLieuImport(file) {
         }
     );
 
+
     const cauHinh =
         validateHeaders(
             headerMap
         );
+
 
     const fieldMa =
         cauHinh.hasCodeKey
             ? cauHinh.codeKey
             : cauHinh.codeField;
 
+
     const danhSach = [];
 
 
-    for (
-        let rowNumber = DATA_START_ROW;
-        rowNumber <= worksheet.rowCount;
-        rowNumber++
-    ) {
-
-        const row =
-            worksheet.getRow(
-                rowNumber
-            );
-
-        if (!hasData(row)) {
-            continue;
-        }
-
-        if (
-            dongLaTemplate(
-                row,
-                getValue,
-                headerMap
-            )
+        for (
+            let rowNumber = DATA_START_ROW;
+            rowNumber <= worksheet.rowCount;
+            rowNumber++
         ) {
-            continue;
-        }
+
+            const row =
+                worksheet.getRow(
+                    rowNumber
+                );
+
+            if (!hasData(row)) {
+                continue;
+            }
+
+            const idRaw =
+                cauHinh.hasIdKey
+                    ? getValue(
+                        row,
+                        cauHinh.idKey
+                    )
+                    : undefined;
 
 
-        const idRaw =
-            cauHinh.hasIdKey
-                ? getValue(
-                    row,
-                    cauHinh.idKey
-                )
-                : undefined;
 
         const maNhanVien =
             getValue(
@@ -142,16 +136,156 @@ async function docDuLieuImport(file) {
                 fieldMa
             );
 
-        const tenNhanVien =
+
+        const item = {
+            rowNumbers: [rowNumber],
+            idIsKey: cauHinh.hasIdKey,
+            codeIsKey: cauHinh.hasCodeKey,
+            id: idRaw !== undefined
+                ? toNumber(idRaw)
+                : undefined,
+            idRaw,
+            code: maNhanVien
+        };
+
+
+        const hoTen =
             getValue(
                 row,
-                "tenNhanVien"
+                "hoTen"
             );
 
-        const moTa =
+        const ngaySinh =
             getValue(
                 row,
-                "moTa"
+                "ngaySinh"
+            );
+
+        const gioiTinh =
+            getValue(
+                row,
+                "gioiTinh"
+            );
+
+        const soDienThoai =
+            getValue(
+                row,
+                "soDienThoai"
+            );
+
+        const email =
+            getValue(
+                row,
+                "email"
+            );
+
+        const diaChi =
+            getValue(
+                row,
+                "diaChi"
+            );
+
+
+        const quocGiaIdRaw =
+            getValue(
+                row,
+                "quocGiaId"
+            );
+
+        const maQuocGia =
+            getValue(
+                row,
+                "maQuocGia"
+            );
+
+
+        const tinhThanhIdRaw =
+            getValue(
+                row,
+                "tinhThanhId"
+            );
+
+        const maTinhThanh =
+            getValue(
+                row,
+                "maTinhThanh"
+            );
+
+
+        const xaPhuongIdRaw =
+            getValue(
+                row,
+                "xaPhuongId"
+            );
+
+        const maXaPhuong =
+            getValue(
+                row,
+                "maXaPhuong"
+            );
+
+
+        const coSoIdRaw =
+            getValue(
+                row,
+                "coSoId"
+            );
+
+        const maCoSo =
+            getValue(
+                row,
+                "maCoSo"
+            );
+
+
+        const phongBanIdRaw =
+            getValue(
+                row,
+                "phongBanId"
+            );
+
+        const maPhongBan =
+            getValue(
+                row,
+                "maPhongBan"
+            );
+
+
+        const chucVuIdRaw =
+            getValue(
+                row,
+                "chucVuId"
+            );
+
+        const maChucVu =
+            getValue(
+                row,
+                "maChucVu"
+            );
+
+
+        const ghiChu =
+            getValue(
+                row,
+                "ghiChu"
+            );
+
+        const maThe =
+            getValue(
+                row,
+                "maThe"
+            );
+
+        const maQr =
+            getValue(
+                row,
+                "maQr"
+            );
+
+        const maBarcode =
+            getValue(
+                row,
+                "maBarcode"
             );
 
         const activeRaw =
@@ -161,23 +295,82 @@ async function docDuLieuImport(file) {
             );
 
 
-        const item = {
-            rowNumbers: [rowNumber],
-            idIsKey: cauHinh.hasIdKey,
-            codeIsKey: cauHinh.hasCodeKey,
-            id: idRaw !== undefined ? toNumber(idRaw) : undefined,
-            idRaw,
-            code: maNhanVien
-        };
+        if (maNhanVien !== undefined)
+            item.maNhanVien = maNhanVien;
+
+        if (hoTen !== undefined)
+            item.hoTen = hoTen;
+
+        if (ngaySinh !== undefined)
+            item.ngaySinh = ngaySinh;
+
+        if (gioiTinh !== undefined)
+            item.gioiTinh = gioiTinh;
+
+        if (soDienThoai !== undefined)
+            item.soDienThoai = soDienThoai;
+
+        if (email !== undefined)
+            item.email = email;
+
+        if (diaChi !== undefined)
+            item.diaChi = diaChi;
 
 
-        if (tenNhanVien !== undefined) {
-            item.tenNhanVien = tenNhanVien;
-        }
+        if (quocGiaIdRaw !== undefined)
+            item.quocGiaId = toNumber(quocGiaIdRaw);
 
-        if (moTa !== undefined) {
-            item.moTa = moTa;
-        }
+        if (maQuocGia !== undefined)
+            item.maQuocGia = maQuocGia;
+
+
+        if (tinhThanhIdRaw !== undefined)
+            item.tinhThanhId = toNumber(tinhThanhIdRaw);
+
+        if (maTinhThanh !== undefined)
+            item.maTinhThanh = maTinhThanh;
+
+
+        if (xaPhuongIdRaw !== undefined)
+            item.xaPhuongId = toNumber(xaPhuongIdRaw);
+
+        if (maXaPhuong !== undefined)
+            item.maXaPhuong = maXaPhuong;
+
+
+        if (coSoIdRaw !== undefined)
+            item.coSoId = toNumber(coSoIdRaw);
+
+        if (maCoSo !== undefined)
+            item.maCoSo = maCoSo;
+
+
+        if (phongBanIdRaw !== undefined)
+            item.phongBanId = toNumber(phongBanIdRaw);
+
+        if (maPhongBan !== undefined)
+            item.maPhongBan = maPhongBan;
+
+
+        if (chucVuIdRaw !== undefined)
+            item.chucVuId = toNumber(chucVuIdRaw);
+
+        if (maChucVu !== undefined)
+            item.maChucVu = maChucVu;
+
+
+        if (ghiChu !== undefined)
+            item.ghiChu = ghiChu;
+
+        if (maThe !== undefined)
+            item.maThe = toText(maThe);
+
+        if (maQr !== undefined)
+            item.maQr = toText(maQr);
+
+        if (maBarcode !== undefined)
+            item.maBarcode = toText(maBarcode);
+
 
         if (activeRaw !== undefined) {
 
@@ -190,7 +383,9 @@ async function docDuLieuImport(file) {
         }
 
 
-        danhSach.push(item);
+        danhSach.push(
+            item
+        );
 
     }
 
@@ -204,25 +399,108 @@ async function docDuLieuImport(file) {
 }
 
 
+function validateId(value, ten) {
+
+    if (
+        value !== undefined &&
+        (
+            value === null ||
+            !Number.isInteger(Number(value)) ||
+            Number(value) <= 0
+        )
+    ) {
+
+        throw new ApiError(
+            400,
+            `${ten} phải là số nguyên lớn hơn 0.`
+        );
+
+    }
+
+}
+
+function toText(value) {
+
+    if (
+        value === undefined ||
+        value === null ||
+        value === ""
+    ) {
+        return value;
+    }
+
+    return String(value).trim();
+
+}
+
 function validateDongImport(item) {
 
     if (
         item.idRaw !== undefined &&
         (
             item.id === null ||
-            !Number.isInteger(
-                Number(item.id)
-            ) ||
+            !Number.isInteger(Number(item.id)) ||
             Number(item.id) <= 0
         )
     ) {
 
         throw new ApiError(
             400,
-            "ID tài khoản phải là số nguyên lớn hơn 0."
+            "ID nhân viên phải là số nguyên lớn hơn 0."
         );
 
     }
+
+
+    validateId(
+        item.quocGiaId,
+        "ID quốc gia"
+    );
+
+    validateId(
+        item.tinhThanhId,
+        "ID tỉnh thành"
+    );
+
+    validateId(
+        item.xaPhuongId,
+        "ID xã phường"
+    );
+
+    validateId(
+        item.coSoId,
+        "ID cơ sở"
+    );
+
+    validateId(
+        item.phongBanId,
+        "ID phòng ban"
+    );
+
+    validateId(
+        item.chucVuId,
+        "ID chức vụ"
+    );
+
+
+    if (
+        item.ngaySinh !== undefined &&
+        item.ngaySinh !== null &&
+        item.ngaySinh !== "" &&
+        Number.isNaN(
+            Date.parse(
+                item.ngaySinh
+            )
+        )
+    ) {
+
+        throw new ApiError(
+            400,
+            "Ngày sinh không đúng định dạng ngày."
+        );
+
+    }
+
 
     if (
         item.active !== undefined &&
@@ -245,16 +523,17 @@ function validateThemMoi(item) {
 
         throw new ApiError(
             400,
-            "Thêm mới tài khoản phải có mã tài khoản."
+            "Thêm mới nhân viên phải có mã nhân viên."
         );
 
     }
 
-    if (!item.tenNhanVien) {
+
+    if (!item.hoTen) {
 
         throw new ApiError(
             400,
-            "Thêm mới tài khoản phải có tên tài khoản."
+            "Thêm mới nhân viên phải có họ tên."
         );
 
     }
@@ -266,17 +545,86 @@ function taoDuLieuNghiepVu(item) {
 
     const data = {};
 
-    if (item.tenNhanVien !== undefined) {
-        data.tenNhanVien = item.tenNhanVien;
-    }
 
-    if (item.moTa !== undefined) {
-        data.moTa = item.moTa;
-    }
+    if (item.maNhanVien !== undefined)
+        data.maNhanVien = item.maNhanVien;
 
-    if (item.active !== undefined) {
+    if (item.hoTen !== undefined)
+        data.hoTen = item.hoTen;
+
+    if (item.ngaySinh !== undefined)
+        data.ngaySinh = item.ngaySinh;
+
+    if (item.gioiTinh !== undefined)
+        data.gioiTinh = item.gioiTinh;
+
+    if (item.soDienThoai !== undefined)
+        data.soDienThoai = item.soDienThoai;
+
+    if (item.email !== undefined)
+        data.email = item.email;
+
+    if (item.diaChi !== undefined)
+        data.diaChi = item.diaChi;
+
+
+    if (item.quocGiaId !== undefined)
+        data.quocGiaId = item.quocGiaId;
+
+    if (item.maQuocGia !== undefined)
+        data.maQuocGia = item.maQuocGia;
+
+
+    if (item.tinhThanhId !== undefined)
+        data.tinhThanhId = item.tinhThanhId;
+
+    if (item.maTinhThanh !== undefined)
+        data.maTinhThanh = item.maTinhThanh;
+
+
+    if (item.xaPhuongId !== undefined)
+        data.xaPhuongId = item.xaPhuongId;
+
+    if (item.maXaPhuong !== undefined)
+        data.maXaPhuong = item.maXaPhuong;
+
+
+    if (item.coSoId !== undefined)
+        data.coSoId = item.coSoId;
+
+    if (item.maCoSo !== undefined)
+        data.maCoSo = item.maCoSo;
+
+
+    if (item.phongBanId !== undefined)
+        data.phongBanId = item.phongBanId;
+
+    if (item.maPhongBan !== undefined)
+        data.maPhongBan = item.maPhongBan;
+
+
+    if (item.chucVuId !== undefined)
+        data.chucVuId = item.chucVuId;
+
+    if (item.maChucVu !== undefined)
+        data.maChucVu = item.maChucVu;
+
+
+    if (item.ghiChu !== undefined)
+        data.ghiChu = item.ghiChu;
+
+    if (item.maThe !== undefined)
+        data.maThe = item.maThe;
+
+    if (item.maQr !== undefined)
+        data.maQr = item.maQr;
+
+    if (item.maBarcode !== undefined)
+        data.maBarcode = item.maBarcode;
+
+    if (item.active !== undefined)
         data.active = item.active;
-    }
+
 
     return data;
 
@@ -289,10 +637,14 @@ async function timNhanVienImport(item) {
         item,
         {
             getById: id =>
-                nhanVienRepository.getChiTiet(id),
+                nhanVienRepository.getChiTiet(
+                    id
+                ),
 
-            getByCode: ma =>
-                nhanVienRepository.getChiTietByMa(ma),
+            getByCode: maNhanVien =>
+                nhanVienRepository.getChiTietByMa(
+                    maNhanVien
+                ),
 
             getRecordId: record =>
                 record.id,
@@ -300,7 +652,7 @@ async function timNhanVienImport(item) {
             getRecordCode: record =>
                 record.maNhanVien,
 
-            entityName: "tài khoản"
+            entityName: "nhân viên"
         }
     );
 
@@ -337,12 +689,16 @@ async function xuLyImport(file) {
 
         try {
 
-            validateDongImport(item);
+            validateDongImport(
+                item
+            );
+
 
             const xuLy =
                 await timNhanVienImport(
                     item
                 );
+
 
             const data =
                 taoDuLieuNghiepVu(
@@ -350,7 +706,10 @@ async function xuLyImport(file) {
                 );
 
 
-            if (xuLy.action === "UPDATE") {
+            if (
+                xuLy.action ===
+                "UPDATE"
+            ) {
 
                 if (
                     xuLy.allowCodeChange &&
@@ -368,7 +727,9 @@ async function xuLyImport(file) {
 
 
                 if (
-                    Object.keys(data).length === 0
+                    Object.keys(
+                        data
+                    ).length === 0
                 ) {
 
                     throw new ApiError(
@@ -394,12 +755,16 @@ async function xuLyImport(file) {
                     message: `Cập nhật thành công - ID ${result.id}`
                 });
 
+
                 continue;
 
             }
 
 
-            validateThemMoi(item);
+            validateThemMoi(
+                item
+            );
+
 
             data.maNhanVien =
                 item.code;
@@ -418,6 +783,7 @@ async function xuLyImport(file) {
                 hanhDong: "THEM_MOI",
                 message: `Thêm mới thành công - ID ${result.id}`
             });
+
 
         } catch (error) {
 
@@ -444,6 +810,7 @@ async function xuLyImport(file) {
 
 }
 
+
 async function importData(
     req,
     res,
@@ -457,14 +824,18 @@ async function importData(
                 req.file
             );
 
+
         return sendExcel(
             res,
             result
         );
 
+
     } catch (error) {
 
-        next(error);
+        next(
+            error
+        );
 
     }
 
