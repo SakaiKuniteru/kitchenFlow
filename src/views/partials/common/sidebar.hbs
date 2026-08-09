@@ -24,6 +24,74 @@
     </div>
 
 
+    <div class="app-sidebar__tools">
+
+        <div class="app-sidebar__search">
+
+            <span
+                class="app-sidebar__search-icon"
+                aria-hidden="true">
+                🔎
+            </span>
+
+            <input
+                type="search"
+                class="app-sidebar__search-input"
+                placeholder="Tìm chức năng..."
+                autocomplete="off"
+                data-sidebar-search>
+
+            <button
+                type="button"
+                class="app-sidebar__search-clear"
+                data-sidebar-search-clear
+                aria-label="Xóa tìm kiếm"
+                hidden>
+                ×
+            </button>
+
+        </div>
+
+        <div class="app-sidebar__more">
+
+            <button
+                type="button"
+                class="app-sidebar__more-button"
+                data-sidebar-more-toggle
+                aria-label="Tùy chọn sidebar"
+                aria-expanded="false">
+                ⋮
+            </button>
+
+            <div
+                class="app-sidebar__more-menu"
+                data-sidebar-more-menu
+                hidden>
+
+                <button
+                    type="button"
+                    data-sidebar-expand-all>
+                    Mở tất cả
+                </button>
+
+                <button
+                    type="button"
+                    data-sidebar-collapse-all>
+                    Thu gọn tất cả
+                </button>
+
+                <button
+                    type="button"
+                    data-sidebar-sort-start>
+                    Sắp xếp
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
     <nav
         class="app-sidebar__navigation"
         aria-label="Danh sách chức năng">
@@ -48,6 +116,75 @@
                     </span>
 
                 </a>
+
+            </li>
+
+            <li class="app-sidebar__menu-group">
+
+                <button
+                    type="button"
+                    class="app-sidebar__group-button"
+                    data-sidebar-toggle="thuc-don"
+                    aria-controls="sidebarThucDon"
+                    aria-expanded="false">
+
+                    <span class="app-sidebar__group-label">
+
+                        <span
+                            class="app-sidebar__menu-icon"
+                            aria-hidden="true">
+                            🍽️
+                        </span>
+
+                        <span class="app-sidebar__menu-text">
+                            Thực đơn
+                        </span>
+
+                    </span>
+
+                    <span
+                        class="app-sidebar__group-arrow"
+                        aria-hidden="true">
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+
+                            <path d="m9 18 6-6-6-6">
+                            </path>
+
+                        </svg>
+
+                    </span>
+
+                </button>
+
+                <ul
+                    id="sidebarThucDon"
+                    class="app-sidebar__submenu"
+                    data-sidebar-submenu="thuc-don"
+                    hidden>
+
+                    <li class="app-sidebar__submenu-group">
+
+                        <a
+                            href="/nghiep-vu/thuc-don"
+                            class="app-sidebar__submenu-button"
+                            data-sidebar-link="thuc-don">
+
+                            <span>
+                                Danh sách thực đơn
+                            </span>
+
+                        </a>
+
+                    </li>
+
+                </ul>
 
             </li>
 
@@ -649,6 +786,38 @@
 
     </nav>
 
+    <div
+        class="app-sidebar__sort-actions"
+        data-sidebar-sort-actions
+        hidden>
+
+        <button
+            type="button"
+            class="app-sidebar__sort-reset"
+            data-sidebar-sort-reset>
+            <span aria-hidden="true">↺</span>
+            <span>Mặc định</span>
+        </button>
+
+        <div class="app-sidebar__sort-confirm">
+
+            <button
+                type="button"
+                class="app-sidebar__sort-cancel"
+                data-sidebar-sort-cancel>
+                Hủy
+            </button>
+
+            <button
+                type="button"
+                class="app-sidebar__sort-save"
+                data-sidebar-sort-save>
+                Lưu
+            </button>
+
+        </div>
+
+    </div>
 
     <div class="app-sidebar__footer">
 

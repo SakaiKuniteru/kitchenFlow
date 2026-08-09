@@ -275,13 +275,52 @@ function tachDanhSachId(value) {
         return undefined;
     }
 
-    return String(value)
-        .split(",")
-        .map(item => Number(item.trim()))
-        .filter(item => Number.isInteger(item) && item > 0);
+    if (Array.isArray(value)) {
+        return value.map(item => Number(item));
+    }
+
+    const text =
+        String(value).trim();
+
+    if (!text) {
+        return undefined;
+    }
+
+    let danhSach;
+
+    try {
+
+        danhSach =
+            JSON.parse(text);
+
+    } catch (error) {
+
+        throw new ApiError(
+            400,
+            "Danh sách ID vai trò không đúng định dạng mảng."
+        );
+
+    }
+
+    if (!Array.isArray(danhSach)) {
+
+        throw new ApiError(
+            400,
+            "Danh sách ID vai trò không đúng định dạng mảng."
+        );
+
+    }
+
+    const ketQua =
+        danhSach.map(
+            item => Number(item)
+        );
+
+    return ketQua.length > 0
+        ? ketQua
+        : undefined;
 
 }
-
 
 function tachDanhSachMa(value) {
 
@@ -293,10 +332,55 @@ function tachDanhSachMa(value) {
         return undefined;
     }
 
-    return String(value)
-        .split(",")
-        .map(item => item.trim())
-        .filter(Boolean);
+    if (Array.isArray(value)) {
+        return value;
+    }
+
+    const text =
+        String(value).trim();
+
+    if (!text) {
+        return undefined;
+    }
+
+    let danhSach;
+
+    try {
+
+        danhSach =
+            JSON.parse(text);
+
+    } catch (error) {
+
+        throw new ApiError(
+            400,
+            "Danh sách mã vai trò không đúng định dạng mảng."
+        );
+
+    }
+
+    if (!Array.isArray(danhSach)) {
+
+        throw new ApiError(
+            400,
+            "Danh sách mã vai trò không đúng định dạng mảng."
+        );
+
+    }
+
+    const ketQua =
+        danhSach
+            .map(
+                item =>
+                    String(item)
+                        .trim()
+                        .toUpperCase()
+            )
+            .filter(Boolean);
+
+    return ketQua.length > 0
+        ? ketQua
+        : undefined;
 
 }
 
@@ -331,14 +415,64 @@ function validateDongImport(item) {
     }
 
     if (
-        item.dsMaVaiTro !== undefined &&
-        typeof item.dsMaVaiTro !== "string"
+        item.dsVaiTroId !== undefined
     ) {
 
-        throw new ApiError(
-            400,
-            "Danh sách mã vai trò không hợp lệ."
-        );
+        if (!Array.isArray(item.dsVaiTroId)) {
+
+            throw new ApiError(
+                400,
+                "Danh sách ID vai trò không hợp lệ."
+            );
+
+        }
+
+        for (const id of item.dsVaiTroId) {
+
+            if (
+                !Number.isInteger(Number(id)) ||
+                Number(id) <= 0
+            ) {
+
+                throw new ApiError(
+                    400,
+                    "Danh sách ID vai trò chỉ được chứa số nguyên lớn hơn 0."
+                );
+
+            }
+
+        }
+
+    }
+
+    if (
+        item.dsMaVaiTro !== undefined
+    ) {
+
+        if (!Array.isArray(item.dsMaVaiTro)) {
+
+            throw new ApiError(
+                400,
+                "Danh sách mã vai trò không hợp lệ."
+            );
+
+        }
+
+        for (const ma of item.dsMaVaiTro) {
+
+            if (
+                typeof ma !== "string" ||
+                !ma.trim()
+            ) {
+
+                throw new ApiError(
+                    400,
+                    "Danh sách mã vai trò chứa mã không hợp lệ."
+                );
+
+            }
+
+        }
 
     }
 

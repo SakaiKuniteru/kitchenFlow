@@ -438,18 +438,22 @@ class TaiKhoanService {
 
     async validateLienKet(data) {
 
-        if (
-            !Array.isArray(
-                data.dsVaiTroId
-            ) ||
-            data.dsVaiTroId.length === 0
-        ) {
+        if (data.dsVaiTroId === undefined) {
+            return;
+        }
+
+        if (!Array.isArray(data.dsVaiTroId)) {
 
             throw new ApiError(
                 400,
-                "Phải chọn ít nhất một vai trò."
+                "Danh sách vai trò không hợp lệ."
             );
 
+        }
+
+        if (data.dsVaiTroId.length === 0) {
+            data.dsVaiTroId = [];
+            return;
         }
 
         const danhSachId = [
@@ -508,8 +512,7 @@ class TaiKhoanService {
 
         }
 
-        data.dsVaiTroId =
-            danhSachId;
+        data.dsVaiTroId = danhSachId;
 
     }
 

@@ -142,15 +142,11 @@ const dsVaiTroIdSchema = Joi.array()
 
             })
     )
-    .min(1)
     .unique()
     .messages({
 
         "array.base":
             "Danh sách ID vai trò phải là một mảng.",
-
-        "array.min":
-            "Phải chọn ít nhất một vai trò.",
 
         "array.unique":
             "Danh sách ID vai trò không được trùng lặp.",
@@ -188,7 +184,6 @@ const dsMaVaiTroSchema = Joi.array()
 
             })
     )
-    .min(1)
     .unique(
         (a, b) =>
             String(a)
@@ -202,9 +197,6 @@ const dsMaVaiTroSchema = Joi.array()
 
         "array.base":
             "Danh sách mã vai trò phải là một mảng.",
-
-        "array.min":
-            "Phải chọn ít nhất một vai trò.",
 
         "array.unique":
             "Danh sách mã vai trò không được trùng lặp.",

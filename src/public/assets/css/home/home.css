@@ -64,17 +64,211 @@
     line-height: 1.65;
 }
 
-.home-page__date {
-    display: flex;
+.home-page__datetime {
+    position: relative;
     flex: 0 0 auto;
-    align-items: flex-end;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 190px;
-    padding: 12px 14px;
+    min-width: 220px;
+}
+
+.home-page__datetime-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    width: 100%;
+    min-width: 220px;
+
+    padding: 11px 14px;
+
     border: 1px solid var(--color-border-light);
     border-radius: var(--radius-md);
+
+    color: inherit;
     background: var(--color-surface);
+
+    font-family: inherit;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        background-color var(--transition-fast);
+}
+
+.home-page__datetime-trigger:hover {
+    border-color:
+        rgba(
+            var(--color-primary-rgb),
+            0.32
+        );
+
+    background:
+        var(--color-primary-soft);
+}
+
+.home-page__datetime-trigger:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.home-page__datetime-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    border-radius: var(--radius-md);
+
+    background: var(--color-primary-soft);
+
+    font-size: 1.1rem;
+}
+
+.home-page__datetime-content {
+    display: grid;
+    flex: 1;
+    gap: 2px;
+    min-width: 0;
+}
+
+.home-page__date-label {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+}
+
+.home-page__date-value {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+}
+
+.home-page__time-value {
+    color: var(--color-primary);
+    font-size: var(--font-size-lg);
+    font-weight: 750;
+    line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+}
+
+.home-page__datetime-popup {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 1000;
+
+    width: 300px;
+
+    overflow: hidden;
+
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+
+    background: var(--color-surface);
+
+    box-shadow:
+        0 18px 45px
+        rgba(15, 23, 42, 0.14);
+}
+
+.home-page__datetime-popup[hidden] {
+    display: none !important;
+}
+
+.home-page__clock {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    padding: 22px 20px 18px;
+
+    border-bottom:
+        1px solid
+        var(--color-border-light);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--color-primary-soft),
+            var(--color-surface)
+        );
+}
+
+.home-page__clock-time {
+    color: var(--color-primary);
+
+    font-size: 2.25rem;
+    font-weight: 750;
+    line-height: 1;
+
+    letter-spacing: 0.02em;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+.home-page__clock-date {
+    margin-top: 10px;
+
+    color: var(--color-text-primary);
+
+    font-size: var(--font-size-sm);
+    font-weight: 650;
+}
+
+.home-page__clock-timezone {
+    margin-top: 4px;
+
+    color: var(--color-text-muted);
+
+    font-size: var(--font-size-xs);
+}
+
+.home-page__calendar-summary {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    padding: 18px;
+}
+
+.home-page__calendar-weekday {
+    color: var(--color-text-secondary);
+
+    font-size: var(--font-size-sm);
+    font-weight: 650;
+}
+
+.home-page__calendar-day {
+    margin-top: 4px;
+
+    color: var(--color-text-primary);
+
+    font-size: 3rem;
+    line-height: 1;
+
+    font-weight: 800;
+}
+
+.home-page__calendar-month {
+    margin-top: 7px;
+
+    color: var(--color-primary);
+
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+}
+
+.home-page__calendar-year {
+    margin-top: 2px;
+
+    color: var(--color-text-muted);
+
+    font-size: var(--font-size-xs);
 }
 
 .home-page__date-label {
@@ -591,14 +785,23 @@
         padding: 18px;
     }
 
-    .home-page__date {
-        align-items: flex-start;
+    .home-page__datetime {
         width: 100%;
         min-width: 0;
     }
 
-    .home-page__date-value {
-        text-align: left;
+    .home-page__datetime-trigger {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .home-page__datetime-popup {
+        right: auto;
+        left: 0;
+        width: min(
+            320px,
+            calc(100vw - 36px)
+        );
     }
 
     .home-summary {
