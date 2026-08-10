@@ -1,0 +1,59 @@
+<div class="form-field">
+
+    {{#if label}}
+
+        <label
+            class="form-label"
+            for="{{id}}">
+
+            {{label}}
+
+            {{#if required}}
+                <span class="form-required">*</span>
+            {{/if}}
+
+        </label>
+
+    {{/if}}
+
+    <label
+        class="file-picker"
+        for="{{id}}">
+
+        <span
+            class="file-picker__icon"
+            aria-hidden="true">
+            📎
+        </span>
+
+        <span
+            class="file-picker__name"
+            data-file-name>
+
+            {{#if value}}
+                {{value}}
+            {{else}}
+                Chưa chọn file
+            {{/if}}
+
+        </span>
+
+        <span
+            class="file-picker__action"
+            aria-hidden="true">
+
+            <i class="fa-regular fa-folder-open"></i>
+
+        </span>
+
+    </label>
+
+    <input
+        id="{{id}}"
+        name="{{name}}"
+        class="file-picker__input"
+        type="file"
+        accept="{{accept}}"
+        {{#if required}}required{{/if}}>
+
+</div>

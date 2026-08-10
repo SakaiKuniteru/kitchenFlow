@@ -1,0 +1,70 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin báo cáo
+    </h3>
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="maBaoCao"
+            name="maBaoCao"
+            label="Mã báo cáo"
+            placeholder="Nhập mã báo cáo"
+            maxlength=100
+            required=true
+        }}
+
+        {{> forms/input
+            id="tenBaoCao"
+            name="tenBaoCao"
+            label="Tên báo cáo"
+            placeholder="Nhập tên báo cáo"
+            maxlength=255
+            required=true
+        }}
+
+        {{> forms/file-picker
+            id="fileMau"
+            name="fileMau"
+            label="File mẫu"
+            required=true
+        }}
+
+        {{> forms/select
+            id="loaiXuatFile"
+            name="loaiXuatFile"
+            label="Loại xuất file"
+            mode="single"
+            placeholder="Loại xuất file..."
+            options=formOptions.loaiXuatFile
+        }}
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/textarea
+                id="moTa"
+                name="moTa"
+                label="Mô tả"
+                placeholder="Nhập mô tả báo cáo"
+                maxlength=500
+                rows=4
+                showCounter=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detail-panel__section">
+
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+
+</div>

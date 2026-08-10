@@ -1,10 +1,7 @@
 "use strict";
 
 
-const danhMucWebController =
-    require(
-        "../../controllers/web/danh-muc.controller"
-    );
+const danhMucWebController = require( "../../controllers/web/danh-muc.controller" );
 
 
 function textColumn(
@@ -173,7 +170,8 @@ function createPage({
     searchPlaceholder,
     showActions = true,
     showFilterRow = true,
-    hideCreateButton = false
+    hideCreateButton = false,
+    formOptions = {}
 }) {
 
     return {
@@ -201,6 +199,8 @@ function createPage({
 
         hideCreateButton,
 
+        formOptions,
+
         breadcrumbs:
             createBreadcrumbs(
                 group,
@@ -214,16 +214,10 @@ function createPage({
 
 const danhMucPages = [
 
-    /*
-     * =====================================================
-     * TỔ CHỨC
-     * =====================================================
-     */
-
     createPage({
 
         path:
-            "/danh-muc/to-chuc/co-so",
+            "/danh-muc/co-so",
 
         view:
             "pages/danh-muc/to-chuc/co-so/index",
@@ -272,7 +266,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/to-chuc/phong-ban",
+            "/danh-muc/phong-ban",
 
         view:
             "pages/danh-muc/to-chuc/phong-ban/index",
@@ -321,7 +315,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/to-chuc/chuc-vu",
+            "/danh-muc/chuc-vu",
 
         view:
             "pages/danh-muc/to-chuc/chuc-vu/index",
@@ -367,7 +361,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/to-chuc/nha-an",
+            "/danh-muc/nha-an",
 
         view:
             "pages/danh-muc/to-chuc/nha-an/index",
@@ -417,7 +411,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/to-chuc/kho",
+            "/danh-muc/kho",
 
         view:
             "pages/danh-muc/to-chuc/kho/index",
@@ -463,17 +457,10 @@ const danhMucPages = [
 
     }),
 
-
-    /*
-     * =====================================================
-     * ĐỊA CHỈ HÀNH CHÍNH
-     * =====================================================
-     */
-
     createPage({
 
         path:
-            "/danh-muc/dia-chi-hanh-chinh/tong-hop",
+            "/danh-muc/dia-chi-hanh-chinh",
 
         view:
             "pages/danh-muc/dia-chi-hanh-chinh/tong-hop/index",
@@ -550,7 +537,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/dia-chi-hanh-chinh/quoc-gia",
+            "/danh-muc/quoc-gia",
 
         view:
             "pages/danh-muc/dia-chi-hanh-chinh/quoc-gia/index",
@@ -612,7 +599,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/dia-chi-hanh-chinh/tinh-thanh",
+            "/danh-muc/tinh-thanh",
 
         view:
             "pages/danh-muc/dia-chi-hanh-chinh/tinh-thanh/index",
@@ -662,7 +649,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/dia-chi-hanh-chinh/xa-phuong",
+            "/danh-muc/xa-phuong",
 
         view:
             "pages/danh-muc/dia-chi-hanh-chinh/xa-phuong/index",
@@ -709,16 +696,10 @@ const danhMucPages = [
     }),
 
 
-    /*
-     * =====================================================
-     * SUẤT ĂN
-     * =====================================================
-     */
-
     createPage({
 
         path:
-            "/danh-muc/suat-an/ca-an",
+            "/danh-muc/ca-an",
 
         view:
             "pages/danh-muc/suat-an/ca-an/index",
@@ -776,10 +757,10 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/suat-an/nhom-mon-an",
+            "/danh-muc/nhom-mon-an",
 
         view:
-            "pages/danh-muc/suat-an/nhom-mon-an/index",
+            "pages/danh-muc/he-thong/nhom-mon-an/index",
 
         title:
             "Danh mục nhóm món ăn",
@@ -818,7 +799,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/suat-an/mon-an",
+            "/danh-muc/mon-an",
 
         view:
             "pages/danh-muc/suat-an/mon-an/index",
@@ -864,7 +845,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/suat-an/thuc-pham",
+            "/danh-muc/thuc-pham",
 
         view:
             "pages/danh-muc/suat-an/thuc-pham/index",
@@ -910,7 +891,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/suat-an/don-vi-tinh",
+            "/danh-muc/don-vi-tinh",
 
         view:
             "pages/danh-muc/suat-an/don-vi-tinh/index",
@@ -952,17 +933,10 @@ const danhMucPages = [
 
     }),
 
-
-    /*
-     * =====================================================
-     * NHÂN SỰ
-     * =====================================================
-     */
-
     createPage({
 
         path:
-            "/danh-muc/nhan-su/nhan-vien",
+            "/danh-muc/nhan-vien",
 
         view:
             "pages/danh-muc/nhan-su/nhan-vien/index",
@@ -1012,7 +986,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/nhan-su/tai-khoan",
+            "/danh-muc/tai-khoan",
 
         view:
             "pages/danh-muc/nhan-su/tai-khoan/index",
@@ -1058,10 +1032,10 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/nhan-su/vai-tro",
+            "/danh-muc/vai-tro",
 
         view:
-            "pages/danh-muc/nhan-su/vai-tro/index",
+            "pages/danh-muc/he-thong/vai-tro/index",
 
         title:
             "Danh mục vai trò",
@@ -1104,10 +1078,10 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/nhan-su/quyen",
+            "/danh-muc/quyen",
 
         view:
-            "pages/danh-muc/nhan-su/quyen/index",
+            "pages/danh-muc/he-thong/quyen/index",
 
         title:
             "Danh mục quyền",
@@ -1150,10 +1124,10 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/nhan-su/nhom-tinh-nang",
+            "/danh-muc/nhom-tinh-nang",
 
         view:
-            "pages/danh-muc/nhan-su/nhom-tinh-nang/index",
+            "pages/danh-muc/he-thong/nhom-tinh-nang/index",
 
         title:
             "Danh mục nhóm tính năng",
@@ -1192,17 +1166,10 @@ const danhMucPages = [
 
     }),
 
-
-    /*
-     * =====================================================
-     * CHÍNH SÁCH
-     * =====================================================
-     */
-
     createPage({
 
         path:
-            "/danh-muc/chinh-sach/voucher",
+            "/danh-muc/voucher",
 
         view:
             "pages/danh-muc/chinh-sach/voucher/index",
@@ -1252,7 +1219,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/chinh-sach/chinh-sach",
+            "/danh-muc/chinh-sach",
 
         view:
             "pages/danh-muc/chinh-sach/chinh-sach/index",
@@ -1299,16 +1266,10 @@ const danhMucPages = [
     }),
 
 
-    /*
-     * =====================================================
-     * HỆ THỐNG
-     * =====================================================
-     */
-
     createPage({
 
         path:
-            "/danh-muc/he-thong/thiet-lap",
+            "/danh-muc/thiet-lap",
 
         view:
             "pages/danh-muc/he-thong/thiet-lap/index",
@@ -1342,8 +1303,71 @@ const danhMucPages = [
                 "Giá trị"
             ),
             textColumn(
-                "kieuDuLieu",
-                "Kiểu dữ liệu"
+                "moTa",
+                "Mô tả"
+            ),
+            booleanColumn()
+        ]
+
+    }),
+
+    createPage({
+
+        path:
+            "/danh-muc/bao-cao",
+
+        view:
+            "pages/danh-muc/he-thong/bao-cao/index",
+
+        title:
+            "Danh mục báo cáo",
+
+        description:
+            "Quản lý các báo cáo trong hệ thống.",
+
+        group:
+            "Hệ thống",
+
+        page:
+            "Báo cáo",
+
+        activeSubmenu:
+            "bao-cao",
+
+       formOptions: {
+
+            loaiXuatFile: [
+                {
+                    value: "10",
+                    label: "Excel"
+                },
+                {
+                    value: "20",
+                    label: "PDF"
+                },
+                {
+                    value: "30",
+                    label: "Word"
+                }
+            ]
+
+        },
+        columns: [
+            textColumn(
+                "maBaoCao",
+                "Mã báo cáo",
+                {
+                    width:
+                        "160px"
+                }
+            ),
+            textColumn(
+                "tenBaoCao",
+                "Tên báo cáo"
+            ),
+            textColumn(
+                "loaiXuatFileText",
+                "Loại xuất file"
             ),
             textColumn(
                 "moTa",

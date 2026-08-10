@@ -211,7 +211,7 @@ document.addEventListener(
 
         let avatarPreviewUrl = null;
 
-        async function initialize() {
+        function initialize() {
 
             initializeAddressSmartSelects();
 
@@ -221,12 +221,9 @@ document.addEventListener(
 
             renderStoredCurrentUser();
 
-            await Promise.allSettled([
-
+            Promise.allSettled([
                 loadCurrentUser(),
-
                 loadSystemInformation()
-
             ]);
 
         }
@@ -312,6 +309,11 @@ document.addEventListener(
                 const currentUser =
                     result?.data;
 
+                console.log(
+                    "Current user API:",
+                    currentUser
+                );
+
                 if (!currentUser) {
 
                     throw new Error(
@@ -368,14 +370,18 @@ document.addEventListener(
             try {
 
                 const settingResult =
-                    await window.MCS
-                        .api
-                        .request(
-                            CONFIG.systemSettingEndpoint
-                        );
+                    await authenticatedRequest(
+                        CONFIG.systemSettingEndpoint,
+                        {
+                            method:
+                                "GET"
+                        }
+                    );
 
                 const settings =
-                    settingResult?.data;
+                    extractArrayData(
+                        settingResult
+                    );
 
                 const systemNameSetting =
                     findSettingByCode(
@@ -393,18 +399,12 @@ document.addEventListener(
                     systemNameSetting?.giaTri ||
                     CONFIG.fallbackSystemName;
 
-                if (
-                    elements.systemName
-                ) {
+                if (elements.systemName) {
 
-                    elements.systemName
-                        .textContent =
+                    elements.systemName.textContent =
                         systemName;
 
                 }
-
-                document.title =
-                    systemName;
 
                 const facilityCode =
                     defaultFacilitySetting?.giaTri;
@@ -421,14 +421,18 @@ document.addEventListener(
                 }
 
                 const facilityResult =
-                    await window.MCS
-                        .api
-                        .request(
-                            CONFIG.facilityEndpoint
-                        );
+                    await authenticatedRequest(
+                        CONFIG.facilityEndpoint,
+                        {
+                            method:
+                                "GET"
+                        }
+                    );
 
                 const facilities =
-                    facilityResult?.data;
+                    extractArrayData(
+                        facilityResult
+                    );
 
                 const facility =
                     findFacilityByCode(
@@ -452,12 +456,9 @@ document.addEventListener(
                     error
                 );
 
-                if (
-                    elements.systemName
-                ) {
+                if (elements.systemName) {
 
-                    elements.systemName
-                        .textContent =
+                    elements.systemName.textContent =
                         CONFIG.fallbackSystemName;
 
                 }
@@ -1383,46 +1384,46 @@ document.addEventListener(
 
         }
 
-function getProfileFieldNameFromTarget(
-    target
-) {
+        function getProfileFieldNameFromTarget(
+            target
+        ) {
 
-    if (
-        !(target instanceof Element)
-    ) {
-        return null;
-    }
+            if (
+                !(target instanceof Element)
+            ) {
+                return null;
+            }
 
-    if (
-        target.matches(
-            "[data-date-input]"
-        )
-    ) {
+            if (
+                target.matches(
+                    "[data-date-input]"
+                )
+            ) {
 
-        return target.closest(
-            "[data-form-field]"
-        )?.dataset.formField || null;
+                return target.closest(
+                    "[data-form-field]"
+                )?.dataset.formField || null;
 
-    }
+            }
 
-    const namedField =
-        target.closest(
-            "[name]"
-        );
+            const namedField =
+                target.closest(
+                    "[name]"
+                );
 
-    if (
-        namedField?.name
-    ) {
+            if (
+                namedField?.name
+            ) {
 
-        return namedField.name;
+                return namedField.name;
 
-    }
+            }
 
-    return target.closest(
-        "[data-form-field]"
-    )?.dataset.formField || null;
+            return target.closest(
+                "[data-form-field]"
+            )?.dataset.formField || null;
 
-}
+        }
 
         function getProvinceCountryId(
             province
@@ -1504,20 +1505,51 @@ function getProfileFieldNameFromTarget(
 
         }
 
+        function normalizeAssetUrl(
+            url,
+            fallback = ""
+        ) {
+
+            const value =
+                url ||
+                fallback;
+
+            if (!value) {
+                return "";
+            }
+
+            if (
+                value.startsWith("blob:")
+                ||
+                value.startsWith("data:")
+                ||
+                value.startsWith("http://")
+                ||
+                value.startsWith("https://")
+                ||
+                value.startsWith("/")
+            ) {
+                return value;
+            }
+
+            return `/${value}`;
+
+        }
+
         function renderSystemLogo(
             logo,
             systemName
         ) {
 
-            if (
-                !elements.systemLogo
-            ) {
+            if (!elements.systemLogo) {
                 return;
             }
 
             elements.systemLogo.src =
-                logo ||
-                CONFIG.fallbackSystemLogo;
+                normalizeAssetUrl(
+                    logo,
+                    CONFIG.fallbackSystemLogo
+                );
 
             elements.systemLogo.alt =
                 `Logo ${systemName}`;
@@ -1729,11 +1761,43 @@ function getProfileFieldNameFromTarget(
             const imageUrl =
                 currentUser?.anhDaiDien;
 
-            elements.userAvatars
-                .forEach(
-                    container => {
+            elements.userAvatars.forEach(
+                container => {
 
-                        if (!imageUrl) {
+                    if (!imageUrl) {
+
+                        container.innerHTML =
+                            `
+                                <span aria-hidden="true">
+                                    👤
+                                </span>
+                            `;
+
+                        return;
+
+                    }
+
+                    container.innerHTML = "";
+
+                    const image =
+                        document.createElement(
+                            "img"
+                        );
+
+                    image.src =
+                        normalizeAssetUrl(
+                            imageUrl
+                        );
+
+                    image.alt =
+                        `Ảnh đại diện của ${
+                            currentUser?.hoTen ||
+                            CONFIG.fallbackUserName
+                        }`;
+
+                    image.addEventListener(
+                        "error",
+                        () => {
 
                             container.innerHTML =
                                 `
@@ -1742,50 +1806,18 @@ function getProfileFieldNameFromTarget(
                                     </span>
                                 `;
 
-                            return;
-
+                        },
+                        {
+                            once: true
                         }
+                    );
 
-                        container.innerHTML =
-                            "";
+                    container.appendChild(
+                        image
+                    );
 
-                        const image =
-                            document.createElement(
-                                "img"
-                            );
-
-                        image.src =
-                            imageUrl;
-
-                        image.alt =
-                            `Ảnh đại diện của ${
-                                currentUser?.hoTen ||
-                                CONFIG.fallbackUserName
-                            }`;
-
-                        image.addEventListener(
-                            "error",
-                            () => {
-
-                                container.innerHTML =
-                                    `
-                                        <span aria-hidden="true">
-                                            👤
-                                        </span>
-                                    `;
-
-                            },
-                            {
-                                once: true
-                            }
-                        );
-
-                        container.appendChild(
-                            image
-                        );
-
-                    }
-                );
+                }
+            );
 
         }
 
@@ -3071,10 +3103,6 @@ function getProfileFieldNameFromTarget(
             const rawValue =
                 String(value).trim();
 
-
-            /*
-            * API trả YYYY-MM-DD
-            */
             const databaseMatch =
                 rawValue.match(
                     /^(\d{4})-(\d{2})-(\d{2})/
@@ -3202,19 +3230,9 @@ function getProfileFieldNameFromTarget(
                 );
 
             image.src =
-                imageUrl.startsWith("blob:")
-                ||
-                imageUrl.startsWith("data:")
-                ||
-                imageUrl.startsWith("http://")
-                ||
-                imageUrl.startsWith("https://")
-                    ? imageUrl
-                    : (
-                        imageUrl.startsWith("/")
-                            ? imageUrl
-                            : `/${imageUrl}`
-                    );
+                normalizeAssetUrl(
+                    imageUrl
+                );
 
             image.alt =
                 "Ảnh đại diện nhân viên";

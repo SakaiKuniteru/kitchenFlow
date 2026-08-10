@@ -1,0 +1,25 @@
+{{> catalog/module-page
+    moduleName="bao-cao"
+    apiBase="/api/mcs/v1/dm-bao-cao"
+    title="Danh mục báo cáo"
+    searchPlaceholder="Tìm theo mã hoặc tên báo cáo..."
+    createButtonLabel="Thêm báo cáo"
+    createButtonId="btnCreateBaoCao"
+    searchInputId="searchBaoCao"
+    tableId="baoCaoTable"
+    tableBodyId="baoCaoTableBody"
+    paginationId="baoCaoPagination"
+    detailPanelId="baoCaoDetailPanel"
+    detailContentId="baoCaoDetailContent"
+    formId="baoCaoForm"
+    formPartial="catalog/forms/bao-cao-form"
+    detailTitle="Thông tin báo cáo"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="baoCaoMobilePanel"
+    columns=columns
+    formOptions=formOptions
+}}
+
+{{> scripts/catalog-page
+    page="bao-cao"}}

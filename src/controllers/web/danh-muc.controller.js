@@ -38,8 +38,7 @@ class DanhMucWebController {
                             config.title,
 
                         pageDescription:
-                            config.description ||
-                            "",
+                            config.description || "",
 
                         currentYear,
 
@@ -64,9 +63,6 @@ class DanhMucWebController {
                             config.breadcrumbs ||
                             [],
 
-                        /*
-                         * Cấu hình bảng.
-                         */
                         columns:
                             config.columns ||
                             [],
@@ -87,9 +83,6 @@ class DanhMucWebController {
                             config.selectable ===
                             true,
 
-                        /*
-                         * Cấu hình giao diện.
-                         */
                         searchPlaceholder:
                             config.searchPlaceholder ||
                             "Tìm theo mã hoặc tên...",
@@ -100,7 +93,12 @@ class DanhMucWebController {
 
                         showExportButton:
                             config.showExportButton ===
-                            true
+                            true,
+
+                        formOptions: {
+                            ...(res.locals.formOptions || {}),
+                            ...(config.formOptions || {})
+                        }
 
                     }
                 );

@@ -16,12 +16,42 @@ const webRoutes =
         "./config"
     );
 
+router.use(
+    (
+        req,
+        res,
+        next
+    ) => {
+
+        res.locals.formOptions = {
+
+            gioiTinh: [
+                {
+                    value: "0",
+                    label: "Nữ"
+                },
+                {
+                    value: "1",
+                    label: "Nam"
+                },
+                {
+                    value: "2",
+                    label: "Khác"
+                }
+            ]
+
+        };
+
+        next();
+
+    }
+);
 
 router.get(
     "/",
     (
         req,
-        res,
+        res, 
         next
     ) => {
 
