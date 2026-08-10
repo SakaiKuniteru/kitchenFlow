@@ -1,8 +1,8 @@
 "use strict";
 
-
 const danhMucWebController = require( "../../controllers/web/danh-muc.controller" );
 
+const thucDonWebController = require( "../../controllers/web/thuc-don.controller" );
 
 function textColumn(
     key,
@@ -157,7 +157,6 @@ function createBreadcrumbs(
 
 }
 
-
 function createPage({
     path,
     view,
@@ -210,7 +209,6 @@ function createPage({
     };
 
 }
-
 
 const danhMucPages = [
 
@@ -1380,8 +1378,7 @@ const danhMucPages = [
 
 ];
 
-
-const webRoutes =
+const danhMucRoutes =
     danhMucPages.map(
         page => ({
 
@@ -1399,6 +1396,50 @@ const webRoutes =
 
         })
     );
+
+
+const thucDonRoutes = [
+
+    {
+        method:
+            "get",
+
+        path:
+            "/thuc-don/danh-sach-thuc-don",
+
+        handler:
+            thucDonWebController.danhSach
+    },
+
+    {
+        method:
+            "get",
+
+        path:
+            "/thuc-don/tao-moi-thuc-don",
+
+        handler:
+            thucDonWebController.taoMoi
+    },
+
+    {
+        method:
+            "get",
+
+        path:
+            "/thuc-don/thong-tin-chi-tiet-thuc-don/:id",
+
+        handler:
+            thucDonWebController.chiTiet
+    }
+
+];
+
+
+const webRoutes = [
+    ...danhMucRoutes,
+    ...thucDonRoutes
+];
 
 
 module.exports =

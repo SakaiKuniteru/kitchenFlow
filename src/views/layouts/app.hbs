@@ -17,9 +17,13 @@
     <link rel="stylesheet" href="/assets/css/common/loading.css">
     <link rel="stylesheet" href="/assets/css/components/date-picker.css">
     <link rel="stylesheet" href="/assets/css/components/smart-select.css">
+    <link rel="stylesheet" href="/assets/css/components/date-time-range.css">
+
+    {{#if isModuleListPage}}
+        <link rel="stylesheet" href="/assets/css/module-list/module-list.css">
+    {{/if}}
 
     {{#if isCatalogPage}}
-
         <link rel="stylesheet" href="/assets/css/catalog/catalog.css">
         <link rel="stylesheet" href="/assets/css/catalog/toolbar.css">
         <link rel="stylesheet" href="/assets/css/catalog/table.css">
@@ -27,7 +31,6 @@
         <link rel="stylesheet" href="/assets/css/catalog/form.css">
         <link rel="stylesheet" href="/assets/css/catalog/pagination.css">
         <link rel="stylesheet" href="/assets/css/catalog/mobile.css">
-
     {{/if}}
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
@@ -73,6 +76,7 @@
 
     <script defer src="/assets/js/common/app.js"></script>
     <script defer src="/assets/js/components/date-picker.js"></script>
+    <script defer src="/assets/js/components/date-time-range.js"></script>
     <script defer src="/assets/js/components/smart-select.js"></script>
     <script defer src="/assets/js/common/header.js"></script>
     <script defer src="/assets/js/common/sidebar.js"></script>

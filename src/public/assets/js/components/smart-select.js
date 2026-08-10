@@ -346,13 +346,14 @@ window.MCS.smartSelect = {
                 "true"
             );
 
-            /*
-            * Chỉ hiện hướng dẫn tìm kiếm khi người dùng
-            * đang focus vào input.
-            */
+            const hasSelection =
+                isAllSelected() ||
+                getSelectedOptions().length > 0;
+
             if (
                 document.activeElement ===
-                elements.search
+                    elements.search &&
+                !hasSelection
             ) {
 
                 elements.search.placeholder =
@@ -739,6 +740,28 @@ window.MCS.smartSelect = {
 
             }
 
+
+            if (
+                mode === "multiple" &&
+                isAllSelected()
+            ) {
+
+                const allOption =
+                    getAllOption();
+
+                if (allOption) {
+
+                    appendTag(
+                        allOption
+                    );
+
+                }
+
+                return;
+
+            }
+
+
             const selectedOptions =
                 getSelectedOptions();
 
@@ -795,7 +818,6 @@ window.MCS.smartSelect = {
             );
 
         }
-
 
         function appendSingleValue(
             label

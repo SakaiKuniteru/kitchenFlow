@@ -1,0 +1,104 @@
+<div class="list-filter-grid">
+
+    {{> forms/date-time-range
+        name="thoiGianTao"
+        label="Thời gian tạo"
+        fromId="createdFrom"
+        fromName="createdFrom"
+        toId="createdTo"
+        toName="createdTo"
+        includeTime=true
+        defaultToday=true
+    }}
+
+
+    {{> forms/select
+        id="loaiThucDon"
+        name="loaiThucDon"
+        label="Loại thực đơn"
+        mode="multiple"
+        placeholder="Loại thực đơn..."
+        options=formOptions.loaiThucDon
+        multiple=true
+        allowAll=true
+        description=""
+    }}
+
+    {{> forms/date-time-range
+        name="thoiGianHieuLuc"
+        label="Thời gian hiệu lực"
+        fromId="effectiveFrom"
+        fromName="effectiveFrom"
+        toId="effectiveTo"
+        toName="effectiveTo"
+        includeTime=true
+        defaultToday=true
+    }}
+
+    {{> forms/select
+        id="coSoId"
+        name="coSoId"
+        label="Cơ sở"
+        mode="multiple"
+        placeholder="Cơ sở..."
+        options=formOptions.coSo
+        multiple=true
+        allowAll=true
+        description=""
+    }}
+
+    {{> forms/select
+        id="nhaAnId"
+        name="nhaAnId"
+        label="Nhà ăn"
+        mode="multiple"
+        placeholder="Nhà ăn..."
+        options=formOptions.nhaAn
+        multiple=true
+        allowAll=true
+        description=""
+    }}
+
+    {{> forms/select
+        id="caAnId"
+        name="caAnId"
+        label="Ca ăn"
+        mode="multiple"
+        placeholder="Ca ăn..."
+        options=formOptions.caAn
+        multiple=true
+        allowAll=true
+        description=""
+    }}
+
+    {{> forms/select
+        id="trangThai"
+        name="trangThai"
+        label="Trạng thái"
+        mode="multiple"
+        placeholder="Trạng thái..."
+        options=formOptions.trangThai
+        multiple=true
+        allowAll=true
+        description=""
+    }}
+
+    <div class="list-filter-actions">
+
+        <button
+            type="button"
+            class="list-filter-button"
+            data-list-filter-reset>
+            Đặt lại
+        </button>
+
+        <button
+            type="button"
+            class="list-filter-button is-primary"
+            data-list-filter-apply>
+            Áp dụng
+        </button>
+
+    </div>
+
+</div>

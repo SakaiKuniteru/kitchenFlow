@@ -1,0 +1,134 @@
+<section
+    class="module-list-page"
+    data-module-list-page="{{moduleName}}">
+
+    <header class="module-list-page__header">
+
+        <div>
+
+            <h1 class="module-list-page__title">
+                {{title}}
+            </h1>
+
+            {{#if description}}
+
+                <p class="module-list-page__description">
+                    {{description}}
+                </p>
+
+            {{/if}}
+
+        </div>
+
+        {{#if createUrl}}
+
+            <a
+                href="{{createUrl}}"
+                class="module-list-page__create">
+
+                <i class="fa-solid fa-plus"></i>
+
+                <span>
+                    Thêm mới
+                </span>
+
+            </a>
+
+        {{/if}}
+
+    </header>
+
+
+    <div class="module-list-page__toolbar">
+
+        <button
+            type="button"
+            class="module-list-page__filter-button"
+            data-list-filter-toggle>
+
+            <i class="fa-solid fa-filter"></i>
+
+            <span>
+                Bộ lọc
+            </span>
+
+        </button>
+
+        <div class="module-list-page__search">
+
+            <i
+                class="
+                    fa-solid
+                    fa-magnifying-glass
+                    module-list-page__search-icon
+                ">
+            </i>
+
+            <input
+                type="search"
+                class="module-list-page__search-input"
+                placeholder="{{searchPlaceholder}}"
+                data-list-search>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="module-list-page__filters"
+        data-list-filter-panel
+        hidden>
+
+        {{> (lookup . "filterPartial")}}
+
+    </div>
+
+
+    <div class="module-list-page__content">
+
+        <table class="module-list-table">
+
+            <thead>
+
+                <tr>
+
+                    {{#each columns}}
+
+                        <th>
+                            {{label}}
+                        </th>
+
+                    {{/each}}
+
+                    <th class="module-list-table__actions">
+                        Thao tác
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody data-list-body>
+            </tbody>
+
+        </table>
+
+        <div
+            class="module-list-page__empty"
+            data-list-empty
+            hidden>
+
+            Không có dữ liệu.
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="module-list-page__pagination"
+        data-list-pagination>
+    </div>
+
+</section>

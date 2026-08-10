@@ -405,3 +405,98 @@
     }
 
 }
+
+
+.date-picker__time {
+    padding: 12px 14px;
+
+    border-top:
+        1px solid
+        var(--color-border-light);
+}
+
+.date-picker__time-title {
+    margin-bottom: 8px;
+
+    color:
+        var(--color-text-secondary);
+
+    font-size:
+        var(--font-size-xs);
+
+    font-weight:
+        600;
+}
+
+.date-picker__time-fields {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.date-picker__time-input {
+    width: 52px;
+    height: 36px;
+
+    padding: 0 6px;
+
+    border:
+        1px solid
+        var(--color-border-light);
+
+    border-radius:
+        var(--radius-sm);
+
+    outline: none;
+
+    color:
+        var(--color-text-primary);
+
+    background:
+        var(--color-surface);
+
+    font-family: inherit;
+    font-size:
+        var(--font-size-sm);
+
+    font-weight: 600;
+    text-align: center;
+}
+
+.date-picker__time-input:focus {
+    border-color:
+        var(--color-primary);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(
+            var(--color-primary-rgb),
+            0.08
+        );
+}
+
+.date-picker__time-separator {
+    color:
+        var(--color-text-muted);
+
+    font-weight: 700;
+}
+
+.date-picker__footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.date-picker__footer-button.is-primary {
+    padding: 0 12px;
+
+    color: #fff;
+
+    background:
+        var(--color-primary);
+
+    border-radius:
+        var(--radius-sm);
+}

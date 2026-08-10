@@ -153,7 +153,7 @@ const LOAI_XUAT_FILE = [
 const TRANG_THAI_THUC_DON = [
     {
         value: 10,
-        label: "Nháp"
+        label: "Tạo mới"
     },
     {
         value: 20,

@@ -1,7 +1,10 @@
 <div
     class="form-field {{#if fieldClass}}{{fieldClass}}{{/if}}"
     data-form-field="{{name}}"
-    data-date-picker>
+    data-date-picker
+    data-show-time="{{#if showTime}}true{{else}}false{{/if}}"
+    data-default-time="{{#if defaultTime}}{{defaultTime}}{{else}}00:00:00{{/if}}"
+    data-default-today="{{#if defaultToday}}true{{else}}false{{/if}}">
 
     {{#if label}}
 
@@ -55,7 +58,7 @@
                 placeholder="{{#if placeholder}}{{placeholder}}{{else}}dd/mm/yyyy{{/if}}"
                 inputmode="numeric"
                 autocomplete="off"
-                maxlength="10"
+                maxlength="{{#if showTime}}19{{else}}10{{/if}}"
                 data-date-input
 
                 {{#if required}}
@@ -196,6 +199,58 @@
                 data-date-body>
             </div>
 
+            {{#if showTime}}
+
+                <div
+                    class="date-picker__time"
+                    data-date-time>
+
+                    <div class="date-picker__time-title">
+                        Thời gian
+                    </div>
+
+                    <div class="date-picker__time-fields">
+
+                        <input
+                            type="number"
+                            min="0"
+                            max="23"
+                            maxlength="2"
+                            class="date-picker__time-input"
+                            data-date-hour
+                            aria-label="Giờ">
+
+                        <span class="date-picker__time-separator">
+                            :
+                        </span>
+
+                        <input
+                            type="number"
+                            min="0"
+                            max="59"
+                            maxlength="2"
+                            class="date-picker__time-input"
+                            data-date-minute
+                            aria-label="Phút">
+
+                        <span class="date-picker__time-separator">
+                            :
+                        </span>
+
+                        <input
+                            type="number"
+                            min="0"
+                            max="59"
+                            maxlength="2"
+                            class="date-picker__time-input"
+                            data-date-second
+                            aria-label="Giây">
+
+                    </div>
+
+                </div>
+
+            {{/if}}
 
             <div class="date-picker__footer">
 
@@ -208,14 +263,34 @@
 
                 </button>
 
-                <button
-                    type="button"
-                    class="date-picker__footer-button"
-                    data-date-today>
+                <div class="date-picker__footer-actions">
 
-                    Hôm nay
+                    <button
+                        type="button"
+                        class="date-picker__footer-button"
+                        data-date-today>
 
-                </button>
+                        Hôm nay
+
+                    </button>
+
+                    {{#if showTime}}
+
+                        <button
+                            type="button"
+                            class="
+                                date-picker__footer-button
+                                is-primary
+                            "
+                            data-date-confirm>
+
+                            Xong
+
+                        </button>
+
+                    {{/if}}
+
+                </div>
 
             </div>
 

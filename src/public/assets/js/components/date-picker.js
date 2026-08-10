@@ -86,9 +86,44 @@ function initializeDatePicker(
         clear:
             root.querySelector(
                 "[data-date-clear]"
+            ),
+
+        hour:
+            root.querySelector(
+                "[data-date-hour]"
+            ),
+
+        minute:
+            root.querySelector(
+                "[data-date-minute]"
+            ),
+
+        second:
+            root.querySelector(
+                "[data-date-second]"
+            ),
+
+        confirm:
+            root.querySelector(
+                "[data-date-confirm]"
             )
 
     };
+
+
+    const showTime =
+        root.dataset.showTime ===
+        "true";
+
+    const defaultToday =
+        root.dataset.defaultToday ===
+        "true";
+
+    const defaultTime =
+        parseTime(
+            root.dataset.defaultTime ||
+            "00:00:00"
+        );
 
 
     const today =
@@ -96,10 +131,27 @@ function initializeDatePicker(
             new Date()
         );
 
-    const initialDate =
-        parseIsoDate(
+    let initialDate =
+        parseIsoDateTime(
             elements.value?.value
         );
+
+    if (
+        !initialDate &&
+        defaultToday
+    ) {
+
+        initialDate =
+            new Date();
+
+        initialDate.setHours(
+            defaultTime.hour,
+            defaultTime.minute,
+            defaultTime.second,
+            0
+        );
+
+    }
 
     const state = {
 
@@ -115,6 +167,24 @@ function initializeDatePicker(
             "day"
 
     };
+
+    if (
+        initialDate &&
+        defaultToday &&
+        elements.value &&
+        !elements.value.value
+    ) {
+
+        elements.value.value =
+            showTime
+                ? formatIsoDateTime(
+                    initialDate
+                )
+                : formatIsoDate(
+                    initialDate
+                );
+
+    }
 
 
     renderInput();
@@ -165,7 +235,18 @@ function initializeDatePicker(
                             )
                             .slice(
                                 0,
-                                8
+                                showTime
+                                    ? 14
+                                    : 8
+                            );
+
+                    event.target.value =
+                        showTime
+                            ? formatDateTimeTypingDigits(
+                                digits
+                            )
+                            : formatTypingDigits(
+                                digits
                             );
 
                     event.target.value =
@@ -336,6 +417,55 @@ function initializeDatePicker(
                 }
             );
 
+        
+        [
+            elements.hour,
+            elements.minute,
+            elements.second
+        ]
+            .forEach(
+                input => {
+
+                    input?.addEventListener(
+                        "input",
+                        () => {
+
+                            normalizeTimeInputs();
+
+                            applyTimeToSelectedDate();
+
+                            renderInput();
+
+                            updateHiddenValue();
+
+                            dispatchChange();
+
+                        }
+                    );
+
+                }
+            );
+
+
+        elements.confirm
+            ?.addEventListener(
+                "click",
+                () => {
+
+                    normalizeTimeInputs();
+
+                    applyTimeToSelectedDate();
+
+                    updateHiddenValue();
+
+                    renderInput();
+
+                    dispatchChange();
+
+                    closeDropdown();
+
+                }
+            );
 
         root.addEventListener(
             "click",
@@ -445,6 +575,8 @@ function initializeDatePicker(
                 break;
 
         }
+
+        renderTimeInputs();
 
     }
 
@@ -963,34 +1095,61 @@ function initializeDatePicker(
         date
     ) {
 
-        state.selectedDate =
-            startOfDay(
-                new Date(date)
-            );
+        const selected =
+            new Date(date);
 
-        state.viewDate =
-            new Date(
-                state.selectedDate
-            );
 
         if (
-            elements.value
+            showTime
         ) {
 
-            elements.value.value =
-                formatIsoDate(
-                    state.selectedDate
-                );
+            const currentTime =
+                getCurrentTime();
+
+            selected.setHours(
+                currentTime.hour,
+                currentTime.minute,
+                currentTime.second,
+                0
+            );
+
+        } else {
+
+            selected.setHours(
+                0,
+                0,
+                0,
+                0
+            );
 
         }
 
+
+        state.selectedDate =
+            selected;
+
+        state.viewDate =
+            new Date(
+                selected
+            );
+
+
+        updateHiddenValue();
+
         renderInput();
+
+        renderTimeInputs();
 
         dispatchChange();
 
         render();
 
-        closeDropdown();
+
+        if (!showTime) {
+
+            closeDropdown();
+
+        }
 
     }
 
@@ -1022,9 +1181,13 @@ function initializeDatePicker(
         }
 
         const date =
-            parseVietnameseDate(
-                rawValue
-            );
+            showTime
+                ? parseVietnameseDateTime(
+                    rawValue
+                )
+                : parseVietnameseDate(
+                    rawValue
+                );
 
         if (!date) {
 
@@ -1064,12 +1227,26 @@ function initializeDatePicker(
             return;
         }
 
+        if (
+            !state.selectedDate
+        ) {
+
+            elements.input.value =
+                "";
+
+            return;
+
+        }
+
+
         elements.input.value =
-            state.selectedDate
-                ? formatVietnameseDate(
+            showTime
+                ? formatVietnameseDateTime(
                     state.selectedDate
                 )
-                : "";
+                : formatVietnameseDate(
+                    state.selectedDate
+                );
 
     }
 
@@ -1088,12 +1265,210 @@ function initializeDatePicker(
 
     }
 
+    function renderTimeInputs() {
+
+        if (!showTime) {
+            return;
+        }
+
+        const time =
+            state.selectedDate
+                ? {
+                    hour:
+                        state.selectedDate
+                            .getHours(),
+
+                    minute:
+                        state.selectedDate
+                            .getMinutes(),
+
+                    second:
+                        state.selectedDate
+                            .getSeconds()
+                }
+                : defaultTime;
+
+
+        if (elements.hour) {
+
+            elements.hour.value =
+                String(
+                    time.hour
+                )
+                    .padStart(
+                        2,
+                        "0"
+                    );
+
+        }
+
+        if (elements.minute) {
+
+            elements.minute.value =
+                String(
+                    time.minute
+                )
+                    .padStart(
+                        2,
+                        "0"
+                    );
+
+        }
+
+        if (elements.second) {
+
+            elements.second.value =
+                String(
+                    time.second
+                )
+                    .padStart(
+                        2,
+                        "0"
+                    );
+
+        }
+
+    }
+
+
+    function getCurrentTime() {
+
+        return {
+
+            hour:
+                clampNumber(
+                    elements.hour?.value,
+                    0,
+                    23,
+                    defaultTime.hour
+                ),
+
+            minute:
+                clampNumber(
+                    elements.minute?.value,
+                    0,
+                    59,
+                    defaultTime.minute
+                ),
+
+            second:
+                clampNumber(
+                    elements.second?.value,
+                    0,
+                    59,
+                    defaultTime.second
+                )
+
+        };
+
+    }
+
+
+    function normalizeTimeInputs() {
+
+        if (!showTime) {
+            return;
+        }
+
+        const time =
+            getCurrentTime();
+
+
+        if (elements.hour) {
+
+            elements.hour.value =
+                String(
+                    time.hour
+                )
+                    .padStart(
+                        2,
+                        "0"
+                    );
+
+        }
+
+        if (elements.minute) {
+
+            elements.minute.value =
+                String(
+                    time.minute
+                )
+                    .padStart(
+                        2,
+                        "0"
+                    );
+
+        }
+
+        if (elements.second) {
+
+            elements.second.value =
+                String(
+                    time.second
+                )
+                    .padStart(
+                        2,
+                        "0"
+                    );
+
+        }
+
+    }
+
+
+    function applyTimeToSelectedDate() {
+
+        if (
+            !showTime ||
+            !state.selectedDate
+        ) {
+            return;
+        }
+
+        const time =
+            getCurrentTime();
+
+        state.selectedDate.setHours(
+            time.hour,
+            time.minute,
+            time.second,
+            0
+        );
+
+    }
+
+
+    function updateHiddenValue() {
+
+        if (
+            !elements.value
+        ) {
+            return;
+        }
+
+        if (
+            !state.selectedDate
+        ) {
+
+            elements.value.value =
+                "";
+
+            return;
+
+        }
+
+        elements.value.value =
+            showTime
+                ? formatIsoDateTime(
+                    state.selectedDate
+                )
+                : formatIsoDate(
+                    state.selectedDate
+                );
+
+    }
+
 }
-
-
-/* =========================================================
-   Helpers
-   ========================================================= */
 
 function formatTypingDigits(
     digits
@@ -1358,5 +1733,342 @@ function isSameDate(
         firstDate.getDate() ===
             secondDate.getDate()
     );
+
+}
+
+function parseTime(
+    value
+) {
+
+    const match =
+        String(value || "")
+            .match(
+                /^(\d{1,2}):(\d{1,2}):(\d{1,2})$/
+            );
+
+    if (!match) {
+
+        return {
+            hour: 0,
+            minute: 0,
+            second: 0
+        };
+
+    }
+
+    return {
+
+        hour:
+            Math.min(
+                23,
+                Number(match[1])
+            ),
+
+        minute:
+            Math.min(
+                59,
+                Number(match[2])
+            ),
+
+        second:
+            Math.min(
+                59,
+                Number(match[3])
+            )
+
+    };
+
+}
+
+
+function clampNumber(
+    value,
+    min,
+    max,
+    fallback
+) {
+
+    const number =
+        Number(value);
+
+    if (
+        !Number.isFinite(number)
+    ) {
+        return fallback;
+    }
+
+    return Math.min(
+        max,
+        Math.max(
+            min,
+            number
+        )
+    );
+
+}
+
+
+function formatTime(
+    date
+) {
+
+    const hour =
+        String(
+            date.getHours()
+        )
+            .padStart(
+                2,
+                "0"
+            );
+
+    const minute =
+        String(
+            date.getMinutes()
+        )
+            .padStart(
+                2,
+                "0"
+            );
+
+    const second =
+        String(
+            date.getSeconds()
+        )
+            .padStart(
+                2,
+                "0"
+            );
+
+    return `${hour}:${minute}:${second}`;
+
+}
+
+
+function formatVietnameseDateTime(
+    date
+) {
+
+    return (
+        `${formatVietnameseDate(date)} ` +
+        `${formatTime(date)}`
+    );
+
+}
+
+
+function formatIsoDateTime(
+    date
+) {
+
+    return (
+        `${formatIsoDate(date)} ` +
+        `${formatTime(date)}`
+    );
+
+}
+
+
+function parseIsoDateTime(
+    value
+) {
+
+    if (!value) {
+        return null;
+    }
+
+    const match =
+        String(value)
+            .match(
+                /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}):(\d{2}))?$/
+            );
+
+    if (!match) {
+        return null;
+    }
+
+
+    const year =
+        Number(match[1]);
+
+    const month =
+        Number(match[2]);
+
+    const day =
+        Number(match[3]);
+
+    const hour =
+        Number(
+            match[4] || 0
+        );
+
+    const minute =
+        Number(
+            match[5] || 0
+        );
+
+    const second =
+        Number(
+            match[6] || 0
+        );
+
+
+    const date =
+        new Date(
+            year,
+            month - 1,
+            day,
+            hour,
+            minute,
+            second
+        );
+
+
+    if (
+        date.getFullYear() !== year ||
+        date.getMonth() !== month - 1 ||
+        date.getDate() !== day ||
+        date.getHours() !== hour ||
+        date.getMinutes() !== minute ||
+        date.getSeconds() !== second
+    ) {
+        return null;
+    }
+
+    return date;
+
+}
+
+
+function parseVietnameseDateTime(
+    value
+) {
+
+    const match =
+        String(value)
+            .trim()
+            .match(
+                /^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}):(\d{2}))?$/
+            );
+
+    if (!match) {
+        return null;
+    }
+
+    const day =
+        Number(match[1]);
+
+    const month =
+        Number(match[2]);
+
+    const year =
+        Number(match[3]);
+
+    const hour =
+        Number(
+            match[4] || 0
+        );
+
+    const minute =
+        Number(
+            match[5] || 0
+        );
+
+    const second =
+        Number(
+            match[6] || 0
+        );
+
+
+    const date =
+        new Date(
+            year,
+            month - 1,
+            day,
+            hour,
+            minute,
+            second
+        );
+
+
+    if (
+        date.getFullYear() !== year ||
+        date.getMonth() !== month - 1 ||
+        date.getDate() !== day ||
+        date.getHours() !== hour ||
+        date.getMinutes() !== minute ||
+        date.getSeconds() !== second
+    ) {
+        return null;
+    }
+
+    return date;
+
+}
+
+
+function formatDateTimeTypingDigits(
+    digits
+) {
+
+    const dateDigits =
+        digits.slice(
+            0,
+            8
+        );
+
+    const timeDigits =
+        digits.slice(
+            8,
+            14
+        );
+
+    let result =
+        formatTypingDigits(
+            dateDigits
+        );
+
+    if (
+        timeDigits.length ===
+        0
+    ) {
+        return result;
+    }
+
+    result +=
+        " " +
+        timeDigits.slice(
+            0,
+            2
+        );
+
+    if (
+        timeDigits.length >
+        2
+    ) {
+
+        result +=
+            ":" +
+            timeDigits.slice(
+                2,
+                4
+            );
+
+    }
+
+    if (
+        timeDigits.length >
+        4
+    ) {
+
+        result +=
+            ":" +
+            timeDigits.slice(
+                4,
+                6
+            );
+
+    }
+
+    return result;
 
 }

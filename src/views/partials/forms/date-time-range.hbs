@@ -1,0 +1,61 @@
+<div
+    class="date-time-range"
+    data-date-time-range>
+
+    {{#if label}}
+
+        <div class="date-time-range__label">
+            {{label}}
+        </div>
+
+    {{/if}}
+
+    <div class="date-time-range__fields">
+
+        <div class="date-time-range__item">
+
+            <span class="date-time-range__caption">
+                Từ
+            </span>
+
+            {{> forms/date
+                id=fromId
+                name=fromName
+                label=""
+                description=""
+                placeholder="dd/MM/yyyy 00:00:00"
+                showTime=includeTime
+                defaultToday=defaultToday
+                defaultTime="00:00:00"
+            }}
+
+        </div>
+
+        <span
+            class="date-time-range__separator"
+            aria-hidden="true">
+            →
+        </span>
+
+        <div class="date-time-range__item">
+
+            <span class="date-time-range__caption">
+                Đến
+            </span>
+
+            {{> forms/date
+                id=toId
+                name=toName
+                label=""
+                description=""
+                placeholder="dd/MM/yyyy 23:59:59"
+                showTime=includeTime
+                defaultToday=defaultToday
+                defaultTime="23:59:59"
+            }}
+
+        </div>
+
+    </div>
+
+</div>

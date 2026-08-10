@@ -48,20 +48,22 @@
 .smart-select__content {
     display: flex;
     flex: 1 1 auto;
+    flex-wrap: wrap;
     align-items: center;
+    gap: 5px;
 
-    width: 100%;
     min-width: 0;
-    height: 100%;
 }
 
 .smart-select__selection {
     display: flex;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
+    flex-wrap: wrap;
     align-items: center;
+    gap: 5px;
 
     min-width: 0;
-    height: 100%;
+    max-width: 100%;
 }
 
 .smart-select__placeholder {
@@ -115,16 +117,39 @@
     color: #94a3b8;
 }
 
-.smart-select.is-searching
+.smart-select[data-select-mode="single"].is-searching
 .smart-select__selection {
     display: none;
 }
 
-.smart-select.is-searching
+.smart-select[data-select-mode="multiple"]
 .smart-select__search {
-    flex: 1 1 100%;
-    width: 100%;
-    min-width: 0;
+    flex: 1 1 80px;
+    width: auto;
+    min-width: 40px;
+}
+
+.smart-select[data-select-mode="multiple"]
+.smart-select__control {
+    height: auto;
+    min-height: 44px;
+}
+
+.smart-select[data-select-mode="multiple"]
+.smart-select__content {
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+.smart-select[data-select-mode="multiple"]
+.smart-select__selection {
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+.smart-select[data-select-mode="multiple"]
+.smart-select__tag {
+    flex: 0 0 auto;
 }
 
 .smart-select__toggle {
@@ -397,11 +422,6 @@
 
     opacity: 1;
     pointer-events: auto;
-}
-
-.smart-select[data-select-mode="single"].is-searching
-.smart-select__selection {
-    display: none;
 }
 
 @keyframes smart-select-enter {
