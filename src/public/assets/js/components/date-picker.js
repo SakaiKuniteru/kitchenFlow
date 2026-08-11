@@ -249,11 +249,6 @@ function initializeDatePicker(
                                 digits
                             );
 
-                    event.target.value =
-                        formatTypingDigits(
-                            digits
-                        );
-
                 }
             );
 
@@ -374,8 +369,24 @@ function initializeDatePicker(
                 "click",
                 () => {
 
+                    const current =
+                        new Date();
+
+                    if (
+                        showTime
+                    ) {
+
+                        current.setHours(
+                            defaultTime.hour,
+                            defaultTime.minute,
+                            defaultTime.second,
+                            0
+                        );
+
+                    }
+
                     selectDate(
-                        today
+                        current
                     );
 
                 }
@@ -418,7 +429,7 @@ function initializeDatePicker(
             );
 
         
-        [
+       [
             elements.hour,
             elements.minute,
             elements.second
@@ -428,15 +439,33 @@ function initializeDatePicker(
 
                     input?.addEventListener(
                         "input",
+                        event => {
+
+                            event.target.value =
+                                event.target.value
+                                    .replace(
+                                        /\D/g,
+                                        ""
+                                    )
+                                    .slice(
+                                        0,
+                                        2
+                                    );
+
+                        }
+                    );
+
+                    input?.addEventListener(
+                        "blur",
                         () => {
 
                             normalizeTimeInputs();
 
                             applyTimeToSelectedDate();
 
-                            renderInput();
-
                             updateHiddenValue();
+
+                            renderInput();
 
                             dispatchChange();
 
@@ -484,7 +513,6 @@ function initializeDatePicker(
 
     }
 
-
     function openDropdown() {
 
         if (
@@ -495,6 +523,8 @@ function initializeDatePicker(
             return;
         }
 
+        closeOtherPopups();
+
         elements.dropdown.hidden =
             false;
 
@@ -503,10 +533,13 @@ function initializeDatePicker(
             "true"
         );
 
+        root.classList.add(
+            "is-open"
+        );
+
         render();
 
     }
-
 
     function closeDropdown() {
 
@@ -524,8 +557,86 @@ function initializeDatePicker(
             "false"
         );
 
+        root.classList.remove(
+            "is-open"
+        );
+
     }
 
+    function closeOtherPopups() {
+
+        document
+            .querySelectorAll(
+                "[data-date-picker]"
+            )
+            .forEach(
+                item => {
+
+                    if (
+                        item === root
+                    ) {
+                        return;
+                    }
+
+
+                    const dropdown =
+                        item.querySelector(
+                            "[data-date-dropdown]"
+                        );
+
+                    const toggle =
+                        item.querySelector(
+                            "[data-date-toggle]"
+                        );
+
+
+                    if (dropdown) {
+
+                        dropdown.hidden =
+                            true;
+
+                    }
+
+
+                    toggle?.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+
+                    item.classList.remove(
+                        "is-open"
+                    );
+
+                }
+            );
+
+
+        document
+            .querySelectorAll(
+                "[data-smart-select]"
+            )
+            .forEach(
+                item => {
+
+                    const api =
+                        item.smartSelect;
+
+
+                    if (
+                        api &&
+                        typeof api.close ===
+                            "function"
+                    ) {
+
+                        api.close();
+
+                    }
+
+                }
+            );
+
+    }
 
     function toggleDropdown() {
 
@@ -1788,14 +1899,36 @@ function clampNumber(
     fallback
 ) {
 
+    const normalizedValue =
+        String(
+            value ?? ""
+        )
+            .trim();
+
+
+    if (!normalizedValue) {
+
+        return fallback;
+
+    }
+
+
     const number =
-        Number(value);
+        Number(
+            normalizedValue
+        );
+
 
     if (
-        !Number.isFinite(number)
+        !Number.isFinite(
+            number
+        )
     ) {
+
         return fallback;
+
     }
+
 
     return Math.min(
         max,
@@ -1806,7 +1939,6 @@ function clampNumber(
     );
 
 }
-
 
 function formatTime(
     date

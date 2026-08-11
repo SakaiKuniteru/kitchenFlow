@@ -331,6 +331,10 @@ window.MCS.smartSelect = {
                 return;
             }
 
+
+            closeOtherPopups();
+
+
             state.opened =
                 true;
 
@@ -346,9 +350,11 @@ window.MCS.smartSelect = {
                 "true"
             );
 
+
             const hasSelection =
                 isAllSelected() ||
                 getSelectedOptions().length > 0;
+
 
             if (
                 document.activeElement ===
@@ -365,6 +371,7 @@ window.MCS.smartSelect = {
                     "";
 
             }
+
 
             renderOptions(
                 elements.search.value
@@ -402,6 +409,81 @@ window.MCS.smartSelect = {
             renderOptions();
 
             renderSelection();
+
+        }
+
+        function closeOtherPopups() {
+
+            document
+                .querySelectorAll(
+                    "[data-smart-select]"
+                )
+                .forEach(
+                    item => {
+
+                        if (
+                            item === root
+                        ) {
+                            return;
+                        }
+
+
+                        const api =
+                            item.smartSelect;
+
+
+                        if (
+                            api &&
+                            typeof api.close ===
+                                "function"
+                        ) {
+
+                            api.close();
+
+                        }
+
+                    }
+                );
+
+
+            document
+                .querySelectorAll(
+                    "[data-date-picker]"
+                )
+                .forEach(
+                    item => {
+
+                        const dropdown =
+                            item.querySelector(
+                                "[data-date-dropdown]"
+                            );
+
+                        const toggle =
+                            item.querySelector(
+                                "[data-date-toggle]"
+                            );
+
+
+                        if (dropdown) {
+
+                            dropdown.hidden =
+                                true;
+
+                        }
+
+
+                        toggle?.setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
+
+
+                        item.classList.remove(
+                            "is-open"
+                        );
+
+                    }
+                );
 
         }
 
