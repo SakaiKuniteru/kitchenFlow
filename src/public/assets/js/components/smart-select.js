@@ -1333,7 +1333,6 @@ window.MCS.smartSelect = {
 
         };
 
-
         root.smartSelect =
             api;
 

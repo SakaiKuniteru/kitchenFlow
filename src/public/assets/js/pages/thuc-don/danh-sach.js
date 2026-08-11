@@ -1093,107 +1093,107 @@ document.addEventListener(
 
         }
 
-
         async function deleteRecord(
             id
         ) {
 
-            const confirmed =
-                await confirmDelete();
+            const executeDelete =
+                async () => {
+
+                    try {
+
+                        setLoading(
+                            true
+                        );
 
 
-            if (!confirmed) {
+                        const response =
+                            await window.MCS.api.request(
+                                `${API_BASE}/xoa/${id}`,
+                                {
+                                    method:
+                                        "DELETE"
+                                }
+                            );
+
+
+                        showSuccess(
+                            response?.message ||
+                            "Xóa thực đơn thành công."
+                        );
+
+
+                        await loadData();
+
+                    } catch (
+                        error
+                    ) {
+
+                        console.error(
+                            error
+                        );
+
+
+                        showError(
+                            error?.message ||
+                            "Xóa thực đơn thất bại."
+                        );
+
+                    } finally {
+
+                        setLoading(
+                            false
+                        );
+
+                    }
+
+                };
+
+
+            if (
+                window.MCS?.confirm
+                    ?.show
+            ) {
+
+                window.MCS.confirm.show({
+
+                    title:
+                        "Xác nhận xóa",
+
+                    message:
+                        "Bạn có chắc chắn muốn xóa thực đơn này không?",
+
+                    confirmLabel:
+                        "Xóa",
+
+                    type:
+                        "danger",
+
+                    onConfirm:
+                        executeDelete
+
+                });
 
                 return;
 
             }
 
 
-            try {
-
-                setLoading(
-                    true
+            const confirmed =
+                window.confirm(
+                    "Bạn có chắc chắn muốn xóa thực đơn này không?"
                 );
 
-
-                const response =
-                    await window.MCS.api.request(
-                        `${API_BASE}/xoa/${id}`,
-                        {
-                            method:
-                                "DELETE"
-                        }
-                    );
-
-
-                showSuccess(
-                    response?.message ||
-                    "Xóa thực đơn thành công."
-                );
-
-                await loadData();
-
-            } catch (
-                error
-            ) {
-
-                console.error(
-                    error
-                );
-
-
-                showError(
-                    error?.message ||
-                    "Xóa thực đơn thất bại."
-                );
-
-            } finally {
-
-                setLoading(
-                    false
-                );
-
-            }
-
-        }
-
-
-        async function confirmDelete() {
 
             if (
-                window.MCS?.modal
-                    ?.confirm
+                confirmed
             ) {
 
-                return await window.MCS
-                    .modal
-                    .confirm({
-
-                        title:
-                            "Xóa thực đơn",
-
-                        message:
-                            "Bạn có chắc chắn muốn xóa thực đơn này không?",
-
-                        confirmText:
-                            "Xóa",
-
-                        cancelText:
-                            "Hủy",
-
-                        type:
-                            "danger"
-
-                    });
+                await executeDelete();
 
             }
 
-            return window.confirm(
-                "Bạn có chắc chắn muốn xóa thực đơn này không?"
-            );
-
         }
-
 
         function showSuccess(
             message
