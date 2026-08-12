@@ -1,0 +1,1299 @@
+/* =========================================================
+   THUC DON FORM
+   Shared:
+   - chi tiet
+   - tao moi
+   - cap nhat
+   ========================================================= */
+
+.thuc-don-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+
+/* =========================================================
+   GENERAL
+   ========================================================= */
+
+.thuc-don-general {
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid #e7ecf4;
+    border-radius: 12px;
+}
+
+
+.thuc-don-general__header {
+    padding: 18px 20px;
+
+    border-bottom: 1px solid #edf1f6;
+}
+
+
+.thuc-don-general__title {
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+.thuc-don-general__description {
+    margin: 5px 0 0;
+
+    color: #8591a6;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+.thuc-don-general__body {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        );
+
+    gap: 24px 30px;
+
+    padding: 22px 20px;
+}
+
+
+.thuc-don-general__field {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    gap: 7px;
+}
+
+
+.thuc-don-general__label {
+    color: #8793a7;
+
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+.thuc-don-general__value {
+    overflow: hidden;
+
+    color: #263248;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.thuc-don-general__status {
+    display: inline-flex;
+
+    align-items: center;
+
+    width: fit-content;
+
+    min-height: 26px;
+
+    padding: 4px 10px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+.thuc-don-general__status.is-pending {
+    color: #b7791f;
+
+    background: #fff7df;
+}
+
+
+.thuc-don-general__status.is-approved {
+    color: #159447;
+
+    background: #edf9f1;
+}
+
+
+.thuc-don-general__status.is-cancelled {
+    color: #dc3d3d;
+
+    background: #fff0f0;
+}
+
+.thuc-don-form__content {
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid #e7ecf4;
+    border-radius: 12px;
+}
+
+
+.thuc-don-form__menu-layout {
+    display: grid;
+
+    grid-template-columns:
+        290px
+        270px
+        minmax(0, 1fr);
+
+    min-height: 660px;
+}
+
+
+/* =========================================================
+   LEFT COLUMNS
+   ========================================================= */
+
+.thuc-don-menu-column {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    background: #ffffff;
+
+    border-right: 1px solid #edf1f6;
+}
+
+
+.thuc-don-menu-column__header {
+    display: flex;
+
+    align-items: center;
+
+    min-height: 58px;
+
+    padding: 0 16px;
+
+    border-bottom: 1px solid #edf1f6;
+}
+
+
+.thuc-don-menu-column__title {
+    color: #273248;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   DAYS
+   ========================================================= */
+
+.thuc-don-days {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    padding: 12px 16px;
+}
+
+
+.thuc-don-days::before {
+    position: absolute;
+
+    top: 39px;
+    bottom: 39px;
+    left: 27px;
+
+    width: 1px;
+
+    background: #dce4ef;
+
+    content: "";
+}
+
+
+.thuc-don-day {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+
+    min-height: 64px;
+
+    background: #ffffff;
+
+    border: 1px solid #e8edf5;
+    border-radius: 8px;
+
+    transition:
+        border-color .15s ease,
+        background .15s ease,
+        box-shadow .15s ease;
+}
+
+
+.thuc-don-day:hover {
+    border-color: #ced9e9;
+
+    box-shadow:
+        0 3px 12px
+        rgba(31, 41, 55, .05);
+}
+
+
+.thuc-don-day__point {
+    position: absolute;
+    z-index: 3;
+
+    top: 50%;
+    left: -6px;
+
+    width: 10px;
+    height: 10px;
+
+    background: #ffffff;
+
+    border: 2px solid #aabbd2;
+    border-radius: 50%;
+
+    transform: translateY(-50%);
+}
+
+
+.thuc-don-day__main {
+    display: flex;
+    flex: 1;
+
+    align-items: center;
+    justify-content: space-between;
+
+    min-width: 0;
+
+    padding: 11px 13px 11px 25px;
+
+    color: inherit;
+
+    text-align: left;
+
+    background: transparent;
+
+    border: 0;
+
+    cursor: pointer;
+}
+
+
+.thuc-don-day__info {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    gap: 5px;
+}
+
+
+.thuc-don-day__info strong {
+    color: #263248;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+.thuc-don-day__info small {
+    color: #73829a;
+
+    font-size: 11px;
+}
+
+
+.thuc-don-day__right {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #7e8da3;
+
+    font-size: 10px;
+}
+
+
+.thuc-don-day__count {
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 24px;
+
+    padding: 3px 8px;
+
+    color: #2563eb;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    background: #eef5ff;
+
+    border-radius: 999px;
+}
+
+
+/* active */
+
+.thuc-don-day.is-active {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2464eb 0%,
+            #3287ed 100%
+        );
+
+    border-color: #2464eb;
+
+    box-shadow:
+        0 6px 16px
+        rgba(37, 99, 235, .16);
+}
+
+
+.thuc-don-day.is-active
+.thuc-don-day__point {
+    background: #ffffff;
+
+    border-color: #2563eb;
+}
+
+
+.thuc-don-day.is-active
+.thuc-don-day__info strong,
+
+.thuc-don-day.is-active
+.thuc-don-day__info small,
+
+.thuc-don-day.is-active
+.thuc-don-day__right {
+    color: #ffffff;
+}
+
+
+.thuc-don-day.is-active
+.thuc-don-day__count {
+    color: #ffffff;
+
+    background:
+        rgba(255, 255, 255, .18);
+}
+
+
+/* =========================================================
+   GROUPS
+   ========================================================= */
+
+.thuc-don-groups {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    padding: 12px;
+}
+
+
+.thuc-don-group {
+    display: flex;
+
+    min-height: 64px;
+
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid #e7ecf4;
+    border-radius: 8px;
+
+    transition:
+        border-color .15s ease,
+        background .15s ease,
+        box-shadow .15s ease;
+}
+
+
+.thuc-don-group:hover {
+    border-color: #ced9e9;
+
+    box-shadow:
+        0 3px 12px
+        rgba(31, 41, 55, .05);
+}
+
+
+.thuc-don-group__main {
+    display: flex;
+    flex: 1;
+
+    align-items: center;
+
+    min-width: 0;
+
+    gap: 12px;
+
+    padding: 10px 12px;
+
+    color: inherit;
+
+    text-align: left;
+
+    background: transparent;
+
+    border: 0;
+
+    cursor: pointer;
+}
+
+
+.thuc-don-group__icon {
+    display: inline-flex;
+
+    flex: 0 0 auto;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    border-radius: 8px;
+}
+
+
+.thuc-don-group__icon.is-green {
+    color: #43b929;
+
+    background: #effce8;
+}
+
+
+.thuc-don-group__icon.is-orange {
+    color: #ff7200;
+
+    background: #fff3e7;
+}
+
+
+.thuc-don-group__icon.is-blue {
+    color: #2563eb;
+
+    background: #edf5ff;
+}
+
+
+.thuc-don-group__icon.is-purple {
+    color: #7c4ce1;
+
+    background: #f3efff;
+}
+
+
+.thuc-don-group__info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    min-width: 0;
+
+    gap: 4px;
+}
+
+
+.thuc-don-group__info strong {
+    overflow: hidden;
+
+    color: #263248;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.thuc-don-group__info small {
+    color: #73829a;
+
+    font-size: 11px;
+}
+
+
+.thuc-don-group__arrow {
+    flex: 0 0 auto;
+
+    color: #8090a7;
+
+    font-size: 10px;
+}
+
+
+.thuc-don-group.is-active {
+    background: #f4f7fd;
+
+    border-color: #d1def1;
+}
+
+
+.thuc-don-group.is-active
+.thuc-don-group__info strong {
+    color: #245dcc;
+}
+
+
+.thuc-don-group.is-active
+.thuc-don-group__arrow {
+    color: #2563eb;
+}
+
+
+/* =========================================================
+   FOOD PANEL
+   ========================================================= */
+
+.thuc-don-food-panel {
+    min-width: 0;
+
+    padding: 0 18px 18px;
+
+    background: #ffffff;
+}
+
+
+.thuc-don-food-panel__toolbar {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 58px;
+
+    gap: 16px;
+
+    border-bottom: 1px solid #edf1f6;
+}
+
+
+.thuc-don-food-panel__back {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 7px 0;
+
+    color: #354158;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    background: transparent;
+
+    border: 0;
+
+    cursor: pointer;
+}
+
+
+.thuc-don-food-panel__back:hover {
+    color: #2563eb;
+}
+
+
+.thuc-don-food-panel__date {
+    color: #8090a7;
+
+    font-size: 12px;
+}
+
+
+.thuc-don-food-panel__date strong {
+    color: #334155;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   FOOD GROUP
+   ========================================================= */
+
+.thuc-don-food-group {
+    margin-top: 14px;
+
+    overflow: hidden;
+
+    border: 1px solid #e6ebf3;
+    border-radius: 10px;
+}
+
+
+.thuc-don-food-group__header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 58px;
+
+    padding: 0 16px;
+
+    border-bottom: 1px solid #edf1f6;
+}
+
+
+.thuc-don-food-group__title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.thuc-don-food-group__title > strong {
+    color: #263248;
+
+    font-size: 14px;
+}
+
+
+.thuc-don-food-group__icon {
+    color: #44be25;
+
+    font-size: 18px;
+}
+
+
+.thuc-don-food-group__count {
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 23px;
+
+    padding: 3px 8px;
+
+    color: #71829a;
+
+    font-size: 11px;
+
+    background: #f1f5fb;
+
+    border-radius: 999px;
+}
+
+
+.thuc-don-food-group__collapse {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    color: #607089;
+
+    background: transparent;
+
+    border: 0;
+    border-radius: 6px;
+
+    cursor: pointer;
+}
+
+
+.thuc-don-food-group__collapse:hover {
+    color: #2563eb;
+
+    background: #f4f7fc;
+}
+
+
+.thuc-don-food-group__body {
+    padding: 14px;
+}
+
+
+/* =========================================================
+   LARGE FOOD
+   ========================================================= */
+
+.thuc-don-food-card {
+    display: grid;
+
+    grid-template-columns:
+        minmax(300px, 38%)
+        minmax(0, 1fr);
+
+    gap: 22px;
+
+    padding: 10px;
+}
+
+
+.thuc-don-food-card__image-box {
+    overflow: hidden;
+
+    aspect-ratio: 16 / 10;
+
+    background: #f4f6f9;
+
+    border-radius: 10px;
+}
+
+
+.thuc-don-food-card__image {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+.thuc-don-food-card__content {
+    min-width: 0;
+
+    padding: 3px 0;
+}
+
+
+.thuc-don-food-card__header {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 16px;
+}
+
+
+.thuc-don-food-card__name {
+    margin: 0;
+
+    color: #1d2738;
+
+    font-size: 21px;
+    font-weight: 700;
+}
+
+
+.thuc-don-food-card__meta {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    margin-top: 8px;
+
+    color: #667a99;
+
+    font-size: 11px;
+}
+
+
+.thuc-don-food-card__status {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 4px 8px;
+
+    color: #36a852;
+
+    font-weight: 600;
+
+    background: #ebfaef;
+
+    border-radius: 999px;
+}
+
+
+/* properties */
+
+.thuc-don-food-card__properties {
+    display: grid;
+
+    grid-template-columns:
+        .8fr
+        .8fr
+        1.4fr;
+
+    margin-top: 25px;
+}
+
+
+.thuc-don-food-card__properties > div {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    padding: 0 18px;
+
+    border-right: 1px solid #edf1f6;
+}
+
+
+.thuc-don-food-card__properties > div:first-child {
+    padding-left: 0;
+}
+
+
+.thuc-don-food-card__properties > div:last-child {
+    border-right: 0;
+}
+
+
+.thuc-don-food-card__properties span,
+.thuc-don-food-card__description > span {
+    color: #8290a5;
+
+    font-size: 11px;
+}
+
+
+.thuc-don-food-card__properties strong {
+    color: #354158;
+
+    font-size: 12px;
+}
+
+
+/* description */
+
+.thuc-don-food-card__description {
+    margin-top: 22px;
+}
+
+
+.thuc-don-food-card__description p {
+    margin: 7px 0 0;
+
+    color: #354158;
+
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+
+/* extra */
+
+.thuc-don-food-card__extra {
+    margin-top: 20px;
+
+    padding: 13px 15px;
+
+    color: #47556c;
+
+    font-size: 12px;
+    line-height: 1.55;
+
+    background: #edf5ff;
+
+    border: 1px solid #deebff;
+    border-radius: 8px;
+}
+
+
+.thuc-don-food-card__extra-title {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #2563eb;
+}
+
+
+.thuc-don-food-card__extra p {
+    margin: 4px 0;
+}
+
+
+/* =========================================================
+   FOOD ROW
+   ========================================================= */
+
+.thuc-don-food-row {
+    display: grid;
+
+    grid-template-columns:
+        minmax(240px, 1fr)
+        110px
+        minmax(180px, 1fr);
+
+    align-items: center;
+
+    gap: 18px;
+
+    min-height: 70px;
+
+    margin-top: 10px;
+
+    padding: 8px 12px;
+
+    background: #ffffff;
+
+    border: 1px solid #e7ecf4;
+    border-radius: 8px;
+}
+
+
+.thuc-don-food-row__identity {
+    display: flex;
+
+    align-items: center;
+
+    min-width: 0;
+
+    gap: 10px;
+}
+
+
+.thuc-don-food-row__identity img {
+    flex: 0 0 auto;
+
+    width: 42px;
+    height: 42px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+}
+
+
+.thuc-don-food-row__identity > div {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    gap: 3px;
+}
+
+
+.thuc-don-food-row__identity strong {
+    overflow: hidden;
+
+    color: #263248;
+
+    font-size: 13px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.thuc-don-food-row__identity span {
+    color: #71829a;
+
+    font-size: 11px;
+}
+
+
+.thuc-don-food-row__quantity {
+    color: #597293;
+
+    font-size: 11px;
+}
+
+
+.thuc-don-food-row__portion {
+    color: #71829a;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1300px) {
+
+    .thuc-don-form__menu-layout {
+        grid-template-columns:
+            240px
+            230px
+            minmax(0, 1fr);
+    }
+
+
+    .thuc-don-food-card {
+        grid-template-columns:
+            280px
+            minmax(0, 1fr);
+    }
+
+}
+
+
+@media (max-width: 1050px) {
+
+    .thuc-don-general__body {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+
+    .thuc-don-form__menu-layout {
+        grid-template-columns:
+            220px
+            220px
+            minmax(500px, 1fr);
+
+        overflow-x: auto;
+    }
+
+
+    .thuc-don-food-card {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 760px) {
+
+    .thuc-don-general__body {
+        grid-template-columns: 1fr;
+    }
+
+
+    .thuc-don-form__menu-layout {
+        display: flex;
+        flex-direction: column;
+
+        overflow: visible;
+    }
+
+
+    .thuc-don-menu-column {
+        border-right: 0;
+        border-bottom: 1px solid #edf1f6;
+    }
+
+
+    .thuc-don-food-panel {
+        padding: 0 12px 12px;
+    }
+
+
+    .thuc-don-food-panel__toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+
+        justify-content: center;
+
+        padding: 10px 0;
+    }
+
+
+    .thuc-don-food-card {
+        padding: 4px;
+    }
+
+
+    .thuc-don-food-row {
+        grid-template-columns:
+            minmax(0, 1fr)
+            auto;
+    }
+
+
+    .thuc-don-food-row__portion {
+        display: none;
+    }
+
+}
+
+/* =========================================================
+   FORM MODE
+   ========================================================= */
+
+.thuc-don-form[data-form-mode="detail"]
+[data-edit-action] {
+    display: none !important;
+}
+
+
+/* =========================================================
+   COMMON ACTION
+   ========================================================= */
+
+.thuc-don-menu-column__header {
+    justify-content: space-between;
+}
+
+
+.thuc-don-menu-column__footer {
+    margin-top: auto;
+
+    padding: 12px 16px 16px;
+}
+
+
+.thuc-don-form-action,
+.thuc-don-menu-column__footer-add {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    min-height: 34px;
+
+    padding: 0 11px;
+
+    color: #2563eb;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    background: #f3f7ff;
+
+    border: 1px solid #dbe7ff;
+    border-radius: 7px;
+
+    cursor: pointer;
+}
+
+
+.thuc-don-menu-column__footer-add {
+    width: 100%;
+    min-height: 42px;
+
+    background: #ffffff;
+}
+
+
+.thuc-don-item-action {
+    display: inline-flex;
+
+    flex: 0 0 auto;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    color: #61728a;
+
+    background: #ffffff;
+
+    border: 1px solid #dde5ef;
+    border-radius: 7px;
+
+    cursor: pointer;
+}
+
+
+.thuc-don-item-action:hover {
+    color: #2563eb;
+
+    border-color: #bfd3fa;
+}
+
+
+.thuc-don-item-action.is-danger {
+    color: #ef4444;
+}
+
+
+.thuc-don-food-group__actions {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   FOOD ROW BUTTON
+   ========================================================= */
+
+.thuc-don-food-row {
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto;
+}
+
+
+.thuc-don-food-row__main {
+    display: grid;
+
+    grid-template-columns:
+        minmax(240px, 1fr)
+        110px
+        minmax(180px, 1fr);
+
+    align-items: center;
+
+    min-width: 0;
+
+    gap: 18px;
+
+    padding: 0;
+
+    color: inherit;
+
+    text-align: left;
+
+    background: transparent;
+
+    border: 0;
+
+    cursor: pointer;
+}
+
+
+.thuc-don-food-row__actions {
+    display: flex;
+
+    gap: 8px;
+}
+
+.thuc-don-general__status.is-active {
+    color: #15803d;
+    background: #ecfdf3;
+}

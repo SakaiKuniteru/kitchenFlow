@@ -1416,10 +1416,10 @@ const thucDonRoutes = [
             "get",
 
         path:
-            "/thuc-don/tao-moi-thuc-don",
+            "/thuc-don/them-moi-thuc-don",
 
         handler:
-            thucDonWebController.taoMoi
+            thucDonWebController.themMoi
     },
 
     {
@@ -1431,6 +1431,17 @@ const thucDonRoutes = [
 
         handler:
             thucDonWebController.chiTiet
+    },
+
+    {
+        method:
+            "get",
+
+        path:
+            "/thuc-don/cap-nhat-thong-tin-thuc-don/:id",
+
+        handler:
+            thucDonWebController.capNhat
     }
 
 ];

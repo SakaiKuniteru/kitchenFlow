@@ -157,15 +157,23 @@ const TRANG_THAI_THUC_DON = [
     },
     {
         value: 20,
-        label: "Đang áp dụng"
+        label: "Chờ duyệt"
     },
     {
         value: 30,
-        label: "Kết thúc"
+        label: "Đang áp dụng"
     },
     {
         value: 40,
+        label: "Chờ duyệt lại"
+    },
+    {
+        value: 50,
         label: "Hủy"
+    },
+    {
+        value: 60,
+        label: "Kết thúc"
     }
 ];
 
@@ -184,7 +192,7 @@ const LOAI_THUC_DON = [
     },
     {
         value: 40,
-        label: "Từ ngày đến ngày"
+        label: "Theo khoảng thời gian"
     }
 ];
 

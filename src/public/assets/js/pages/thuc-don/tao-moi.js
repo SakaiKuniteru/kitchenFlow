@@ -1,103 +1,114 @@
 "use strict";
 
-
 document.addEventListener(
     "DOMContentLoaded",
-    () => {
+    async () => {
 
-        const API_BASE =
-            "/api/mcs/v1/thuc-don";
+        const root =
+            document.querySelector(
+                "[data-thuc-don-create]"
+            );
+
+        if (!root) return;
 
 
         const form =
-            document.querySelector(
-                "[data-thuc-don-create-form]"
+            window.MCS.thucDon.form;
+
+        const api =
+            window.MCS.thucDon.api;
+
+        const confirm =
+            window.MCS.thucDon.confirm;
+
+        const U =
+            window.MCS.thucDon.utils;
+
+
+        await form.initialize({
+
+            mode:
+                "create",
+
+            data: {
+
+                loaiThucDon:
+                    20,
+
+                trangThai:
+                    10,
+
+                active:
+                    true,
+
+                dsNgay:
+                    []
+
+            }
+
+        });
+
+
+        root
+            .querySelector(
+                "[data-create-cancel]"
+            )
+            ?.addEventListener(
+                "click",
+                () =>
+                    window.history.back()
             );
 
 
-        form?.addEventListener(
-            "submit",
-            async event => {
-
-                event.preventDefault();
-
-
-                const payload =
-                    getPayload();
-
-
-                try {
-
-                    const response =
-                        await window.MCS.api.request(
-                            `${API_BASE}/them-moi`,
-                            {
-                                method:
-                                    "POST",
-
-                                body:
-                                    JSON.stringify(
-                                        payload
-                                    )
-                            }
-                        );
+        root
+            .querySelector(
+                "[data-create-save]"
+            )
+            ?.addEventListener(
+                "click",
+                () =>
+                    confirm.save(
+                        save
+                    )
+            );
 
 
-                    const id =
-                        response?.data?.id;
+        async function save() {
+
+            try {
+
+                const r =
+                    await api.create(
+                        form.getPayload()
+                    );
 
 
-                    if (!id) {
-
-                        throw new Error(
-                            "Không nhận được ID thực đơn vừa tạo."
-                        );
-
-                    }
+                U.toast(
+                    "success",
+                    r?.message ||
+                    "Tạo thực đơn thành công."
+                );
 
 
-                    if (
-                        window.MCS?.toast
-                            ?.success
-                    ) {
-
-                        window.MCS.toast.success(
-                            "Thêm mới thực đơn thành công."
-                        );
-
-                    }
+                const id =
+                    r?.data?.id;
 
 
-                    window.location.href =
-                        `/thuc-don/thong-tin-chi-tiet-thuc-don/${id}`;
-
-                } catch (
-                    error
-                ) {
-
-                    if (
-                        window.MCS?.toast
-                            ?.error
-                    ) {
-
-                        window.MCS.toast.error(
-                            error?.message ||
-                            "Thêm mới thực đơn thất bại."
-                        );
-
-                    }
-
-                }
+                window.location.href =
+                    id
+                        ? `/thuc-don/chi-tiet/${id}`
+                        : "/thuc-don/danh-sach";
 
             }
-        );
+            catch (error) {
 
+                U.toast(
+                    "error",
+                    error?.message ||
+                    "Tạo thực đơn thất bại."
+                );
 
-        function getPayload() {
-
-            return {
-
-            };
+            }
 
         }
 

@@ -17,7 +17,7 @@ class ThucDonWebController {
         try {
 
             return res.render(
-                "pages/thuc-don/danh-sach/index",
+                "pages/thuc-don/danh-sach",
                 {
 
                     layout:
@@ -133,7 +133,7 @@ class ThucDonWebController {
     }
 
 
-    async taoMoi(
+    async themMoi(
         req,
         res,
         next
@@ -142,7 +142,7 @@ class ThucDonWebController {
         try {
 
             return res.render(
-                "pages/thuc-don/tao-moi/index",
+                "pages/thuc-don/them-moi",
                 {
 
                     layout:
@@ -156,6 +156,9 @@ class ThucDonWebController {
 
                     activeMenu:
                         "thuc-don",
+
+                    formMode:
+                        "create",
 
                     formOptions: {
 
@@ -185,28 +188,7 @@ class ThucDonWebController {
                                 })
                             )
 
-                    },
-
-                    breadcrumbs: [
-                        {
-                            label:
-                                "Trang chủ",
-
-                            href:
-                                "/"
-                        },
-                        {
-                            label:
-                                "Danh sách thực đơn",
-
-                            href:
-                                "/thuc-don/danh-sach-thuc-don"
-                        },
-                        {
-                            label:
-                                "Thêm mới thực đơn"
-                        }
-                    ]
+                    }
 
                 }
             );
@@ -219,7 +201,6 @@ class ThucDonWebController {
 
     }
 
-
     async chiTiet(
         req,
         res,
@@ -229,7 +210,7 @@ class ThucDonWebController {
         try {
 
             return res.render(
-                "pages/thuc-don/chi-tiet/index",
+                "pages/thuc-don/chi-tiet",
                 {
 
                     layout:
@@ -244,6 +225,9 @@ class ThucDonWebController {
                     thucDonId:
                         req.params.id,
 
+                    formMode:
+                        "detail",
+
                     activeMenu:
                         "thuc-don",
 
@@ -275,28 +259,78 @@ class ThucDonWebController {
                                 })
                             )
 
-                    },
+                    }
 
-                    breadcrumbs: [
-                        {
-                            label:
-                                "Trang chủ",
+                }
+            );
 
-                            href:
-                                "/"
-                        },
-                        {
-                            label:
-                                "Danh sách thực đơn",
+        } catch (error) {
 
-                            href:
-                                "/thuc-don/danh-sach-thuc-don"
-                        },
-                        {
-                            label:
-                                "Chi tiết thực đơn"
-                        }
-                    ]
+            next(error);
+
+        }
+
+    }
+
+    async capNhat(
+        req,
+        res,
+        next
+    ) {
+
+        try {
+
+            return res.render(
+                "pages/thuc-don/cap-nhat",
+                {
+
+                    layout:
+                        "app",
+
+                    title:
+                        "Cập nhật thực đơn",
+
+                    pageTitle:
+                        "Cập nhật thực đơn",
+
+                    thucDonId:
+                        req.params.id,
+
+                    formMode:
+                        "update",
+
+                    activeMenu:
+                        "thuc-don",
+
+                    formOptions: {
+
+                        loaiThucDon:
+                            loaiThucDon.map(
+                                item => ({
+                                    value:
+                                        String(
+                                            item.value
+                                        ),
+
+                                    label:
+                                        item.label
+                                })
+                            ),
+
+                        trangThai:
+                            trangThaiThucDon.map(
+                                item => ({
+                                    value:
+                                        String(
+                                            item.value
+                                        ),
+
+                                    label:
+                                        item.label
+                                })
+                            )
+
+                    }
 
                 }
             );

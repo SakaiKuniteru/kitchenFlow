@@ -1,0 +1,274 @@
+<main
+    class="thuc-don-food-panel"
+    data-food-panel>
+
+    <div class="thuc-don-food-panel__toolbar">
+
+        <div class="thuc-don-food-panel__date">
+
+            <span>
+                Ngày áp dụng:
+            </span>
+
+            <strong data-food-applied-date>
+                -
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <section
+        class="thuc-don-food-group"
+        data-food-group>
+
+        <header class="thuc-don-food-group__header">
+
+            <div class="thuc-don-food-group__title">
+
+                <span class="thuc-don-food-group__icon">
+
+                    <i class="fa-solid fa-bowl-food"></i>
+
+                </span>
+
+
+                <strong data-food-group-name>
+                    Chưa chọn nhóm món
+                </strong>
+
+
+                <span
+                    class="thuc-don-food-group__count"
+                    data-food-group-count>
+                    0 món
+                </span>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="thuc-don-food-group__collapse"
+                data-food-group-collapse>
+
+                <i class="fa-solid fa-chevron-up"></i>
+
+            </button>
+
+        </header>
+
+
+        <div
+            class="thuc-don-food-group__body"
+            data-food-group-body>
+
+            <div data-food-list></div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<template id="template-thuc-don-food-detail">
+
+    <article
+        class="thuc-don-food-card"
+        data-food-card>
+
+        <div class="thuc-don-food-card__image-box">
+
+            <img
+                class="thuc-don-food-card__image"
+                src="/assets/images/placeholder-food.png"
+                alt=""
+                data-food-image>
+
+        </div>
+
+
+        <div class="thuc-don-food-card__content">
+
+            <div class="thuc-don-food-card__header">
+
+                <div>
+
+                    <h3
+                        class="thuc-don-food-card__name"
+                        data-food-name>
+                        -
+                    </h3>
+
+
+                    <div class="thuc-don-food-card__meta">
+
+                        <span data-food-code>
+                            -
+                        </span>
+
+
+                        <span
+                            class="thuc-don-food-card__status"
+                            data-food-status>
+                            -
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="thuc-don-food-card__properties">
+
+                <div>
+
+                    <span>
+                        Định lượng
+                    </span>
+
+                    <strong data-food-quantity>
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Đơn vị tính
+                    </span>
+
+                    <strong data-food-unit>
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Khẩu phần
+                    </span>
+
+                    <strong data-food-portion>
+                        -
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="thuc-don-food-card__description">
+
+                <span>
+                    Mô tả
+                </span>
+
+                <p data-food-description>
+                    -
+                </p>
+
+            </div>
+
+
+            <div class="thuc-don-food-card__extra">
+
+                <strong class="thuc-don-food-card__extra-title">
+                    Thông tin bổ sung
+                </strong>
+
+
+                <p>
+
+                    <b>
+                        Cách chế biến:
+                    </b>
+
+                    <span data-food-preparation>
+                        -
+                    </span>
+
+                </p>
+
+
+                <p>
+
+                    <b>
+                        Ghi chú:
+                    </b>
+
+                    <span data-food-note>
+                        -
+                    </span>
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </article>
+
+</template>
+
+
+<template id="template-thuc-don-food-row">
+
+    <article
+        class="thuc-don-food-row"
+        data-food-row>
+
+        <button
+            type="button"
+            class="thuc-don-food-row__main"
+            data-select-food>
+
+            <div class="thuc-don-food-row__identity">
+
+                <img
+                    src="/assets/images/placeholder-food.png"
+                    alt=""
+                    data-food-image>
+
+
+                <div>
+
+                    <strong data-food-name>
+                        -
+                    </strong>
+
+                    <span data-food-code>
+                        -
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <strong
+                class="thuc-don-food-row__quantity"
+                data-food-quantity>
+                -
+            </strong>
+
+
+            <span
+                class="thuc-don-food-row__portion"
+                data-food-portion>
+                -
+            </span>
+
+        </button>
+
+    </article>
+
+</template>
