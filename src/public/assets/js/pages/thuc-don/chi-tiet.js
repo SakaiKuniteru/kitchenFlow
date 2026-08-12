@@ -119,6 +119,22 @@ document.addEventListener(
     }
 );
 
+const TRANG_THAI_THUC_DON = Object.freeze({
+
+    TAO_MOI: 10,
+
+    CHO_DUYET: 20,
+
+    DANG_AP_DUNG: 30,
+
+    CHO_DUYET_LAI: 40,
+
+    HUY: 50,
+
+    KET_THUC: 60
+
+});
+
 function initDetailActions(
     root,
     form,
@@ -1089,101 +1105,112 @@ function renderActions(
     );
 
 
-    const trangThaiText =
-        getTrangThaiLabel(
-            root,
+    const trangThai =
+        Number(
             data.trangThai
         );
 
 
-    const status =
-        String(
-            trangThaiText ||
-            ""
-        )
-            .trim()
-            .toLowerCase();
-
-    if (
-        status === "hủy" ||
-        status === "đã hủy"
+    switch (
+        trangThai
     ) {
 
-        if (restoreButton) {
-            restoreButton.hidden = false;
-        }
+        case TRANG_THAI_THUC_DON.TAO_MOI:
+
+            showAction(
+                editButton
+            );
+
+            showAction(
+                approveButton
+            );
+
+            showAction(
+                cancelButton
+            );
+
+            break;
+
+        case TRANG_THAI_THUC_DON.CHO_DUYET:
+
+            showAction(
+                editButton
+            );
+
+            showAction(
+                approveButton
+            );
+
+            showAction(
+                cancelButton
+            );
+
+            break;
+
+        case TRANG_THAI_THUC_DON.DANG_AP_DUNG:
+
+            showAction(
+                editButton
+            );
+
+            showAction(
+                unapproveButton
+            );
+
+            showAction(
+                cancelButton
+            );
+
+            break;
+
+        case TRANG_THAI_THUC_DON.CHO_DUYET_LAI:
+
+            showAction(
+                editButton
+            );
+
+            showAction(
+                approveButton
+            );
+
+            showAction(
+                cancelButton
+            );
+
+            break;
+
+        case TRANG_THAI_THUC_DON.HUY:
+
+            showAction(
+                restoreButton
+            );
+
+            break;
+
+        case TRANG_THAI_THUC_DON.KET_THUC:
+
+            break;
 
 
-        return;
+        default:
+
+            console.warn(
+                "Trạng thái thực đơn không hợp lệ:",
+                data.trangThai
+            );
+
+            break;
 
     }
 
-    if (
-        status.includes(
-            "đang áp dụng"
-        ) ||
-        status === "đã duyệt"
-    ) {
+}
 
-        if (editButton) {
-            editButton.hidden = false;
-        }
+function showAction(
+    button
+) {
 
-
-        if (unapproveButton) {
-            unapproveButton.hidden = false;
-        }
-
-
-        if (cancelButton) {
-            cancelButton.hidden = false;
-        }
-
-
-        return;
-
-    }
-
-    if (
-        status.includes(
-            "hủy duyệt"
-        ) ||
-        status.includes(
-            "chờ duyệt lại"
-        )
-    ) {
-
-        if (editButton) {
-            editButton.hidden = false;
-        }
-
-
-        if (approveButton) {
-            approveButton.hidden = false;
-        }
-
-
-        if (cancelButton) {
-            cancelButton.hidden = false;
-        }
-
-
-        return;
-
-    }
-
-    if (editButton) {
-        editButton.hidden = false;
-    }
-
-
-    if (approveButton) {
-        approveButton.hidden = false;
-    }
-
-
-    if (cancelButton) {
-        cancelButton.hidden = false;
+    if (button) {
+        button.hidden = false;
     }
 
 }

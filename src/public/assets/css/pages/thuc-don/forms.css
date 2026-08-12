@@ -117,27 +117,6 @@
     font-weight: 600;
 }
 
-
-.thuc-don-general__status.is-pending {
-    color: #b7791f;
-
-    background: #fff7df;
-}
-
-
-.thuc-don-general__status.is-approved {
-    color: #159447;
-
-    background: #edf9f1;
-}
-
-
-.thuc-don-general__status.is-cancelled {
-    color: #dc3d3d;
-
-    background: #fff0f0;
-}
-
 .thuc-don-form__content {
     overflow: hidden;
 
@@ -158,11 +137,6 @@
 
     min-height: 660px;
 }
-
-
-/* =========================================================
-   LEFT COLUMNS
-   ========================================================= */
 
 .thuc-don-menu-column {
     display: flex;
@@ -196,10 +170,6 @@
     font-weight: 700;
 }
 
-
-/* =========================================================
-   DAYS
-   ========================================================= */
 
 .thuc-don-days {
     position: relative;
@@ -406,11 +376,6 @@
     background:
         rgba(255, 255, 255, .18);
 }
-
-
-/* =========================================================
-   GROUPS
-   ========================================================= */
 
 .thuc-don-groups {
     display: flex;
@@ -1293,7 +1258,50 @@
     gap: 8px;
 }
 
+.thuc-don-general__status.is-new {
+    color: #2563eb;
+
+    background: #eff6ff;
+}
+
+
+.thuc-don-general__status.is-pending {
+    color: #b7791f;
+
+    background: #fff7df;
+}
+
+
 .thuc-don-general__status.is-active {
     color: #15803d;
+
     background: #ecfdf3;
+}
+
+
+.thuc-don-general__status.is-unapproved {
+    color: #c2410c;
+
+    background: #fff7ed;
+}
+
+
+.thuc-don-general__status.is-cancelled {
+    color: #dc2626;
+
+    background: #fef2f2;
+}
+
+
+.thuc-don-general__status.is-ended {
+    color: #475569;
+
+    background: #f1f5f9;
+}
+
+
+.thuc-don-general__status.is-default {
+    color: #64748b;
+
+    background: #f1f5f9;
 }

@@ -5,6 +5,38 @@ window.ThucDonForm = (() => {
     const PLACEHOLDER_IMAGE =
         "/assets/images/placeholder-food.png";
 
+    const TRANG_THAI_THUC_DON = Object.freeze({
+
+        TAO_MOI: 10,
+
+        CHO_DUYET: 20,
+
+        DANG_AP_DUNG: 30,
+
+        CHO_DUYET_LAI: 40,
+
+        HUY: 50,
+
+        KET_THUC: 60
+
+    });
+
+    const TRANG_THAI_THUC_DON_LABEL = Object.freeze({
+
+        10: "Tạo mới",
+
+        20: "Chờ duyệt",
+
+        30: "Đang áp dụng",
+
+        40: "Chờ duyệt lại",
+
+        50: "Hủy",
+
+        60: "Kết thúc"
+
+    });
+
     function init(root) {
 
         if (!root) {
@@ -224,33 +256,34 @@ window.ThucDonForm = (() => {
                 "[data-general-trang-thai]"
             );
 
-
         if (status) {
 
-            const trangThaiText =
-                data.trangThaiText ||
-                data.tenTrangThai ||
-                getOptionLabel(
-                    root,
-                    "[data-trang-thai-option]",
+            const trangThai =
+                Number(
                     data.trangThai
                 );
 
+            const trangThaiText =
+                getTrangThaiText(
+                    trangThai
+                );
 
             status.textContent =
                 trangThaiText;
 
             status.classList.remove(
+                "is-new",
                 "is-pending",
                 "is-active",
-                "is-approved",
                 "is-unapproved",
-                "is-cancelled"
+                "is-cancelled",
+                "is-ended",
+                "is-default"
             );
 
             status.classList.add(
                 getStatusClass(
-                    trangThaiText
+                    trangThai
                 )
             );
 
@@ -1577,64 +1610,66 @@ window.ThucDonForm = (() => {
 
     }
 
-    function getStatusClass(
-        statusText
+    function getTrangThaiText(
+        trangThai
     ) {
 
-        const value =
-            String(
-                statusText ||
-                ""
-            )
-                .trim()
-                .toLowerCase();
+        return (
+            TRANG_THAI_THUC_DON_LABEL[
+                Number(
+                    trangThai
+                )
+            ] ||
+            "-"
+        );
 
+    }
 
-        if (
-            value.includes(
-                "hủy duyệt"
-            ) ||
-            value.includes(
-                "chờ duyệt lại"
-            )
-        ) {
+    function getStatusClass(
+        trangThai
+    ) {
 
-            return "is-unapproved";
-
-        }
-
-
-        if (
-            value === "hủy" ||
-            value === "đã hủy"
-        ) {
-
-            return "is-cancelled";
-
-        }
-
-
-        if (
-            value.includes(
-                "đang áp dụng"
+        switch (
+            Number(
+                trangThai
             )
         ) {
 
-            return "is-active";
+            case TRANG_THAI_THUC_DON.TAO_MOI:
+
+                return "is-new";
+
+
+            case TRANG_THAI_THUC_DON.CHO_DUYET:
+
+                return "is-pending";
+
+
+            case TRANG_THAI_THUC_DON.DANG_AP_DUNG:
+
+                return "is-active";
+
+
+            case TRANG_THAI_THUC_DON.CHO_DUYET_LAI:
+
+                return "is-unapproved";
+
+
+            case TRANG_THAI_THUC_DON.HUY:
+
+                return "is-cancelled";
+
+
+            case TRANG_THAI_THUC_DON.KET_THUC:
+
+                return "is-ended";
+
+
+            default:
+
+                return "is-default";
 
         }
-
-
-        if (
-            value === "đã duyệt"
-        ) {
-
-            return "is-approved";
-
-        }
-
-
-        return "is-pending";
 
     }
 

@@ -192,7 +192,7 @@ const LOAI_THUC_DON = [
     },
     {
         value: 40,
-        label: "Theo khoảng thời gian"
+        label: "Theo thời gian"
     }
 ];
 

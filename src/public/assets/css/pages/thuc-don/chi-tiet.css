@@ -193,10 +193,6 @@
 
 }
 
-/* =========================================================
-   LOADING
-   ========================================================= */
-
 .thuc-don-detail.is-loading
 .thuc-don-form {
     position: relative;
@@ -397,10 +393,4 @@
     background: #eff6ff;
 
     border-color: #d8e7ff;
-}
-
-.thuc-don-general__status.is-unapproved {
-    color: #c2410c;
-
-    background: #fff7ed;
 }
