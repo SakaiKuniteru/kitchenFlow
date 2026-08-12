@@ -1,21 +1,8 @@
-/* =========================================================
-   THUC DON FORM
-   Shared:
-   - chi tiet
-   - tao moi
-   - cap nhat
-   ========================================================= */
-
 .thuc-don-form {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
-
-
-/* =========================================================
-   GENERAL
-   ========================================================= */
 
 .thuc-don-general {
     overflow: hidden;
@@ -328,9 +315,6 @@
     border-radius: 999px;
 }
 
-
-/* active */
-
 .thuc-don-day.is-active {
     color: #ffffff;
 
@@ -540,11 +524,6 @@
     color: #2563eb;
 }
 
-
-/* =========================================================
-   FOOD PANEL
-   ========================================================= */
-
 .thuc-don-food-panel {
     min-width: 0;
 
@@ -607,11 +586,6 @@
 
     font-weight: 700;
 }
-
-
-/* =========================================================
-   FOOD GROUP
-   ========================================================= */
 
 .thuc-don-food-group {
     margin-top: 14px;
@@ -710,11 +684,6 @@
     padding: 14px;
 }
 
-
-/* =========================================================
-   LARGE FOOD
-   ========================================================= */
-
 .thuc-don-food-card {
     display: grid;
 
@@ -807,9 +776,6 @@
     border-radius: 999px;
 }
 
-
-/* properties */
-
 .thuc-don-food-card__properties {
     display: grid;
 
@@ -858,9 +824,6 @@
     font-size: 12px;
 }
 
-
-/* description */
-
 .thuc-don-food-card__description {
     margin-top: 22px;
 }
@@ -874,9 +837,6 @@
     font-size: 12px;
     line-height: 1.6;
 }
-
-
-/* extra */
 
 .thuc-don-food-card__extra {
     margin-top: 20px;
@@ -907,11 +867,6 @@
 .thuc-don-food-card__extra p {
     margin: 4px 0;
 }
-
-
-/* =========================================================
-   FOOD ROW
-   ========================================================= */
 
 .thuc-don-food-row {
     display: grid;
@@ -1002,11 +957,6 @@
 
     font-size: 11px;
 }
-
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
 
 @media (max-width: 1300px) {
 
@@ -1109,19 +1059,10 @@
 
 }
 
-/* =========================================================
-   FORM MODE
-   ========================================================= */
-
 .thuc-don-form[data-form-mode="detail"]
 [data-edit-action] {
     display: none !important;
 }
-
-
-/* =========================================================
-   COMMON ACTION
-   ========================================================= */
 
 .thuc-don-menu-column__header {
     justify-content: space-between;
@@ -1211,11 +1152,6 @@
 
     gap: 8px;
 }
-
-
-/* =========================================================
-   FOOD ROW BUTTON
-   ========================================================= */
 
 .thuc-don-food-row {
     grid-template-columns:
