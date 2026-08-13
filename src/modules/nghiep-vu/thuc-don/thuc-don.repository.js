@@ -2121,7 +2121,7 @@ async dongBoTrangThaiKetThuc(
             trang_thai_truoc_ket_thuc = trang_thai,
             trang_thai = 60,
             updated_at = NOW()
-        WHERE den_ngay < CURRENT_DATE
+        WHERE den_ngay < NOW()
         AND trang_thai IN (10, 20, 30)
         ${dieuKienId}
     `;
@@ -2143,7 +2143,7 @@ async khoiPhucTrangThaiKetThuc(id) {
             updated_at = NOW()
         WHERE id = $1
         AND trang_thai = 60
-        AND den_ngay >= CURRENT_DATE
+        AND den_ngay >= NOW()
         AND trang_thai_truoc_ket_thuc IN (10, 20, 30)
         RETURNING id
     `;

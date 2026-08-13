@@ -656,6 +656,26 @@ class ThucDonService {
 
     }
 
+    chuanHoaThoiGianNgay(
+        value,
+        laDenNgay = false
+    ) {
+
+        const ngay =
+            this.chuanHoaNgay(
+                value
+            );
+
+        if (!ngay) {
+            return null;
+        }
+
+        return laDenNgay
+            ? `${ngay} 23:59:39`
+            : `${ngay} 00:00:00`;
+
+    }
+
     validateLoaiThucDon(
         loaiThucDon
     ) {
@@ -767,10 +787,10 @@ class ThucDonService {
         }
 
         data.tuNgay =
-            tuNgay;
+            `${tuNgay} 00:00:00`;
 
         data.denNgay =
-            denNgay;
+            `${denNgay} 23:59:39`;
 
     }
 
@@ -1477,13 +1497,15 @@ class ThucDonService {
                 ),
 
             tuNgay:
-                this.chuanHoaNgay(
-                    data.tuNgay
+                this.chuanHoaThoiGianNgay(
+                    data.tuNgay,
+                    false
                 ),
 
             denNgay:
-                this.chuanHoaNgay(
-                    data.denNgay
+                this.chuanHoaThoiGianNgay(
+                    data.denNgay,
+                    true
                 ),
 
             coSoId:
@@ -1761,15 +1783,15 @@ class ThucDonService {
                 ),
 
             tuNgay:
-                this.chuanHoaNgay(
-                    duLieuDaChuanHoa
-                        .tuNgay
+                this.chuanHoaThoiGianNgay(
+                    duLieuDaChuanHoa.tuNgay,
+                    false
                 ),
 
             denNgay:
-                this.chuanHoaNgay(
-                    duLieuDaChuanHoa
-                        .denNgay
+                this.chuanHoaThoiGianNgay(
+                    duLieuDaChuanHoa.denNgay,
+                    true
                 ),
 
             moTa:

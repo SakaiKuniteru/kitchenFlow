@@ -121,7 +121,7 @@ document.addEventListener(
 
 const TRANG_THAI_THUC_DON = Object.freeze({
 
-    TAO_MOI: 10,
+    TAO_MOI_CHO_DUYET: 10,
 
     CHO_DUYET: 20,
 
@@ -129,9 +129,9 @@ const TRANG_THAI_THUC_DON = Object.freeze({
 
     CHO_DUYET_LAI: 40,
 
-    HUY: 50,
+    DA_HUY: 50,
 
-    KET_THUC: 60
+    DA_KET_THUC: 60
 
 });
 
@@ -1060,24 +1060,20 @@ function renderActions(
             "[data-detail-edit]"
         );
 
-
     const approveButton =
         root.querySelector(
             "[data-detail-approve]"
         );
-
 
     const unapproveButton =
         root.querySelector(
             "[data-detail-unapprove]"
         );
 
-
     const cancelButton =
         root.querySelector(
             "[data-detail-cancel]"
         );
-
 
     const restoreButton =
         root.querySelector(
@@ -1111,11 +1107,9 @@ function renderActions(
         );
 
 
-    switch (
-        trangThai
-    ) {
+    switch (trangThai) {
 
-        case TRANG_THAI_THUC_DON.TAO_MOI:
+        case TRANG_THAI_THUC_DON.TAO_MOI_CHO_DUYET:
 
             showAction(
                 editButton
@@ -1130,6 +1124,7 @@ function renderActions(
             );
 
             break;
+
 
         case TRANG_THAI_THUC_DON.CHO_DUYET:
 
@@ -1147,21 +1142,15 @@ function renderActions(
 
             break;
 
-        case TRANG_THAI_THUC_DON.DANG_AP_DUNG:
 
-            showAction(
-                editButton
-            );
+        case TRANG_THAI_THUC_DON.DANG_AP_DUNG:
 
             showAction(
                 unapproveButton
             );
 
-            showAction(
-                cancelButton
-            );
-
             break;
+
 
         case TRANG_THAI_THUC_DON.CHO_DUYET_LAI:
 
@@ -1179,7 +1168,8 @@ function renderActions(
 
             break;
 
-        case TRANG_THAI_THUC_DON.HUY:
+
+        case TRANG_THAI_THUC_DON.DA_HUY:
 
             showAction(
                 restoreButton
@@ -1187,7 +1177,12 @@ function renderActions(
 
             break;
 
-        case TRANG_THAI_THUC_DON.KET_THUC:
+
+        case TRANG_THAI_THUC_DON.DA_KET_THUC:
+
+            showAction(
+                editButton
+            );
 
             break;
 
