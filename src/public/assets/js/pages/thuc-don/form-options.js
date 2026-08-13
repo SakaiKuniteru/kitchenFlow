@@ -260,42 +260,19 @@ window.ThucDonFormOptions = (() => {
             return;
         }
 
-
-        const wrapper =
-            select.closest(
-                "[data-smart-select]"
-            );
-
-
-        const placeholder =
-            wrapper?.dataset.selectPlaceholder ||
-            "Chọn dữ liệu...";
-
-
-        select.innerHTML =
-            "";
-
-
-        const defaultOption =
-            document.createElement(
-                "option"
-            );
-
-
-        defaultOption.value =
-            "";
-
-        defaultOption.textContent =
-            placeholder;
-
-
-        select.appendChild(
-            defaultOption
-        );
+        select.innerHTML = "";
 
 
         data.forEach(
             item => {
+
+                if (
+                    item.active ===
+                    false
+                ) {
+                    return;
+                }
+
 
                 const option =
                     document.createElement(
@@ -317,6 +294,25 @@ window.ThucDonFormOptions = (() => {
                     "-";
 
 
+                if (
+                    options.selected !==
+                    null &&
+                    options.selected !==
+                    undefined &&
+                    String(
+                        option.value
+                    ) ===
+                    String(
+                        options.selected
+                    )
+                ) {
+
+                    option.selected =
+                        true;
+
+                }
+
+
                 select.appendChild(
                     option
                 );
@@ -324,23 +320,17 @@ window.ThucDonFormOptions = (() => {
             }
         );
 
-
         if (
-            options.selected !==
-            undefined &&
-            options.selected !==
-            null
+            options.selected ===
+            null ||
+            options.selected ===
+            undefined ||
+            options.selected ===
+            ""
         ) {
 
-            select.value =
-                String(
-                    options.selected
-                );
-
-        } else {
-
-            select.value =
-                "";
+            select.selectedIndex =
+                -1;
 
         }
 
@@ -380,15 +370,21 @@ window.ThucDonFormOptions = (() => {
             );
 
         const selectedOption =
-            select.options[
-                select.selectedIndex
-            ];
+            select.selectedIndex >= 0
+                ? select.options[
+                    select.selectedIndex
+                ]
+                : null;
 
         if (selection) {
 
             const hasValue =
                 selectedOption &&
-                selectedOption.value !== "";
+                String(
+                    selectedOption.value ??
+                    ""
+                ).trim() !== "";
+
 
             selection.innerHTML =
                 hasValue
@@ -422,7 +418,10 @@ window.ThucDonFormOptions = (() => {
                 select.options
             ).filter(
                 option =>
-                    option.value !== ""
+                    String(
+                        option.value ??
+                        ""
+                    ).trim() !== ""
             );
 
         options.forEach(

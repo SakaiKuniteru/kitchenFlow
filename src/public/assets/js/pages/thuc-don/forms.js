@@ -69,7 +69,9 @@ window.ThucDonForm = (() => {
 
         return {
 
-            setData(data) {
+            setData(
+                data
+            ) {
 
                 state.data =
                     data;
@@ -88,13 +90,153 @@ window.ThucDonForm = (() => {
             },
 
 
+            getData() {
+
+                syncGeneralForm(
+                    root,
+                    state
+                );
+
+
+                return state.data;
+
+            },
+
+
             getState() {
 
                 return state;
 
+            },
+
+
+            render() {
+
+                renderAll(
+                    root,
+                    state
+                );
+
             }
 
         };
+
+    }
+
+    function syncGeneralForm(
+        root,
+        state
+    ) {
+
+        if (!state.data) {
+            return;
+        }
+
+
+        state.data.maThucDon =
+            getFieldValue(
+                root,
+                "maThucDon"
+            );
+
+
+        state.data.tenThucDon =
+            getFieldValue(
+                root,
+                "tenThucDon"
+            );
+
+
+        state.data.loaiThucDon =
+            getNumberFieldValue(
+                root,
+                "loaiThucDon"
+            );
+
+
+        state.data.coSoId =
+            getNumberFieldValue(
+                root,
+                "coSoId"
+            );
+
+
+        state.data.nhaAnId =
+            getNumberFieldValue(
+                root,
+                "nhaAnId"
+            );
+
+
+        state.data.caAnId =
+            getNumberFieldValue(
+                root,
+                "caAnId"
+            );
+
+
+        state.data.tuNgay =
+            getFieldValue(
+                root,
+                "tuNgay"
+            );
+
+
+        state.data.denNgay =
+            getFieldValue(
+                root,
+                "denNgay"
+            );
+
+
+        state.data.moTa =
+            getFieldValue(
+                root,
+                "moTa"
+            );
+
+    }
+
+    function getFieldValue(
+        root,
+        name
+    ) {
+
+        return (
+            root.querySelector(
+                `[name="${name}"]`
+            )
+                ?.value
+                ?.trim() ||
+            ""
+        );
+
+    }
+
+    function getNumberFieldValue(
+        root,
+        name
+    ) {
+
+        const value =
+            root.querySelector(
+                `[name="${name}"]`
+            )
+                ?.value;
+
+
+        if (
+            value === "" ||
+            value === null ||
+            value === undefined
+        ) {
+            return null;
+        }
+
+
+        return Number(
+            value
+        );
 
     }
 

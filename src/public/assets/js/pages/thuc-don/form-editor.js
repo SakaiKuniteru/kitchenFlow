@@ -4,17 +4,23 @@ window.ThucDonEditor = (() => {
 
     const TRANG_THAI = Object.freeze({
 
-        TAO_MOI_CHO_DUYET: 10,
+        TAO_MOI_CHO_DUYET:
+            10,
 
-        CHO_DUYET: 20,
+        CHO_DUYET:
+            20,
 
-        DANG_AP_DUNG: 30,
+        DANG_AP_DUNG:
+            30,
 
-        CHO_DUYET_LAI: 40,
+        CHO_DUYET_LAI:
+            40,
 
-        DA_HUY: 50,
+        DA_HUY:
+            50,
 
-        DA_KET_THUC: 60
+        DA_KET_THUC:
+            60
 
     });
 
@@ -100,6 +106,7 @@ window.ThucDonEditor = (() => {
 
         bindActions(
             root,
+            formRoot,
             form,
             state,
             options
@@ -108,7 +115,9 @@ window.ThucDonEditor = (() => {
 
         return {
 
-            async setData(data) {
+            async setData(
+                data
+            ) {
 
                 const normalized =
                     cloneData(
@@ -147,20 +156,58 @@ window.ThucDonEditor = (() => {
             },
 
 
+            async setWorkingData(
+                data
+            ) {
+
+                const normalized =
+                    cloneData(
+                        data
+                    );
+
+
+                state.currentData =
+                    cloneData(
+                        normalized
+                    );
+
+
+                form.setData(
+                    normalized
+                );
+
+
+                renderEditorGeneral(
+                    formRoot,
+                    normalized
+                );
+
+
+                renderActions(
+                    root,
+                    normalized
+                );
+
+            },
+
+
             getData() {
 
-                if (
+                const current =
                     typeof form.getData ===
                     "function"
-                ) {
+                        ? form.getData()
+                        : state.currentData;
 
-                    return form.getData();
 
-                }
+                state.currentData =
+                    cloneData(
+                        current
+                    );
 
 
                 return cloneData(
-                    state.currentData
+                    current
                 );
 
             },
@@ -182,15 +229,33 @@ window.ThucDonEditor = (() => {
                     state
                 );
 
+            },
+
+
+            replaceInitialData(
+                data
+            ) {
+
+                state.initialData =
+                    cloneData(
+                        data
+                    );
+
+
+                state.currentData =
+                    cloneData(
+                        data
+                    );
+
             }
 
         };
 
     }
 
-
     function bindActions(
         root,
+        formRoot,
         form,
         state,
         options
@@ -219,76 +284,70 @@ window.ThucDonEditor = (() => {
                 "[data-form-save-approve]"
             );
 
-
         backButton?.addEventListener(
             "click",
             () => {
 
-                window.history.back();
+                showConfirm({
+
+                    title:
+                        "Quay lại",
+
+                    message:
+                        "Các thay đổi chưa lưu sẽ bị mất. Bạn có muốn quay lại trang trước?",
+
+                    confirmLabel:
+                        "Quay lại",
+
+                    type:
+                        "warning",
+
+                    onConfirm:
+                        () => {
+
+                            window.history.back();
+
+                        }
+
+                });
 
             }
         );
-
 
         cancelButton?.addEventListener(
             "click",
             () => {
 
-                const execute =
-                    () => {
+                showConfirm({
 
-                        const formRoot =
-                            root.querySelector(
-                                "[data-thuc-don-form]"
+                    title:
+                        "Hủy thay đổi",
+
+                    message:
+                        "Toàn bộ dữ liệu vừa thay đổi sẽ được khôi phục về trạng thái ban đầu.",
+
+                    confirmLabel:
+                        "Hủy thay đổi",
+
+                    type:
+                        "danger",
+
+                    onConfirm:
+                        () => {
+
+                            resetForm(
+                                root,
+                                formRoot,
+                                form,
+                                state
                             );
 
+                        }
 
-                        resetForm(
-                            root,
-                            formRoot,
-                            form,
-                            state
-                        );
-
-                    };
-
-
-                if (
-                    window.MCS
-                        ?.confirm
-                        ?.show
-                ) {
-
-                    window.MCS.confirm.show({
-
-                        title:
-                            "Hủy thay đổi",
-
-                        message:
-                            "Toàn bộ dữ liệu vừa thay đổi sẽ được khôi phục.",
-
-                        confirmLabel:
-                            "Hủy thay đổi",
-
-                        type:
-                            "warning",
-
-                        onConfirm:
-                            execute
-
-                    });
-
-
-                    return;
-
-                }
-
-
-                execute();
+                });
 
             }
         );
-
 
         saveButton?.addEventListener(
             "click",
@@ -311,7 +370,6 @@ window.ThucDonEditor = (() => {
 
             }
         );
-
 
         saveApproveButton?.addEventListener(
             "click",
@@ -337,24 +395,58 @@ window.ThucDonEditor = (() => {
 
     }
 
+    function showConfirm(
+        config
+    ) {
+
+        if (
+            window.MCS
+                ?.confirm
+                ?.show
+        ) {
+
+            window.MCS.confirm.show(
+                config
+            );
+
+            return;
+
+        }
+
+
+        if (
+            window.confirm(
+                config.message
+            )
+        ) {
+
+            config.onConfirm?.();
+
+        }
+
+    }
+
 
     function buildPayload(
         form,
         state
     ) {
 
-        if (
+        const data =
             typeof form.getData ===
             "function"
-        ) {
+                ? form.getData()
+                : state.currentData;
 
-            return form.getData();
 
-        }
+        state.currentData =
+            cloneData(
+                data
+            );
 
 
         return cloneData(
-            state.currentData
+            data
         );
 
     }
@@ -396,10 +488,15 @@ window.ThucDonEditor = (() => {
         );
 
 
+        clearGeneralError(
+            root
+        );
+
+
         window.MCS
             ?.toast
             ?.success(
-                "Đã hủy các thay đổi."
+                "Đã khôi phục dữ liệu ban đầu."
             );
 
     }
@@ -525,61 +622,15 @@ window.ThucDonEditor = (() => {
                 );
 
 
-        const wrapper =
-            select.closest(
-                "[data-smart-select]"
-            );
-
-
-        if (!wrapper) {
-            return;
-        }
-
-
-        const selectedOption =
-            select.options[
-                select.selectedIndex
-            ];
-
-
-        const selection =
-            wrapper.querySelector(
-                "[data-smart-select-selection]"
-            );
-
-
-        if (!selection) {
-            return;
-        }
-
-
-        if (
-            selectedOption &&
-            selectedOption.value !== ""
-        ) {
-
-            selection.innerHTML = `
-                <span>
-                    ${escapeHtml(
-                        selectedOption
-                            .textContent
-                            .trim()
-                    )}
-                </span>
-            `;
-
-        } else {
-
-            selection.innerHTML = `
-                <span class="smart-select__placeholder">
-                    ${escapeHtml(
-                        wrapper.dataset.selectPlaceholder ||
-                        "Chọn dữ liệu..."
-                    )}
-                </span>
-            `;
-
-        }
+        select.dispatchEvent(
+            new Event(
+                "change",
+                {
+                    bubbles:
+                        true
+                }
+            )
+        );
 
     }
 
@@ -647,60 +698,40 @@ window.ThucDonEditor = (() => {
         );
 
 
-        switch (status) {
+        const classMap = {
 
-            case 10:
+            10:
+                "is-new",
 
-                element.classList.add(
-                    "is-new"
-                );
+            20:
+                "is-pending",
 
-                break;
+            30:
+                "is-active",
 
+            40:
+                "is-review",
 
-            case 20:
+            50:
+                "is-cancelled",
 
-                element.classList.add(
-                    "is-pending"
-                );
+            60:
+                "is-ended"
 
-                break;
-
-
-            case 30:
-
-                element.classList.add(
-                    "is-active"
-                );
-
-                break;
+        };
 
 
-            case 40:
+        if (
+            classMap[
+                status
+            ]
+        ) {
 
-                element.classList.add(
-                    "is-review"
-                );
-
-                break;
-
-
-            case 50:
-
-                element.classList.add(
-                    "is-cancelled"
-                );
-
-                break;
-
-
-            case 60:
-
-                element.classList.add(
-                    "is-ended"
-                );
-
-                break;
+            element.classList.add(
+                classMap[
+                    status
+                ]
+            );
 
         }
 
@@ -742,6 +773,34 @@ window.ThucDonEditor = (() => {
     }
 
 
+    function clearGeneralError(
+        root
+    ) {
+
+        const error =
+            root.querySelector(
+                "[data-general-error]"
+            );
+
+
+        if (error) {
+            error.hidden = true;
+        }
+
+
+        root.querySelectorAll(
+            ".form-field.has-error"
+        )
+            .forEach(
+                element =>
+                    element.classList.remove(
+                        "has-error"
+                    )
+            );
+
+    }
+
+
     function cloneData(
         data
     ) {
@@ -759,38 +818,6 @@ window.ThucDonEditor = (() => {
                 data
             )
         );
-
-    }
-
-
-    function escapeHtml(
-        value
-    ) {
-
-        return String(
-            value ??
-            ""
-        )
-            .replaceAll(
-                "&",
-                "&amp;"
-            )
-            .replaceAll(
-                "<",
-                "&lt;"
-            )
-            .replaceAll(
-                ">",
-                "&gt;"
-            )
-            .replaceAll(
-                '"',
-                "&quot;"
-            )
-            .replaceAll(
-                "'",
-                "&#039;"
-            );
 
     }
 
