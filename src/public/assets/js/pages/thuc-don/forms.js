@@ -3,7 +3,7 @@
 window.ThucDonForm = (() => {
 
     const PLACEHOLDER_IMAGE =
-        "/assets/images/placeholder-food.png";
+        "/uploads/danh-muc/mon-an/mon-an.png";
 
     const TRANG_THAI_THUC_DON = Object.freeze({
 
@@ -95,6 +95,53 @@ window.ThucDonForm = (() => {
             }
 
         };
+
+    }
+
+    function normalizeImageUrl(
+        value
+    ) {
+
+        if (!value) {
+            return PLACEHOLDER_IMAGE;
+        }
+
+
+        const url =
+            String(
+                value
+            ).trim();
+
+
+        if (!url) {
+            return PLACEHOLDER_IMAGE;
+        }
+
+
+        if (
+            url.startsWith(
+                "http://"
+            ) ||
+            url.startsWith(
+                "https://"
+            ) ||
+            url.startsWith(
+                "blob:"
+            ) ||
+            url.startsWith(
+                "data:"
+            ) ||
+            url.startsWith(
+                "/"
+            )
+        ) {
+
+            return url;
+
+        }
+
+
+        return `/${url}`;
 
     }
 
@@ -790,10 +837,11 @@ window.ThucDonForm = (() => {
         if (image) {
 
             image.src =
-                food.hinhAnh ||
-                food.anh ||
-                food.duongDanAnh ||
-                PLACEHOLDER_IMAGE;
+                normalizeImageUrl(
+                    food.hinhAnh ||
+                    food.anh ||
+                    food.duongDanAnh
+                );
 
 
             image.alt =

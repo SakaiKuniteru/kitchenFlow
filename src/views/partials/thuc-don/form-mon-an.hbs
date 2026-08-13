@@ -1,0 +1,502 @@
+<div
+    class="thuc-don-editor-source"
+    data-food-source
+    hidden>
+
+    {{> forms/select
+        id="monAnId"
+        name="monAnId"
+        label="Món ăn"
+        placeholder="Chọn món ăn"
+        options=null
+    }}
+
+</div>
+
+
+<main
+    class="thuc-don-food-panel"
+    data-food-panel>
+
+    <div class="thuc-don-food-panel__toolbar">
+
+        <div class="thuc-don-food-panel__date">
+
+            <span>
+                Ngày áp dụng:
+            </span>
+
+            <strong data-food-applied-date>
+                -
+            </strong>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="thuc-don-form-action"
+            data-add-food>
+
+            <i class="fa-solid fa-plus"></i>
+
+            <span>
+                Thêm món
+            </span>
+
+        </button>
+
+    </div>
+
+
+    <section
+        class="thuc-don-food-group"
+        data-food-group>
+
+        <header class="thuc-don-food-group__header">
+
+            <div class="thuc-don-food-group__title">
+
+                <span class="thuc-don-food-group__icon">
+
+                    <i class="fa-solid fa-bowl-food"></i>
+
+                </span>
+
+
+                <strong data-food-group-name>
+                    Chưa chọn nhóm món
+                </strong>
+
+
+                <span
+                    class="thuc-don-food-group__count"
+                    data-food-group-count>
+                    0 món
+                </span>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="thuc-don-food-group__collapse"
+                data-food-group-collapse>
+
+                <i class="fa-solid fa-chevron-up"></i>
+
+            </button>
+
+        </header>
+
+
+        <div
+            class="thuc-don-food-group__body"
+            data-food-group-body>
+
+            <div data-food-list></div>
+
+            <div class="thuc-don-editor-bottom-action">
+
+                <button
+                    type="button"
+                    class="thuc-don-editor-bottom-add"
+                    data-add-food
+                    title="Thêm món ăn">
+
+                    <i class="fa-solid fa-plus"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<template id="template-thuc-don-food-detail">
+
+    <article
+        class="thuc-don-food-card"
+        data-food-card>
+
+        <div
+            class="thuc-don-food-card__image-box"
+            data-food-image-editor>
+
+            <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                data-food-image-input
+                hidden>
+
+            <div
+                class="thuc-don-food-image-stage"
+                data-food-image-stage>
+
+                <img
+                    class="thuc-don-food-card__image"
+                    src="/uploads/danh-muc/mon-an/mon-an.png"
+                    alt="Ảnh món ăn"
+                    draggable="false"
+                    data-food-image
+                    data-food-image-preview>
+
+                <div
+                    class="thuc-don-food-image-overlay"
+                    data-food-image-trigger>
+
+                    <span class="thuc-don-food-image-overlay__icon">
+                        <i class="fa-regular fa-image"></i>
+                    </span>
+
+                    <span class="thuc-don-food-image-overlay__text">
+                        Chọn ảnh
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="thuc-don-food-image-tools"
+                data-food-image-tools>
+
+                <button
+                    type="button"
+                    data-food-image-zoom-out
+                    title="Thu nhỏ">
+
+                    <i class="fa-solid fa-minus"></i>
+
+                </button>
+
+                <button
+                    type="button"
+                    data-food-image-reset
+                    title="Căn lại ảnh">
+
+                    <i class="fa-solid fa-arrows-to-dot"></i>
+
+                </button>
+
+                <button
+                    type="button"
+                    data-food-image-zoom-in
+                    title="Phóng to">
+
+                    <i class="fa-solid fa-plus"></i>
+
+                </button>
+
+                <button
+                    type="button"
+                    data-food-image-change
+                    title="Đổi ảnh">
+
+                    <i class="fa-regular fa-image"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="thuc-don-food-card__content">
+
+            <div class="thuc-don-food-card__header">
+
+                <div class="thuc-don-food-card__identity">
+
+                    <h3
+                        class="thuc-don-food-card__name"
+                        data-food-name>
+                        -
+                    </h3>
+
+
+                    <div class="thuc-don-food-card__meta">
+
+                        <span
+                            class="thuc-don-food-card__code"
+                            data-food-code>
+                            -
+                        </span>
+
+
+                        <span
+                            class="thuc-don-food-card__status"
+                            data-food-status>
+                            -
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="thuc-don-food-card__actions">
+
+                    <button
+                        type="button"
+                        class="thuc-don-item-action"
+                        data-save-food
+                        title="Lưu tạm món ăn"
+                        aria-label="Lưu tạm món ăn">
+
+                        <i class="fa-regular fa-floppy-disk"></i>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="thuc-don-item-action"
+                        data-edit-food
+                        title="Chỉnh sửa món ăn"
+                        aria-label="Chỉnh sửa món ăn">
+
+                        <i class="fa-regular fa-pen-to-square"></i>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="
+                            thuc-don-item-action
+                            is-danger
+                        "
+                        data-delete-food
+                        title="Xóa món ăn"
+                        aria-label="Xóa món ăn">
+
+                        <i class="fa-regular fa-trash-can"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="thuc-don-food-card__properties">
+
+                <div class="thuc-don-food-card__property">
+
+                    <span>
+                        Định lượng
+                    </span>
+
+                    <strong data-food-quantity>
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="thuc-don-food-card__property">
+
+                    <span>
+                        Đơn vị tính
+                    </span>
+
+                    <strong data-food-unit>
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="thuc-don-food-card__property">
+
+                    <span>
+                        Khẩu phần
+                    </span>
+
+                    <strong data-food-portion>
+                        -
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="thuc-don-food-card__description">
+
+                <span class="thuc-don-food-card__label">
+                    Mô tả
+                </span>
+
+                <p data-food-description>
+                    -
+                </p>
+
+            </div>
+
+
+            <div class="thuc-don-food-card__extra">
+
+                <strong class="thuc-don-food-card__extra-title">
+                    Thông tin bổ sung
+                </strong>
+
+
+                <div class="thuc-don-food-card__extra-row">
+
+                    <b>
+                        Cách chế biến:
+                    </b>
+
+                    <span data-food-preparation>
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="thuc-don-food-card__extra-row">
+
+                    <b>
+                        Ghi chú:
+                    </b>
+
+                    <span data-food-note>
+                        -
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </article>
+
+</template>
+
+<template id="template-thuc-don-food-row">
+
+    <article
+        class="thuc-don-food-row"
+        data-food-row>
+
+        <button
+            type="button"
+            class="thuc-don-food-row__main"
+            data-select-food>
+
+            <div class="thuc-don-food-row__identity">
+
+                <div class="thuc-don-food-row__image-box">
+
+                    <img
+                        class="thuc-don-food-row__image"
+                        src="/uploads/danh-muc/mon-an/mon-an.png"
+                        alt="Ảnh món ăn"
+                        data-food-image>
+
+                </div>
+
+
+                <div class="thuc-don-food-row__info">
+
+                    <strong
+                        class="thuc-don-food-row__name"
+                        data-food-name>
+                        -
+                    </strong>
+
+
+                    <span
+                        class="thuc-don-food-row__code"
+                        data-food-code>
+                        -
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="thuc-don-food-row__data">
+
+                <div class="thuc-don-food-row__data-item">
+
+                    <span>
+                        Định lượng
+                    </span>
+
+                    <strong data-food-quantity>
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="thuc-don-food-row__data-item">
+
+                    <span>
+                        Khẩu phần
+                    </span>
+
+                    <strong data-food-portion>
+                        -
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </button>
+
+
+        <div class="thuc-don-food-row__actions">
+
+            <button
+                type="button"
+                class="thuc-don-item-action"
+                data-save-food
+                title="Lưu tạm món ăn"
+                aria-label="Lưu tạm món ăn">
+
+                <i class="fa-regular fa-floppy-disk"></i>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="thuc-don-item-action"
+                data-edit-food
+                title="Chỉnh sửa món ăn"
+                aria-label="Chỉnh sửa món ăn">
+
+                <i class="fa-regular fa-pen-to-square"></i>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="
+                    thuc-don-item-action
+                    is-danger
+                "
+                data-delete-food
+                title="Xóa món ăn"
+                aria-label="Xóa món ăn">
+
+                <i class="fa-regular fa-trash-can"></i>
+
+            </button>
+
+        </div>
+
+    </article>
+
+</template>

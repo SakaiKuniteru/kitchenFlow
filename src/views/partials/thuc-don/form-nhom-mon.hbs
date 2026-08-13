@@ -1,0 +1,143 @@
+<div
+    class="thuc-don-editor-source"
+    data-group-source
+    hidden>
+
+    {{> forms/select
+        id="nhomMonAnId"
+        name="nhomMonAnId"
+        label="Nhóm món"
+        placeholder="Chọn nhóm món"
+        options=null
+    }}
+
+</div>
+
+
+<aside
+    class="
+        thuc-don-menu-column
+        thuc-don-menu-column--groups
+    "
+    data-groups-column>
+
+    <header class="thuc-don-menu-column__header">
+
+        <strong class="thuc-don-menu-column__title">
+            Danh sách nhóm món
+        </strong>
+
+
+        <button
+            type="button"
+            class="thuc-don-form-action"
+            data-add-group>
+
+            <i class="fa-solid fa-plus"></i>
+
+            <span>
+                Thêm mới
+            </span>
+
+        </button>
+
+    </header>
+
+
+    <div
+        class="thuc-don-groups"
+        data-groups-list>
+    </div>
+
+    <div class="thuc-don-editor-bottom-action">
+
+        <button
+            type="button"
+            class="thuc-don-editor-bottom-add"
+            data-add-group
+            title="Thêm nhóm món">
+
+            <i class="fa-solid fa-plus"></i>
+
+        </button>
+
+    </div>
+
+</aside>
+
+
+<template id="template-thuc-don-group">
+
+    <article
+        class="thuc-don-group"
+        data-group-item>
+
+        <button
+            type="button"
+            class="thuc-don-group__main"
+            data-select-group>
+
+            <span
+                class="
+                    thuc-don-group__icon
+                    is-green
+                ">
+
+                <i class="fa-solid fa-bowl-food"></i>
+
+            </span>
+
+            <span class="thuc-don-group__info">
+
+                <strong data-group-name>
+                    -
+                </strong>
+
+                <small data-group-count>
+                    0 món
+                </small>
+
+            </span>
+
+        </button>
+
+        <div class="thuc-don-item-actions">
+
+            <button
+                type="button"
+                class="thuc-don-item-action"
+                data-save-group
+                title="Lưu tạm">
+
+                <i class="fa-regular fa-floppy-disk"></i>
+
+            </button>
+
+            <button
+                type="button"
+                class="thuc-don-item-action"
+                data-edit-group
+                title="Chỉnh sửa">
+
+                <i class="fa-regular fa-pen-to-square"></i>
+
+            </button>
+
+            <button
+                type="button"
+                class="
+                    thuc-don-item-action
+                    is-danger
+                "
+                data-delete-group
+                title="Xóa">
+
+                <i class="fa-regular fa-trash-can"></i>
+
+            </button>
+
+        </div>
+
+    </article>
+
+</template>

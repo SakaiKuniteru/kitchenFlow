@@ -1,0 +1,128 @@
+<section
+    class="thuc-don-general thuc-don-general--editor"
+    data-thuc-don-general>
+
+    <header class="thuc-don-general__header">
+
+        <div>
+
+            <h2 class="thuc-don-general__title">
+                Thông tin chung
+            </h2>
+
+            <p class="thuc-don-general__description">
+                Thông tin chung và phạm vi áp dụng của thực đơn.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <div class="thuc-don-general-form">
+
+        {{> forms/input
+            id="maThucDon"
+            name="maThucDon"
+            label="Mã thực đơn"
+            placeholder="Nhập mã thực đơn"
+            required=true
+        }}
+
+
+        {{> forms/input
+            id="tenThucDon"
+            name="tenThucDon"
+            label="Tên thực đơn"
+            placeholder="Nhập tên thực đơn"
+            required=true
+        }}
+
+        {{> forms/select
+            id="loaiThucDon"
+            name="loaiThucDon"
+            label="Loại thực đơn"
+            mode="single"
+            placeholder="Chọn loại thực đơn"
+            options=formOptions.loaiThucDon
+            required=true
+        }}
+
+        {{> forms/select
+            id="coSoId"
+            name="coSoId"
+            label="Cơ sở"
+            mode="single"
+            placeholder="Chọn cơ sở"
+            options=null
+            required=true
+        }}
+
+        {{> forms/select
+            id="nhaAnId"
+            name="nhaAnId"
+            label="Nhà ăn"
+            mode="single"
+            placeholder="Chọn nhà ăn"
+            options=null
+            required=true
+        }}
+
+        {{> forms/select
+            id="caAnId"
+            name="caAnId"
+            label="Ca ăn"
+            mode="single"
+            placeholder="Chọn ca ăn"
+            options=null
+            required=true
+        }}
+
+
+        {{> forms/date
+            id="tuNgay"
+            name="tuNgay"
+            label="Từ ngày"
+            placeholder="dd/mm/yyyy"
+            defaultTime="00:00:00"
+            required=true
+        }}
+
+
+        {{> forms/date
+            id="denNgay"
+            name="denNgay"
+            label="Đến ngày"
+            placeholder="dd/mm/yyyy"
+            defaultTime="23:59:39"
+            required=true
+        }}
+
+
+        {{> forms/textarea
+            id="moTa"
+            name="moTa"
+            label="Mô tả"
+            placeholder="Nhập mô tả thực đơn"
+            rows=1
+            fieldClass="thuc-don-general-form__description"
+        }}
+
+
+        <div class="form-field">
+
+            <label class="form-field__label">
+                Trạng thái
+            </label>
+
+            <span
+                class="thuc-don-general__status is-new"
+                data-editor-status>
+                Tạo mới/Chờ duyệt
+            </span>
+
+        </div>
+
+    </div>
+
+</section>

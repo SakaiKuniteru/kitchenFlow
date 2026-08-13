@@ -1,25 +1,145 @@
-<div
-    class="thuc-don-form"
-    data-thuc-don-form
+<link rel="stylesheet" href="/assets/css/pages/thuc-don/forms.css">
+<link rel="stylesheet" href="/assets/css/pages/thuc-don/form-editor.css">
+
+<main
+    class="thuc-don-editor"
+    data-thuc-don-editor
     data-form-mode="create">
 
-    {{> thuc-don/thong-tin-chung}}
 
-    <section class="thuc-don-form__content">
+    <header class="thuc-don-editor__header">
 
-        <div class="thuc-don-form__menu-layout">
+        <div>
 
-            {{> thuc-don/ngay}}
+            <h1 class="thuc-don-editor__title">
+                Thêm mới thực đơn
+            </h1>
 
-            {{> thuc-don/nhom-mon}}
-
-            {{> thuc-don/mon-an}}
+            <p class="thuc-don-editor__description">
+                Khởi tạo thông tin và nội dung thực đơn.
+            </p>
 
         </div>
 
-    </section>
+        <div class="thuc-don-editor__actions">
 
-</div>
+            <button
+                type="button"
+                class="thuc-don-editor__action is-back"
+                data-form-back>
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+                <span>
+                    Quay lại
+                </span>
+
+            </button>
+
+            <button
+                type="button"
+                class="thuc-don-editor__action is-cancel"
+                data-form-cancel>
+
+                <i class="fa-solid fa-xmark"></i>
+
+                <span>
+                    Hủy
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="thuc-don-editor__action is-save"
+                data-form-save>
+
+                <i class="fa-regular fa-floppy-disk"></i>
+
+                <span>
+                    Lưu
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="thuc-don-editor__action is-save-approve"
+                data-form-save-approve>
+
+                <i class="fa-solid fa-check"></i>
+
+                <span>
+                    Lưu và duyệt
+                </span>
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <div
+        class="thuc-don-form"
+        data-thuc-don-form
+        data-form-mode="create">
+
+        <div
+            hidden
+            data-thuc-don-options>
+
+            {{#each formOptions.loaiThucDon}}
+
+                <span
+                    data-loai-thuc-don-option
+                    data-value="{{value}}"
+                    data-label="{{label}}">
+                </span>
+
+            {{/each}}
+
+
+            {{#each formOptions.trangThai}}
+
+                <span
+                    data-trang-thai-option
+                    data-value="{{value}}"
+                    data-label="{{label}}">
+                </span>
+
+            {{/each}}
+
+        </div>
+
+
+        {{> thuc-don/form-thong-tin-chung}}
+
+
+        <section class="thuc-don-form__content">
+
+            <div class="thuc-don-form__menu-layout">
+
+                {{> thuc-don/form-ngay}}
+
+                {{> thuc-don/form-nhom-mon}}
+
+                {{> thuc-don/form-mon-an}}
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+</main>
+
 
 <script src="/assets/js/pages/thuc-don/forms.js"></script>
+<script src="/assets/js/pages/thuc-don/form-options.js"></script>
+<script src="/assets/js/pages/thuc-don/form-editor.js"></script>
+<script src="/assets/js/pages/thuc-don/form-image.js"></script>
 <script src="/assets/js/pages/thuc-don/them-moi.js"></script>
