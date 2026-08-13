@@ -153,7 +153,7 @@ const LOAI_XUAT_FILE = [
 const TRANG_THAI_THUC_DON = [
     {
         value: 10,
-        label: "Tạo mới"
+        label: "Tạo mới/Chờ duyệt"
     },
     {
         value: 20,
@@ -169,11 +169,11 @@ const TRANG_THAI_THUC_DON = [
     },
     {
         value: 50,
-        label: "Hủy"
+        label: "Đã hủy"
     },
     {
         value: 60,
-        label: "Kết thúc"
+        label: "Đã kết thúc"
     }
 ];
 

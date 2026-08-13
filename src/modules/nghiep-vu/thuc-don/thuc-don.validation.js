@@ -566,7 +566,9 @@ const createSchema =
                 10,
                 20,
                 30,
-                40
+                40,
+                50,
+                60
             )
             .optional()
             .default(10)

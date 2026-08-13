@@ -7,7 +7,7 @@ window.ThucDonForm = (() => {
 
     const TRANG_THAI_THUC_DON = Object.freeze({
 
-        TAO_MOI: 10,
+        TAO_MOI_CHO_DUYET: 10,
 
         CHO_DUYET: 20,
 
@@ -15,15 +15,15 @@ window.ThucDonForm = (() => {
 
         CHO_DUYET_LAI: 40,
 
-        HUY: 50,
+        DA_HUY: 50,
 
-        KET_THUC: 60
+        DA_KET_THUC: 60
 
     });
 
     const TRANG_THAI_THUC_DON_LABEL = Object.freeze({
 
-        10: "Tạo mới",
+        10: "Tạo mới/Chờ duyệt",
 
         20: "Chờ duyệt",
 
@@ -31,9 +31,9 @@ window.ThucDonForm = (() => {
 
         40: "Chờ duyệt lại",
 
-        50: "Hủy",
+        50: "Đã hủy",
 
-        60: "Kết thúc"
+        60: "Đã kết thúc"
 
     });
 
@@ -275,7 +275,7 @@ window.ThucDonForm = (() => {
                 "is-new",
                 "is-pending",
                 "is-active",
-                "is-unapproved",
+                "is-review",
                 "is-cancelled",
                 "is-ended",
                 "is-default"
@@ -1635,7 +1635,7 @@ window.ThucDonForm = (() => {
             )
         ) {
 
-            case TRANG_THAI_THUC_DON.TAO_MOI:
+            case TRANG_THAI_THUC_DON.TAO_MOI_CHO_DUYET:
 
                 return "is-new";
 
@@ -1655,12 +1655,12 @@ window.ThucDonForm = (() => {
                 return "is-review";
 
 
-            case TRANG_THAI_THUC_DON.HUY:
+            case TRANG_THAI_THUC_DON.DA_HUY:
 
                 return "is-cancelled";
 
 
-            case TRANG_THAI_THUC_DON.KET_THUC:
+            case TRANG_THAI_THUC_DON.DA_KET_THUC:
 
                 return "is-ended";
 

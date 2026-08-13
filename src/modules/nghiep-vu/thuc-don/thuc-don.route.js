@@ -78,11 +78,22 @@ router.patch(
 );
 
 router.patch(
+    "/huy-duyet/:id",
+    authenticate,
+    controller.huyDuyet
+);
+
+router.patch(
     "/huy/:id",
     authenticate,
     controller.huy
 );
 
+router.patch(
+    "/hoan-huy/:id",
+    authenticate,
+    controller.hoanHuy
+);
 
 module.exports =
     router;

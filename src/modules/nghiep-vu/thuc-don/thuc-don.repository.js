@@ -98,6 +98,12 @@ class ThucDonRepository {
             trangThai:
                 row.trang_thai,
 
+            trangThaiTruocHuy:
+                row.trang_thai_truoc_huy,
+
+            trangThaiTruocKetThuc:
+                row.trang_thai_truoc_ket_thuc,
+
             moTa:
                 row.mo_ta,
 
@@ -345,6 +351,8 @@ class ThucDonRepository {
                 td.ca_an_id,
 
                 td.trang_thai,
+                td.trang_thai_truoc_huy,
+                td.trang_thai_truoc_ket_thuc,
                 td.mo_ta,
 
                 td.active,
@@ -1965,40 +1973,27 @@ class ThucDonRepository {
 
     }
 
-    async duyet(
-        id
-    ) {
+    async duyet(id) {
 
         const sql = `
             UPDATE nv_thuc_don
-
             SET
-                trang_thai = 20,
+                trang_thai = 30,
                 updated_at = NOW()
-
             WHERE id = $1
-
+            AND trang_thai IN (10, 20, 40)
             RETURNING id
         `;
-
 
         const result =
             await pool.query(
                 sql,
-                [
-                    id
-                ]
+                [id]
             );
 
-
-        if (
-            result.rows.length === 0
-        ) {
-
+        if (result.rows.length === 0) {
             return null;
-
         }
-
 
         return await this.getChiTiet(
             result.rows[0].id
@@ -2006,48 +2001,169 @@ class ThucDonRepository {
 
     }
 
-    async huy(
-        id
-    ) {
+async huyDuyet(id) {
 
-        const sql = `
-            UPDATE nv_thuc_don
+    const sql = `
+        UPDATE nv_thuc_don
+        SET
+            trang_thai = 40,
+            updated_at = NOW()
+        WHERE id = $1
+        AND trang_thai = 30
+        RETURNING id
+    `;
 
-            SET
-                trang_thai = 40,
-                updated_at = NOW()
-
-            WHERE id = $1
-
-            RETURNING id
-        `;
-
-
-        const result =
-            await pool.query(
-                sql,
-                [
-                    id
-                ]
-            );
-
-
-        if (
-            result.rows.length === 0
-        ) {
-
-            return null;
-
-        }
-
-
-        return await this.getChiTiet(
-            result.rows[0].id
+    const result =
+        await pool.query(
+            sql,
+            [id]
         );
 
+    if (result.rows.length === 0) {
+        return null;
     }
+
+    return await this.getChiTiet(
+        result.rows[0].id
+    );
+
 }
 
+async huy(id) {
+
+    const sql = `
+        UPDATE nv_thuc_don
+        SET
+            trang_thai_truoc_huy = trang_thai,
+            trang_thai = 50,
+            updated_at = NOW()
+        WHERE id = $1
+        AND trang_thai IN (10, 20, 30, 40)
+        RETURNING id
+    `;
+
+    const result =
+        await pool.query(
+            sql,
+            [id]
+        );
+
+    if (result.rows.length === 0) {
+        return null;
+    }
+
+    return await this.getChiTiet(
+        result.rows[0].id
+    );
+
+}
+
+async hoanHuy(id) {
+
+    const sql = `
+        UPDATE nv_thuc_don
+        SET
+            trang_thai = CASE
+                WHEN trang_thai_truoc_huy = 10 THEN 20
+                WHEN trang_thai_truoc_huy = 20 THEN 20
+                WHEN trang_thai_truoc_huy = 30 THEN 30
+                WHEN trang_thai_truoc_huy = 40 THEN 40
+                ELSE NULL
+            END,
+            trang_thai_truoc_huy = NULL,
+            updated_at = NOW()
+        WHERE id = $1
+        AND trang_thai = 50
+        AND trang_thai_truoc_huy IN (10, 20, 30, 40)
+        RETURNING id
+    `;
+
+    const result =
+        await pool.query(
+            sql,
+            [id]
+        );
+
+    if (result.rows.length === 0) {
+        return null;
+    }
+
+    return await this.getChiTiet(
+        result.rows[0].id
+    );
+
+}
+
+async dongBoTrangThaiKetThuc(
+    id = null
+) {
+
+    const values = [];
+
+    let dieuKienId = "";
+
+    if (
+        id !== null &&
+        id !== undefined
+    ) {
+
+        values.push(id);
+
+        dieuKienId = `
+            AND id = $1
+        `;
+
+    }
+
+    const sql = `
+        UPDATE nv_thuc_don
+        SET
+            trang_thai_truoc_ket_thuc = trang_thai,
+            trang_thai = 60,
+            updated_at = NOW()
+        WHERE den_ngay < CURRENT_DATE
+        AND trang_thai IN (10, 20, 30)
+        ${dieuKienId}
+    `;
+
+    await pool.query(
+        sql,
+        values
+    );
+
+}
+
+async khoiPhucTrangThaiKetThuc(id) {
+
+    const sql = `
+        UPDATE nv_thuc_don
+        SET
+            trang_thai = trang_thai_truoc_ket_thuc,
+            trang_thai_truoc_ket_thuc = NULL,
+            updated_at = NOW()
+        WHERE id = $1
+        AND trang_thai = 60
+        AND den_ngay >= CURRENT_DATE
+        AND trang_thai_truoc_ket_thuc IN (10, 20, 30)
+        RETURNING id
+    `;
+
+    const result =
+        await pool.query(
+            sql,
+            [id]
+        );
+
+    if (result.rows.length === 0) {
+        return null;
+    }
+
+    return await this.getChiTiet(
+        result.rows[0].id
+    );
+
+}
+}
 
 module.exports =
     new ThucDonRepository();

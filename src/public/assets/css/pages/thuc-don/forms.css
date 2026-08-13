@@ -1215,7 +1215,7 @@
 }
 
 
-.thuc-don-general__status.is-unapproved {
+.thuc-don-general__status.is-review {
     color: #c2410c;
 
     background: #fff7ed;

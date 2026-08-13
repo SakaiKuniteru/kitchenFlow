@@ -208,6 +208,37 @@ class ThucDonController {
 
     }
 
+    async huyDuyet(
+        req,
+        res,
+        next
+    ) {
+
+        try {
+
+            const { id } =
+                req.params;
+
+            const data =
+                await thucDonService
+                    .huyDuyet(
+                        id
+                    );
+
+            return successResponse(
+                res,
+                "Hủy duyệt thực đơn thành công.",
+                data,
+                200
+            );
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
 
     async huy(
         req,
@@ -230,6 +261,38 @@ class ThucDonController {
             return successResponse(
                 res,
                 "Hủy thực đơn thành công.",
+                data,
+                200
+            );
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
+
+    async hoanHuy(
+        req,
+        res,
+        next
+    ) {
+
+        try {
+
+            const { id } =
+                req.params;
+
+            const data =
+                await thucDonService
+                    .hoanHuy(
+                        id
+                    );
+
+            return successResponse(
+                res,
+                "Hoàn hủy thực đơn thành công.",
                 data,
                 200
             );

@@ -35,6 +35,8 @@ class ThucDonService {
     async getTongHop(
         query
     ) {
+        await thucDonRepository
+            .dongBoTrangThaiKetThuc();
 
         return await thucDonRepository
             .getTongHop(
@@ -50,6 +52,11 @@ class ThucDonService {
         const thucDonId =
             this.parseId(
                 id
+            );
+
+        await thucDonRepository
+            .dongBoTrangThaiKetThuc(
+                thucDonId
             );
 
         const thucDon =
@@ -78,11 +85,6 @@ class ThucDonService {
         const duLieu = {
             ...data
         };
-
-
-        /* =========================================================
-        CƠ SỞ
-        ========================================================= */
 
         if (duLieu.maCoSo) {
 
@@ -147,11 +149,6 @@ class ThucDonService {
                 );
 
         }
-
-
-        /* =========================================================
-        NHÀ ĂN
-        ========================================================= */
 
         if (duLieu.maNhaAn) {
 
@@ -227,11 +224,6 @@ class ThucDonService {
 
         }
 
-
-        /* =========================================================
-        CA ĂN
-        ========================================================= */
-
         if (duLieu.maCaAn) {
 
             const caAn =
@@ -296,11 +288,6 @@ class ThucDonService {
 
         }
 
-
-        /* =========================================================
-        NGÀY → NHÓM → MÓN
-        ========================================================= */
-
         if (
             Array.isArray(
                 duLieu.dsNgay
@@ -325,10 +312,6 @@ class ThucDonService {
                     const nhom of
                     ngay.dsNhomMonAn
                 ) {
-
-                    /* =============================
-                    NHÓM MÓN
-                    ============================= */
 
                     if (
                         nhom.maNhomMonAn
@@ -417,10 +400,6 @@ class ThucDonService {
                         nhom.dsMonAn
                     ) {
 
-                        /* =============================
-                        MÓN ĂN
-                        ============================= */
-
                         if (
                             mon.maMonAn
                         ) {
@@ -508,11 +487,6 @@ class ThucDonService {
                                 );
 
                         }
-
-
-                        /* =============================
-                        ĐƠN VỊ TÍNH
-                        ============================= */
 
                         if (
                             mon.maDonViTinh
@@ -628,9 +602,6 @@ class ThucDonService {
 
         }
 
-        /*
-         * Nếu PostgreSQL trả Date object.
-         */
         if (
             value instanceof Date
         ) {
@@ -650,9 +621,6 @@ class ThucDonService {
             )
                 .trim();
 
-        /*
-         * YYYY-MM-DD
-         */
         if (
             /^\d{4}-\d{2}-\d{2}$/
                 .test(
@@ -784,9 +752,6 @@ class ThucDonService {
 
         }
 
-        /*
-         * Loại 10 = theo ngày.
-         */
         if (
             Number(
                 data.loaiThucDon
@@ -1653,22 +1618,31 @@ class ThucDonService {
 
 
         if (
-            Number(
-                thucDon.trangThai
-            ) === 40
+            ![
+                10,
+                20,
+                40,
+                60
+            ].includes(
+                Number(
+                    thucDon.trangThai
+                )
+            )
         ) {
 
             throw new ApiError(
                 400,
-                "Không thể cập nhật thực đơn đã hủy."
+                "Trạng thái hiện tại không cho phép cập nhật thực đơn."
             );
 
         }
 
 
-        /*
-        * Trước tiên ghép dữ liệu cũ + dữ liệu PATCH.
-        */
+        const trangThaiBanDau =
+            Number(
+                thucDon.trangThai
+            );
+
 
         const duLieuTam = {
 
@@ -1697,11 +1671,6 @@ class ThucDonService {
                     ? data.denNgay
                     : thucDon.denNgay,
 
-
-            /*
-            * Cơ sở
-            */
-
             coSoId:
                 data.coSoId !== undefined
                     ? data.coSoId
@@ -1715,11 +1684,6 @@ class ThucDonService {
                 data.maCoSo !== undefined
                     ? data.maCoSo
                     : undefined,
-
-
-            /*
-            * Nhà ăn
-            */
 
             nhaAnId:
                 data.nhaAnId !== undefined
@@ -1735,11 +1699,6 @@ class ThucDonService {
                     ? data.maNhaAn
                     : undefined,
 
-
-            /*
-            * Ca ăn
-            */
-
             caAnId:
                 data.caAnId !== undefined
                     ? data.caAnId
@@ -1754,22 +1713,18 @@ class ThucDonService {
                     ? data.maCaAn
                     : undefined,
 
-
             trangThai:
                 thucDon.trangThai,
-
 
             moTa:
                 data.moTa !== undefined
                     ? data.moTa
                     : thucDon.moTa,
 
-
             active:
                 data.active !== undefined
                     ? data.active
                     : thucDon.active,
-
 
             dsNgay:
                 data.dsNgay !== undefined
@@ -1778,10 +1733,6 @@ class ThucDonService {
 
         };
 
-
-        /*
-        * Chuyển MÃ → ID.
-        */
 
         const duLieuDaChuanHoa =
             await this.chuanHoaLienKet(
@@ -1874,7 +1825,7 @@ class ThucDonService {
         }
 
 
-        const ketQua =
+        let ketQua =
             await thucDonRepository
                 .update(
                     thucDonId,
@@ -1892,7 +1843,36 @@ class ThucDonService {
         }
 
 
-        return ketQua;
+        if (
+            trangThaiBanDau === 60
+        ) {
+
+            const khoiPhuc =
+                await thucDonRepository
+                    .khoiPhucTrangThaiKetThuc(
+                        thucDonId
+                    );
+
+            if (khoiPhuc) {
+
+                ketQua =
+                    khoiPhuc;
+
+            }
+
+        }
+
+
+        await thucDonRepository
+            .dongBoTrangThaiKetThuc(
+                thucDonId
+            );
+
+
+        return await thucDonRepository
+            .getChiTiet(
+                thucDonId
+            );
 
     }
 
@@ -1922,10 +1902,12 @@ class ThucDonService {
 
         }
 
+
         if (
-            [
+            ![
+                10,
                 20,
-                30
+                40
             ].includes(
                 Number(
                     thucDon.trangThai
@@ -1935,7 +1917,7 @@ class ThucDonService {
 
             throw new ApiError(
                 400,
-                "Không thể xóa thực đơn đã duyệt hoặc đã kết thúc."
+                "Trạng thái hiện tại không cho phép xóa thực đơn."
             );
 
         }
@@ -2019,22 +2001,16 @@ class ThucDonService {
 
     }
 
-    async duyet(
-        id
-    ) {
+    async duyet(id) {
 
         const thucDonId =
-            this.parseId(
-                id
-            );
-
+            this.parseId(id);
 
         const thucDon =
             await thucDonRepository
                 .getChiTiet(
                     thucDonId
                 );
-
 
         if (!thucDon) {
 
@@ -2045,53 +2021,24 @@ class ThucDonService {
 
         }
 
-
         if (
-            Number(
-                thucDon.trangThai
-            ) === 20
+            ![10, 20, 40].includes(
+                Number(
+                    thucDon.trangThai
+                )
+            )
         ) {
 
             throw new ApiError(
                 400,
-                "Thực đơn đã được duyệt."
+                "Trạng thái hiện tại không cho phép duyệt thực đơn."
             );
 
         }
-
-
-        if (
-            Number(
-                thucDon.trangThai
-            ) === 30
-        ) {
-
-            throw new ApiError(
-                400,
-                "Không thể duyệt thực đơn đã kết thúc."
-            );
-
-        }
-
-
-        if (
-            Number(
-                thucDon.trangThai
-            ) === 40
-        ) {
-
-            throw new ApiError(
-                400,
-                "Không thể duyệt thực đơn đã hủy."
-            );
-
-        }
-
 
         this.validateDuLieuTruocKhiDuyet(
             thucDon
         );
-
 
         const ketQua =
             await thucDonRepository
@@ -2099,37 +2046,29 @@ class ThucDonService {
                     thucDonId
                 );
 
-
         if (!ketQua) {
 
             throw new ApiError(
-                404,
-                "Thực đơn không tồn tại."
+                400,
+                "Trạng thái thực đơn đã thay đổi, không thể duyệt."
             );
 
         }
-
 
         return ketQua;
 
     }
 
-    async huy(
-        id
-    ) {
+    async huyDuyet(id) {
 
         const thucDonId =
-            this.parseId(
-                id
-            );
-
+            this.parseId(id);
 
         const thucDon =
             await thucDonRepository
                 .getChiTiet(
                     thucDonId
                 );
-
 
         if (!thucDon) {
 
@@ -2140,43 +2079,50 @@ class ThucDonService {
 
         }
 
-
         if (
             Number(
                 thucDon.trangThai
-            ) === 40
+            ) !== 30
         ) {
 
             throw new ApiError(
                 400,
-                "Thực đơn đã được hủy."
+                "Chỉ có thể hủy duyệt thực đơn đang áp dụng."
             );
 
         }
-
-
-        if (
-            Number(
-                thucDon.trangThai
-            ) === 30
-        ) {
-
-            throw new ApiError(
-                400,
-                "Không thể hủy thực đơn đã kết thúc."
-            );
-
-        }
-
 
         const ketQua =
             await thucDonRepository
-                .huy(
+                .huyDuyet(
                     thucDonId
                 );
 
-
         if (!ketQua) {
+
+            throw new ApiError(
+                400,
+                "Trạng thái thực đơn đã thay đổi, không thể hủy duyệt."
+            );
+
+        }
+
+        return ketQua;
+
+    }
+
+    async huy(id) {
+
+        const thucDonId =
+            this.parseId(id);
+
+        const thucDon =
+            await thucDonRepository
+                .getChiTiet(
+                    thucDonId
+                );
+
+        if (!thucDon) {
 
             throw new ApiError(
                 404,
@@ -2185,6 +2131,102 @@ class ThucDonService {
 
         }
 
+        if (
+            ![10, 20, 40].includes(
+                Number(
+                    thucDon.trangThai
+                )
+            )
+        ) {
+
+            throw new ApiError(
+                400,
+                "Trạng thái hiện tại không cho phép hủy thực đơn."
+            );
+
+        }
+
+        const ketQua =
+            await thucDonRepository
+                .huy(
+                    thucDonId
+                );
+
+        if (!ketQua) {
+
+            throw new ApiError(
+                400,
+                "Trạng thái thực đơn đã thay đổi, không thể hủy."
+            );
+
+        }
+
+        return ketQua;
+
+    }
+
+    async hoanHuy(id) {
+
+        const thucDonId =
+            this.parseId(id);
+
+        const thucDon =
+            await thucDonRepository
+                .getChiTiet(
+                    thucDonId
+                );
+
+        if (!thucDon) {
+
+            throw new ApiError(
+                404,
+                "Thực đơn không tồn tại."
+            );
+
+        }
+
+        if (
+            Number(
+                thucDon.trangThai
+            ) !== 50
+        ) {
+
+            throw new ApiError(
+                400,
+                "Chỉ có thể hoàn hủy thực đơn đã hủy."
+            );
+
+        }
+
+        if (
+            ![10, 20, 40].includes(
+                Number(
+                    thucDon.trangThaiTruocHuy
+                )
+            )
+        ) {
+
+            throw new ApiError(
+                400,
+                "Không xác định được trạng thái trước khi hủy."
+            );
+
+        }
+
+        const ketQua =
+            await thucDonRepository
+                .hoanHuy(
+                    thucDonId
+                );
+
+        if (!ketQua) {
+
+            throw new ApiError(
+                400,
+                "Không thể hoàn hủy thực đơn."
+            );
+
+        }
 
         return ketQua;
 
