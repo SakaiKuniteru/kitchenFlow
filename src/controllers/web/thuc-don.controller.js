@@ -1,9 +1,6 @@
 "use strict";
 
-const {
-    trangThaiThucDon,
-    loaiThucDon
-} = require("../../constants/enums");
+const { trangThaiThucDon, loaiThucDon } = require("../../constants/enums");
 
 
 class ThucDonWebController {
@@ -51,7 +48,7 @@ class ThucDonWebController {
                         },
 
                         {
-                            key: "loaiThucDonText",
+                            key: "loaiThucDon",
                             label: "Loại thực đơn"
                         },
 
@@ -71,7 +68,7 @@ class ThucDonWebController {
                         },
 
                         {
-                            key: "trangThaiText",
+                            key: "trangThai",
                             label: "Trạng thái"
                         }
 

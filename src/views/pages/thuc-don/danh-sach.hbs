@@ -1,9 +1,12 @@
+<link rel="stylesheet" href="/assets/css/pages/thuc-don/danh-sach.css">
+
 {{> list/module-list-page
     moduleName="thuc-don"
     title="Danh sách thực đơn"
     createUrl="/thuc-don/them-moi-thuc-don"
     searchPlaceholder="Tìm theo mã hoặc tên thực đơn..."
     filterPartial="thuc-don/filter-form"
+    footerPartial="thuc-don/status-legend"
     columns=columns
 }}
 

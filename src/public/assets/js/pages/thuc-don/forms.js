@@ -1652,7 +1652,7 @@ window.ThucDonForm = (() => {
 
             case TRANG_THAI_THUC_DON.CHO_DUYET_LAI:
 
-                return "is-unapproved";
+                return "is-review";
 
 
             case TRANG_THAI_THUC_DON.HUY:

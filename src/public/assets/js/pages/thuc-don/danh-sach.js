@@ -8,39 +8,79 @@ document.addEventListener(
         const API_BASE =
             "/api/mcs/v1/thuc-don";
 
+        const TRANG_THAI_THUC_DON =
+            Object.freeze({
+
+                TAO_MOI: 10,
+
+                CHO_DUYET: 20,
+
+                DANG_AP_DUNG: 30,
+
+                CHO_DUYET_LAI: 40,
+
+                HUY: 50,
+
+                KET_THUC: 60
+
+            });
+
+
+        const TRANG_THAI_THUC_DON_LABEL =
+            Object.freeze({
+
+                10: "Tạo mới",
+
+                20: "Chờ duyệt",
+
+                30: "Đang áp dụng",
+
+                40: "Chờ duyệt lại",
+
+                50: "Hủy",
+
+                60: "Kết thúc"
+
+            });
+
+
+        const LOAI_THUC_DON_LABEL =
+            Object.freeze({
+
+                10: "Theo ngày",
+
+                20: "Theo tuần",
+
+                30: "Theo tháng",
+
+                40: "Theo thời gian"
+
+            });
+
         const ACTIONS = {
 
             view: {
-                icon:
-                    "fa-regular fa-eye",
+                icon: "fa-regular fa-eye",
 
-                title:
-                    "Xem chi tiết",
+                title: "Xem chi tiết",
 
-                className:
-                    "is-view"
+                className: "is-view"
             },
 
             print: {
-                icon:
-                    "fa-solid fa-print",
+                icon: "fa-solid fa-print",
 
-                title:
-                    "In thực đơn",
+                title: "In thực đơn",
 
-                className:
-                    "is-print"
+                className: "is-print"
             },
 
             delete: {
-                icon:
-                    "fa-regular fa-trash-can",
+                icon: "fa-regular fa-trash-can",
 
-                title:
-                    "Xóa",
+                title: "Xóa",
 
-                className:
-                    "is-delete"
+                className: "is-delete"
             }
 
         };
@@ -48,14 +88,6 @@ document.addEventListener(
         const state = {
 
             keyword: "",
-
-            createdFrom: "",
-
-            createdTo: "",
-
-            effectiveFrom: "",
-
-            effectiveTo: "",
 
             loaiThucDon: [],
 
@@ -70,6 +102,16 @@ document.addEventListener(
             page: 1,
 
             limit: 20
+
+        };
+
+        const lookupData = {
+
+            coSo: [],
+
+            nhaAn: [],
+
+            caAn: []
 
         };
 
@@ -121,15 +163,17 @@ document.addEventListener(
 
         initialize();
 
-
         async function initialize() {
 
             bindEvents();
 
+
+            await loadFilterOptions();
+
+
             await loadData();
 
         }
-
 
         function bindEvents() {
 
@@ -138,6 +182,8 @@ document.addEventListener(
             bindSearch();
 
             bindTableActions();
+
+            bindFilterDependencies();
 
         }
 
@@ -199,6 +245,85 @@ document.addEventListener(
 
         }
 
+        function bindFilterDependencies() {
+
+            const coSoSelect =
+                document.getElementById(
+                    "coSoId"
+                );
+
+
+            coSoSelect
+                ?.addEventListener(
+                    "change",
+                    () => {
+
+                        const coSoIds =
+                            getMultiValues(
+                                "coSoId"
+                            );
+
+
+                        refreshNhaAnFilter(
+                            coSoIds
+                        );
+
+                    }
+                );
+
+        }
+
+        function refreshNhaAnFilter(
+            coSoIds
+        ) {
+
+            let records =
+                lookupData.nhaAn;
+
+
+            if (
+                Array.isArray(
+                    coSoIds
+                ) &&
+                coSoIds.length
+            ) {
+
+                const ids =
+                    new Set(
+                        coSoIds.map(
+                            value =>
+                                String(
+                                    value
+                                )
+                        )
+                    );
+
+
+                records =
+                    lookupData.nhaAn
+                        .filter(
+                            item =>
+                                ids.has(
+                                    String(
+                                        item.coSoId ??
+                                        item.coSo?.id
+                                    )
+                                )
+                        );
+
+            }
+
+
+            refreshSelectOptions(
+                "nhaAnId",
+                records,
+                item =>
+                    item.id,
+                item =>
+                    item.tenNhaAn
+            );
+
+        }
 
         function bindSearch() {
 
@@ -486,62 +611,12 @@ document.addEventListener(
                 state.trangThai
             );
 
-
-            if (
-                state.createdFrom
-            ) {
-
-                params.set(
-                    "createdFrom",
-                    state.createdFrom
-                );
-
-            }
-
-
-            if (
-                state.createdTo
-            ) {
-
-                params.set(
-                    "createdTo",
-                    state.createdTo
-                );
-
-            }
-
-
-            if (
-                state.effectiveFrom
-            ) {
-
-                params.set(
-                    "effectiveFrom",
-                    state.effectiveFrom
-                );
-
-            }
-
-
-            if (
-                state.effectiveTo
-            ) {
-
-                params.set(
-                    "effectiveTo",
-                    state.effectiveTo
-                );
-
-            }
-
-
             params.set(
                 "page",
                 String(
                     state.page
                 )
             );
-
 
             params.set(
                 "limit",
@@ -550,12 +625,10 @@ document.addEventListener(
                 )
             );
 
-
             return params
                 .toString();
 
         }
-
 
         function appendArray(
             params,
@@ -584,33 +657,7 @@ document.addEventListener(
 
         }
 
-
         function readFilterState() {
-
-            state.createdFrom =
-                getValue(
-                    "createdFrom"
-                );
-
-
-            state.createdTo =
-                getValue(
-                    "createdTo"
-                );
-
-
-            state.effectiveFrom =
-                getValue(
-                    "effectiveFrom"
-                );
-
-
-            state.effectiveTo =
-                getValue(
-                    "effectiveTo"
-                );
-
-
             state.loaiThucDon =
                 getMultiValues(
                     "loaiThucDon"
@@ -641,26 +688,7 @@ document.addEventListener(
                 );
 
         }
-
-
-        function getValue(
-            id
-        ) {
-
-            const element =
-                document.getElementById(
-                    id
-                );
-
-
-            return (
-                element?.value ||
-                ""
-            ).trim();
-
-        }
-
-
+        
         function getMultiValues(
             id
         ) {
@@ -703,19 +731,6 @@ document.addEventListener(
 
 
         function resetFilters() {
-
-            state.createdFrom =
-                "";
-
-            state.createdTo =
-                "";
-
-            state.effectiveFrom =
-                "";
-
-            state.effectiveTo =
-                "";
-
             state.loaiThucDon =
                 [];
 
@@ -775,26 +790,6 @@ document.addEventListener(
 
                     }
                 );
-
-            resetDateRange(
-                "createdFrom",
-                "00:00:00"
-            );
-
-            resetDateRange(
-                "createdTo",
-                "23:59:59"
-            );
-
-            resetDateRange(
-                "effectiveFrom",
-                "00:00:00"
-            );
-
-            resetDateRange(
-                "effectiveTo",
-                "23:59:59"
-            );
 
         }
 
@@ -960,91 +955,114 @@ document.addEventListener(
                         );
 
 
-                    row.innerHTML =
-                        `
-                            <td>
+                    row.innerHTML = `
+                        <td>
+
+                            <strong
+                                class="
+                                    thuc-don-list-code
+                                ">
                                 ${escapeHtml(
                                     item.maThucDon ||
                                     ""
                                 )}
-                            </td>
+                            </strong>
 
-                            <td>
+                        </td>
+
+
+                        <td>
+
+                            <span
+                                class="
+                                    thuc-don-list-name
+                                ">
                                 ${escapeHtml(
                                     item.tenThucDon ||
                                     ""
                                 )}
-                            </td>
+                            </span>
 
-                            <td>
-                                ${escapeHtml(
-                                    item.loaiThucDonText ||
-                                    ""
-                                )}
-                            </td>
+                        </td>
 
-                            <td>
-                                ${escapeHtml(
-                                    item.tenCoSo ||
-                                    item.coSo?.tenCoSo ||
-                                    ""
-                                )}
-                            </td>
 
-                            <td>
-                                ${escapeHtml(
-                                    item.tenNhaAn ||
-                                    item.nhaAn?.tenNhaAn ||
-                                    ""
-                                )}
-                            </td>
+                        <td>
 
-                            <td>
-                                ${escapeHtml(
-                                    item.tenCaAn ||
-                                    item.caAn?.tenCaAn ||
-                                    ""
-                                )}
-                            </td>
+                            ${renderMenuType(
+                                item.loaiThucDon
+                            )}
 
-                            <td>
-                                ${renderStatus(
-                                    item
-                                )}
-                            </td>
+                        </td>
 
-                            <td>
 
-                                <div
-                                    class="
-                                        module-list-table__row-actions
-                                    ">
+                        <td>
+                            ${escapeHtml(
+                                item.tenCoSo ||
+                                item.coSo?.tenCoSo ||
+                                "-"
+                            )}
+                        </td>
 
-                                    ${
-                                        renderAction(
-                                            "view",
-                                            item.id
-                                        )
-                                    }
-                                    
-                                    ${
-                                        renderAction(
-                                            "print",
-                                            item.id
-                                        )
-                                    }
 
-                                    ${
-                                        renderAction(
-                                            "delete",
-                                            item.id
-                                        )
-                                    }
+                        <td>
+                            ${escapeHtml(
+                                item.tenNhaAn ||
+                                item.nhaAn?.tenNhaAn ||
+                                "-"
+                            )}
+                        </td>
 
-                                </div>
 
-                            </td>
-                        `;
+                        <td>
+                            ${escapeHtml(
+                                item.tenCaAn ||
+                                item.caAn?.tenCaAn ||
+                                "-"
+                            )}
+                        </td>
+
+
+                        <td>
+
+                            ${renderStatus(
+                                item
+                            )}
+
+                        </td>
+
+
+                        <td>
+
+                            <div
+                                class="
+                                    module-list-table__row-actions
+                                ">
+
+                                ${
+                                    renderAction(
+                                        "view",
+                                        item.id
+                                    )
+                                }
+
+                                ${
+                                    renderAction(
+                                        "print",
+                                        item.id
+                                    )
+                                }
+
+                                ${
+                                    renderAction(
+                                        "delete",
+                                        item.id
+                                    )
+                                }
+
+                            </div>
+
+                        </td>
+                    `;
 
 
                     elements.body
@@ -1057,36 +1075,76 @@ document.addEventListener(
 
         }
 
-
-        function renderStatus(
-            item
+        function renderMenuType(
+            value
         ) {
 
-            const text =
-                item.trangThaiText ||
-                "";
+            const type =
+                Number(
+                    value
+                );
 
 
-            if (!text) {
-
-                return "—";
-
-            }
+            const label =
+                LOAI_THUC_DON_LABEL[
+                    type
+                ] ||
+                "-";
 
 
             return `
                 <span
                     class="
-                        module-list-table__status
-                        status-${Number(
-                            item.trangThai ||
-                            0
-                        )}
+                        thuc-don-list-type
+                        type-${type}
                     ">
 
                     ${escapeHtml(
-                        text
+                        label
                     )}
+
+                </span>
+            `;
+
+        }
+
+        function renderStatus(
+            item
+        ) {
+
+            const status =
+                Number(
+                    item.trangThai
+                );
+
+
+            const text =
+                TRANG_THAI_THUC_DON_LABEL[
+                    status
+                ] ||
+                "-";
+
+
+            return `
+                <span
+                    class="
+                        thuc-don-list-status
+                        ${getStatusClass(
+                            status
+                        )}
+                    ">
+
+                    <span
+                        class="
+                            thuc-don-list-status__dot
+                        ">
+                    </span>
+
+                    <span>
+                        ${escapeHtml(
+                            text
+                        )}
+                    </span>
 
                 </span>
             `;
@@ -1483,6 +1541,280 @@ document.addEventListener(
                     );
 
             };
+
+        }
+
+        function normalizeActiveRecords(
+            data
+        ) {
+
+            const records =
+                Array.isArray(
+                    data
+                )
+                    ? data
+                    : (
+                        data?.items ||
+                        data?.rows ||
+                        data?.danhSach ||
+                        []
+                    );
+
+
+            return records.filter(
+                item =>
+                    item?.active === true
+            );
+
+        }
+
+function refreshSelectOptions(
+    id,
+    records,
+    getValue,
+    getLabel
+) {
+
+    const select =
+        document.getElementById(
+            id
+        );
+
+
+    if (!select) {
+        return;
+    }
+
+
+    const allOption =
+        select.querySelector(
+            'option[value="__ALL__"]'
+        );
+
+
+    select.innerHTML =
+        "";
+
+
+    if (allOption) {
+
+        select.appendChild(
+            allOption
+        );
+
+    } else {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+
+        option.value =
+            "__ALL__";
+
+        option.textContent =
+            "Tất cả";
+
+
+        select.appendChild(
+            option
+        );
+
+    }
+
+
+    records.forEach(
+        record => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                String(
+                    getValue(
+                        record
+                    )
+                );
+
+
+            option.textContent =
+                getLabel(
+                    record
+                ) || "";
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    const smartSelectRoot =
+        select.closest(
+            "[data-smart-select]"
+        );
+
+
+    if (
+        smartSelectRoot
+            ?.smartSelect
+            ?.refresh
+    ) {
+
+        smartSelectRoot
+            .smartSelect
+            .refresh();
+
+    } else {
+
+        window.MCS
+            ?.smartSelect
+            ?.initialize(
+                smartSelectRoot
+            );
+
+    }
+
+}
+
+        async function loadFilterOptions() {
+
+            try {
+
+                const [
+                    coSoResponse,
+                    nhaAnResponse,
+                    caAnResponse
+                ] =
+                    await Promise.all(
+                        [
+
+                            window.MCS.api.request(
+                                "/api/mcs/v1/dm-co-so/tong-hop"
+                            ),
+
+                            window.MCS.api.request(
+                                "/api/mcs/v1/dm-nha-an/tong-hop"
+                            ),
+
+                            window.MCS.api.request(
+                                "/api/mcs/v1/dm-ca-an/tong-hop"
+                            )
+
+                        ]
+                    );
+
+
+                lookupData.coSo =
+                    normalizeActiveRecords(
+                        coSoResponse?.data
+                    );
+
+
+                lookupData.nhaAn =
+                    normalizeActiveRecords(
+                        nhaAnResponse?.data
+                    );
+
+
+                lookupData.caAn =
+                    normalizeActiveRecords(
+                        caAnResponse?.data
+                    );
+
+
+                refreshSelectOptions(
+                    "coSoId",
+                    lookupData.coSo,
+                    item =>
+                        item.id,
+                    item =>
+                        item.tenCoSo
+                );
+
+
+                refreshSelectOptions(
+                    "nhaAnId",
+                    lookupData.nhaAn,
+                    item =>
+                        item.id,
+                    item =>
+                        item.tenNhaAn
+                );
+
+
+                refreshSelectOptions(
+                    "caAnId",
+                    lookupData.caAn,
+                    item =>
+                        item.id,
+                    item =>
+                        item.tenCaAn
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Không tải được dữ liệu bộ lọc:",
+                    error
+                );
+
+            }
+
+        }
+
+        function getStatusClass(
+            status
+        ) {
+
+            switch (
+                Number(
+                    status
+                )
+            ) {
+
+                case TRANG_THAI_THUC_DON.TAO_MOI:
+
+                    return "is-new";
+
+
+                case TRANG_THAI_THUC_DON.CHO_DUYET:
+
+                    return "is-pending";
+
+
+                case TRANG_THAI_THUC_DON.DANG_AP_DUNG:
+
+                    return "is-active";
+
+
+                case TRANG_THAI_THUC_DON.CHO_DUYET_LAI:
+
+                    return "is-review";
+
+
+                case TRANG_THAI_THUC_DON.HUY:
+
+                    return "is-cancelled";
+
+
+                case TRANG_THAI_THUC_DON.KET_THUC:
+
+                    return "is-ended";
+
+
+                default:
+
+                    return "is-default";
+
+            }
 
         }
 

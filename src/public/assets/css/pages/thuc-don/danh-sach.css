@@ -1,0 +1,378 @@
+/* =========================================================
+   FILTER
+   ========================================================= */
+
+.thuc-don-list-filter {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            5,
+            minmax(150px, 1fr)
+        );
+
+    align-items: end;
+
+    gap: 16px;
+
+    width: 100%;
+}
+
+.module-list-table {
+    width: 100%;
+    min-width: 1100px;
+
+    border-collapse:
+        collapse;
+
+    table-layout:
+        fixed;
+}
+
+.module-list-table thead {
+    background: #f8fafc;
+}
+
+.module-list-page__content::-webkit-scrollbar {
+    height: 8px;
+}
+
+
+.module-list-page__content::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+
+.module-list-page__content::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+}
+
+
+.module-list-page__content::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.module-list-table th {
+    height: 48px;
+
+    padding: 0 16px;
+
+    color: #58677f;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: .02em;
+
+    text-transform: uppercase;
+
+    border-bottom: 1px solid #edf1f6;
+}
+
+
+.module-list-table td {
+    height: 72px;
+
+    padding: 12px 16px;
+
+    color: #40516b;
+
+    font-size: 13px;
+
+    vertical-align: middle;
+
+    border-bottom: 1px solid #edf1f6;
+}
+
+
+.module-list-table tbody tr {
+    transition:
+        background .15s ease;
+}
+
+
+.module-list-table tbody tr:hover {
+    background: #fafcff;
+}
+
+
+.module-list-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+
+/* =========================================================
+   NAME / CODE
+   ========================================================= */
+
+.thuc-don-list-code {
+    color: #15233b;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+.thuc-don-list-name {
+    color: #40516b;
+
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   MENU TYPE
+   ========================================================= */
+
+.thuc-don-list-type {
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 25px;
+
+    padding: 3px 9px;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    border-radius: 6px;
+}
+
+
+.thuc-don-list-type.type-10 {
+    color: #15803d;
+
+    background: #ecfdf3;
+}
+
+
+.thuc-don-list-type.type-20 {
+    color: #2563eb;
+
+    background: #eff6ff;
+}
+
+
+.thuc-don-list-type.type-30 {
+    color: #7c3aed;
+
+    background: #f5f3ff;
+}
+
+
+.thuc-don-list-type.type-40 {
+    color: #c2410c;
+
+    background: #fff7ed;
+}
+
+.thuc-don-list-status {
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 25px;
+
+    gap: 6px;
+
+    padding: 3px 9px;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    border-radius: 7px;
+}
+
+
+.thuc-don-list-status__dot {
+    flex: 0 0 auto;
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: currentColor;
+}
+
+
+.module-list-table__row-actions {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+}
+
+
+.module-list-table__action {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    padding: 0;
+
+    background: #ffffff;
+
+    border: 1px solid #dfe6ef;
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        border-color .15s ease,
+        color .15s ease,
+        transform .15s ease;
+}
+
+
+.module-list-table__action:hover {
+    transform: translateY(-1px);
+}
+
+
+.module-list-table__action.is-view {
+    color: #2563eb;
+}
+
+
+.module-list-table__action.is-view:hover {
+    color: #1d4ed8;
+
+    background: #eff6ff;
+
+    border-color: #bfdbfe;
+}
+
+
+.module-list-table__action.is-print {
+    color: #64748b;
+}
+
+
+.module-list-table__action.is-print:hover {
+    color: #334155;
+
+    background: #f8fafc;
+
+    border-color: #cbd5e1;
+}
+
+
+.module-list-table__action.is-delete {
+    color: #ef4444;
+}
+
+
+.module-list-table__action.is-delete:hover {
+    color: #dc2626;
+
+    background: #fef2f2;
+
+    border-color: #fecaca;
+}
+
+.thuc-don-list-filter > * {
+    min-width: 0;
+}
+
+
+.thuc-don-list-filter .form-field,
+.thuc-don-list-filter .smart-select {
+    width: 100%;
+    min-width: 0;
+}
+
+@media (max-width: 1200px) {
+
+    .thuc-don-list-filter {
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(0, 1fr)
+            );
+    }
+
+}
+
+
+@media (max-width: 800px) {
+
+    .thuc-don-list-filter {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+}
+
+
+@media (max-width: 560px) {
+
+    .thuc-don-list-filter {
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+.thuc-don-general__status.is-new,
+.thuc-don-list-status.is-new {
+    color: #2563eb;
+    background: #eff6ff;
+}
+
+
+.thuc-don-general__status.is-pending,
+.thuc-don-list-status.is-pending {
+    color: #a16207;
+    background: #fef9c3;
+}
+
+
+.thuc-don-general__status.is-active,
+.thuc-don-list-status.is-active {
+    color: #15803d;
+    background: #ecfdf3;
+}
+
+
+.thuc-don-general__status.is-review,
+.thuc-don-list-status.is-review {
+    color: #c2410c;
+    background: #fff7ed;
+}
+
+
+.thuc-don-general__status.is-cancelled,
+.thuc-don-list-status.is-cancelled {
+    color: #dc2626;
+    background: #fef2f2;
+}
+
+
+.thuc-don-general__status.is-ended,
+.thuc-don-list-status.is-ended {
+    color: #475569;
+    background: #f1f5f9;
+}
+
+
+.thuc-don-general__status.is-default,
+.thuc-don-list-status.is-default {
+    color: #64748b;
+    background: #f1f5f9;
+}

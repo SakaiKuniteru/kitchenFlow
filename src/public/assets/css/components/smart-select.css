@@ -443,3 +443,65 @@
     }
 
 }
+
+/* =========================================================
+   SMART SELECT - SCROLL
+   ========================================================= */
+
+[data-smart-select-dropdown] {
+    max-height: min(
+        360px,
+        calc(100vh - 180px)
+    );
+
+    overflow: hidden;
+}
+
+
+[data-smart-select-options] {
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+
+[data-smart-select-options]::-webkit-scrollbar {
+    width: 7px;
+}
+
+
+[data-smart-select-options]::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+[data-smart-select-options]::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+
+    border-radius: 999px;
+}
+
+
+[data-smart-select-options]::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+[data-smart-select-selection] {
+    min-width: 0;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scrollbar-width: thin;
+}
+
+
+[data-smart-select-selection]::-webkit-scrollbar {
+    height: 5px;
+}
+
+
+[data-smart-select-selection]::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+
+    border-radius: 999px;
+}
