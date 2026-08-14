@@ -59,9 +59,6 @@ window.ThucDonContentEditor = (() => {
             "click",
             event => {
 
-                /*
-                 * THÊM NGÀY
-                 */
                 const addDay =
                     event.target.closest(
                         "[data-add-day]"
@@ -84,10 +81,6 @@ window.ThucDonContentEditor = (() => {
 
                 }
 
-
-                /*
-                 * LƯU TẠM NGÀY
-                 */
                 const saveDay =
                     event.target.closest(
                         "[data-save-day]"
@@ -111,10 +104,6 @@ window.ThucDonContentEditor = (() => {
 
                 }
 
-
-                /*
-                 * SỬA NGÀY
-                 */
                 const editDay =
                     event.target.closest(
                         "[data-edit-day]"
@@ -138,10 +127,6 @@ window.ThucDonContentEditor = (() => {
 
                 }
 
-
-                /*
-                 * XÓA NGÀY
-                 */
                 const deleteDay =
                     event.target.closest(
                         "[data-delete-day]"
@@ -165,10 +150,6 @@ window.ThucDonContentEditor = (() => {
 
                 }
 
-
-                /*
-                 * THÊM NHÓM
-                 */
                 const addGroup =
                     event.target.closest(
                         "[data-add-group]"
@@ -191,10 +172,6 @@ window.ThucDonContentEditor = (() => {
 
                 }
 
-
-                /*
-                 * LƯU NHÓM
-                 */
                 const saveGroup =
                     event.target.closest(
                         "[data-save-group]"
@@ -218,10 +195,6 @@ window.ThucDonContentEditor = (() => {
 
                 }
 
-
-                /*
-                 * SỬA NHÓM
-                 */
                 const editGroup =
                     event.target.closest(
                         "[data-edit-group]"
@@ -245,10 +218,6 @@ window.ThucDonContentEditor = (() => {
 
                 }
 
-
-                /*
-                 * XÓA NHÓM
-                 */
                 const deleteGroup =
                     event.target.closest(
                         "[data-delete-group]"
@@ -272,10 +241,6 @@ window.ThucDonContentEditor = (() => {
 
                 }
 
-
-                /*
-                 * THÊM MÓN
-                 */
                 const addFood =
                     event.target.closest(
                         "[data-add-food]"
@@ -298,10 +263,6 @@ window.ThucDonContentEditor = (() => {
 
                 }
 
-
-                /*
-                 * LƯU TẠM MÓN
-                 */
                 const saveFood =
                     event.target.closest(
                         "[data-save-food]"
@@ -331,10 +292,6 @@ window.ThucDonContentEditor = (() => {
 
                 }
 
-
-                /*
-                 * SỬA MÓN
-                 */
                 const editFood =
                     event.target.closest(
                         "[data-edit-food]"
@@ -358,10 +315,27 @@ window.ThucDonContentEditor = (() => {
 
                 }
 
+                const saveGroupSource =
+                    event.target.closest(
+                        "[data-group-source-save]"
+                    );
 
-                /*
-                 * XÓA MÓN
-                 */
+
+                if (saveGroupSource) {
+
+                    event.preventDefault();
+
+
+                    saveGroupSourceValue(
+                        root,
+                        editor
+                    );
+
+
+                    return;
+
+                }
+
                 const deleteFood =
                     event.target.closest(
                         "[data-delete-food]"
@@ -383,6 +357,139 @@ window.ThucDonContentEditor = (() => {
                 }
 
             }
+        );
+
+    }
+
+    function saveGroupSourceValue(
+        root,
+        editor
+    ) {
+
+        const source =
+            root.querySelector(
+                "[data-group-source]"
+            );
+
+
+        const select =
+            source?.querySelector(
+                '[name="nhomMonAnId"]'
+            );
+
+
+        const selectedId =
+            select?.value;
+
+
+        if (!selectedId) {
+
+            showContentError(
+                "Vui lòng chọn nhóm món."
+            );
+
+            return;
+
+        }
+
+
+        const selected =
+            root._thucDonOptions
+                ?.nhomMonAn
+                ?.find(
+                    item =>
+                        String(
+                            item.id
+                        ) ===
+                        String(
+                            selectedId
+                        )
+                );
+
+
+        if (!selected) {
+            return;
+        }
+
+
+        const context =
+            getSelectedContext(
+                editor
+            );
+
+
+        if (!context.day) {
+            return;
+        }
+
+
+        const groups =
+            ensureGroups(
+                context.day
+            );
+
+
+        const editingGroupId =
+            source.dataset.groupId;
+
+
+        if (editingGroupId) {
+
+            const group =
+                groups.find(
+                    item =>
+                        String(
+                            item.id
+                        ) ===
+                        String(
+                            editingGroupId
+                        )
+                );
+
+
+            if (group) {
+
+                group.nhomMonAnId =
+                    selected.id;
+
+                group.nhomMonAn = {
+                    ...selected
+                };
+
+            }
+
+        } else {
+
+            groups.push({
+
+                id:
+                    temporaryId(
+                        "group"
+                    ),
+
+                nhomMonAnId:
+                    selected.id,
+
+                nhomMonAn: {
+                    ...selected
+                },
+
+                dsMonAn:
+                    []
+
+            });
+
+        }
+
+
+        source.hidden =
+            true;
+
+        delete source.dataset.groupId;
+
+
+        editor.setWorkingData(
+            context.data
         );
 
     }
@@ -671,7 +778,6 @@ window.ThucDonContentEditor = (() => {
 
     }
 
-
     function handleAddGroup(
         root,
         editor
@@ -696,126 +802,13 @@ window.ThucDonContentEditor = (() => {
         }
 
 
-        const options =
-            (
-                root._thucDonOptions
-                    ?.nhomMonAn ||
-                []
-            )
-                .filter(
-                    item =>
-                        item.active !==
-                        false
-                );
-
-
-        if (
-            !options.length
-        ) {
-
-            showContentError(
-                "Không có nhóm món đang hoạt động."
-            );
-
-            return;
-
-        }
-
-
-        openSelectionEditor({
-
+        openGroupSource(
             root,
-
-            title:
-                "Chọn nhóm món",
-
-            options,
-
-            valueKey:
-                "id",
-
-            labelKey:
-                "tenNhomMonAn",
-
-            onSave:
-                selected => {
-
-                    const groups =
-                        ensureGroups(
-                            context.day
-                        );
-
-
-                    const exists =
-                        groups.some(
-                            group =>
-                                Number(
-                                    group.nhomMonAnId ??
-                                    group.nhomMonAn?.id
-                                ) ===
-                                Number(
-                                    selected.id
-                                )
-                        );
-
-
-                    if (
-                        exists
-                    ) {
-
-                        showContentError(
-                            "Nhóm món này đã có trong ngày."
-                        );
-
-                        return false;
-
-                    }
-
-
-                    groups.push({
-
-                        id:
-                            temporaryId(
-                                "group"
-                            ),
-
-                        nhomMonAnId:
-                            selected.id,
-
-                        nhomMonAn:
-                            {
-                                ...selected
-                            },
-
-                        tenNhomMonAn:
-                            selected.tenNhomMonAn,
-
-                        dsMonAn:
-                            []
-
-                    });
-
-
-                    editor.setWorkingData(
-                        context.data
-                    );
-
-
-                    window.MCS
-                        ?.toast
-                        ?.success(
-                            "Đã thêm nhóm món vào bộ nhớ tạm."
-                        );
-
-
-                    return true;
-
-                }
-
-        });
+            editor,
+            null
+        );
 
     }
-
 
     function handleEditGroup(
         root,
@@ -845,14 +838,10 @@ window.ThucDonContentEditor = (() => {
         }
 
 
-        const groups =
+        const group =
             ensureGroups(
                 context.day
-            );
-
-
-        const group =
-            groups.find(
+            ).find(
                 item =>
                     String(
                         item.id
@@ -868,60 +857,28 @@ window.ThucDonContentEditor = (() => {
         }
 
 
-        const options =
-            root._thucDonOptions
-                ?.nhomMonAn ||
-            [];
-
-
-        openSelectionEditor({
-
+        openGroupSource(
             root,
-
-            title:
-                "Đổi nhóm món",
-
-            options,
-
-            selectedId:
-                group.nhomMonAnId ??
-                group.nhomMonAn?.id,
-
-            valueKey:
-                "id",
-
-            labelKey:
-                "tenNhomMonAn",
-
-            onSave:
-                selected => {
-
-                    group.nhomMonAnId =
-                        selected.id;
+            editor,
+            group.nhomMonAnId ??
+            group.nhomMonAn?.id
+        );
 
 
-                    group.nhomMonAn = {
-                        ...selected
-                    };
+        const source =
+            root.querySelector(
+                "[data-group-source]"
+            );
 
 
-                    group.tenNhomMonAn =
-                        selected.tenNhomMonAn;
+        if (source) {
 
+            source.dataset.groupId =
+                groupId;
 
-                    editor.setWorkingData(
-                        context.data
-                    );
-
-
-                    return true;
-
-                }
-
-        });
+        }
 
     }
-
 
     function handleDeleteGroup(
         root,
@@ -1444,208 +1401,147 @@ window.ThucDonContentEditor = (() => {
 
     }
 
-
-    function openSelectionEditor(
-        config
+    function openGroupSource(
+        root,
+        editor,
+        selectedId = null
     ) {
 
-        const old =
-            document.querySelector(
-                "[data-content-selection-editor]"
+        const source =
+            root.querySelector(
+                "[data-group-source]"
             );
 
 
-        old?.remove();
-
-
-        const overlay =
-            document.createElement(
-                "div"
+        const select =
+            source?.querySelector(
+                '[name="nhomMonAnId"]'
             );
 
 
-        overlay.className =
-            "thuc-don-content-selection";
-
-
-        overlay.dataset.contentSelectionEditor =
-            "true";
+        if (
+            !source ||
+            !select
+        ) {
+            return;
+        }
 
 
         const options =
-            config.options
-                .filter(
-                    item =>
-                        item.active !==
-                        false
-                )
-                .map(
-                    item => {
-
-                        const value =
-                            item[
-                                config.valueKey
-                            ];
+            root._thucDonOptions
+                ?.nhomMonAn ||
+            [];
 
 
-                        const label =
-                            item[
-                                config.labelKey
-                            ];
-
-
-                        const selected =
-                            String(
-                                value
-                            ) ===
-                            String(
-                                config.selectedId
-                            );
-
-
-                        return `
-                            <option
-                                value="${escapeHtml(
-                                    value
-                                )}"
-                                ${
-                                    selected
-                                        ? "selected"
-                                        : ""
-                                }>
-                                ${escapeHtml(
-                                    label
-                                )}
-                            </option>
-                        `;
-
-                    }
-                )
-                .join(
-                    ""
-                );
-
-
-        overlay.innerHTML = `
-            <div class="thuc-don-content-selection__box">
-
-                <strong class="thuc-don-content-selection__title">
-                    ${escapeHtml(
-                        config.title
-                    )}
-                </strong>
-
-                <select
-                    class="thuc-don-content-selection__select"
-                    data-content-selection>
-
-                    <option value="">
-                        -- Chọn --
-                    </option>
-
-                    ${options}
-
-                </select>
-
-                <div class="thuc-don-content-selection__actions">
-
-                    <button
-                        type="button"
-                        class="is-cancel"
-                        data-content-selection-cancel>
-                        Hủy
-                    </button>
-
-                    <button
-                        type="button"
-                        class="is-save"
-                        data-content-selection-save>
-                        Lưu tạm
-                    </button>
-
-                </div>
-
-            </div>
-        `;
-
-
-        document.body.appendChild(
-            overlay
+        setSourceSelectOptions(
+            select,
+            options,
+            "id",
+            "tenNhomMonAn",
+            selectedId
         );
 
 
-        overlay
-            .querySelector(
-                "[data-content-selection-cancel]"
-            )
-            ?.addEventListener(
-                "click",
-                () => {
-
-                    overlay.remove();
-
-                }
-            );
+        source.hidden =
+            false;
 
 
-        overlay
-            .querySelector(
-                "[data-content-selection-save]"
-            )
-            ?.addEventListener(
-                "click",
-                () => {
-
-                    const value =
-                        overlay.querySelector(
-                            "[data-content-selection]"
-                        )?.value;
-
-
-                    const selected =
-                        config.options.find(
-                            item =>
-                                String(
-                                    item[
-                                        config.valueKey
-                                    ]
-                                ) ===
-                                String(
-                                    value
-                                )
-                        );
-
-
-                    if (!selected) {
-
-                        showContentError(
-                            "Vui lòng chọn dữ liệu."
-                        );
-
-                        return;
-
-                    }
-
-
-                    const close =
-                        config.onSave(
-                            selected
-                        );
-
-
-                    if (
-                        close !== false
-                    ) {
-
-                        overlay.remove();
-
-                    }
-
-                }
-            );
+        source.dataset.editingId =
+            selectedId ??
+            "";
 
     }
 
+    function setSourceSelectOptions(
+        select,
+        records,
+        valueKey,
+        labelKey,
+        selectedValue = null
+    ) {
+
+        select.innerHTML =
+            "";
+
+
+        records
+            .filter(
+                item =>
+                    item.active !==
+                    false
+            )
+            .forEach(
+                item => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        String(
+                            item[
+                                valueKey
+                            ]
+                        );
+
+
+                    option.textContent =
+                        item[
+                            labelKey
+                        ] ||
+                        "-";
+
+
+                    select.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+        const wrapper =
+            select.closest(
+                "[data-smart-select]"
+            );
+
+
+        const api =
+            window.MCS
+                ?.smartSelect
+                ?.initialize(
+                    wrapper
+                );
+
+
+        api?.refresh();
+
+
+        if (
+            selectedValue !==
+            null &&
+            selectedValue !==
+            undefined
+        ) {
+
+            api?.setValue(
+                String(
+                    selectedValue
+                ),
+                false
+            );
+
+        } else {
+
+            api?.clear(
+                false
+            );
+
+        }
+
+    }
 
     function confirmAction(
         config

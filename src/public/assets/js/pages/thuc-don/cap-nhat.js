@@ -164,7 +164,6 @@ document.addEventListener(
     }
 );
 
-
 async function submit(
     root,
     editor,
@@ -184,6 +183,40 @@ async function submit(
             trangThai
         );
 
+        if (
+            Number(
+                payload.loaiThucDon
+            ) ===
+            30
+        ) {
+
+            const year =
+                root.querySelector(
+                    '[name="thangApDungNam"]'
+                )?.value;
+
+
+            const month =
+                root.querySelector(
+                    '[name="thangApDungThang"]'
+                )?.value;
+
+
+            if (
+                !year ||
+                !month
+            ) {
+
+                showMonthError(
+                    root,
+                    "Vui lòng chọn năm và tháng áp dụng."
+                );
+
+                return;
+
+            }
+
+        }
 
     const validation =
         validatePayload(
@@ -338,6 +371,8 @@ function preparePayload(
     payload.trangThai =
         trangThai;
 
+    delete payload.thangApDungNam;
+    delete payload.thangApDungThang;
 
     payload.loaiThucDon =
         toNumber(
@@ -370,7 +405,7 @@ function preparePayload(
         payload.tuNgay =
             `${normalizeDate(
                 payload.tuNgay
-            )}T00:00:00`;
+            )}T00:00:00+07:00`;
 
     }
 
@@ -382,15 +417,216 @@ function preparePayload(
         payload.denNgay =
             `${normalizeDate(
                 payload.denNgay
-            )}T23:59:59`;
+            )}T23:59:59+07:00`;
 
     }
 
-
+    payload.dsNgay =
+        prepareDays(
+            payload.dsNgay ||
+            payload.danhSachNgay ||
+            []
+        );
+        
     return payload;
 
 }
 
+function prepareDays(
+    days
+) {
+
+    if (
+        !Array.isArray(
+            days
+        )
+    ) {
+        return [];
+    }
+
+
+    return days.map(
+        (
+            day,
+            dayIndex
+        ) => {
+
+            const ngay =
+                normalizeDate(
+                    day.ngay ||
+                    day.ngayApDung
+                );
+
+
+            return {
+
+                ...getPersistedId(
+                    day.id
+                ),
+
+                ngay:
+                    ngay
+                        ? `${ngay}T00:00:00+07:00`
+                        : null,
+
+                ghiChu:
+                    day.ghiChu ||
+                    null,
+
+                thuTuHienThi:
+                    day.thuTuHienThi ??
+                    dayIndex + 1,
+
+                dsNhomMonAn:
+                    prepareGroups(
+                        day.dsNhomMonAn ||
+                        day.danhSachNhomMonAn ||
+                        []
+                    )
+
+            };
+
+        }
+    );
+
+}
+
+function prepareGroups(
+    groups
+) {
+
+    if (
+        !Array.isArray(
+            groups
+        )
+    ) {
+        return [];
+    }
+
+
+    return groups.map(
+        (
+            group,
+            groupIndex
+        ) => {
+
+            return {
+
+                ...getPersistedId(
+                    group.id
+                ),
+
+                nhomMonAnId:
+                    toNumber(
+                        group.nhomMonAnId ??
+                        group.nhomMonAn?.id
+                    ),
+
+                thuTuHienThi:
+                    group.thuTuHienThi ??
+                    groupIndex + 1,
+
+                ghiChu:
+                    group.ghiChu ||
+                    null,
+
+                dsMonAn:
+                    prepareFoods(
+                        group.dsMonAn ||
+                        group.danhSachMonAn ||
+                        []
+                    )
+
+            };
+
+        }
+    );
+
+}
+
+function prepareFoods(
+    foods
+) {
+
+    if (
+        !Array.isArray(
+            foods
+        )
+    ) {
+        return [];
+    }
+
+
+    return foods.map(
+        (
+            food,
+            foodIndex
+        ) => {
+
+            return {
+
+                ...getPersistedId(
+                    food.id
+                ),
+
+                monAnId:
+                    toNumber(
+                        food.monAnId ??
+                        food.monAn?.id
+                    ),
+
+                thuTuHienThi:
+                    food.thuTuHienThi ??
+                    foodIndex + 1,
+
+                dinhLuong:
+                    food.dinhLuong ??
+                    null,
+
+                donViTinhId:
+                    toNumber(
+                        food.donViTinhId ??
+                        food.donViTinh?.id
+                    ),
+
+                ghiChu:
+                    food.ghiChu ||
+                    null
+
+            };
+
+        }
+    );
+
+}
+
+function getPersistedId(
+    id
+) {
+
+    if (
+        id === null ||
+        id === undefined ||
+        String(
+            id
+        ).startsWith(
+            "tmp-"
+        )
+    ) {
+
+        return {};
+
+    }
+
+
+    return {
+        id:
+            toNumber(
+                id
+            )
+    };
+
+}
 
 function validatePayload(
     data
@@ -482,10 +718,6 @@ function validatePayload(
 
     }
 
-
-    /*
-     * 10 = theo ngày
-     */
     if (
         Number(
             data.loaiThucDon
@@ -502,10 +734,6 @@ function validatePayload(
 
     }
 
-
-    /*
-     * 20 = theo tuần
-     */
     if (
         Number(
             data.loaiThucDon
@@ -535,11 +763,6 @@ function validatePayload(
     }
 
 
-    /*
-     * 30 = theo tháng.
-     * Từ ngày phải là ngày đầu tháng,
-     * đến ngày phải là ngày cuối tháng.
-     */
     if (
         Number(
             data.loaiThucDon
@@ -575,13 +798,6 @@ function validatePayload(
 
     }
 
-
-    /*
-     * 40 = theo thời gian:
-     * chỉ cần denNgay >= tuNgay.
-     */
-
-
     return {
         valid:
             true
@@ -589,43 +805,74 @@ function validatePayload(
 
 }
 
-
 function bindDateBusinessRules(
     root
 ) {
 
-    const loai =
+    const typeSelect =
         root.querySelector(
             '[name="loaiThucDon"]'
         );
 
 
-    const tuNgay =
+    const fromInput =
         root.querySelector(
             '[name="tuNgay"][data-date-value]'
         );
 
 
+    const toInput =
+        root.querySelector(
+            '[name="denNgay"][data-date-value]'
+        );
+
+
+    const fromField =
+        root.querySelector(
+            "[data-menu-from-date]"
+        );
+
+
+    const toField =
+        root.querySelector(
+            "[data-menu-to-date]"
+        );
+
+    const monthFields =
+        root.querySelectorAll(
+            "[data-menu-month-field]"
+        );
+
+
     if (
-        !loai ||
-        !tuNgay
+        !typeSelect ||
+        !fromInput ||
+        !toInput
     ) {
         return;
     }
 
+    let syncing =
+        false;
 
-    const apply =
+
+    const syncFromDate =
         () => {
+
+            if (syncing) {
+                return;
+            }
+
 
             const type =
                 Number(
-                    loai.value
+                    typeSelect.value
                 );
 
 
             const from =
                 normalizeDate(
-                    tuNgay.value
+                    fromInput.value
                 );
 
 
@@ -634,14 +881,16 @@ function bindDateBusinessRules(
             }
 
 
-            switch (
-                type
-            ) {
+            syncing =
+                true;
 
-                /*
-                 * Theo ngày.
-                 */
-                case 10:
+
+            try {
+
+                if (
+                    type ===
+                    10
+                ) {
 
                     setDateValue(
                         root,
@@ -649,13 +898,12 @@ function bindDateBusinessRules(
                         from
                     );
 
-                    break;
+                }
 
-
-                /*
-                 * Theo tuần = 7 ngày.
-                 */
-                case 20:
+                if (
+                    type ===
+                    20
+                ) {
 
                     setDateValue(
                         root,
@@ -666,60 +914,823 @@ function bindDateBusinessRules(
                         )
                     );
 
-                    break;
+                }
 
+            } finally {
 
-                /*
-                 * Theo tháng.
-                 */
-                case 30:
-
-                    setDateValue(
-                        root,
-                        "tuNgay",
-                        firstDayOfMonth(
-                            from
-                        )
-                    );
-
-
-                    setDateValue(
-                        root,
-                        "denNgay",
-                        lastDayOfMonth(
-                            from
-                        )
-                    );
-
-                    break;
-
-
-                /*
-                 * Theo thời gian:
-                 * user tự chọn.
-                 */
-                case 40:
-
-                    break;
+                syncing =
+                    false;
 
             }
 
         };
 
 
-    loai.addEventListener(
+    const syncToDate =
+        () => {
+
+            if (syncing) {
+                return;
+            }
+
+
+            const type =
+                Number(
+                    typeSelect.value
+                );
+
+
+            const to =
+                normalizeDate(
+                    toInput.value
+                );
+
+
+            if (!to) {
+                return;
+            }
+
+
+            syncing =
+                true;
+
+
+            try {
+
+                if (
+                    type ===
+                    10
+                ) {
+
+                    setDateValue(
+                        root,
+                        "tuNgay",
+                        to
+                    );
+
+                }
+
+                if (
+                    type ===
+                    20
+                ) {
+
+                    setDateValue(
+                        root,
+                        "tuNgay",
+                        addDays(
+                            to,
+                            -6
+                        )
+                    );
+
+                }
+
+            } finally {
+
+                syncing =
+                    false;
+
+            }
+
+        };
+
+
+    const changeType =
+        () => {
+
+            const type =
+                Number(
+                    typeSelect.value
+                );
+
+
+            clearFieldError(
+                root,
+                "tuNgay"
+            );
+
+
+            clearFieldError(
+                root,
+                "denNgay"
+            );
+
+
+            if (
+                type ===
+                30
+            ) {
+
+                if (fromField) {
+                    fromField.hidden = true;
+                }
+
+
+                if (toField) {
+                    toField.hidden = true;
+                }
+
+                monthFields.forEach(
+                    field => {
+
+                        field.hidden =
+                            false;
+
+                    }
+                );
+
+                initializeMonthPicker(
+                    root
+                );
+
+
+                return;
+
+            }
+
+            if (fromField) {
+                fromField.hidden = false;
+            }
+
+
+            if (toField) {
+                toField.hidden = false;
+            }
+
+            monthFields.forEach(
+                field => {
+
+                    field.hidden =
+                        true;
+
+                }
+            );
+
+            syncFromDate();
+
+        };
+
+
+    fromInput.addEventListener(
         "change",
-        apply
+        syncFromDate
     );
 
 
-    tuNgay.addEventListener(
+    toInput.addEventListener(
         "change",
-        apply
+        syncToDate
+    );
+
+
+    typeSelect.addEventListener(
+        "change",
+        changeType
+    );
+
+
+    changeType();
+
+}
+
+function initializeMonthPicker(
+    root
+) {
+
+    const yearSelect =
+        root.querySelector(
+            'select[name="thangApDungNam"]'
+        );
+
+
+    const monthSelect =
+        root.querySelector(
+            'select[name="thangApDungThang"]'
+        );
+
+
+    if (
+        !yearSelect ||
+        !monthSelect
+    ) {
+        return;
+    }
+
+
+    const current =
+        new Date();
+
+
+    const currentYear =
+        current.getFullYear();
+
+
+    const currentMonth =
+        current.getMonth() +
+        1;
+
+    const from =
+        normalizeDate(
+            root.querySelector(
+                '[name="tuNgay"]'
+            )?.value
+        );
+
+
+    let selectedYear =
+        null;
+
+
+    let selectedMonth =
+        null;
+
+
+    if (from) {
+
+        const [
+            year,
+            month
+        ] =
+            from
+                .split(
+                    "-"
+                )
+                .map(
+                    Number
+                );
+
+
+        selectedYear =
+            year;
+
+
+        selectedMonth =
+            month;
+
+    }
+
+    const startYear =
+        selectedYear &&
+        selectedYear <
+        currentYear
+            ? selectedYear
+            : currentYear;
+
+
+    const endYear =
+        Math.max(
+            currentYear + 5,
+            selectedYear ||
+            currentYear
+        );
+
+
+    const years =
+        [];
+
+
+    for (
+        let year =
+            startYear;
+
+        year <=
+        endYear;
+
+        year +=
+        1
+    ) {
+
+        years.push({
+
+            value:
+                String(
+                    year
+                ),
+
+            label:
+                String(
+                    year
+                )
+
+        });
+
+    }
+
+
+    setSmartSelectOptions(
+        yearSelect,
+        years,
+        selectedYear
+    );
+
+
+    renderMonthOptions(
+        root,
+        selectedYear,
+        selectedMonth
+    );
+
+    if (
+        yearSelect.dataset.monthRuleBound !==
+        "true"
+    ) {
+
+        yearSelect.dataset.monthRuleBound =
+            "true";
+
+
+        yearSelect.addEventListener(
+            "change",
+            () => {
+
+                renderMonthOptions(
+                    root,
+                    Number(
+                        yearSelect.value
+                    ),
+                    null
+                );
+
+
+                clearMonthError(
+                    root
+                );
+
+            }
+        );
+
+    }
+
+
+    if (
+        monthSelect.dataset.monthRuleBound !==
+        "true"
+    ) {
+
+        monthSelect.dataset.monthRuleBound =
+            "true";
+
+
+        monthSelect.addEventListener(
+            "change",
+            () => {
+
+                applySelectedMonth(
+                    root
+                );
+
+
+                clearMonthError(
+                    root
+                );
+
+            }
+        );
+
+    }
+
+}
+
+function renderMonthOptions(
+    root,
+    selectedYear,
+    selectedMonth = null
+) {
+
+    const monthSelect =
+        root.querySelector(
+            'select[name="thangApDungThang"]'
+        );
+
+
+    if (!monthSelect) {
+        return;
+    }
+
+
+    const current =
+        new Date();
+
+
+    const currentYear =
+        current.getFullYear();
+
+
+    const currentMonth =
+        current.getMonth() +
+        1;
+
+
+    if (!selectedYear) {
+
+        setSmartSelectOptions(
+            monthSelect,
+            [],
+            null
+        );
+
+
+        setSmartSelectDisabled(
+            monthSelect,
+            true
+        );
+
+
+        return;
+
+    }
+
+
+    let startMonth =
+        Number(
+            selectedYear
+        ) ===
+        currentYear
+            ? currentMonth
+            : 1;
+
+    if (
+        Number(
+            selectedYear
+        ) ===
+        currentYear &&
+        selectedMonth &&
+        Number(
+            selectedMonth
+        ) <
+        startMonth
+    ) {
+
+        startMonth =
+            Number(
+                selectedMonth
+            );
+
+    }
+
+
+    const months =
+        [];
+
+
+    for (
+        let month =
+            startMonth;
+
+        month <=
+        12;
+
+        month +=
+        1
+    ) {
+
+        months.push({
+
+            value:
+                String(
+                    month
+                ),
+
+            label:
+                `Tháng ${month}`
+
+        });
+
+    }
+
+
+    setSmartSelectDisabled(
+        monthSelect,
+        false
+    );
+
+
+    setSmartSelectOptions(
+        monthSelect,
+        months,
+        selectedMonth
     );
 
 }
 
+function setSmartSelectOptions(
+    select,
+    options,
+    selectedValue = null
+) {
+
+    if (!select) {
+        return;
+    }
+
+
+    const wrapper =
+        select.closest(
+            "[data-smart-select]"
+        );
+
+
+    const normalizedSelected =
+        selectedValue ===
+            null ||
+        selectedValue ===
+            undefined ||
+        selectedValue ===
+            ""
+            ? ""
+            : String(
+                selectedValue
+            );
+
+    select.innerHTML =
+        "";
+
+
+    options.forEach(
+        item => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                String(
+                    item.value
+                );
+
+
+            option.textContent =
+                item.label;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    select.value =
+        normalizedSelected;
+
+
+    if (
+        !normalizedSelected
+    ) {
+
+        select.selectedIndex =
+            -1;
+
+    }
+
+
+    if (!wrapper) {
+        return;
+    }
+
+    window.MCS
+        ?.smartSelect
+        ?.initialize(
+            wrapper
+        );
+
+
+    if (
+        typeof wrapper
+            .smartSelect
+            ?.setOptions ===
+        "function"
+    ) {
+
+        wrapper
+            .smartSelect
+            .setOptions(
+                options,
+                false
+            );
+
+    }
+
+
+    if (
+        typeof wrapper
+            .smartSelect
+            ?.setValue ===
+        "function"
+    ) {
+
+        wrapper
+            .smartSelect
+            .setValue(
+                normalizedSelected,
+                false
+            );
+
+    }
+
+}
+
+function setSmartSelectDisabled(
+    select,
+    disabled
+) {
+
+    if (!select) {
+        return;
+    }
+
+
+    select.disabled =
+        disabled;
+
+
+    const wrapper =
+        select.closest(
+            "[data-smart-select]"
+        );
+
+
+    if (!wrapper) {
+        return;
+    }
+
+
+    wrapper.classList.toggle(
+        "is-disabled",
+        disabled
+    );
+
+
+    const search =
+        wrapper.querySelector(
+            "[data-smart-select-search]"
+        );
+
+
+    const toggle =
+        wrapper.querySelector(
+            "[data-smart-select-toggle]"
+        );
+
+
+    if (search) {
+
+        search.disabled =
+            disabled;
+
+    }
+
+
+    if (toggle) {
+
+        toggle.disabled =
+            disabled;
+
+    }
+
+}
+
+function applySelectedMonth(
+    root
+) {
+
+    const year =
+        Number(
+            root.querySelector(
+                '[name="thangApDungNam"]'
+            )?.value
+        );
+
+
+    const month =
+        Number(
+            root.querySelector(
+                '[name="thangApDungThang"]'
+            )?.value
+        );
+
+
+    if (
+        !year ||
+        !month
+    ) {
+        return;
+    }
+
+
+    const monthText =
+        String(
+            month
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    const from =
+        `${year}-${monthText}-01`;
+
+
+    const last =
+        new Date(
+            year,
+            month,
+            0
+        );
+
+
+    const to =
+        toIsoDate(
+            last
+        );
+
+    setDateValue(
+        root,
+        "tuNgay",
+        from,
+        false
+    );
+
+
+    setDateValue(
+        root,
+        "denNgay",
+        to,
+        false
+    );
+
+}
+
+function showMonthError(
+    root,
+    message
+) {
+
+    const field =
+        root.querySelector(
+            "[data-menu-month-field]"
+        );
+
+
+    const error =
+        root.querySelector(
+            "[data-month-error]"
+        );
+
+
+    field?.classList.add(
+        "has-error"
+    );
+
+
+    if (error) {
+
+        error.textContent =
+            message;
+
+        error.hidden =
+            false;
+
+    }
+
+}
+
+function clearMonthError(
+    root
+) {
+
+    const field =
+        root.querySelector(
+            "[data-menu-month-field]"
+        );
+
+
+    const error =
+        root.querySelector(
+            "[data-month-error]"
+        );
+
+
+    field?.classList.remove(
+        "has-error"
+    );
+
+
+    if (error) {
+
+        error.textContent =
+            "";
+
+        error.hidden =
+            true;
+
+    }
+
+}
 
 async function updateThucDon(
     id,
@@ -806,7 +1817,6 @@ async function updateThucDon(
     return result;
 
 }
-
 
 async function loadThucDon(
     id
@@ -1040,23 +2050,25 @@ function syncDateFields(
     setDateValue(
         root,
         "tuNgay",
-        data?.tuNgay
+        data?.tuNgay,
+        false
     );
 
 
     setDateValue(
         root,
         "denNgay",
-        data?.denNgay
+        data?.denNgay,
+        false
     );
 
 }
 
-
 function setDateValue(
     root,
     name,
-    value
+    value,
+    dispatchChange = true
 ) {
 
     const hidden =
@@ -1070,14 +2082,20 @@ function setDateValue(
     }
 
 
-    const field =
+    const fieldContainer =
+        hidden.closest(
+            "[data-form-field]"
+        );
+
+
+    const datePicker =
         hidden.closest(
             "[data-date-picker]"
         );
 
 
     const display =
-        field?.querySelector(
+        datePicker?.querySelector(
             "[data-date-input]"
         );
 
@@ -1087,10 +2105,8 @@ function setDateValue(
             value
         );
 
-
     hidden.value =
-        normalized;
-
+        normalized || "";
 
     if (display) {
 
@@ -1103,19 +2119,39 @@ function setDateValue(
 
     }
 
+    const datePickerApi =
+        fieldContainer?.datePicker ||
+        datePicker?.datePicker;
 
-    hidden.dispatchEvent(
-        new Event(
-            "change",
-            {
-                bubbles:
-                    true
-            }
-        )
-    );
+
+    if (
+        datePickerApi &&
+        typeof datePickerApi.setValue ===
+        "function"
+    ) {
+
+        datePickerApi.setValue(
+            normalized,
+            false
+        );
+
+    }
+
+    if (dispatchChange) {
+
+        hidden.dispatchEvent(
+            new Event(
+                "change",
+                {
+                    bubbles:
+                        true
+                }
+            )
+        );
+
+    }
 
 }
-
 
 function normalizeDate(
     value
@@ -1126,23 +2162,90 @@ function normalizeDate(
     }
 
 
-    const match =
+    const text =
         String(
             value
-        ).match(
-            /^(\d{4})-(\d{2})-(\d{2})/
+        ).trim();
+
+    if (
+        /^\d{4}-\d{2}-\d{2}$/.test(
+            text
+        )
+    ) {
+
+        return text;
+
+    }
+
+    const date =
+        new Date(
+            text
         );
 
 
-    if (!match) {
-        return "";
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        const match =
+            text.match(
+                /^(\d{4})-(\d{2})-(\d{2})/
+            );
+
+
+        return match
+            ? `${match[1]}-${match[2]}-${match[3]}`
+            : "";
+
     }
 
 
-    return `${match[1]}-${match[2]}-${match[3]}`;
+    const parts =
+        new Intl.DateTimeFormat(
+            "en-CA",
+            {
+                timeZone:
+                    "Asia/Ho_Chi_Minh",
+
+                year:
+                    "numeric",
+
+                month:
+                    "2-digit",
+
+                day:
+                    "2-digit"
+            }
+        )
+            .formatToParts(
+                date
+            );
+
+
+    const map = {};
+
+
+    parts.forEach(
+        part => {
+
+            map[
+                part.type
+            ] =
+                part.value;
+
+        }
+    );
+
+
+    return (
+        `${map.year}-` +
+        `${map.month}-` +
+        `${map.day}`
+    );
 
 }
-
 
 function dateOnly(
     value
@@ -1153,7 +2256,6 @@ function dateOnly(
     );
 
 }
-
 
 function formatDateVi(
     value
@@ -1178,7 +2280,6 @@ function formatDateVi(
 
 }
 
-
 function addDays(
     value,
     count
@@ -1201,7 +2302,6 @@ function addDays(
     );
 
 }
-
 
 function firstDayOfMonth(
     value
@@ -1229,7 +2329,6 @@ function firstDayOfMonth(
 
 }
 
-
 function lastDayOfMonth(
     value
 ) {
@@ -1254,7 +2353,6 @@ function lastDayOfMonth(
     );
 
 }
-
 
 function createLocalDate(
     value
@@ -1284,7 +2382,6 @@ function createLocalDate(
 
 }
 
-
 function toIsoDate(
     date
 ) {
@@ -1312,7 +2409,6 @@ function toIsoDate(
 
 }
 
-
 function toNumber(
     value
 ) {
@@ -1332,7 +2428,6 @@ function toNumber(
 
 }
 
-
 function invalid(
     field,
     message
@@ -1348,7 +2443,6 @@ function invalid(
     };
 
 }
-
 
 function setLoading(
     root,

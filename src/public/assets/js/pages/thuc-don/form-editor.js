@@ -595,7 +595,6 @@ window.ThucDonEditor = (() => {
 
     }
 
-
     function setSelectValue(
         root,
         name,
@@ -613,13 +612,41 @@ window.ThucDonEditor = (() => {
         }
 
 
-        select.value =
+        const normalizedValue =
             value === null ||
             value === undefined
                 ? ""
                 : String(
                     value
                 );
+
+
+        select.value =
+            normalizedValue;
+
+
+        const wrapper =
+            select.closest(
+                "[data-smart-select]"
+            );
+
+
+        const api =
+            wrapper?.smartSelect;
+
+
+        if (
+            api &&
+            typeof api.setValue ===
+            "function"
+        ) {
+
+            api.setValue(
+                normalizedValue,
+                false
+            );
+
+        }
 
 
         select.dispatchEvent(
@@ -633,8 +660,7 @@ window.ThucDonEditor = (() => {
         );
 
     }
-
-
+    
     function renderStatus(
         root,
         value

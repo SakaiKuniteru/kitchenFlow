@@ -68,12 +68,41 @@ window.ThucDonFormOptions = (() => {
 
         }
 
+        let currentCoSoId =
+            data?.coSoId
+                ? String(
+                    data.coSoId
+                )
+                : "";
+
+
         coSoSelect?.addEventListener(
             "change",
             async event => {
 
                 const coSoId =
-                    event.target.value;
+                    String(
+                        event.target.value ||
+                        ""
+                    );
+
+                if (
+                    coSoId ===
+                    currentCoSoId
+                ) {
+
+                    refreshSmartSelect(
+                        coSoSelect
+                    );
+
+                    return;
+
+                }
+
+
+                currentCoSoId =
+                    coSoId;
+
 
                 await loadNhaAn(
                     root,
@@ -334,165 +363,38 @@ window.ThucDonFormOptions = (() => {
 
         }
 
-
-        refreshSmartSelect(
-            select
-        );
-
-    }
-
-    function refreshSmartSelect(
-        select
-    ) {
-
         const wrapper =
             select.closest(
                 "[data-smart-select]"
             );
 
-        if (!wrapper) {
-            return;
-        }
 
-        const selection =
-            wrapper.querySelector(
-                "[data-smart-select-selection]"
-            );
+        const api =
+            window.MCS
+                ?.smartSelect
+                ?.initialize(
+                    wrapper
+                );
 
-        const optionsContainer =
-            wrapper.querySelector(
-                "[data-smart-select-options]"
-            );
 
-        const empty =
-            wrapper.querySelector(
-                "[data-smart-select-empty]"
-            );
+        api?.refresh();
 
-        const selectedOption =
-            select.selectedIndex >= 0
-                ? select.options[
-                    select.selectedIndex
-                ]
-                : null;
 
-        if (selection) {
+        if (
+            options.selected !==
+            null &&
+            options.selected !==
+            undefined &&
+            options.selected !==
+            ""
+        ) {
 
-            const hasValue =
-                selectedOption &&
+            api?.setValue(
                 String(
-                    selectedOption.value ??
-                    ""
-                ).trim() !== "";
-
-
-            selection.innerHTML =
-                hasValue
-                    ? `
-                        <span>
-                            ${escapeHtml(
-                                selectedOption.textContent.trim()
-                            )}
-                        </span>
-                    `
-                    : `
-                        <span class="smart-select__placeholder">
-                            ${escapeHtml(
-                                wrapper.dataset.selectPlaceholder ||
-                                "Chọn dữ liệu..."
-                            )}
-                        </span>
-                    `;
-
-        }
-
-        if (!optionsContainer) {
-            return;
-        }
-
-        optionsContainer.innerHTML =
-            "";
-
-        const options =
-            Array.from(
-                select.options
-            ).filter(
-                option =>
-                    String(
-                        option.value ??
-                        ""
-                    ).trim() !== ""
+                    options.selected
+                ),
+                false
             );
-
-        options.forEach(
-            option => {
-
-                const item =
-                    document.createElement(
-                        "button"
-                    );
-
-                item.type =
-                    "button";
-
-                item.className =
-                    "smart-select__option";
-
-                item.dataset.value =
-                    option.value;
-
-                item.textContent =
-                    option.textContent;
-
-                if (option.selected) {
-
-                    item.classList.add(
-                        "is-selected"
-                    );
-
-                }
-
-                item.addEventListener(
-                    "click",
-                    () => {
-
-                        select.value =
-                            option.value;
-
-                        select.dispatchEvent(
-                            new Event(
-                                "change",
-                                {
-                                    bubbles: true
-                                }
-                            )
-                        );
-
-                        refreshSmartSelect(
-                            select
-                        );
-
-                        wrapper.querySelector(
-                            "[data-smart-select-dropdown]"
-                        )?.setAttribute(
-                            "hidden",
-                            ""
-                        );
-
-                    }
-                );
-
-                optionsContainer.appendChild(
-                    item
-                );
-
-            }
-        );
-
-        if (empty) {
-
-            empty.hidden =
-                options.length > 0;
 
         }
 

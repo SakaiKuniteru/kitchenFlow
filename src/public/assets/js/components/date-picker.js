@@ -1579,6 +1579,89 @@ function initializeDatePicker(
 
     }
 
+    root.datePicker = {
+
+            setValue(
+                value,
+                emitChange = false
+            ) {
+
+                const parsed =
+                    value
+                        ? parseIsoDateTime(
+                            String(
+                                value
+                            )
+                        )
+                        : null;
+
+
+                state.selectedDate =
+                    parsed
+                        ? new Date(
+                            parsed
+                        )
+                        : null;
+
+
+                if (
+                    state.selectedDate
+                ) {
+
+                    state.viewDate =
+                        new Date(
+                            state.selectedDate
+                        );
+
+                }
+
+
+                updateHiddenValue();
+
+                renderInput();
+
+                renderTimeInputs();
+
+                render();
+
+
+                if (
+                    emitChange
+                ) {
+
+                    dispatchChange();
+
+                }
+
+            },
+
+
+            getValue() {
+
+                return (
+                    elements.value
+                        ?.value ||
+                    ""
+                );
+
+            },
+
+
+            open() {
+
+                openDropdown();
+
+            },
+
+
+            close() {
+
+                closeDropdown();
+
+            }
+
+        };
+
 }
 
 function formatTypingDigits(
@@ -1614,7 +1697,6 @@ function formatTypingDigits(
     );
 
 }
-
 
 function parseVietnameseDate(
     value
@@ -1707,7 +1789,6 @@ function parseVietnameseDate(
 
 }
 
-
 function parseIsoDate(
     value
 ) {
@@ -1756,7 +1837,6 @@ function parseIsoDate(
 
 }
 
-
 function formatVietnameseDate(
     date
 ) {
@@ -1785,7 +1865,6 @@ function formatVietnameseDate(
     return `${day}/${month}/${year}`;
 
 }
-
 
 function formatIsoDate(
     date
@@ -1817,7 +1896,6 @@ function formatIsoDate(
 
 }
 
-
 function startOfDay(
     date
 ) {
@@ -1829,7 +1907,6 @@ function startOfDay(
     );
 
 }
-
 
 function isSameDate(
     firstDate,
@@ -1890,7 +1967,6 @@ function parseTime(
     };
 
 }
-
 
 function clampNumber(
     value,
@@ -1975,7 +2051,6 @@ function formatTime(
 
 }
 
-
 function formatVietnameseDateTime(
     date
 ) {
@@ -1986,7 +2061,6 @@ function formatVietnameseDateTime(
     );
 
 }
-
 
 function formatIsoDateTime(
     date
@@ -1999,7 +2073,6 @@ function formatIsoDateTime(
 
 }
 
-
 function parseIsoDateTime(
     value
 ) {
@@ -2008,68 +2081,92 @@ function parseIsoDateTime(
         return null;
     }
 
+
+    const text =
+        String(
+            value
+        ).trim();
+
+    const dateOnlyMatch =
+        text.match(
+            /^(\d{4})-(\d{2})-(\d{2})$/
+        );
+
+
+    if (
+        dateOnlyMatch
+    ) {
+
+        return new Date(
+            Number(
+                dateOnlyMatch[1]
+            ),
+            Number(
+                dateOnlyMatch[2]
+            ) - 1,
+            Number(
+                dateOnlyMatch[3]
+            )
+        );
+
+    }
+
+    const parsed =
+        new Date(
+            text
+        );
+
+
+    if (
+        !Number.isNaN(
+            parsed.getTime()
+        )
+    ) {
+
+        return parsed;
+
+    }
+
     const match =
-        String(value)
-            .match(
-                /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}):(\d{2}))?$/
-            );
+        text.match(
+            /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}):(\d{2}))?$/
+        );
+
 
     if (!match) {
         return null;
     }
 
 
-    const year =
-        Number(match[1]);
-
-    const month =
-        Number(match[2]);
-
-    const day =
-        Number(match[3]);
-
-    const hour =
-        Number(
-            match[4] || 0
-        );
-
-    const minute =
-        Number(
-            match[5] || 0
-        );
-
-    const second =
-        Number(
-            match[6] || 0
-        );
-
-
     const date =
         new Date(
-            year,
-            month - 1,
-            day,
-            hour,
-            minute,
-            second
+            Number(
+                match[1]
+            ),
+            Number(
+                match[2]
+            ) - 1,
+            Number(
+                match[3]
+            ),
+            Number(
+                match[4] ||
+                0
+            ),
+            Number(
+                match[5] ||
+                0
+            ),
+            Number(
+                match[6] ||
+                0
+            )
         );
 
-
-    if (
-        date.getFullYear() !== year ||
-        date.getMonth() !== month - 1 ||
-        date.getDate() !== day ||
-        date.getHours() !== hour ||
-        date.getMinutes() !== minute ||
-        date.getSeconds() !== second
-    ) {
-        return null;
-    }
 
     return date;
 
 }
-
 
 function parseVietnameseDateTime(
     value
@@ -2136,7 +2233,6 @@ function parseVietnameseDateTime(
     return date;
 
 }
-
 
 function formatDateTimeTypingDigits(
     digits

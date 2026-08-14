@@ -77,26 +77,78 @@
             required=true
         }}
 
+        <div
+            class="thuc-don-general-date-field"
+            data-menu-from-date>
 
-        {{> forms/date
-            id="tuNgay"
-            name="tuNgay"
-            label="Từ ngày"
-            placeholder="dd/mm/yyyy"
-            defaultTime="00:00:00"
-            required=true
-        }}
+            {{> forms/date
+                id="tuNgay"
+                name="tuNgay"
+                label="Từ ngày"
+                placeholder="dd/mm/yyyy"
+                defaultTime="00:00:00"
+                required=true
+            }}
+
+        </div>
 
 
-        {{> forms/date
-            id="denNgay"
-            name="denNgay"
-            label="Đến ngày"
-            placeholder="dd/mm/yyyy"
-            defaultTime="23:59:39"
-            required=true
-        }}
+        <div
+            class="thuc-don-general-date-field"
+            data-menu-to-date>
 
+            {{> forms/date
+                id="denNgay"
+                name="denNgay"
+                label="Đến ngày"
+                placeholder="dd/mm/yyyy"
+                defaultTime="23:59:59"
+                required=true
+            }}
+
+        </div>
+
+        <div
+            class="
+                thuc-don-general-month-field
+                thuc-don-general-month-field--year
+            "
+            data-menu-month-field
+            data-menu-year-field
+            hidden>
+
+            {{> forms/select
+                id="thangApDungNam"
+                name="thangApDungNam"
+                label="Năm áp dụng"
+                mode="single"
+                placeholder="Chọn năm"
+                options=null
+                required=true
+            }}
+
+        </div>
+
+        <div
+            class="
+                thuc-don-general-month-field
+                thuc-don-general-month-field--month
+            "
+            data-menu-month-field
+            data-menu-month-select-field
+            hidden>
+
+            {{> forms/select
+                id="thangApDungThang"
+                name="thangApDungThang"
+                label="Tháng áp dụng"
+                mode="single"
+                placeholder="Chọn tháng"
+                options=null
+                required=true
+            }}
+
+        </div>
 
         {{> forms/textarea
             id="moTa"

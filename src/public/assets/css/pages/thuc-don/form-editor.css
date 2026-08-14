@@ -1269,3 +1269,55 @@
 
     border: 1px solid #2563eb;
 }
+
+.thuc-don-general-month-field {
+    min-width: 0;
+}
+
+.thuc-don-general-month-field.has-error
+.form-field__error {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-top: 2px;
+
+    color: #dc2626;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.thuc-don-general-month-field.has-error
+.form-field__error::before {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    width: 16px;
+    height: 16px;
+
+    color: #ffffff;
+
+    font-size: 10px;
+
+    background: #dc2626;
+
+    border-radius: 50%;
+
+    content: "!";
+}
+
+@media (max-width: 650px) {
+
+    .thuc-don-month-picker {
+        grid-template-columns:
+            1fr;
+    }
+
+}

@@ -29,6 +29,44 @@
 
 
     <div
+        class="thuc-don-editor-source"
+        data-day-source
+        hidden>
+
+        {{> forms/date
+            id="noiDungNgay"
+            name="noiDungNgay"
+            label="Ngày áp dụng"
+            placeholder="dd/mm/yyyy"
+            defaultTime="00:00:00"
+        }}
+
+        <div class="thuc-don-editor-source__actions">
+
+            <button
+                type="button"
+                class="thuc-don-form-action"
+                data-day-source-cancel>
+
+                Hủy
+
+            </button>
+
+            <button
+                type="button"
+                class="thuc-don-form-action is-primary"
+                data-day-source-save>
+
+                Lưu
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div
         class="thuc-don-days"
         data-days-list>
     </div>
