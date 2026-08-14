@@ -1,79 +1,64 @@
-<link rel="stylesheet" href="/assets/css/pages/thuc-don/forms.css">
-<link rel="stylesheet" href="/assets/css/pages/thuc-don/form-editor.css">
+<link rel="stylesheet" href="/assets/css/pages/thuc-don/form.css" >
+<link rel="stylesheet" href="/assets/css/pages/thuc-don/form-editor.css" >
 
 <main
-    class="thuc-don-editor"
-    data-thuc-don-editor
-    data-form-mode="create">
+    class="td-page td-editor"
+    data-thuc-don-page
+    data-page-mode="create">
+
+    <div class="td-topline">
+
+        <button
+            type="button"
+            class="td-back-link"
+            data-form-back>
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Quay lại
+
+        </button>
+
+    </div>
 
 
-    <header class="thuc-don-editor__header">
+    <header class="td-page-header">
 
         <div>
 
-            <h1 class="thuc-don-editor__title">
-                Thêm mới thực đơn
+            <h1>
+                Tạo thực đơn mới
             </h1>
 
-            <p class="thuc-don-editor__description">
-                Khởi tạo thông tin và nội dung thực đơn.
+            <p>
+                Thiết lập thông tin và xây dựng nội dung thực đơn
             </p>
 
         </div>
 
-        <div class="thuc-don-editor__actions">
+
+        <div class="td-page-actions">
 
             <button
+                class="td-btn"
                 type="button"
-                class="thuc-don-editor__action is-back"
-                data-form-back>
-
-                <i class="fa-solid fa-arrow-left"></i>
-
-                <span>
-                    Quay lại
-                </span>
-
-            </button>
-
-            <button
-                type="button"
-                class="thuc-don-editor__action is-cancel"
                 data-form-cancel>
 
                 <i class="fa-solid fa-xmark"></i>
 
-                <span>
-                    Hủy
-                </span>
+                Hủy bỏ
 
             </button>
 
 
             <button
+                class="td-btn td-btn--primary"
                 type="button"
-                class="thuc-don-editor__action is-save"
                 data-form-save>
-
-                <i class="fa-regular fa-floppy-disk"></i>
-
-                <span>
-                    Lưu
-                </span>
-
-            </button>
-
-
-            <button
-                type="button"
-                class="thuc-don-editor__action is-save-approve"
-                data-form-save-approve>
 
                 <i class="fa-solid fa-check"></i>
 
-                <span>
-                    Lưu và duyệt
-                </span>
+                Thêm mới
 
             </button>
 
@@ -83,64 +68,71 @@
 
 
     <div
-        class="thuc-don-form"
+        class="td-form"
         data-thuc-don-form
         data-form-mode="create">
 
-        <div
-            hidden
-            data-thuc-don-options>
-
-            {{#each formOptions.loaiThucDon}}
-
-                <span
-                    data-loai-thuc-don-option
-                    data-value="{{value}}"
-                    data-label="{{label}}">
-                </span>
-
-            {{/each}}
-
-
-            {{#each formOptions.trangThai}}
-
-                <span
-                    data-trang-thai-option
-                    data-value="{{value}}"
-                    data-label="{{label}}">
-                </span>
-
-            {{/each}}
-
-        </div>
-
-
         {{> thuc-don/form-thong-tin-chung}}
 
-
-        <section class="thuc-don-form__content">
-
-            <div class="thuc-don-form__menu-layout">
-
-                {{> thuc-don/form-ngay}}
-
-                {{> thuc-don/form-nhom-mon}}
-
-                {{> thuc-don/form-mon-an}}
-
-            </div>
-
-        </section>
+        {{> thuc-don/form-noi-dung}}
 
     </div>
 
 
+    {{> thuc-don/modal-ngay}}
+
+    {{> thuc-don/modal-nhom}}
+
+    {{> thuc-don/modal-mon}}
+
+
+    <footer class="td-summary-footer">
+
+        <div>
+
+            <strong data-summary-count>
+                0 ngày · 0 nhóm · 0 món
+            </strong>
+
+            <span data-summary-quantity>
+                Tổng định lượng: 0
+            </span>
+
+        </div>
+
+
+        <div>
+
+            <button
+                class="td-btn"
+                type="button"
+                data-form-cancel>
+
+                Hủy bỏ
+
+            </button>
+
+
+            <button
+                class="td-btn td-btn--primary"
+                type="button"
+                data-form-save>
+
+                Thêm mới
+
+            </button>
+
+        </div>
+
+    </footer>
+
 </main>
 
 
-<script src="/assets/js/pages/thuc-don/forms.js"></script>
-<script src="/assets/js/pages/thuc-don/form-options.js"></script>
-<script src="/assets/js/pages/thuc-don/form-editor.js"></script>
-<script src="/assets/js/pages/thuc-don/form-image.js"></script>
-<script src="/assets/js/pages/thuc-don/form-content-editor.js"></script>
+<script src="/assets/js/pages/thuc-don/api.js"></script>
+<script src="/assets/js/pages/thuc-don/options.js"></script>
+<script src="/assets/js/pages/thuc-don/form.js"></script>
+<script src="/assets/js/pages/thuc-don/payload.js"></script>
+<script src="/assets/js/pages/thuc-don/content-editor.js"></script>
+<script src="/assets/js/pages/thuc-don/editor.js"></script>
 <script src="/assets/js/pages/thuc-don/them-moi.js"></script>

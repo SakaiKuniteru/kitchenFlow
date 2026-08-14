@@ -1,24 +1,27 @@
 <section
-    class="thuc-don-general thuc-don-general--editor"
-    data-thuc-don-general>
+    class="td-card td-general"
+    data-general-section>
 
-    <header class="thuc-don-general__header">
+    <header class="td-card__header">
 
         <div>
 
-            <h2 class="thuc-don-general__title">
+            <h2>
                 Thông tin chung
             </h2>
 
-            <p class="thuc-don-general__description">
-                Thông tin chung và phạm vi áp dụng của thực đơn.
+            <p>
+                Thiết lập thông tin và phạm vi áp dụng của thực đơn.
             </p>
 
         </div>
 
     </header>
 
-    <div class="thuc-don-general-form">
+
+    <div
+        class="td-general__grid"
+        data-general-edit-fields>
 
         {{> forms/input
             id="maThucDon"
@@ -37,6 +40,7 @@
             required=true
         }}
 
+
         {{> forms/select
             id="loaiThucDon"
             name="loaiThucDon"
@@ -46,6 +50,7 @@
             options=formOptions.loaiThucDon
             required=true
         }}
+
 
         {{> forms/select
             id="coSoId"
@@ -57,6 +62,7 @@
             required=true
         }}
 
+
         {{> forms/select
             id="nhaAnId"
             name="nhaAnId"
@@ -66,6 +72,7 @@
             options=null
             required=true
         }}
+
 
         {{> forms/select
             id="caAnId"
@@ -77,9 +84,8 @@
             required=true
         }}
 
-        <div
-            class="thuc-don-general-date-field"
-            data-menu-from-date>
+
+        <div data-menu-from-date>
 
             {{> forms/date
                 id="tuNgay"
@@ -93,9 +99,7 @@
         </div>
 
 
-        <div
-            class="thuc-don-general-date-field"
-            data-menu-to-date>
+        <div data-menu-to-date>
 
             {{> forms/date
                 id="denNgay"
@@ -108,69 +112,165 @@
 
         </div>
 
-        <div
-            class="
-                thuc-don-general-month-field
-                thuc-don-general-month-field--year
-            "
-            data-menu-month-field
-            data-menu-year-field
-            hidden>
 
-            {{> forms/select
-                id="thangApDungNam"
-                name="thangApDungNam"
-                label="Năm áp dụng"
-                mode="single"
-                placeholder="Chọn năm"
-                options=null
-                required=true
+        <div class="td-general__description">
+
+            {{> forms/textarea
+                id="moTa"
+                name="moTa"
+                label="Mô tả"
+                placeholder="Nhập mô tả thực đơn"
+                rows=3
             }}
 
         </div>
 
-        <div
-            class="
-                thuc-don-general-month-field
-                thuc-don-general-month-field--month
-            "
-            data-menu-month-field
-            data-menu-month-select-field
-            hidden>
 
-            {{> forms/select
-                id="thangApDungThang"
-                name="thangApDungThang"
-                label="Tháng áp dụng"
-                mode="single"
-                placeholder="Chọn tháng"
-                options=null
-                required=true
-            }}
-
-        </div>
-
-        {{> forms/textarea
-            id="moTa"
-            name="moTa"
-            label="Mô tả"
-            placeholder="Nhập mô tả thực đơn"
-            rows=1
-            fieldClass="thuc-don-general-form__description"
-        }}
-
-
-        <div class="form-field">
+        <div class="form-field td-general__status-field">
 
             <label class="form-field__label">
                 Trạng thái
             </label>
 
             <span
-                class="thuc-don-general__status is-new"
+                class="td-status is-new"
                 data-editor-status>
-                Tạo mới/Chờ duyệt
+
+                -
+
             </span>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="td-general__detail"
+        data-general-detail-fields
+        hidden>
+
+        <div>
+
+            <span>
+                Mã thực đơn
+            </span>
+
+            <strong data-detail-ma>
+                -
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                Tên thực đơn
+            </span>
+
+            <strong data-detail-ten>
+                -
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                Loại thực đơn
+            </span>
+
+            <strong data-detail-loai>
+                -
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                Cơ sở
+            </span>
+
+            <strong data-detail-co-so>
+                -
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                Nhà ăn
+            </span>
+
+            <strong data-detail-nha-an>
+                -
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                Ca ăn
+            </span>
+
+            <strong data-detail-ca-an>
+                -
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                Thời gian áp dụng
+            </span>
+
+            <strong data-detail-thoi-gian>
+                -
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                Trạng thái
+            </span>
+
+            <strong>
+
+                <span
+                    class="td-status"
+                    data-detail-trang-thai>
+
+                    -
+
+                </span>
+
+            </strong>
+
+        </div>
+
+
+        <div class="is-full">
+
+            <span>
+                Mô tả
+            </span>
+
+            <strong data-detail-mo-ta>
+                -
+            </strong>
 
         </div>
 

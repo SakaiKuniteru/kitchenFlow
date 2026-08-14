@@ -1,0 +1,1323 @@
+.thuc-don-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.thuc-don-editor__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 24px;
+
+    min-width: 0;
+
+    padding: 18px 20px;
+
+    background: #ffffff;
+
+    border: 1px solid #e7ecf4;
+    border-radius: 12px;
+}
+
+.thuc-don-editor__header > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+}.thuc-don-editor__title {
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.thuc-don-editor__description {
+    margin: 5px 0 0;
+
+    color: #8591a6;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+}
+
+.thuc-don-editor__actions {
+    display: flex;
+    flex: 0 0 auto;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 7px;
+
+    white-space: nowrap;
+}
+
+.thuc-don-editor__action {
+    display: inline-flex;
+    flex: 0 0 auto;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 34px;
+
+    gap: 6px;
+
+    padding: 0 11px;
+
+    white-space: nowrap;
+
+    color: #475569;
+
+    font-size: 12px;
+    font-weight: 650;
+
+    background: #ffffff;
+
+    border: 1px solid #dbe3ee;
+    border-radius: 7px;
+
+    cursor: pointer;
+}
+
+.thuc-don-editor__action i {
+    flex: 0 0 auto;
+
+    font-size: 11px;
+}
+
+.thuc-don-editor__action span {
+    white-space: nowrap;
+}
+
+.thuc-don-editor__action.is-back {
+    color: #475569;
+
+    background: #ffffff;
+}
+
+.thuc-don-editor__action.is-cancel {
+    color: #dc2626;
+
+    background: #fff5f5;
+
+    border-color: #fecaca;
+}
+
+.thuc-don-editor__action.is-save {
+    color: #2563eb;
+
+    background: #eff6ff;
+
+    border-color: #bfdbfe;
+}
+
+.thuc-don-editor__action.is-save-approve {
+    color: #ffffff;
+
+    background: #16a34a;
+
+    border-color: #16a34a;
+}
+
+.thuc-don-editor__action:disabled {
+    cursor: not-allowed;
+
+    opacity: .6;
+}
+
+.thuc-don-editor.is-loading {
+    pointer-events: none;
+
+    opacity: .6;
+}
+
+@media (max-width: 1200px) {
+
+    .thuc-don-editor__header {
+        gap: 16px;
+
+        padding: 16px 18px;
+    }
+
+    .thuc-don-editor__title {
+        font-size: 18px;
+    }
+
+    .thuc-don-editor__description {
+        font-size: 12px;
+    }
+
+    .thuc-don-editor__actions {
+        gap: 5px;
+    }
+
+    .thuc-don-editor__action {
+        min-height: 32px;
+
+        gap: 5px;
+
+        padding: 0 9px;
+
+        font-size: 11px;
+    }
+
+    .thuc-don-editor__action i {
+        font-size: 10px;
+    }
+
+}
+
+@media (max-width: 980px) {
+
+    .thuc-don-editor__action.is-back,
+    .thuc-don-editor__action.is-cancel {
+        width: 32px;
+        min-width: 32px;
+
+        padding: 0;
+    }
+
+    .thuc-don-editor__action.is-back span,
+    .thuc-don-editor__action.is-cancel span {
+        display: none;
+    }
+
+}
+
+@media (max-width: 820px) {
+
+    .thuc-don-editor__header {
+        gap: 10px;
+
+        padding: 14px;
+    }
+
+    .thuc-don-editor__title {
+        font-size: 17px;
+    }
+
+    .thuc-don-editor__description {
+        max-width: 320px;
+
+        overflow: hidden;
+
+        font-size: 11px;
+
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .thuc-don-editor__actions {
+        gap: 5px;
+    }
+
+    .thuc-don-editor__action,
+    .thuc-don-editor__action.is-back,
+    .thuc-don-editor__action.is-cancel,
+    .thuc-don-editor__action.is-save,
+    .thuc-don-editor__action.is-save-approve {
+        width: 32px;
+        min-width: 32px;
+        height: 32px;
+        min-height: 32px;
+
+        padding: 0;
+
+        border-radius: 7px;
+    }
+
+    .thuc-don-editor__action span,
+    .thuc-don-editor__action.is-back span,
+    .thuc-don-editor__action.is-cancel span,
+    .thuc-don-editor__action.is-save span,
+    .thuc-don-editor__action.is-save-approve span {
+        display: none;
+    }
+
+    .thuc-don-editor__action i {
+        font-size: 12px;
+    }
+
+}
+
+@media (max-width: 560px) {
+
+    .thuc-don-editor__header {
+        gap: 8px;
+
+        padding: 12px;
+    }
+
+    .thuc-don-editor__title {
+        font-size: 15px;
+    }
+
+    .thuc-don-editor__description {
+        display: none;
+    }
+
+    .thuc-don-editor__actions {
+        gap: 4px;
+    }
+
+    .thuc-don-editor__action,
+    .thuc-don-editor__action.is-back,
+    .thuc-don-editor__action.is-cancel,
+    .thuc-don-editor__action.is-save,
+    .thuc-don-editor__action.is-save-approve {
+        width: 30px;
+        min-width: 30px;
+        height: 30px;
+        min-height: 30px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .thuc-don-editor__header {
+        grid-template-columns:
+            minmax(0, 1fr);
+
+        gap: 10px;
+    }
+
+    .thuc-don-editor__actions {
+        justify-content: flex-start;
+    }
+
+    .thuc-don-editor__title {
+        font-size: 17px;
+    }
+
+}
+
+.thuc-don-general-form {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        );
+
+    gap: 20px 24px;
+
+    padding: 22px 20px;
+}
+
+.thuc-don-general-form__full {
+    grid-column:
+        span 3;
+}
+
+.thuc-don-general-form .form-field {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    gap: 7px;
+}
+
+.thuc-don-general-form .form-label {
+    color: #68778f;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.thuc-don-general-form .form-control {
+    width: 100%;
+    min-height: 40px;
+
+    padding: 8px 11px;
+
+    color: #263248;
+
+    font-size: 13px;
+
+    background: #ffffff;
+
+    border: 1px solid #dce4ef;
+    border-radius: 7px;
+
+    outline: none;
+}
+
+.thuc-don-general-form textarea.form-control {
+    min-height: 90px;
+
+    resize: vertical;
+}
+
+.thuc-don-general-form .form-control:focus {
+    border-color: #8bb3ff;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, .08);
+}
+
+.thuc-don-general-form .form-control:disabled {
+    color: #94a3b8;
+
+    background: #f8fafc;
+
+    cursor: not-allowed;
+}
+
+@media (max-width: 1100px) {
+
+    .thuc-don-general-form {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+    .thuc-don-general-form__full {
+        grid-column:
+            span 2;
+    }
+
+}
+
+@media (max-width: 650px) {
+
+    .thuc-don-general-form {
+        grid-template-columns:
+            1fr;
+    }
+
+    .thuc-don-general-form__full {
+        grid-column:
+            auto;
+    }
+
+}
+
+.thuc-don-form-action {
+    display: inline-flex;
+    flex: 0 0 auto;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 32px;
+
+    gap: 6px;
+
+    padding: 0 10px;
+
+    color: #2563eb;
+
+    font-size: 12px;
+    font-weight: 650;
+
+    background: #f5f8ff;
+
+    border: 1px solid #dbe7ff;
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    transition:
+        color .15s ease,
+        background .15s ease,
+        border-color .15s ease;
+}
+
+.thuc-don-form-action:hover {
+    color: #1d4ed8;
+
+    background: #edf4ff;
+
+    border-color: #bfd4ff;
+}
+
+.thuc-don-form-action i {
+    font-size: 11px;
+}
+
+
+
+.thuc-don-form-action,
+.thuc-don-menu-column__footer-add {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    min-height: 34px;
+
+    padding: 0 11px;
+
+    color: #2563eb;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    background: #f3f7ff;
+
+    border: 1px solid #dbe7ff;
+    border-radius: 7px;
+
+    cursor: pointer;
+}
+
+.thuc-don-form-action {
+    white-space: nowrap;
+}
+
+.thuc-don-form-action span {
+    white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+
+    .thuc-don-form-action {
+        min-height: 30px;
+
+        padding: 0 9px;
+
+        font-size: 11px;
+    }
+}
+
+
+
+.thuc-don-item-actions,
+.thuc-don-food-row__actions,
+.thuc-don-food-card__actions {
+    display: flex;
+    flex: 0 0 auto;
+
+    align-items: center;
+
+    gap: 3px;
+
+    padding-right: 7px;
+}
+
+.thuc-don-item-action {
+    display: inline-flex;
+    flex: 0 0 auto;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 27px;
+    height: 27px;
+
+    padding: 0;
+
+    color: #718096;
+
+    background: transparent;
+
+    border: 0;
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    transition:
+        color .14s ease,
+        background .14s ease;
+}
+
+.thuc-don-item-action i {
+    font-size: 12px;
+}
+
+.thuc-don-item-action:hover {
+    color: #2563eb;
+
+    background: #edf4ff;
+}
+
+.thuc-don-item-action.is-danger {
+    color: #94a3b8;
+}
+
+.thuc-don-item-action.is-danger:hover {
+    color: #dc2626;
+
+    background: #fff0f0;
+}
+
+.thuc-don-day
+.thuc-don-item-actions,
+.thuc-don-group
+.thuc-don-item-actions {
+    opacity: 0;
+
+    transform: translateX(4px);
+
+    transition:
+        opacity .14s ease,
+        transform .14s ease;
+}
+
+.thuc-don-day:hover
+.thuc-don-item-actions,
+.thuc-don-group:hover
+.thuc-don-item-actions,
+.thuc-don-day.is-active
+.thuc-don-item-actions,
+.thuc-don-group.is-active
+.thuc-don-item-actions {
+    opacity: 1;
+
+    transform: translateX(0);
+}
+
+.thuc-don-day.is-active
+.thuc-don-item-action {
+    color:
+        rgba(255, 255, 255, .82);
+}
+
+.thuc-don-day.is-active
+.thuc-don-item-action:hover {
+    color: #ffffff;
+
+    background:
+        rgba(255, 255, 255, .14);
+}
+
+.thuc-don-day.is-active
+.thuc-don-item-action.is-danger:hover {
+    color: #ffffff;
+
+    background:
+        rgba(220, 38, 38, .35);
+}
+
+.thuc-don-editor__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+}
+
+.thuc-don-editor__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 34px;
+
+    gap: 6px;
+
+    padding: 0 11px;
+
+    color: #475569;
+
+    font-size: 12px;
+    font-weight: 650;
+
+    background: #ffffff;
+
+    border: 1px solid #dbe3ee;
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        border-color .15s ease,
+        color .15s ease;
+}
+
+
+.thuc-don-editor__action.is-back:hover {
+    color: #334155;
+    background: #f8fafc;
+}
+
+.thuc-don-editor__action.is-cancel {
+    color: #dc2626;
+    background: #fffafa;
+    border-color: #fecaca;
+}
+
+.thuc-don-editor__action.is-cancel:hover {
+    background: #fef2f2;
+}
+
+.thuc-don-editor__action.is-save {
+    color: #2563eb;
+    background: #f4f8ff;
+    border-color: #cfe0ff;
+}
+
+.thuc-don-editor__action.is-save:hover {
+    background: #eaf2ff;
+}
+
+.thuc-don-editor__action.is-save-approve {
+    color: #ffffff;
+    background: #16a34a;
+    border-color: #16a34a;
+}
+
+.thuc-don-editor__action.is-save-approve:hover {
+    background: #15803d;
+    border-color: #15803d;
+}
+
+.thuc-don-item-actions,
+.thuc-don-food-card__actions,
+.thuc-don-food-row__actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 2px;
+}
+
+.thuc-don-item-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 25px;
+    height: 25px;
+
+    padding: 0;
+
+    color: #8492a8;
+
+    background: transparent;
+
+    border: 0;
+    border-radius: 6px;
+
+    cursor: pointer;
+}
+
+.thuc-don-item-action i {
+    font-size: 11px;
+}
+
+.thuc-don-item-action:hover {
+    color: #2563eb;
+    background: #eff6ff;
+}
+
+.thuc-don-item-action.is-danger:hover {
+    color: #dc2626;
+    background: #fef2f2;
+}
+
+.thuc-don-editor-bottom-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 52px;
+
+    padding: 8px;
+
+    opacity: .35;
+
+    transition:
+        opacity .15s ease;
+}
+
+.thuc-don-menu-column:hover
+.thuc-don-editor-bottom-action,
+.thuc-don-food-group:hover
+.thuc-don-editor-bottom-action {
+    opacity: 1;
+}
+
+.thuc-don-editor-bottom-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+
+    padding: 0;
+
+    color: #2563eb;
+
+    background: #f4f8ff;
+
+    border: 1px solid #cfe0ff;
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 3px 10px
+        rgba(37, 99, 235, .08);
+
+    transition:
+        transform .15s ease,
+        background .15s ease;
+}
+
+.thuc-don-editor-bottom-add:hover {
+    background: #e9f1ff;
+
+    transform:
+        translateY(-1px);
+}
+
+.thuc-don-editor-bottom-add i {
+    font-size: 12px;
+}
+
+.thuc-don-food-card__image-box {
+    position: relative;
+}
+
+.thuc-don-food-card__image-box {
+    position: relative;
+
+    overflow: hidden;
+
+    background: #f5f7fb;
+
+    border-radius: 10px;
+}
+
+.thuc-don-food-image-trigger {
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    padding: 0;
+
+    overflow: hidden;
+
+    background: transparent;
+
+    border: 0;
+
+    cursor: pointer;
+}
+
+/* */
+
+.thuc-don-food-card__image-box {
+    position: relative;
+
+    overflow: hidden;
+
+    background: #f5f7fb;
+
+    border-radius: 10px;
+}
+
+.thuc-don-food-image-stage {
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    background:
+        #f3f5f8;
+
+    cursor: grab;
+
+    touch-action: none;
+}
+
+.thuc-don-food-image-stage.is-dragging {
+    cursor: grabbing;
+}
+
+.thuc-don-food-card__image {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    object-position: center;
+
+    pointer-events: none;
+
+    user-select: none;
+
+    transform-origin: center center;
+
+    transition:
+        opacity .18s ease;
+}
+
+.thuc-don-food-image-stage.is-dragging
+.thuc-don-food-card__image {
+    transition: none;
+}
+
+.thuc-don-food-image-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    color: #ffffff;
+
+    background:
+        rgba(
+            15,
+            23,
+            42,
+            .42
+        );
+
+    opacity: 0;
+
+    cursor: pointer;
+
+    transition:
+        opacity .18s ease;
+}
+
+.thuc-don-food-image-stage:hover
+.thuc-don-food-image-overlay {
+    opacity: 1;
+}
+
+.thuc-don-food-card__image-box.has-preview
+.thuc-don-food-image-overlay {
+    pointer-events: none;
+}
+
+.thuc-don-food-image-overlay__icon {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    font-size: 16px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .16
+        );
+
+    border-radius: 50%;
+}
+
+.thuc-don-food-image-overlay__text {
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.thuc-don-food-image-tools {
+    position: absolute;
+
+    right: 10px;
+    bottom: 10px;
+
+    z-index: 5;
+
+    display: none;
+
+    align-items: center;
+
+    gap: 4px;
+
+    padding: 4px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .94
+        );
+
+    border: 1px solid #dbe3ee;
+    border-radius: 8px;
+
+    box-shadow:
+        0 4px 14px
+        rgba(
+            15,
+            23,
+            42,
+            .12
+        );
+}
+
+.thuc-don-food-card__image-box.has-preview
+.thuc-don-food-image-tools {
+    display: flex;
+}
+
+.thuc-don-food-image-tools button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+
+    padding: 0;
+
+    color: #64748b;
+
+    background: transparent;
+
+    border: 0;
+    border-radius: 6px;
+
+    cursor: pointer;
+}
+
+.thuc-don-food-image-tools button:hover {
+    color: #2563eb;
+
+    background: #eff6ff;
+}
+
+.thuc-don-food-image-tools i {
+    font-size: 11px;
+}
+
+/* */
+
+.thuc-don-food-image-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    color: #ffffff;
+
+    background:
+        rgba(
+            15,
+            23,
+            42,
+            .48
+        );
+
+    opacity: 0;
+
+    transition:
+        opacity .18s ease;
+}
+
+.thuc-don-food-image-overlay__icon {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    font-size: 16px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .16
+        );
+
+    border-radius: 50%;
+}
+
+.thuc-don-food-image-overlay__text {
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.thuc-don-food-image-trigger:hover
+.thuc-don-food-image-overlay {
+    opacity: 1;
+}
+
+.thuc-don-food-image-trigger:hover
+.thuc-don-food-card__image {
+    transform: scale(1.025);
+}
+
+.thuc-don-food-card__image-box.has-preview
+.thuc-don-food-image-overlay__text::before {
+    content: "Đổi ";
+}
+
+.thuc-don-general-form
+.form-field.has-error
+.form-input,
+
+.thuc-don-general-form
+.form-field.has-error
+.form-textarea,
+
+.thuc-don-general-form
+.form-field.has-error
+.smart-select__control,
+
+.thuc-don-general-form
+.form-field.has-error
+.date-picker__input {
+    color: #172033;
+
+    background: #fffafa;
+
+    border-color: #ef4444 !important;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(239, 68, 68, .08);
+}
+
+
+.thuc-don-general-form
+.form-field.has-error
+.form-field__error {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-top: 2px;
+
+    color: #dc2626;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+.thuc-don-general-form
+.form-field.has-error
+.form-field__error::before {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    width: 16px;
+    height: 16px;
+
+    color: #ffffff;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    background: #dc2626;
+
+    border-radius: 50%;
+
+    content: "!";
+}
+
+.thuc-don-content-selection {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1200;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(15, 23, 42, .42);
+}
+
+
+.thuc-don-content-selection__box {
+    display: flex;
+    flex-direction: column;
+
+    width: min(
+        420px,
+        100%
+    );
+
+    gap: 16px;
+
+    padding: 20px;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    box-shadow:
+        0 18px 50px
+        rgba(15, 23, 42, .18);
+}
+
+
+.thuc-don-content-selection__title {
+    color: #172033;
+
+    font-size: 16px;
+}
+
+
+.thuc-don-content-selection__select {
+    width: 100%;
+    height: 42px;
+
+    padding: 0 12px;
+
+    color: #334155;
+
+    background: #ffffff;
+
+    border: 1px solid #dbe3ee;
+    border-radius: 8px;
+
+    outline: 0;
+}
+
+
+.thuc-don-content-selection__select:focus {
+    border-color: #3b82f6;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(59, 130, 246, .08);
+}
+
+
+.thuc-don-content-selection__actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+}
+
+
+.thuc-don-content-selection__actions button {
+    min-height: 36px;
+
+    padding: 0 14px;
+
+    font-size: 12px;
+    font-weight: 650;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+}
+
+
+.thuc-don-content-selection__actions .is-cancel {
+    color: #475569;
+
+    background: #ffffff;
+
+    border: 1px solid #dbe3ee;
+}
+
+
+.thuc-don-content-selection__actions .is-save {
+    color: #ffffff;
+
+    background: #2563eb;
+
+    border: 1px solid #2563eb;
+}
+
+.thuc-don-general-month-field {
+    min-width: 0;
+}
+
+.thuc-don-general-month-field.has-error
+.form-field__error {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-top: 2px;
+
+    color: #dc2626;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.thuc-don-general-month-field.has-error
+.form-field__error::before {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    width: 16px;
+    height: 16px;
+
+    color: #ffffff;
+
+    font-size: 10px;
+
+    background: #dc2626;
+
+    border-radius: 50%;
+
+    content: "!";
+}
+
+@media (max-width: 650px) {
+
+    .thuc-don-month-picker {
+        grid-template-columns:
+            1fr;
+    }
+
+}

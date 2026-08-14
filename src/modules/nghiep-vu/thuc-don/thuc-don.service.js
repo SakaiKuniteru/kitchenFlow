@@ -1736,7 +1736,13 @@ class ThucDonService {
                     : undefined,
 
             trangThai:
-                thucDon.trangThai,
+                data.trangThai !== undefined
+                    ? Number(
+                        data.trangThai
+                    )
+                    : Number(
+                        thucDon.trangThai
+                    ),
 
             moTa:
                 data.moTa !== undefined

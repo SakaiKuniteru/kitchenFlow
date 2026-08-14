@@ -1,127 +1,94 @@
-<link
-    rel="stylesheet"
-    href="/assets/css/pages/thuc-don/forms.css">
+<link rel="stylesheet" href="/assets/css/pages/thuc-don/form.css" >
+<link rel="stylesheet" href="/assets/css/pages/thuc-don/chi-tiet.css" >
 
-<link
-    rel="stylesheet"
-    href="/assets/css/pages/thuc-don/chi-tiet.css">
-
-
-<section
-    class="thuc-don-detail"
-    data-thuc-don-detail
+<main
+    class="td-page td-detail"
+    data-thuc-don-page
+    data-page-mode="detail"
     data-thuc-don-id="{{thucDonId}}">
 
-    <header class="thuc-don-detail__page-header">
+    <div class="td-topline">
+
+        <button
+            type="button"
+            class="td-back-link"
+            onclick="history.back()">
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Quay lại
+
+        </button>
+
+    </div>
+
+
+    <header class="td-page-header">
 
         <div>
 
-            <h1 class="thuc-don-detail__title">
-
-                <i class="fa-regular fa-calendar-check"></i>
-
-                <span>
-                    Chi tiết thực đơn
-                </span>
-
+            <h1>
+                Chi tiết thực đơn
             </h1>
 
-
-            <p class="thuc-don-detail__subtitle">
-                Xem thông tin chi tiết và nội dung của thực đơn.
+            <p>
+                Xem thông tin chi tiết và nội dung thực đơn
             </p>
 
         </div>
 
 
-        <div class="thuc-don-detail__page-actions">
+        <div class="td-page-actions">
 
             <a
+                class="td-btn td-btn--outline"
                 href="/thuc-don/cap-nhat-thong-tin-thuc-don/{{thucDonId}}"
-                class="
-                    thuc-don-detail__action
-                    is-edit
-                "
                 data-detail-edit
                 hidden>
 
                 <i class="fa-regular fa-pen-to-square"></i>
 
-                <span>
-                    Chỉnh sửa
-                </span>
+                Chỉnh sửa
 
             </a>
 
 
             <button
-                type="button"
-                class="
-                    thuc-don-detail__action
-                    is-approve
-                "
+                class="td-btn td-btn--success"
                 data-detail-approve
                 hidden>
 
-                <i class="fa-solid fa-check"></i>
-
-                <span>
-                    Duyệt
-                </span>
+                Duyệt
 
             </button>
 
 
             <button
-                type="button"
-                class="
-                    thuc-don-detail__action
-                    is-unapprove
-                "
+                class="td-btn td-btn--warning"
                 data-detail-unapprove
                 hidden>
 
-                <i class="fa-solid fa-rotate-left"></i>
-
-                <span>
-                    Hủy duyệt
-                </span>
+                Hủy duyệt
 
             </button>
 
 
             <button
-                type="button"
-                class="
-                    thuc-don-detail__action
-                    is-cancel
-                "
+                class="td-btn td-btn--danger"
                 data-detail-cancel
                 hidden>
 
-                <i class="fa-solid fa-ban"></i>
-
-                <span>
-                    Hủy thực đơn
-                </span>
+                Hủy thực đơn
 
             </button>
 
 
             <button
-                type="button"
-                class="
-                    thuc-don-detail__action
-                    is-restore
-                "
+                class="td-btn td-btn--outline"
                 data-detail-restore
                 hidden>
 
-                <i class="fa-solid fa-arrow-rotate-left"></i>
-
-                <span>
-                    Hoàn hủy
-                </span>
+                Hoàn hủy
 
             </button>
 
@@ -131,60 +98,19 @@
 
 
     <div
-        class="thuc-don-form"
+        class="td-form"
         data-thuc-don-form
-        data-form-mode="detail"
-        data-thuc-don-id="{{thucDonId}}">
+        data-form-mode="detail">
 
-        <div
-            hidden
-            data-thuc-don-options>
+        {{> thuc-don/form-thong-tin-chung}}
 
-            {{#each formOptions.loaiThucDon}}
-
-                <span
-                    data-loai-thuc-don-option
-                    data-value="{{value}}"
-                    data-label="{{label}}">
-                </span>
-
-            {{/each}}
-
-
-            {{#each formOptions.trangThai}}
-
-                <span
-                    data-trang-thai-option
-                    data-value="{{value}}"
-                    data-label="{{label}}">
-                </span>
-
-            {{/each}}
-
-        </div>
-
-
-        {{> thuc-don/thong-tin-chung}}
-
-        <section class="thuc-don-form__content">
-
-            <div class="thuc-don-form__menu-layout">
-
-                {{> thuc-don/ngay}}
-
-                {{> thuc-don/nhom-mon}}
-
-                {{> thuc-don/mon-an}}
-
-            </div>
-
-        </section>
+        {{> thuc-don/form-noi-dung}}
 
     </div>
 
-</section>
+</main>
 
 
-<script src="/assets/js/pages/thuc-don/forms.js"></script>
-
+<script src="/assets/js/pages/thuc-don/api.js"></script>
+<script src="/assets/js/pages/thuc-don/form.js"></script>
 <script src="/assets/js/pages/thuc-don/chi-tiet.js"></script>

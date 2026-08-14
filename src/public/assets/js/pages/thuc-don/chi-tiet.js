@@ -1,1411 +1,431 @@
 "use strict";
 
-
 document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
         const root =
             document.querySelector(
-                "[data-thuc-don-detail]"
+                '[data-thuc-don-page][data-page-mode="detail"]'
             );
 
 
-        if (!root) {
-            return;
-        }
+        if (!root) return;
 
 
-        const formRoot =
-            root.querySelector(
-                "[data-thuc-don-form]"
-            );
-
-
-        if (!formRoot) {
-
-            console.error(
-                "Không tìm thấy form thực đơn."
-            );
-
-            return;
-        }
-
-
-        if (
-            !window.ThucDonForm
-        ) {
-
-            console.error(
-                "ThucDonForm chưa được khởi tạo."
-            );
-
-            return;
-        }
-
-
-        const thucDonId =
+        const id =
             root.dataset.thucDonId;
 
 
-        if (!thucDonId) {
-
-            console.error(
-                "Không tìm thấy ID thực đơn."
-            );
-
-            return;
-        }
+        if (!id) return;
 
 
         const form =
-            window.ThucDonForm.init(
-                formRoot
-            );
+            window.ThucDon
+                .form
+                .init(
+                    root.querySelector(
+                        "[data-thuc-don-form]"
+                    ),
+                    {
+                        mode:
+                            "detail"
+                    }
+                );
 
 
-        try {
-
-            setLoading(
-                root,
-                true
-            );
-
-        const data =
-            await loadChiTietThucDon(
-                thucDonId
-            );
+        bindActions();
 
 
-        form.setData(
+        await reload();
+
+
+        async function reload() {
+
+            try {
+
+                root.classList.add(
+                    "is-loading"
+                );
+
+
+                const res =
+                    await window.ThucDon
+                        .api
+                        .detail(
+                            id
+                        );
+
+
+                const data =
+                    res?.data ??
+                    res;
+
+
+                form.setData(
+                    data
+                );
+
+
+                renderActions(
+                    data
+                );
+
+            }
+            catch (e) {
+
+                window.MCS
+                    ?.toast
+                    ?.error
+                    ?.(
+                        e.message ||
+                        "Không thể tải thực đơn."
+                    );
+
+            }
+            finally {
+
+                root.classList.remove(
+                    "is-loading"
+                );
+
+            }
+
+        }
+
+
+        function bindActions() {
+
+            root
+                .querySelector(
+                    "[data-detail-approve]"
+                )
+                ?.addEventListener(
+                    "click",
+                    () =>
+                        confirmAction(
+                            "Xác nhận duyệt thực đơn",
+                            "Bạn có chắc chắn muốn duyệt thực đơn này?",
+                            "Duyệt",
+                            "success",
+                            () =>
+                                run(
+                                    () =>
+                                        window.ThucDon
+                                            .api
+                                            .approve(
+                                                id
+                                            )
+                                )
+                        )
+                );
+
+
+            root
+                .querySelector(
+                    "[data-detail-unapprove]"
+                )
+                ?.addEventListener(
+                    "click",
+                    () =>
+                        confirmAction(
+                            "Xác nhận hủy duyệt",
+                            "Bạn có chắc chắn muốn hủy duyệt thực đơn này?",
+                            "Hủy duyệt",
+                            "warning",
+                            () =>
+                                run(
+                                    () =>
+                                        window.ThucDon
+                                            .api
+                                            .unapprove(
+                                                id
+                                            )
+                                )
+                        )
+                );
+
+
+            root
+                .querySelector(
+                    "[data-detail-cancel]"
+                )
+                ?.addEventListener(
+                    "click",
+                    () =>
+                        confirmAction(
+                            "Xác nhận hủy thực đơn",
+                            "Bạn có chắc chắn muốn hủy thực đơn này?",
+                            "Hủy thực đơn",
+                            "danger",
+                            () =>
+                                run(
+                                    () =>
+                                        window.ThucDon
+                                            .api
+                                            .cancel(
+                                                id
+                                            )
+                                )
+                        )
+                );
+
+
+            root
+                .querySelector(
+                    "[data-detail-restore]"
+                )
+                ?.addEventListener(
+                    "click",
+                    () =>
+                        confirmAction(
+                            "Xác nhận hoàn hủy",
+                            "Bạn có chắc chắn muốn hoàn lại thao tác hủy?",
+                            "Hoàn hủy",
+                            "warning",
+                            () =>
+                                run(
+                                    () =>
+                                        window.ThucDon
+                                            .api
+                                            .restore(
+                                                id
+                                            )
+                                )
+                        )
+                );
+
+        }
+
+
+        async function run(
+            fn
+        ) {
+
+            try {
+
+                root.classList.add(
+                    "is-loading"
+                );
+
+
+                const r =
+                    await fn();
+
+
+                window.MCS
+                    ?.toast
+                    ?.success
+                    ?.(
+                        r?.message ||
+                        "Thao tác thành công."
+                    );
+
+
+                await reload();
+
+            }
+            catch (e) {
+
+                window.MCS
+                    ?.toast
+                    ?.error
+                    ?.(
+                        e.message ||
+                        "Thao tác thất bại."
+                    );
+
+            }
+            finally {
+
+                root.classList.remove(
+                    "is-loading"
+                );
+
+            }
+
+        }
+
+
+        function confirmAction(
+            title,
+            message,
+            confirmLabel,
+            type,
+            onConfirm
+        ) {
+
+            if (
+                window.MCS
+                    ?.confirm
+                    ?.show
+            ) {
+
+                window.MCS
+                    .confirm
+                    .show({
+                        title,
+                        message,
+                        confirmLabel,
+                        type,
+                        onConfirm
+                    });
+
+            }
+            else if (
+                window.confirm(
+                    message
+                )
+            ) {
+
+                onConfirm();
+
+            }
+
+        }
+
+        function renderActions(
             data
-        );
+        ) {
+
+            const actions = {
+
+                edit:
+                    root.querySelector(
+                        "[data-detail-edit]"
+                    ),
+
+                approve:
+                    root.querySelector(
+                        "[data-detail-approve]"
+                    ),
+
+                unapprove:
+                    root.querySelector(
+                        "[data-detail-unapprove]"
+                    ),
+
+                cancel:
+                    root.querySelector(
+                        "[data-detail-cancel]"
+                    ),
+
+                restore:
+                    root.querySelector(
+                        "[data-detail-restore]"
+                    )
+
+            };
 
 
-        renderActions(
-            root,
-            data
-        );
-
-        initDetailActions(
-            root,
-            form,
-            thucDonId
-        );
-
-
-        } catch (error) {
-
-            console.error(
-                error
+            hideAllActions(
+                actions
             );
 
 
-            showError(
-                root,
-                error.message
-            );
+            const trangThai =
+                Number(
+                    data?.trangThai
+                );
 
 
-        } finally {
+            switch (
+                trangThai
+            ) {
 
-            setLoading(
-                root,
-                false
-            );
+                case 10:
+                case 20:
+                case 40:
+
+                    showAction(
+                        actions.edit
+                    );
+
+                    showAction(
+                        actions.approve
+                    );
+
+                    showAction(
+                        actions.cancel
+                    );
+
+                    break;
+
+                case 30:
+
+                    showAction(
+                        actions.unapprove
+                    );
+
+                    break;
+
+                case 50:
+
+                    showAction(
+                        actions.restore
+                    );
+
+                    break;
+
+                case 60:
+
+                    showAction(
+                        actions.edit
+                    );
+
+                    break;
+
+
+                default:
+
+                    console.warn(
+                        "Trạng thái thực đơn không hợp lệ:",
+                        data?.trangThai
+                    );
+
+                    break;
+
+            }
+
+        }
+
+        function hideAllActions(
+            actions
+        ) {
+
+            Object
+                .values(
+                    actions
+                )
+                .forEach(
+                    action => {
+
+                        if (!action) {
+                            return;
+                        }
+
+
+                        action.hidden =
+                            true;
+
+                    }
+                );
+
+        }
+
+        function showAction(
+            action
+        ) {
+
+            if (!action) {
+                return;
+            }
+
+
+            action.hidden =
+                false;
 
         }
 
     }
 );
-
-const TRANG_THAI_THUC_DON = Object.freeze({
-
-    TAO_MOI_CHO_DUYET: 10,
-
-    CHO_DUYET: 20,
-
-    DANG_AP_DUNG: 30,
-
-    CHO_DUYET_LAI: 40,
-
-    DA_HUY: 50,
-
-    DA_KET_THUC: 60
-
-});
-
-function initDetailActions(
-    root,
-    form,
-    thucDonId
-) {
-
-    const approveButton =
-        root.querySelector(
-            "[data-detail-approve]"
-        );
-
-
-    const unapproveButton =
-        root.querySelector(
-            "[data-detail-unapprove]"
-        );
-
-
-    const cancelButton =
-        root.querySelector(
-            "[data-detail-cancel]"
-        );
-
-
-    const restoreButton =
-        root.querySelector(
-            "[data-detail-restore]"
-        );
-
-
-    approveButton?.addEventListener(
-        "click",
-        () => {
-
-            handleApprove(
-                root,
-                form,
-                thucDonId,
-                approveButton
-            );
-
-        }
-    );
-
-
-    unapproveButton?.addEventListener(
-        "click",
-        () => {
-
-            handleUnapprove(
-                root,
-                form,
-                thucDonId,
-                unapproveButton
-            );
-
-        }
-    );
-
-
-    cancelButton?.addEventListener(
-        "click",
-        () => {
-
-            handleCancel(
-                root,
-                form,
-                thucDonId,
-                cancelButton
-            );
-
-        }
-    );
-
-
-    restoreButton?.addEventListener(
-        "click",
-        () => {
-
-            handleRestore(
-                root,
-                form,
-                thucDonId,
-                restoreButton
-            );
-
-        }
-    );
-
-}
-
-function handleApprove(
-    root,
-    form,
-    thucDonId,
-    button
-) {
-
-    if (
-        button.dataset.loading ===
-        "true"
-    ) {
-        return;
-    }
-
-
-    const executeApprove =
-        async () => {
-
-            try {
-
-                setActionLoading(
-                    button,
-                    true,
-                    "Đang duyệt..."
-                );
-
-
-                const response =
-                    await approveThucDon(
-                        thucDonId
-                    );
-
-
-                const data =
-                    await loadChiTietThucDon(
-                        thucDonId
-                    );
-
-
-                form.setData(
-                    data
-                );
-
-
-                renderActions(
-                    root,
-                    data
-                );
-
-
-                window.MCS?.toast?.success(
-                    response?.message ||
-                    "Duyệt thực đơn thành công."
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    error
-                );
-
-
-                window.MCS?.toast?.error(
-                    error?.message ||
-                    "Duyệt thực đơn thất bại."
-                );
-
-
-            } finally {
-
-                setActionLoading(
-                    button,
-                    false
-                );
-
-            }
-
-        };
-
-
-    if (
-        window.MCS
-            ?.confirm
-            ?.show
-    ) {
-
-        window.MCS.confirm.show({
-
-            title:
-                "Xác nhận duyệt thực đơn",
-
-            message:
-                "Bạn có chắc chắn muốn duyệt thực đơn này?",
-
-            confirmLabel:
-                "Duyệt",
-
-            type:
-                "success",
-
-            onConfirm:
-                executeApprove
-
-        });
-
-
-        return;
-
-    }
-
-
-    executeApprove();
-
-}
-
-function handleCancel(
-    root,
-    form,
-    thucDonId,
-    button
-) {
-
-    if (
-        button.dataset.loading ===
-        "true"
-    ) {
-        return;
-    }
-
-
-    const executeCancel =
-        async () => {
-
-            try {
-
-                setActionLoading(
-                    button,
-                    true,
-                    "Đang hủy..."
-                );
-
-
-                const response =
-                    await cancelThucDon(
-                        thucDonId
-                    );
-
-
-                const data =
-                    await loadChiTietThucDon(
-                        thucDonId
-                    );
-
-
-                form.setData(
-                    data
-                );
-
-
-                renderActions(
-                    root,
-                    data
-                );
-
-
-                window.MCS?.toast?.success(
-                    response?.message ||
-                    "Hủy thực đơn thành công."
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    error
-                );
-
-
-                window.MCS?.toast?.error(
-                    error?.message ||
-                    "Hủy thực đơn thất bại."
-                );
-
-
-            } finally {
-
-                setActionLoading(
-                    button,
-                    false
-                );
-
-            }
-
-        };
-
-
-    if (
-        window.MCS
-            ?.confirm
-            ?.show
-    ) {
-
-        window.MCS.confirm.show({
-
-            title:
-                "Xác nhận hủy thực đơn",
-
-            message:
-                "Bạn có chắc chắn muốn hủy thực đơn này?",
-
-            confirmLabel:
-                "Hủy thực đơn",
-
-            type:
-                "danger",
-
-            onConfirm:
-                executeCancel
-
-        });
-
-
-        return;
-
-    }
-
-
-    executeCancel();
-
-}
-
-function handleUnapprove(
-    root,
-    form,
-    thucDonId,
-    button
-) {
-
-    if (
-        button.dataset.loading ===
-        "true"
-    ) {
-        return;
-    }
-
-
-    const executeUnapprove =
-        async () => {
-
-            try {
-
-                setActionLoading(
-                    button,
-                    true,
-                    "Đang hủy duyệt..."
-                );
-
-
-                const response =
-                    await unapproveThucDon(
-                        thucDonId
-                    );
-
-
-                const data =
-                    await loadChiTietThucDon(
-                        thucDonId
-                    );
-
-
-                form.setData(
-                    data
-                );
-
-
-                renderActions(
-                    root,
-                    data
-                );
-
-
-                window.MCS?.toast?.success(
-                    response?.message ||
-                    "Hủy duyệt thực đơn thành công."
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    error
-                );
-
-
-                window.MCS?.toast?.error(
-                    error?.message ||
-                    "Hủy duyệt thực đơn thất bại."
-                );
-
-
-            } finally {
-
-                setActionLoading(
-                    button,
-                    false
-                );
-
-            }
-
-        };
-
-
-    if (
-        window.MCS
-            ?.confirm
-            ?.show
-    ) {
-
-        window.MCS.confirm.show({
-
-            title:
-                "Xác nhận hủy duyệt",
-
-            message:
-                "Bạn có chắc chắn muốn hủy duyệt thực đơn này?",
-
-            confirmLabel:
-                "Hủy duyệt",
-
-            type:
-                "warning",
-
-            onConfirm:
-                executeUnapprove
-
-        });
-
-
-        return;
-
-    }
-
-
-    executeUnapprove();
-
-}
-
-function handleRestore(
-    root,
-    form,
-    thucDonId,
-    button
-) {
-
-    if (
-        button.dataset.loading ===
-        "true"
-    ) {
-        return;
-    }
-
-
-    const executeRestore =
-        async () => {
-
-            try {
-
-                setActionLoading(
-                    button,
-                    true,
-                    "Đang hoàn hủy..."
-                );
-
-
-                const response =
-                    await restoreThucDon(
-                        thucDonId
-                    );
-
-
-                const data =
-                    await loadChiTietThucDon(
-                        thucDonId
-                    );
-
-
-                form.setData(
-                    data
-                );
-
-
-                renderActions(
-                    root,
-                    data
-                );
-
-
-                window.MCS?.toast?.success(
-                    response?.message ||
-                    "Hoàn hủy thực đơn thành công."
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    error
-                );
-
-
-                window.MCS?.toast?.error(
-                    error?.message ||
-                    "Hoàn hủy thực đơn thất bại."
-                );
-
-
-            } finally {
-
-                setActionLoading(
-                    button,
-                    false
-                );
-
-            }
-
-        };
-
-
-    if (
-        window.MCS
-            ?.confirm
-            ?.show
-    ) {
-
-        window.MCS.confirm.show({
-
-            title:
-                "Xác nhận hoàn hủy",
-
-            message:
-                "Bạn có chắc chắn muốn hoàn lại thao tác hủy thực đơn này?",
-
-            confirmLabel:
-                "Hoàn hủy",
-
-            type:
-                "warning",
-
-            onConfirm:
-                executeRestore
-
-        });
-
-
-        return;
-
-    }
-
-
-    executeRestore();
-
-}
-
-async function loadChiTietThucDon(
-    id
-) {
-
-    const accessToken =
-        getAccessToken();
-
-
-    const response =
-        await fetch(
-            `/api/mcs/v1/thuc-don/${id}`,
-            {
-                method:
-                    "GET",
-
-                headers: {
-
-                    Accept:
-                        "application/json",
-
-                    Authorization:
-                        `Bearer ${accessToken}`
-
-                },
-
-                credentials:
-                    "include"
-
-            }
-        );
-
-
-    let result;
-
-
-    try {
-
-        result =
-            await response.json();
-
-    } catch {
-
-        throw new Error(
-            "Dữ liệu API trả về không hợp lệ."
-        );
-
-    }
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            result.message ||
-            "Không thể tải thông tin thực đơn."
-        );
-
-    }
-
-
-    const data =
-        result.data ??
-        result;
-
-
-    if (!data) {
-
-        throw new Error(
-            "Không tìm thấy dữ liệu thực đơn."
-        );
-
-    }
-
-
-    return data;
-
-}
-
-async function approveThucDon(
-    id
-) {
-
-    const accessToken =
-        getAccessToken();
-
-
-    const response =
-        await fetch(
-            `/api/mcs/v1/thuc-don/duyet/${id}`,
-            {
-                method:
-                    "PATCH",
-
-                headers: {
-
-                    Accept:
-                        "application/json",
-
-                    "Content-Type":
-                        "application/json",
-
-                    Authorization:
-                        `Bearer ${accessToken}`
-
-                },
-
-                credentials:
-                    "include"
-
-            }
-        );
-
-
-    return handleApiResponse(
-        response,
-        "Không thể duyệt thực đơn."
-    );
-
-}
-
-async function cancelThucDon(
-    id
-) {
-
-    const accessToken =
-        getAccessToken();
-
-
-    const response =
-        await fetch(
-            `/api/mcs/v1/thuc-don/huy/${id}`,
-            {
-                method:
-                    "PATCH",
-
-                headers: {
-
-                    Accept:
-                        "application/json",
-
-                    "Content-Type":
-                        "application/json",
-
-                    Authorization:
-                        `Bearer ${accessToken}`
-
-                },
-
-                credentials:
-                    "include"
-
-            }
-        );
-
-
-    return handleApiResponse(
-        response,
-        "Không thể hủy thực đơn."
-    );
-
-}
-
-async function unapproveThucDon(
-    id
-) {
-
-    const accessToken =
-        getAccessToken();
-
-
-    const response =
-        await fetch(
-            `/api/mcs/v1/thuc-don/huy-duyet/${id}`,
-            {
-                method:
-                    "PATCH",
-
-                headers: {
-
-                    Accept:
-                        "application/json",
-
-                    "Content-Type":
-                        "application/json",
-
-                    Authorization:
-                        `Bearer ${accessToken}`
-
-                },
-
-                credentials:
-                    "include"
-
-            }
-        );
-
-
-    return handleApiResponse(
-        response,
-        "Không thể hủy duyệt thực đơn."
-    );
-
-}
-
-async function restoreThucDon(
-    id
-) {
-
-    const accessToken =
-        getAccessToken();
-
-
-    const response =
-        await fetch(
-            `/api/mcs/v1/thuc-don/hoan-huy/${id}`,
-            {
-                method:
-                    "PATCH",
-
-                headers: {
-
-                    Accept:
-                        "application/json",
-
-                    "Content-Type":
-                        "application/json",
-
-                    Authorization:
-                        `Bearer ${accessToken}`
-
-                },
-
-                credentials:
-                    "include"
-
-            }
-        );
-
-
-    return handleApiResponse(
-        response,
-        "Không thể hoàn hủy thực đơn."
-    );
-
-}
-
-function getAccessToken() {
-
-    const accessToken =
-        localStorage.getItem(
-            "accessToken"
-        );
-
-
-    if (!accessToken) {
-
-        throw new Error(
-            "Không tìm thấy access token."
-        );
-
-    }
-
-
-    return accessToken;
-
-}
-
-async function handleApiResponse(
-    response,
-    defaultMessage
-) {
-
-    let result;
-
-
-    try {
-
-        result =
-            await response.json();
-
-    } catch {
-
-        throw new Error(
-            "Dữ liệu API trả về không hợp lệ."
-        );
-
-    }
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            result.message ||
-            defaultMessage
-        );
-
-    }
-
-
-    return result;
-
-}
-
-function setActionLoading(
-    button,
-    loading,
-    loadingText = ""
-) {
-
-    if (!button) {
-        return;
-    }
-
-
-    if (loading) {
-
-        button.dataset.loading =
-            "true";
-
-
-        button.dataset.originalHtml =
-            button.innerHTML;
-
-
-        button.disabled =
-            true;
-
-
-        button.innerHTML = `
-            <i class="fa-solid fa-spinner fa-spin"></i>
-
-            <span>
-                ${loadingText}
-            </span>
-        `;
-
-
-        return;
-
-    }
-
-
-    button.dataset.loading =
-        "false";
-
-
-    button.disabled =
-        false;
-
-
-    if (
-        button.dataset.originalHtml
-    ) {
-
-        button.innerHTML =
-            button.dataset.originalHtml;
-
-    }
-
-}
-
-function renderActions(
-    root,
-    data
-) {
-
-    const editButton =
-        root.querySelector(
-            "[data-detail-edit]"
-        );
-
-    const approveButton =
-        root.querySelector(
-            "[data-detail-approve]"
-        );
-
-    const unapproveButton =
-        root.querySelector(
-            "[data-detail-unapprove]"
-        );
-
-    const cancelButton =
-        root.querySelector(
-            "[data-detail-cancel]"
-        );
-
-    const restoreButton =
-        root.querySelector(
-            "[data-detail-restore]"
-        );
-
-
-    const buttons = [
-        editButton,
-        approveButton,
-        unapproveButton,
-        cancelButton,
-        restoreButton
-    ];
-
-
-    buttons.forEach(
-        button => {
-
-            if (button) {
-                button.hidden = true;
-            }
-
-        }
-    );
-
-
-    const trangThai =
-        Number(
-            data.trangThai
-        );
-
-
-    switch (trangThai) {
-
-        case TRANG_THAI_THUC_DON.TAO_MOI_CHO_DUYET:
-
-            showAction(
-                editButton
-            );
-
-            showAction(
-                approveButton
-            );
-
-            showAction(
-                cancelButton
-            );
-
-            break;
-
-
-        case TRANG_THAI_THUC_DON.CHO_DUYET:
-
-            showAction(
-                editButton
-            );
-
-            showAction(
-                approveButton
-            );
-
-            showAction(
-                cancelButton
-            );
-
-            break;
-
-
-        case TRANG_THAI_THUC_DON.DANG_AP_DUNG:
-
-            showAction(
-                unapproveButton
-            );
-
-            break;
-
-
-        case TRANG_THAI_THUC_DON.CHO_DUYET_LAI:
-
-            showAction(
-                editButton
-            );
-
-            showAction(
-                approveButton
-            );
-
-            showAction(
-                cancelButton
-            );
-
-            break;
-
-
-        case TRANG_THAI_THUC_DON.DA_HUY:
-
-            showAction(
-                restoreButton
-            );
-
-            break;
-
-
-        case TRANG_THAI_THUC_DON.DA_KET_THUC:
-
-            showAction(
-                editButton
-            );
-
-            break;
-
-
-        default:
-
-            console.warn(
-                "Trạng thái thực đơn không hợp lệ:",
-                data.trangThai
-            );
-
-            break;
-
-    }
-
-}
-
-function showAction(
-    button
-) {
-
-    if (button) {
-        button.hidden = false;
-    }
-
-}
-
-function showSuccessMessage(
-    message
-) {
-
-    if (
-        window.MCS?.toast
-    ) {
-
-        window.MCS.toast.success(
-            message
-        );
-
-        return;
-
-    }
-
-
-    console.log(
-        message
-    );
-
-}
-
-function showErrorMessage(
-    message
-) {
-
-    if (
-        window.MCS?.toast
-    ) {
-
-        window.MCS.toast.error(
-            message
-        );
-
-        return;
-
-    }
-
-
-    console.error(
-        message
-    );
-
-}
-
-function getTrangThaiLabel(
-    root,
-    value
-) {
-
-    const options =
-        root.querySelectorAll(
-            "[data-trang-thai-option]"
-        );
-
-
-    const targetValue =
-        String(
-            value
-        );
-
-
-    for (
-        const option
-        of options
-    ) {
-
-        if (
-            String(
-                option.dataset.value
-            ) ===
-            targetValue
-        ) {
-
-            return (
-                option.dataset.label ||
-                ""
-            );
-
-        }
-
-    }
-
-
-    return "";
-
-}
-
-function setLoading(
-    root,
-    loading
-) {
-
-    root.classList.toggle(
-        "is-loading",
-        loading
-    );
-
-
-    const form =
-        root.querySelector(
-            "[data-thuc-don-form]"
-        );
-
-
-    if (!form) {
-        return;
-    }
-
-
-    form.setAttribute(
-        "aria-busy",
-        loading
-            ? "true"
-            : "false"
-    );
-
-}
-
-function showError(
-    root,
-    message
-) {
-
-    const form =
-        root.querySelector(
-            "[data-thuc-don-form]"
-        );
-
-
-    if (!form) {
-        return;
-    }
-
-
-    form.innerHTML = `
-        <div class="thuc-don-detail-error">
-
-            <div class="thuc-don-detail-error__icon">
-
-                <i class="fa-solid fa-circle-exclamation"></i>
-
-            </div>
-
-            <strong>
-                Không thể tải thông tin thực đơn
-            </strong>
-
-            <p>
-                ${escapeHtml(
-                    message ||
-                    "Đã xảy ra lỗi."
-                )}
-            </p>
-
-            <button
-                type="button"
-                onclick="window.location.reload()">
-
-                <i class="fa-solid fa-rotate-right"></i>
-
-                Thử lại
-
-            </button>
-
-        </div>
-    `;
-
-}
-
-function escapeHtml(value) {
-
-    return String(
-        value ??
-        ""
-    )
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-        .replaceAll(
-            "\"",
-            "&quot;"
-        )
-        .replaceAll(
-            "'",
-            "&#039;"
-        );
-
-}

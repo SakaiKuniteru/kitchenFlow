@@ -1,0 +1,81 @@
+<div
+    class="td-modal"
+    data-modal-day
+    hidden>
+
+    <div
+        class="td-modal__backdrop"
+        data-modal-close>
+    </div>
+
+
+    <section
+        class="td-modal__dialog is-day"
+        role="dialog"
+        aria-modal="true">
+
+        <header class="td-modal__header">
+
+            <div>
+
+                <i class="fa-regular fa-calendar"></i>
+
+                <strong>
+                    Thêm ngày mới
+                </strong>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="td-icon-btn"
+                data-modal-close>
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </header>
+
+
+        <div class="td-modal__body">
+
+            {{> forms/date
+                id="tdNgay"
+                name="tdNgay"
+                label="Ngày áp dụng"
+                placeholder="dd/mm/yyyy"
+                defaultTime="00:00:00"
+                required=true
+            }}
+
+        </div>
+
+
+        <footer class="td-modal__footer">
+
+            <button
+                type="button"
+                class="td-btn"
+                data-modal-close>
+
+                Hủy
+
+            </button>
+
+
+            <button
+                type="button"
+                class="td-btn td-btn--primary"
+                data-save-day-modal>
+
+                Thêm ngày
+
+            </button>
+
+        </footer>
+
+    </section>
+
+</div>

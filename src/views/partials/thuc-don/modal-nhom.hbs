@@ -1,0 +1,82 @@
+<div
+    class="td-modal"
+    data-modal-group
+    hidden>
+
+    <div
+        class="td-modal__backdrop"
+        data-modal-close>
+    </div>
+
+
+    <section
+        class="td-modal__dialog is-group"
+        role="dialog"
+        aria-modal="true">
+
+        <header class="td-modal__header">
+
+            <div>
+
+                <i class="fa-solid fa-leaf"></i>
+
+                <strong>
+                    Thêm nhóm món
+                </strong>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="td-icon-btn"
+                data-modal-close>
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </header>
+
+
+        <div class="td-modal__body">
+
+            {{> forms/select
+                id="tdNhomMonAnId"
+                name="tdNhomMonAnId"
+                label="Nhóm món"
+                mode="single"
+                placeholder="Chọn nhóm món"
+                options=null
+                required=true
+            }}
+
+        </div>
+
+
+        <footer class="td-modal__footer">
+
+            <button
+                type="button"
+                class="td-btn"
+                data-modal-close>
+
+                Hủy
+
+            </button>
+
+
+            <button
+                type="button"
+                class="td-btn td-btn--primary"
+                data-save-group-modal>
+
+                Thêm nhóm
+
+            </button>
+
+        </footer>
+
+    </section>
+
+</div>

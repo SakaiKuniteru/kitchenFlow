@@ -1,0 +1,127 @@
+<div
+    class="td-modal"
+    data-modal-food
+    hidden>
+
+    <div
+        class="td-modal__backdrop"
+        data-modal-close>
+    </div>
+
+
+    <section
+        class="td-modal__dialog is-food"
+        role="dialog"
+        aria-modal="true">
+
+        <header class="td-modal__header">
+
+            <div>
+
+                <i class="fa-solid fa-bowl-food"></i>
+
+                <strong>
+                    Thêm món ăn mới
+                </strong>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="td-icon-btn"
+                data-modal-close>
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </header>
+
+
+        <div class="td-modal__body td-modal-food-grid">
+
+            <div class="is-full">
+
+                {{> forms/select
+                    id="tdMonAnId"
+                    name="tdMonAnId"
+                    label="Món ăn"
+                    mode="single"
+                    placeholder="Chọn món ăn"
+                    options=null
+                    required=true
+                }}
+
+            </div>
+
+
+            {{> forms/input
+                id="tdDinhLuong"
+                name="tdDinhLuong"
+                label="Định lượng"
+                placeholder="0"
+                required=true
+            }}
+
+
+            {{> forms/select
+                id="tdDonViTinhId"
+                name="tdDonViTinhId"
+                label="Đơn vị"
+                mode="single"
+                placeholder="Chọn đơn vị"
+                options=null
+                required=true
+            }}
+
+
+            {{> forms/input
+                id="tdKhauPhan"
+                name="tdKhauPhan"
+                label="Khẩu phần"
+                placeholder="1"
+            }}
+
+
+            <div class="is-full">
+
+                {{> forms/textarea
+                    id="tdGhiChuMon"
+                    name="tdGhiChuMon"
+                    label="Ghi chú"
+                    placeholder="Nhập ghi chú (nếu có)..."
+                    rows=3
+                }}
+
+            </div>
+
+        </div>
+
+
+        <footer class="td-modal__footer">
+
+            <button
+                type="button"
+                class="td-btn"
+                data-modal-close>
+
+                Hủy
+
+            </button>
+
+
+            <button
+                type="button"
+                class="td-btn td-btn--primary"
+                data-save-food-modal>
+
+                Thêm món
+
+            </button>
+
+        </footer>
+
+    </section>
+
+</div>
