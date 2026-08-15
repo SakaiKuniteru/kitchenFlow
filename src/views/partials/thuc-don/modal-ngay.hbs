@@ -21,7 +21,7 @@
                 <i class="fa-regular fa-calendar"></i>
 
                 <strong>
-                    Thêm ngày mới
+                    Chọn ngày áp dụng
                 </strong>
 
             </div>
@@ -41,14 +41,34 @@
 
         <div class="td-modal__body">
 
-            {{> forms/date
-                id="tdNgay"
-                name="tdNgay"
-                label="Ngày áp dụng"
-                placeholder="dd/mm/yyyy"
-                defaultTime="00:00:00"
-                required=true
-            }}
+            <div class="form-field">
+
+                <label class="form-field__label">
+                    Danh sách ngày
+                </label>
+
+                <div class="td-checkbox-search">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="text"
+                        placeholder="Tìm theo ngày hoặc thứ..."
+                        autocomplete="off"
+                        data-checkbox-search
+                        data-checkbox-search-target="day">
+
+                </div>
+
+
+
+                <div
+                    class="td-checkbox-list"
+                    data-checkbox-list-type="day"
+                    data-day-checkbox-list>
+                </div>
+
+            </div>
 
         </div>
 
@@ -70,7 +90,7 @@
                 class="td-btn td-btn--primary"
                 data-save-day-modal>
 
-                Thêm ngày
+                Áp dụng
 
             </button>
 

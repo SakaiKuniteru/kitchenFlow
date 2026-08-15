@@ -21,7 +21,7 @@
                 <i class="fa-solid fa-leaf"></i>
 
                 <strong>
-                    Thêm nhóm món
+                    Chọn nhóm món
                 </strong>
 
             </div>
@@ -41,15 +41,43 @@
 
         <div class="td-modal__body">
 
-            {{> forms/select
-                id="tdNhomMonAnId"
-                name="tdNhomMonAnId"
-                label="Nhóm món"
-                mode="single"
-                placeholder="Chọn nhóm món"
-                options=null
-                required=true
-            }}
+            <div class="form-field">
+
+                <label class="form-field__label">
+
+                    Nhóm món
+
+                    <span class="form-field__required">
+                        *
+                    </span>
+
+                </label>
+
+                <div class="td-checkbox-search">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="text"
+                        placeholder="Tìm mã hoặc tên nhóm món..."
+                        autocomplete="off"
+                        data-checkbox-search
+                        data-checkbox-search-target="group">
+
+                </div>
+
+                <div
+                    class="td-checkbox-list"
+                    data-checkbox-list-type="group"
+                    data-group-checkbox-list>
+
+                    <div class="td-checkbox-list__empty">
+                        Không còn nhóm món để chọn.
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
 
@@ -71,7 +99,7 @@
                 class="td-btn td-btn--primary"
                 data-save-group-modal>
 
-                Thêm nhóm
+                Áp dụng
 
             </button>
 

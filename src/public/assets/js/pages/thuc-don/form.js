@@ -110,7 +110,6 @@ window.ThucDon.form =
         const PLACEHOLDER_IMAGE =
             "/uploads/danh-muc/mon-an/mon-an.png";
 
-
         function init(
             root,
             {
@@ -125,6 +124,12 @@ window.ThucDon.form =
 
                 mode,
 
+                contentView:
+                    "detail",
+
+                daySearch:
+                    "",
+
                 data:
                     null,
 
@@ -136,6 +141,20 @@ window.ThucDon.form =
 
             };
 
+            const contentSection =
+                root.querySelector(
+                    "[data-content-section]"
+                );
+
+
+            if (
+                contentSection
+            ) {
+
+                contentSection.dataset.contentViewMode =
+                    state.contentView;
+
+            }
 
             root.dataset.formMode =
                 mode;
@@ -152,6 +171,15 @@ window.ThucDon.form =
                 state
             );
 
+            bindContentViewEvents(
+                root,
+                state
+            );
+
+            bindDaySearchEvents(
+                root,
+                state
+            );
 
             return {
 
@@ -285,7 +313,6 @@ window.ThucDon.form =
 
         }
 
-
         function applyMode(
             root,
             mode
@@ -341,6 +368,45 @@ window.ThucDon.form =
 
         }
 
+        function applyContentView(
+            root,
+            state
+        ) {
+
+            root
+                .querySelectorAll(
+                    "[data-day-add-group]"
+                )
+                .forEach(
+                    button => {
+
+                        button.hidden =
+                            state.mode ===
+                                "detail" ||
+                            state.contentView ===
+                                "food";
+
+                    }
+                );
+
+
+            root
+                .querySelectorAll(
+                    "[data-content-view]"
+                )
+                .forEach(
+                    button => {
+
+                        button.classList.toggle(
+                            "is-active",
+                            button.dataset.contentView ===
+                                state.contentView
+                        );
+
+                    }
+                );
+
+        }
 
         function normalizeData(
             data
@@ -459,7 +525,6 @@ window.ThucDon.form =
             return data;
 
         }
-
 
         function renderGeneral(
             root,
@@ -632,7 +697,6 @@ window.ThucDon.form =
 
         }
 
-
         function syncGeneral(
             root,
             state
@@ -713,7 +777,6 @@ window.ThucDon.form =
 
         }
 
-
         function renderContent(
             root,
             state
@@ -747,12 +810,34 @@ window.ThucDon.form =
                 state.data?.dsNgay ||
                 [];
 
+            const filteredDays =
+                filterDays(
+                    days,
+                    state.daySearch
+                );
 
             const empty =
                 root.querySelector(
                     "[data-empty-day]"
                 );
 
+            const searchEmpty =
+                root.querySelector(
+                    "[data-day-search-empty]"
+                );
+
+            if (
+                searchEmpty
+            ) {
+
+                searchEmpty.hidden =
+                    !(
+                        days.length > 0 &&
+                        filteredDays.length === 0 &&
+                        state.daySearch
+                    );
+
+            }
 
             if (
                 empty
@@ -764,12 +849,13 @@ window.ThucDon.form =
 
             }
 
+            filteredDays.forEach(
+                day => {
 
-            days.forEach(
-                (
-                    day,
-                    index
-                ) => {
+                    const index =
+                        days.indexOf(
+                            day
+                        );
 
                     const fragment =
                         tpl.content.cloneNode(
@@ -788,6 +874,35 @@ window.ThucDon.form =
                             day.id
                         );
 
+                    const dayBody =
+                        fragment.querySelector(
+                            "[data-day-body]"
+                        );
+
+
+                    const isDayOpen =
+                        String(
+                            state.selectedDayId
+                        ) ===
+                        String(
+                            day.id
+                        );
+
+
+                    if (
+                        dayBody
+                    ) {
+
+                        dayBody.hidden =
+                            !isDayOpen;
+
+                    }
+
+
+                    item.classList.toggle(
+                        "is-open",
+                        isDayOpen
+                    );
 
                     setFragmentText(
                         fragment,
@@ -862,11 +977,35 @@ window.ThucDon.form =
                             "[data-groups-list]"
                         );
 
+                    setFragmentText(
+                        fragment,
+                        "[data-day-content-title]",
+                        state.contentView ===
+                            "food"
+                            ? "Danh sách món ăn"
+                            : "Danh sách nhóm món"
+                    );
 
-                    renderGroups(
+                    const addGroupButton =
+                        fragment.querySelector(
+                            "[data-day-add-group]"
+                        );
+
+
+                    if (
+                        addGroupButton
+                    ) {
+
+                        addGroupButton.hidden =
+                            state.contentView ===
+                            "food";
+
+                    }
+
+                    renderDayContent(
                         groupsList,
                         day,
-                        state.mode
+                        state
                     );
 
 
@@ -883,13 +1022,312 @@ window.ThucDon.form =
                 state.mode
             );
 
+            applyContentView(
+                root,
+                state
+            );
+
         }
 
+        function renderDayContent(
+            container,
+            day,
+            state
+        ) {
+
+            switch (
+                state.contentView
+            ) {
+
+                case "group":
+
+                    renderGroupOverview(
+                        container,
+                        day,
+                        state
+                    );
+
+                    break;
+
+
+                case "food":
+
+                    renderFoodOverview(
+                        container,
+                        day,
+                        state
+                    );
+
+                    break;
+
+
+                case "detail":
+
+                default:
+
+                    renderGroups(
+                        container,
+                        day,
+                        state
+                    );
+
+                    break;
+
+            }
+
+        }
+
+        function renderGroupOverview(
+            container,
+            day,
+            state
+        ) {
+
+            const tpl =
+                document.getElementById(
+                    "td-template-group-overview"
+                );
+
+
+            if (
+                !container ||
+                !tpl
+            ) {
+                return;
+            }
+
+
+            container.innerHTML =
+                "";
+
+
+            const groups =
+                day.dsNhomMonAn ||
+                [];
+
+
+            groups.forEach(
+                group => {
+
+                    const fragment =
+                        tpl.content.cloneNode(
+                            true
+                        );
+
+
+                    setFragmentText(
+                        fragment,
+                        "[data-group-overview-name]",
+                        group.tenNhomMonAn ||
+                        group.nhomMonAn?.tenNhomMonAn ||
+                        "-"
+                    );
+
+
+                    setFragmentText(
+                        fragment,
+                        "[data-group-overview-code]",
+                        group.maNhomMonAn ||
+                        group.nhomMonAn?.maNhomMonAn ||
+                        "-"
+                    );
+
+
+                    setFragmentText(
+                        fragment,
+                        "[data-group-overview-food-count]",
+                        `${
+                            (
+                                group.dsMonAn ||
+                                []
+                            ).length
+                        } món`
+                    );
+
+
+                    container.appendChild(
+                        fragment
+                    );
+
+                }
+            );
+
+        }
+
+        function getDayFoods(
+            day
+        ) {
+
+            return (
+                day.dsNhomMonAn ||
+                []
+            ).flatMap(
+                group => {
+
+                    return (
+                        group.dsMonAn ||
+                        []
+                    ).map(
+                        food => ({
+
+                            food,
+
+                            group
+
+                        })
+                    );
+
+                }
+            );
+
+        }
+
+        function renderFoodOverview(
+            container,
+            day,
+            state
+        ) {
+
+            const tpl =
+                document.getElementById(
+                    "td-template-food-overview"
+                );
+
+
+            if (
+                !container ||
+                !tpl
+            ) {
+                return;
+            }
+
+
+            container.innerHTML =
+                "";
+
+
+            const foods =
+                getDayFoods(
+                    day
+                );
+
+
+            foods.forEach(
+                ({
+                    food,
+                    group
+                }) => {
+
+                    const fragment =
+                        tpl.content.cloneNode(
+                            true
+                        );
+
+
+                    const mon =
+                        food.monAn ||
+                        food;
+
+
+                    setFragmentText(
+                        fragment,
+                        "[data-food-overview-name]",
+                        mon.tenMonAn ||
+                        food.tenMonAn ||
+                        "-"
+                    );
+
+
+                    setFragmentText(
+                        fragment,
+                        "[data-food-overview-code]",
+                        mon.maMonAn ||
+                        food.maMonAn ||
+                        "-"
+                    );
+
+
+                    setFragmentText(
+                        fragment,
+                        "[data-food-overview-group]",
+                        group.tenNhomMonAn ||
+                        group.nhomMonAn?.tenNhomMonAn ||
+                        "-"
+                    );
+
+
+                    setFragmentText(
+                        fragment,
+                        "[data-food-overview-quantity]",
+                        food.dinhLuong ??
+                        "-"
+                    );
+
+
+                    setFragmentText(
+                        fragment,
+                        "[data-food-overview-unit]",
+                        food.donViTinh?.tenDonViTinh ||
+                        mon.donViTinh?.tenDonViTinh ||
+                        food.tenDonViTinh ||
+                        "-"
+                    );
+
+
+                    setFragmentText(
+                        fragment,
+                        "[data-food-overview-portion]",
+                        food.khauPhan ??
+                        mon.khauPhan ??
+                        "-"
+                    );
+
+
+                    const img =
+                        fragment.querySelector(
+                            "[data-food-overview-image]"
+                        );
+
+
+                    if (
+                        img
+                    ) {
+
+                        img.src =
+                            normalizeImage(
+                                mon.hinhAnh ||
+                                food.hinhAnh
+                            );
+
+
+                        img.onerror =
+                            () => {
+
+                                img.onerror =
+                                    null;
+
+
+                                img.src =
+                                    PLACEHOLDER_IMAGE;
+
+                            };
+
+                    }
+
+
+                    container.appendChild(
+                        fragment
+                    );
+
+                }
+            );
+
+        }
 
         function renderGroups(
             container,
             day,
-            mode
+            state
         ) {
 
             const tpl =
@@ -936,6 +1374,41 @@ window.ThucDon.form =
                             day.id
                         );
 
+                    const groupBody =
+                        fragment.querySelector(
+                            "[data-group-body]"
+                        );
+
+
+                    const isGroupOpen =
+                        String(
+                            state.selectedDayId
+                        ) ===
+                            String(
+                                day.id
+                            ) &&
+                        String(
+                            state.selectedGroupId
+                        ) ===
+                            String(
+                                group.id
+                            );
+
+
+                    if (
+                        groupBody
+                    ) {
+
+                        groupBody.hidden =
+                            !isGroupOpen;
+
+                    }
+
+
+                    item.classList.toggle(
+                        "is-open",
+                        isGroupOpen
+                    );
 
                     setFragmentText(
                         fragment,
@@ -963,7 +1436,7 @@ window.ThucDon.form =
                         foodsList,
                         group,
                         day,
-                        mode
+                        state.mode
                     );
 
 
@@ -975,7 +1448,6 @@ window.ThucDon.form =
             );
 
         }
-
 
         function renderFoods(
             container,
@@ -1134,9 +1606,9 @@ window.ThucDon.form =
 
         }
 
-
         function bindToggleEvents(
-            root
+            root,
+            state
         ) {
 
             root.addEventListener(
@@ -1158,14 +1630,43 @@ window.ThucDon.form =
                                 "[data-day-item]"
                             );
 
-
-                        toggleBody(
-                            item?.querySelector(
-                                "[data-day-body]"
-                            ),
-                            dayToggle
+                    const body =
+                        item?.querySelector(
+                            "[data-day-body]"
                         );
 
+
+                    toggleBody(
+                        body,
+                        dayToggle
+                    );
+
+
+                    if (
+                        body &&
+                        !body.hidden
+                    ) {
+
+                        state.selectedDayId =
+                            item.dataset.dayId;
+
+                    }
+                    else if (
+                        String(
+                            state.selectedDayId
+                        ) ===
+                        String(
+                            item?.dataset.dayId
+                        )
+                    ) {
+
+                        state.selectedDayId =
+                            null;
+
+                        state.selectedGroupId =
+                            null;
+
+                    }
 
                         return;
 
@@ -1187,13 +1688,43 @@ window.ThucDon.form =
                                 "[data-group-item]"
                             );
 
-
-                        toggleBody(
-                            item?.querySelector(
-                                "[data-group-body]"
-                            ),
-                            groupToggle
+                    const body =
+                        item?.querySelector(
+                            "[data-group-body]"
                         );
+
+
+                    toggleBody(
+                        body,
+                        groupToggle
+                    );
+
+
+                    if (
+                        body &&
+                        !body.hidden
+                    ) {
+
+                        state.selectedDayId =
+                            item.dataset.dayId;
+
+                        state.selectedGroupId =
+                            item.dataset.groupId;
+
+                    }
+                    else if (
+                        String(
+                            state.selectedGroupId
+                        ) ===
+                        String(
+                            item?.dataset.groupId
+                        )
+                    ) {
+
+                        state.selectedGroupId =
+                            null;
+
+                    }
 
                     }
 
@@ -1202,6 +1733,258 @@ window.ThucDon.form =
 
         }
 
+        function bindContentViewEvents(
+            root,
+            state
+        ) {
+
+            root.addEventListener(
+                "click",
+                event => {
+
+                    const button =
+                        event.target.closest(
+                            "[data-content-view]"
+                        );
+
+
+                    if (!button) {
+                        return;
+                    }
+
+
+                    const view =
+                        button.dataset.contentView;
+
+
+                    if (
+                        ![
+                            "detail",
+                            "group",
+                            "food"
+                        ].includes(
+                            view
+                        )
+                    ) {
+                        return;
+                    }
+
+
+                    state.contentView =
+                        view;
+
+                    const contentSection =
+                        root.querySelector(
+                            "[data-content-section]"
+                        );
+
+                    if (
+                        contentSection
+                    ) {
+
+                        contentSection.dataset.contentViewMode =
+                            view;
+
+                    }
+
+                    state.selectedGroupId =
+                        null;
+
+
+                    root
+                        .querySelectorAll(
+                            "[data-content-view]"
+                        )
+                        .forEach(
+                            item => {
+
+                                item.classList.toggle(
+                                    "is-active",
+                                    item.dataset.contentView ===
+                                        view
+                                );
+
+                            }
+                        );
+
+
+                    renderContent(
+                        root,
+                        state
+                    );
+
+                }
+            );
+
+        }
+
+        function bindDaySearchEvents(
+            root,
+            state
+        ) {
+
+            const input =
+                root.querySelector(
+                    "[data-day-search-input]"
+                );
+
+
+            const clearButton =
+                root.querySelector(
+                    "[data-day-search-clear]"
+                );
+
+
+            if (!input) {
+                return;
+            }
+
+
+            input.addEventListener(
+                "input",
+                () => {
+
+                    state.daySearch =
+                        input.value
+                            .trim();
+
+
+                    if (
+                        clearButton
+                    ) {
+
+                        clearButton.hidden =
+                            state.daySearch === "";
+
+                    }
+
+
+                    renderContent(
+                        root,
+                        state
+                    );
+
+                }
+            );
+
+
+            clearButton
+                ?.addEventListener(
+                    "click",
+                    () => {
+
+                        input.value =
+                            "";
+
+
+                        state.daySearch =
+                            "";
+
+
+                        clearButton.hidden =
+                            true;
+
+
+                        renderContent(
+                            root,
+                            state
+                        );
+
+
+                        input.focus();
+
+                    }
+                );
+
+        }
+
+        function filterDays(
+            days,
+            search
+        ) {
+
+            const keyword =
+                normalizeSearchText(
+                    search
+                );
+
+
+            if (!keyword) {
+
+                return days;
+
+            }
+
+
+            return days.filter(
+                day => {
+
+                    const isoDate =
+                        normalizeDate(
+                            day.ngay
+                        );
+
+
+                    const formattedDate =
+                        formatDate(
+                            day.ngay
+                        );
+
+
+                    const dayName =
+                        weekday(
+                            day.ngay
+                        );
+
+
+                    const searchText =
+                        normalizeSearchText(
+                            [
+                                isoDate,
+                                formattedDate,
+                                dayName
+                            ].join(
+                                " "
+                            )
+                        );
+
+
+                    return searchText.includes(
+                        keyword
+                    );
+
+                }
+            );
+
+        }
+
+        function normalizeSearchText(
+            value
+        ) {
+
+            return String(
+                value ||
+                ""
+            )
+                .normalize(
+                    "NFD"
+                )
+                .replace(
+                    /[\u0300-\u036f]/g,
+                    ""
+                )
+                .replace(
+                    /đ/g,
+                    "d"
+                )
+                .replace(
+                    /Đ/g,
+                    "D"
+                )
+                .toLowerCase()
+                .trim();
+
+        }
 
         function toggleBody(
             body,
@@ -1288,7 +2071,6 @@ window.ThucDon.form =
 
         }
 
-
         function setSelect(
             root,
             name,
@@ -1331,7 +2113,6 @@ window.ThucDon.form =
 
         }
 
-
         function setDate(
             root,
             name,
@@ -1370,7 +2151,6 @@ window.ThucDon.form =
 
         }
 
-
         function value(
             root,
             name
@@ -1386,7 +2166,6 @@ window.ThucDon.form =
                 "";
 
         }
-
 
         function numberValue(
             root,
@@ -1407,7 +2186,6 @@ window.ThucDon.form =
                 );
 
         }
-
 
         function setText(
             root,
@@ -1433,7 +2211,6 @@ window.ThucDon.form =
 
         }
 
-
         function setFragmentText(
             root,
             selector,
@@ -1458,7 +2235,6 @@ window.ThucDon.form =
 
         }
 
-
         function countFoods(
             day
         ) {
@@ -1480,7 +2256,6 @@ window.ThucDon.form =
             );
 
         }
-
 
         function normalizeDate(
             v
@@ -1569,7 +2344,6 @@ window.ThucDon.form =
 
         }
 
-
         function formatDate(
             v
         ) {
@@ -1596,7 +2370,6 @@ window.ThucDon.form =
             return `${day}/${m}/${y}`;
 
         }
-
 
         function weekday(
             v
@@ -1643,7 +2416,6 @@ window.ThucDon.form =
 
         }
 
-
         function normalizeImage(
             v
         ) {
@@ -1671,7 +2443,6 @@ window.ThucDon.form =
 
         }
 
-
         function tempId(
             type,
             i = 0
@@ -1680,7 +2451,6 @@ window.ThucDon.form =
             return `tmp-${type}-${Date.now()}-${i}-${Math.random().toString(36).slice(2, 7)}`;
 
         }
-
 
         function clone(
             v
@@ -1693,7 +2463,6 @@ window.ThucDon.form =
             );
 
         }
-
 
         return {
             init,

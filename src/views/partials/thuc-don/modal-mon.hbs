@@ -21,7 +21,7 @@
                 <i class="fa-solid fa-bowl-food"></i>
 
                 <strong>
-                    Thêm món ăn mới
+                    Chọn món ăn mới
                 </strong>
 
             </div>
@@ -43,20 +43,51 @@
 
             <div class="is-full">
 
-                {{> forms/select
-                    id="tdMonAnId"
-                    name="tdMonAnId"
-                    label="Món ăn"
-                    mode="single"
-                    placeholder="Chọn món ăn"
-                    options=null
-                    required=true
-                }}
+                <div class="is-full">
 
+                    <div class="form-field">
+
+                        <label class="form-field__label">
+
+                            Món ăn
+
+                            <span class="form-field__required">
+                                *
+                            </span>
+
+                        </label>
+
+                        <div class="td-checkbox-search">
+
+                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                            <input
+                                type="text"
+                                placeholder="Tìm mã hoặc tên món ăn..."
+                                autocomplete="off"
+                                data-checkbox-search
+                                data-checkbox-search-target="food">
+
+                        </div>
+
+                        <div
+                            class="td-checkbox-list td-checkbox-list--food"
+                            data-checkbox-list-type="food"
+                            data-food-checkbox-list>
+
+                            <div class="td-checkbox-list__empty">
+                                Không còn món ăn để chọn.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
             </div>
 
 
-            {{> forms/input
+            {{!-- {{> forms/input
                 id="tdDinhLuong"
                 name="tdDinhLuong"
                 label="Định lượng"
@@ -94,7 +125,7 @@
                     rows=3
                 }}
 
-            </div>
+            </div> --}}
 
         </div>
 
@@ -116,7 +147,7 @@
                 class="td-btn td-btn--primary"
                 data-save-food-modal>
 
-                Thêm món
+                Áp dụng
 
             </button>
 

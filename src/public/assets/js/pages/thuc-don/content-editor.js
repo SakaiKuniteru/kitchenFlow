@@ -53,7 +53,8 @@ window.ThucDon.contentEditor =
                         event.preventDefault();
 
                         openDay(
-                            root
+                            root,
+                            form
                         );
 
                         return;
@@ -86,7 +87,9 @@ window.ThucDon.contentEditor =
 
 
                         openGroup(
-                            root
+                            root,
+                            form,
+                            ctx
                         );
 
 
@@ -131,7 +134,9 @@ window.ThucDon.contentEditor =
 
 
                         openFood(
-                            root
+                            root,
+                            form,
+                            ctx
                         );
 
 
@@ -325,16 +330,73 @@ window.ThucDon.contentEditor =
 
         }
 
-
-        function openDay(
-            root
+        function prepareCheckboxSearch(
+            root,
+            type
         ) {
 
-            clearModal(
+            const input =
+                root.querySelector(
+                    `[data-checkbox-search-target="${type}"]`
+                );
+
+
+            if (
+                input
+            ) {
+
+                input.value =
+                    "";
+
+            }
+
+
+            window.MCS
+                ?.checkboxList
+                ?.bindSearch(
+                    root
+                );
+
+        }
+
+        function openDay(
+            root,
+            form
+        ) {
+
+            const data =
+                form.getData();
+
+
+            if (
+                !data.tuNgay ||
+                !data.denNgay
+            ) {
+
+                error(
+                    "Vui lòng chọn từ ngày và đến ngày trước."
+                );
+
+
+                return;
+
+            }
+
+
+            window.ThucDon
+                .options
+                .refreshDayOptions(
+                    root,
+                    data.tuNgay,
+                    data.denNgay,
+                    data.dsNgay ||
+                    []
+                );
+
+            prepareCheckboxSearch(
                 root,
                 "day"
             );
-
 
             open(
                 root.querySelector(
@@ -344,9 +406,10 @@ window.ThucDon.contentEditor =
 
         }
 
-
         function openGroup(
-            root
+            root,
+            form,
+            ctx
         ) {
 
             clearModal(
@@ -354,6 +417,50 @@ window.ThucDon.contentEditor =
                 "group"
             );
 
+
+            const data =
+                form.getData();
+
+
+            const day =
+                (
+                    data.dsNgay ||
+                    []
+                )
+                    .find(
+                        item =>
+                            String(
+                                item.id
+                            ) ===
+                            String(
+                                ctx.dayId
+                            )
+                    );
+
+
+            if (!day) {
+
+                error(
+                    "Không xác định được ngày."
+                );
+
+                return;
+
+            }
+
+
+            window.ThucDon
+                .options
+                .refreshGroupOptions(
+                    root,
+                    day.dsNhomMonAn ||
+                    []
+                );
+
+            prepareCheckboxSearch(
+                root,
+                "group"
+            );
 
             open(
                 root.querySelector(
@@ -363,9 +470,10 @@ window.ThucDon.contentEditor =
 
         }
 
-
         function openFood(
-            root
+            root,
+            form,
+            ctx
         ) {
 
             clearModal(
@@ -374,6 +482,72 @@ window.ThucDon.contentEditor =
             );
 
 
+            const data =
+                form.getData();
+
+
+            const day =
+                (
+                    data.dsNgay ||
+                    []
+                )
+                    .find(
+                        item =>
+                            String(
+                                item.id
+                            ) ===
+                            String(
+                                ctx.dayId
+                            )
+                    );
+
+
+            const group =
+                (
+                    day?.dsNhomMonAn ||
+                    []
+                )
+                    .find(
+                        item =>
+                            String(
+                                item.id
+                            ) ===
+                            String(
+                                ctx.groupId
+                            )
+                    );
+
+
+            if (!group) {
+
+                error(
+                    "Không xác định được nhóm món."
+                );
+
+                return;
+
+            }
+
+
+            const nhomMonAnId =
+                group.nhomMonAnId ??
+                group.nhomMonAn?.id;
+
+
+            window.ThucDon
+                .options
+                .refreshFoodOptions(
+                    root,
+                    nhomMonAnId,
+                    group.dsMonAn ||
+                    []
+                );
+
+            prepareCheckboxSearch(
+                root,
+                "food"
+            );
+
             open(
                 root.querySelector(
                     "[data-modal-food]"
@@ -381,7 +555,6 @@ window.ThucDon.contentEditor =
             );
 
         }
-
 
         function open(
             modal
@@ -402,7 +575,6 @@ window.ThucDon.contentEditor =
                 );
 
         }
-
 
         function closeAll(
             root
@@ -427,7 +599,6 @@ window.ThucDon.contentEditor =
                 );
 
         }
-
 
         function clearModal(
             root,
@@ -456,13 +627,40 @@ window.ThucDon.contentEditor =
             names.forEach(
                 name => {
 
+                    const checkboxes =
+                        root.querySelectorAll(
+                            `input[type="checkbox"][name="${name}"]`
+                        );
+
+
+                    if (
+                        checkboxes.length
+                    ) {
+
+                        checkboxes.forEach(
+                            checkbox => {
+
+                                checkbox.checked =
+                                    false;
+
+                            }
+                        );
+
+
+                        return;
+
+                    }
+
+
                     const el =
                         root.querySelector(
                             `[name="${name}"]`
                         );
 
 
-                    if (!el) return;
+                    if (!el) {
+                        return;
+                    }
 
 
                     if (
@@ -512,119 +710,169 @@ window.ThucDon.contentEditor =
 
         }
 
-
         function saveDay(
             root,
             form
         ) {
 
-            const date =
-                normalizeDate(
-                    field(
-                        root,
+            const dayList =
+                root.querySelector(
+                    "[data-day-checkbox-list]"
+                );
+
+
+            const selectedDateSet =
+                new Set(
+                    scopedTextField(
+                        dayList,
                         "tdNgay"
                     )
                 );
-
-
-            const note =
-                field(
-                    root,
-                    "tdGhiChuNgay"
-                );
-
-
-            if (
-                !date
-            ) {
-
-                error(
-                    "Vui lòng chọn ngày áp dụng."
-                );
-
-                return;
-
-            }
-
 
             const data =
                 form.getData();
 
 
-            const days =
+            const currentDays =
                 data.dsNgay ||
                 [];
 
+            const blockedDays =
+                [];
 
-            if (
-                days.some(
-                    d =>
+
+            currentDays.forEach(
+                day => {
+
+                    const date =
                         normalizeDate(
-                            d.ngay ||
-                            d.ngayApDung
-                        ) ===
-                        date
-                )
-            ) {
+                            day.ngay ||
+                            day.ngayApDung
+                        );
 
-                error(
-                    "Ngày này đã có trong thực đơn."
+                    if (
+                        selectedDateSet.has(
+                            date
+                        )
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const groupCount =
+                        (
+                            day.dsNhomMonAn ||
+                            []
+                        ).length;
+
+                    if (
+                        groupCount > 0
+                    ) {
+
+                        selectedDateSet.add(
+                            date
+                        );
+
+
+                        blockedDays.push({
+
+                            date,
+
+                            groupCount
+
+                        });
+
+                    }
+
+                }
+            );
+
+
+            const currentMap =
+                new Map(
+                    currentDays.map(
+                        day => [
+
+                            normalizeDate(
+                                day.ngay ||
+                                day.ngayApDung
+                            ),
+
+                            day
+
+                        ]
+                    )
                 );
 
-                return;
 
-            }
-
-
-            const from =
-                normalizeDate(
-                    data.tuNgay
-                );
+            const nextDays =
+                [];
 
 
-            const to =
-                normalizeDate(
-                    data.denNgay
-                );
+            selectedDateSet.forEach(
+                date => {
+
+                    const existed =
+                        currentMap.get(
+                            date
+                        );
 
 
-            if (
-                from &&
-                date < from ||
-                to &&
-                date > to
-            ) {
+                    if (
+                        existed
+                    ) {
 
-                error(
-                    "Ngày áp dụng phải nằm trong thời gian của thực đơn."
-                );
-
-                return;
-
-            }
+                        nextDays.push(
+                            existed
+                        );
 
 
-            days.push({
+                        return;
 
-                id:
-                    tempId(
-                        "day"
-                    ),
+                    }
 
-                ngay:
-                    date,
+                    nextDays.push({
 
-                ghiChu:
-                    note,
+                        id:
+                            tempId(
+                                "day"
+                            ),
 
-                dsNhomMonAn:
-                    []
+                        ngay:
+                            date,
 
-            });
+                        ghiChu:
+                            null,
+
+                        dsNhomMonAn:
+                            []
+
+                    });
+
+                }
+            );
+
+
+            nextDays.sort(
+                (
+                    a,
+                    b
+                ) =>
+                    normalizeDate(
+                        a.ngay
+                    )
+                        .localeCompare(
+                            normalizeDate(
+                                b.ngay
+                            )
+                        )
+            );
 
 
             data.dsNgay =
-                days;
+                nextDays;
 
 
             form.setWorkingData(
@@ -637,12 +885,47 @@ window.ThucDon.contentEditor =
             );
 
 
-            success(
-                "Đã thêm ngày."
-            );
+            if (
+                blockedDays.length
+            ) {
+
+                const first =
+                    blockedDays[0];
+
+
+                window.MCS
+                    ?.toast
+                    ?.warning
+                    ?.(
+                        blockedDays.length === 1
+                            ?
+                                `Ngày ${formatDate(first.date)} đang tồn tại ${first.groupCount} nhóm món nên không thể bỏ chọn.`
+                            :
+                                `${blockedDays.length} ngày đang có nhóm món nên không thể bỏ chọn.`
+                    );
+
+            }
+            else {
+
+                success(
+                    `Đã cập nhật ${nextDays.length} ngày áp dụng.`
+                );
+
+            }
 
         }
 
+        function formatDate(
+            value
+        ) {
+
+            return window.ThucDon
+                .form
+                .formatDate(
+                    value
+                );
+
+        }
 
         function saveGroup(
             root,
@@ -658,32 +941,27 @@ window.ThucDon.contentEditor =
                     "Không xác định được ngày."
                 );
 
+
                 return;
 
             }
 
+            const groupList =
+                root.querySelector(
+                    "[data-group-checkbox-list]"
+                );
 
-            const id =
-                Number(
-                    field(
-                        root,
+
+            const selectedIds =
+                new Set(
+                    scopedMultiField(
+                        groupList,
                         "tdNhomMonAnId"
                     )
+                        .map(
+                            String
+                        )
                 );
-
-
-            if (
-                !id
-            ) {
-
-                error(
-                    "Vui lòng chọn nhóm món."
-                );
-
-                return;
-
-            }
-
 
             const data =
                 form.getData();
@@ -693,18 +971,21 @@ window.ThucDon.contentEditor =
                 (
                     data.dsNgay ||
                     []
-                ).find(
-                    d =>
-                        String(
-                            d.id
-                        ) ===
-                        String(
-                            ctx.dayId
-                        )
-                );
+                )
+                    .find(
+                        item =>
+                            String(
+                                item.id
+                            ) ===
+                            String(
+                                ctx.dayId
+                            )
+                    );
 
 
-            if (!day) return;
+            if (!day) {
+                return;
+            }
 
 
             day.dsNhomMonAn =
@@ -712,64 +993,167 @@ window.ThucDon.contentEditor =
                 [];
 
 
-            if (
-                day.dsNhomMonAn.some(
-                    g =>
-                        Number(
-                            g.nhomMonAnId ??
-                            g.nhomMonAn?.id
-                        ) ===
-                        id
-                )
-            ) {
+            const blockedGroups =
+                [];
 
-                error(
-                    "Nhóm món đã tồn tại trong ngày."
+            day.dsNhomMonAn.forEach(
+                group => {
+
+                    const groupId =
+                        String(
+                            group.nhomMonAnId ??
+                            group.nhomMonAn?.id
+                        );
+
+                    if (
+                        selectedIds.has(
+                            groupId
+                        )
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const foodCount =
+                        (
+                            group.dsMonAn ||
+                            []
+                        ).length;
+
+                    if (
+                        foodCount > 0
+                    ) {
+
+                        selectedIds.add(
+                            groupId
+                        );
+
+
+                        blockedGroups.push({
+
+                            id:
+                                groupId,
+
+                            name:
+                                group.tenNhomMonAn ||
+                                group.nhomMonAn
+                                    ?.tenNhomMonAn ||
+                                "Nhóm món",
+
+                            foodCount
+
+                        });
+
+                    }
+
+                }
+            );
+
+
+            const oldMap =
+                new Map(
+                    day.dsNhomMonAn.map(
+                        group => [
+
+                            String(
+                                group.nhomMonAnId ??
+                                group.nhomMonAn?.id
+                            ),
+
+                            group
+
+                        ]
+                    )
                 );
 
-                return;
 
-            }
+            const nextGroups =
+                [];
 
 
-            const selected =
-                root
-                    ._tdOptions
-                    ?.nhomMonAn
-                    ?.find(
-                        x =>
-                            Number(
-                                x.id
-                            ) ===
+            selectedIds.forEach(
+                id => {
+
+                    const existed =
+                        oldMap.get(
                             id
-                    );
+                        );
 
 
-            day.dsNhomMonAn.push({
+                    if (
+                        existed
+                    ) {
 
-                id:
-                    tempId(
-                        "group"
-                    ),
+                        nextGroups.push(
+                            existed
+                        );
 
-                nhomMonAnId:
-                    id,
 
-                nhomMonAn:
-                    selected
-                        ? {
+                        return;
+
+                    }
+
+                    const selected =
+                        root
+                            ._tdOptions
+                            ?.nhomMonAn
+                            ?.find(
+                                item =>
+                                    String(
+                                        item.id
+                                    ) ===
+                                    id
+                            );
+
+
+                    if (!selected) {
+                        return;
+                    }
+
+
+                    nextGroups.push({
+
+                        id:
+                            tempId(
+                                "group"
+                            ),
+
+                        nhomMonAnId:
+                            Number(
+                                selected.id
+                            ),
+
+                        nhomMonAn: {
                             ...selected
-                        }
-                        : null,
+                        },
 
-                tenNhomMonAn:
-                    selected?.tenNhomMonAn ||
-                    "-",
+                        tenNhomMonAn:
+                            selected.tenNhomMonAn ||
+                            "-",
 
-                dsMonAn:
-                    []
+                        dsMonAn:
+                            []
 
-            });
+                    });
+
+                }
+            );
+
+
+            day.dsNhomMonAn =
+                nextGroups;
+
+
+            form.selectDay(
+                ctx.dayId
+            );
+
+
+            form.selectGroup(
+                null
+            );
 
 
             form.setWorkingData(
@@ -782,12 +1166,49 @@ window.ThucDon.contentEditor =
             );
 
 
+            if (
+                blockedGroups.length
+            ) {
+
+                if (
+                    blockedGroups.length ===
+                    1
+                ) {
+
+                    const blocked =
+                        blockedGroups[0];
+
+
+                    window.MCS
+                        ?.toast
+                        ?.warning
+                        ?.(
+                            `${blocked.name} đang tồn tại ${blocked.foodCount} món ăn nên không thể bỏ chọn.`
+                        );
+
+                }
+                else {
+
+                    window.MCS
+                        ?.toast
+                        ?.warning
+                        ?.(
+                            `${blockedGroups.length} nhóm đang tồn tại món ăn nên không thể bỏ chọn.`
+                        );
+
+                }
+
+
+                return;
+
+            }
+
+
             success(
-                "Đã thêm nhóm món."
+                `Đã cập nhật ${nextGroups.length} nhóm món.`
             );
 
         }
-
 
         function saveFood(
             root,
@@ -804,19 +1225,27 @@ window.ThucDon.contentEditor =
                     "Không xác định được nhóm món."
                 );
 
+
                 return;
 
             }
 
-
-            const monAnId =
-                Number(
-                    field(
-                        root,
-                        "tdMonAnId"
-                    )
+            const foodList =
+                root.querySelector(
+                    "[data-food-checkbox-list]"
                 );
 
+
+            const selectedIds =
+                new Set(
+                    scopedMultiField(
+                        foodList,
+                        "tdMonAnId"
+                    )
+                        .map(
+                            String
+                        )
+                );
 
             const dinhLuong =
                 numberOrNull(
@@ -852,19 +1281,6 @@ window.ThucDon.contentEditor =
                 );
 
 
-            if (
-                !monAnId
-            ) {
-
-                error(
-                    "Vui lòng chọn món ăn."
-                );
-
-                return;
-
-            }
-
-
             const data =
                 form.getData();
 
@@ -873,33 +1289,37 @@ window.ThucDon.contentEditor =
                 (
                     data.dsNgay ||
                     []
-                ).find(
-                    d =>
-                        String(
-                            d.id
-                        ) ===
-                        String(
-                            ctx.dayId
-                        )
-                );
+                )
+                    .find(
+                        item =>
+                            String(
+                                item.id
+                            ) ===
+                            String(
+                                ctx.dayId
+                            )
+                    );
 
 
             const group =
                 (
                     day?.dsNhomMonAn ||
                     []
-                ).find(
-                    g =>
-                        String(
-                            g.id
-                        ) ===
-                        String(
-                            ctx.groupId
-                        )
-                );
+                )
+                    .find(
+                        item =>
+                            String(
+                                item.id
+                            ) ===
+                            String(
+                                ctx.groupId
+                            )
+                    );
 
 
-            if (!group) return;
+            if (!group) {
+                return;
+            }
 
 
             group.dsMonAn =
@@ -907,37 +1327,21 @@ window.ThucDon.contentEditor =
                 [];
 
 
-            if (
-                group.dsMonAn.some(
-                    f =>
-                        Number(
-                            f.monAnId ??
-                            f.monAn?.id
-                        ) ===
-                        monAnId
-                )
-            ) {
+            const currentMap =
+                new Map(
+                    group.dsMonAn.map(
+                        food => [
 
-                error(
-                    "Món ăn đã có trong nhóm."
+                            String(
+                                food.monAnId ??
+                                food.monAn?.id
+                            ),
+
+                            food
+
+                        ]
+                    )
                 );
-
-                return;
-
-            }
-
-
-            const mon =
-                root
-                    ._tdOptions
-                    ?.monAn
-                    ?.find(
-                        x =>
-                            Number(
-                                x.id
-                            ) ===
-                            monAnId
-                    );
 
 
             const unit =
@@ -945,46 +1349,133 @@ window.ThucDon.contentEditor =
                     ._tdOptions
                     ?.donViTinh
                     ?.find(
-                        x =>
+                        item =>
                             Number(
-                                x.id
+                                item.id
                             ) ===
-                            donViTinhId
+                            Number(
+                                donViTinhId
+                            )
                     );
 
 
-            group.dsMonAn.push({
+            const nextFoods =
+                [];
 
-                id:
-                    tempId(
-                        "food"
-                    ),
 
-                monAnId,
+            selectedIds.forEach(
+                monAnId => {
 
-                monAn:
-                    mon
-                        ? {
+                    const existed =
+                        currentMap.get(
+                            monAnId
+                        );
+
+                    if (
+                        existed
+                    ) {
+
+                        nextFoods.push(
+                            existed
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    const mon =
+                        root
+                            ._tdOptions
+                            ?.monAn
+                            ?.find(
+                                item =>
+                                    String(
+                                        item.id
+                                    ) ===
+                                    monAnId
+                            );
+
+
+                    if (!mon) {
+                        return;
+                    }
+
+
+                    const monGroupId =
+                        Number(
+                            mon.nhomMonAnId ??
+                            mon.nhomMonAn?.id
+                        );
+
+
+                    const currentGroupId =
+                        Number(
+                            group.nhomMonAnId ??
+                            group.nhomMonAn?.id
+                        );
+
+
+                    if (
+                        monGroupId !==
+                        currentGroupId
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    nextFoods.push({
+
+                        id:
+                            tempId(
+                                "food"
+                            ),
+
+                        monAnId:
+                            Number(
+                                mon.id
+                            ),
+
+                        monAn: {
                             ...mon
-                        }
-                        : null,
+                        },
 
-                dinhLuong,
+                        dinhLuong,
 
-                donViTinhId,
+                        donViTinhId,
 
-                donViTinh:
-                    unit
-                        ? {
-                            ...unit
-                        }
-                        : null,
+                        donViTinh:
+                            unit
+                                ? {
+                                    ...unit
+                                }
+                                : null,
 
-                khauPhan,
+                        khauPhan,
 
-                ghiChu
+                        ghiChu
 
-            });
+                    });
+
+                }
+            );
+
+
+            group.dsMonAn =
+                nextFoods;
+
+
+            form.selectDay(
+                ctx.dayId
+            );
+
+
+            form.selectGroup(
+                ctx.groupId
+            );
 
 
             form.setWorkingData(
@@ -998,11 +1489,90 @@ window.ThucDon.contentEditor =
 
 
             success(
-                "Đã thêm món ăn."
+                `Đã cập nhật ${nextFoods.length} món ăn.`
             );
 
         }
 
+        function scopedTextField(
+            container,
+            name
+        ) {
+
+            if (!container) {
+                return [];
+            }
+
+
+            return Array
+                .from(
+                    container.querySelectorAll(
+                        `input[type="checkbox"][name="${name}"]:checked`
+                    )
+                )
+                .map(
+                    input =>
+                        String(
+                            input.value ||
+                            ""
+                        )
+                )
+                .filter(Boolean);
+
+        }
+
+        function scopedMultiField(
+            container,
+            name
+        ) {
+
+            if (!container) {
+                return [];
+            }
+
+
+            return Array
+                .from(
+                    container.querySelectorAll(
+                        `input[type="checkbox"][name="${name}"]:checked`
+                    )
+                )
+                .map(
+                    input =>
+                        Number(
+                            input.value
+                        )
+                )
+                .filter(
+                    value =>
+                        Number.isFinite(
+                            value
+                        ) &&
+                        value > 0
+                );
+
+        }
+
+        function multiTextField(
+            root,
+            name
+        ) {
+
+            return Array
+                .from(
+                    root.querySelectorAll(
+                        `input[type="checkbox"][name="${name}"]:checked`
+                    )
+                )
+                .map(
+                    input =>
+                        String(
+                            input.value
+                        )
+                )
+                .filter(Boolean);
+
+        }
 
         function removeDay(
             root,
@@ -1042,7 +1612,6 @@ window.ThucDon.contentEditor =
             );
 
         }
-
 
         function removeGroup(
             root,
@@ -1104,7 +1673,6 @@ window.ThucDon.contentEditor =
             );
 
         }
-
 
         function removeFood(
             root,
@@ -1183,7 +1751,6 @@ window.ThucDon.contentEditor =
 
         }
 
-
         function confirmDelete(
             title,
             message,
@@ -1221,7 +1788,6 @@ window.ThucDon.contentEditor =
 
         }
 
-
         function field(
             root,
             name
@@ -1238,6 +1804,32 @@ window.ThucDon.contentEditor =
 
         }
 
+        function multiField(
+            root,
+            name
+        ) {
+
+            return Array
+                .from(
+                    root.querySelectorAll(
+                        `input[type="checkbox"][name="${name}"]:checked`
+                    )
+                )
+                .map(
+                    input =>
+                        Number(
+                            input.value
+                        )
+                )
+                .filter(
+                    value =>
+                        Number.isFinite(
+                            value
+                        ) &&
+                        value > 0
+                );
+
+        }
 
         function numberOrNull(
             v
@@ -1251,7 +1843,6 @@ window.ThucDon.contentEditor =
 
         }
 
-
         function normalizeDate(
             v
         ) {
@@ -1264,7 +1855,6 @@ window.ThucDon.contentEditor =
 
         }
 
-
         function tempId(
             type
         ) {
@@ -1272,7 +1862,6 @@ window.ThucDon.contentEditor =
             return `tmp-${type}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
         }
-
 
         function success(
             m
@@ -1285,7 +1874,6 @@ window.ThucDon.contentEditor =
 
         }
 
-
         function error(
             m
         ) {
@@ -1296,7 +1884,6 @@ window.ThucDon.contentEditor =
                 ?.(m);
 
         }
-
 
         return {
             init
