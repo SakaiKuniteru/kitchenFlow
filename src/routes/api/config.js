@@ -175,6 +175,15 @@ const routes = [
         )
     ],
 
+    // CẤU HÌNH //
+
+    [
+        "/thiet-lap",
+        require(
+            "../../modules/cau-hinh/cau-hinh.route"
+        )
+    ],
+
     // NGHIỆP VỤ
 
     [

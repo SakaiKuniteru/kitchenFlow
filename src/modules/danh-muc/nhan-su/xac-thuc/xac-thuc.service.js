@@ -1,12 +1,118 @@
 const md5 = require("../../../../utils/md5");
 const jwt = require("../../../../utils/jwt");
-
 const ApiError = require("../../../../utils/api-error");
-
 const authRepository = require("./xac-thuc.repository");
-const thietLapRepository = require("../../he-thong/thiet-lap/thiet-lap.repository");
+const cauHinhService = require("../../../cau-hinh/cau-hinh.service");
 
 class XacThucService {
+
+tinhThoiGianMoKhoa(
+    batDau,
+    {
+        soLuong,
+        donVi
+    }
+) {
+
+    const ketQua =
+        new Date(
+            batDau
+        );
+
+
+    switch (
+        donVi
+    ) {
+
+        case "phut":
+
+            ketQua.setMinutes(
+                ketQua.getMinutes() +
+                soLuong
+            );
+
+            break;
+
+
+        case "gio":
+
+            ketQua.setHours(
+                ketQua.getHours() +
+                soLuong
+            );
+
+            break;
+
+
+        case "ngay":
+
+            ketQua.setDate(
+                ketQua.getDate() +
+                soLuong
+            );
+
+            break;
+
+
+        case "thang":
+
+            ketQua.setMonth(
+                ketQua.getMonth() +
+                soLuong
+            );
+
+            break;
+
+
+        case "nam":
+
+            ketQua.setFullYear(
+                ketQua.getFullYear() +
+                soLuong
+            );
+
+            break;
+
+
+        default:
+
+            return null;
+
+    }
+
+
+    return ketQua;
+
+}
+
+taoThongBaoKhoa({
+    soLuong,
+    donVi
+}) {
+
+    const label = {
+
+        phut:
+            "phút",
+
+        gio:
+            "giờ",
+
+        ngay:
+            "ngày",
+
+        thang:
+            "tháng",
+
+        nam:
+            "năm"
+
+    };
+
+
+    return `Tài khoản đã bị khóa trong ${soLuong} ${label[donVi]}.`;
+
+}
 
     async login(taiKhoan, matKhau) {
 
@@ -33,14 +139,59 @@ class XacThucService {
         }
 
         if (
-            account.khoaDen &&
-            new Date(account.khoaDen) > new Date()
+            account.biKhoa
         ) {
 
-            throw new ApiError(
-                423,
-                "Tài khoản đang bị khóa tạm thời."
-            );
+            if (
+                !account.khoaDen
+            ) {
+
+                throw new ApiError(
+                    423,
+                    "Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên."
+                );
+
+            }
+
+
+            const khoaDen =
+                new Date(
+                    account.khoaDen
+                );
+
+
+            const hienTai =
+                new Date();
+
+
+            if (
+                khoaDen >
+                hienTai
+            ) {
+
+                throw new ApiError(
+                    423,
+                    "Tài khoản đang bị khóa tạm thời."
+                );
+
+            }
+
+            await authRepository
+                .unlockAccount(
+                    account.id
+                );
+
+
+            account.biKhoa =
+                false;
+
+
+            account.khoaDen =
+                null;
+
+
+            account.soLanDangNhapSai =
+                0;
 
         }
 
@@ -49,56 +200,91 @@ class XacThucService {
             account.matKhauHash
         );
 
-        if (!isCorrectMatKhau) {
-
-            await authRepository.increaseFailedLogin(
-                account.id
-            );
+        if (
+            !isCorrectMatKhau
+        ) {
 
             const failedLoginCount =
-                await authRepository.getFailedLoginCount(
-                    account.id
-                );
+                await authRepository
+                    .increaseFailedLogin(
+                        account.id
+                    );
 
-            const maxFailedLogin = Number(
-                await thietLapRepository.getGiaTriTheoMa(
-                    "SO_LAN_DANG_NHAP_SAI_TOI_DA"
-                )
-            );
 
-            const lockMinutes = Number(
-                await thietLapRepository.getGiaTriTheoMa(
-                    "THOI_GIAN_KHOA_TAI_KHOAN"
-                )
-            );
+            const maxFailedLogin =
+                await cauHinhService
+                    .getSoLanDangNhapSaiToiDa();
 
-            const isLocked =
-                failedLoginCount >= maxFailedLogin;
 
-            if (isLocked) {
-
-                const lockUntil = new Date(
-                    Date.now() + lockMinutes * 60 * 1000
-                );
-
-                await authRepository.lockAccount(
-                    account.id,
-                    lockUntil
-                );
+            if (
+                maxFailedLogin ===
+                null
+            ) {
 
                 throw new ApiError(
-                    423,
-                    `Tài khoản đã bị khóa tạm thời ${lockMinutes} phút.`
+                    401,
+                    "Sai tài khoản hoặc mật khẩu."
                 );
 
             }
 
+            if (
+                failedLoginCount <
+                maxFailedLogin
+            ) {
+
+                throw new ApiError(
+                    401,
+                    "Sai tài khoản hoặc mật khẩu."
+                );
+
+            }
+
+            const thoiGianKhoa =
+                await cauHinhService
+                    .getThoiGianKhoaTaiKhoan();
+
+            if (
+                !thoiGianKhoa
+            ) {
+
+                await authRepository
+                    .lockAccount(
+                        account.id,
+                        null
+                    );
+
+
+                throw new ApiError(
+                    423,
+                    "Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên."
+                );
+
+            }
+
+
+            const khoaDen =
+                this.tinhThoiGianMoKhoa(
+                    new Date(),
+                    thoiGianKhoa
+                );
+
+
+            await authRepository
+                .lockAccount(
+                    account.id,
+                    khoaDen
+                );
+
+
             throw new ApiError(
-                401,
-                "Sai tài khoản hoặc mật khẩu."
+                423,
+                this.taoThongBaoKhoa(
+                    thoiGianKhoa
+                )
             );
 
-        };
+        }
 
         await authRepository.resetFailedLogin(
             account.id
@@ -130,23 +316,46 @@ class XacThucService {
 
         };
 
+        const accessTokenMinutes =
+            await cauHinhService
+                .getSoPhutAccessToken();
+
+
+        const refreshTokenMinutes =
+            await cauHinhService
+                .getSoPhutRefreshToken();
+
+
         const accessToken =
-            jwt.generateAccessToken(payload);
+            jwt.generateAccessToken(
+                payload,
+                accessTokenMinutes
+            );
+
 
         const refreshToken =
-            jwt.generateRefreshToken(payload);
+            jwt.generateRefreshToken(
+                payload,
+                refreshTokenMinutes
+            );
 
-        const refreshExpiresAt = new Date();
 
-        const refreshTokenDays = Number(
-            await thietLapRepository.getGiaTriTheoMa(
-                "SO_NGAY_REFRESH_TOKEN"
-            )
+        const refreshExpiresAt =
+            new Date();
+
+
+        refreshExpiresAt.setMinutes(
+            refreshExpiresAt.getMinutes() +
+            refreshTokenMinutes
         );
 
-        refreshExpiresAt.setDate(
-            refreshExpiresAt.getDate() + refreshTokenDays
-        );
+
+        await authRepository
+            .saveRefreshToken(
+                account.id,
+                refreshToken,
+                refreshExpiresAt
+            );
 
         await authRepository.saveRefreshToken(
 
@@ -365,26 +574,65 @@ class XacThucService {
 
         };
 
+        const accessTokenMinutes =
+            await cauHinhService
+                .getSoPhutAccessToken();
+
+
+        const refreshTokenMinutes =
+            await cauHinhService
+                .getSoPhutRefreshToken();
+
+
         const newAccessToken =
-            jwt.generateAccessToken(newPayload);
+            jwt.generateAccessToken(
+                newPayload,
+                accessTokenMinutes
+            );
+
 
         const newRefreshToken =
-            jwt.generateRefreshToken(newPayload);
+            jwt.generateRefreshToken(
+                newPayload,
+                refreshTokenMinutes
+            );
+
+
+        await authRepository
+            .revokeRefreshToken(
+                refreshToken
+            );
+
+
+        const expiresAt =
+            new Date();
+
+
+        expiresAt.setMinutes(
+            expiresAt.getMinutes() +
+            refreshTokenMinutes
+        );
+
+
+        await authRepository
+            .saveRefreshToken(
+                account.id,
+                newRefreshToken,
+                expiresAt
+            );
 
         await authRepository.revokeRefreshToken(
             refreshToken
         );
 
-        const expiresAt = new Date();
-
-        const refreshTokenDays = Number(
-            await thietLapRepository.getGiaTriTheoMa(
-                "SO_NGAY_REFRESH_TOKEN"
-            )
+        expiresAt.setMinutes(
+            expiresAt.getMinutes() +
+            refreshTokenMinutes
         );
 
-        expiresAt.setDate(
-            expiresAt.getDate() + refreshTokenDays
+        expiresAt.setMinutes(
+            expiresAt.getMinutes() +
+            refreshTokenMinutes
         );
 
         await authRepository.saveRefreshToken(

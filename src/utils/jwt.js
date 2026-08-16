@@ -1,38 +1,70 @@
-const jwt = require("jsonwebtoken");
+const jwt =
+    require(
+        "jsonwebtoken"
+    );
 
-const ACCESS_TOKEN_EXPIRES_IN = "1h";
 
-const REFRESH_TOKEN_EXPIRES_IN = "30d";
+function generateAccessToken(
+    payload,
+    expiresInMinutes
+) {
 
-function generateAccessToken(payload) {
+    const expiresIn =
+        Number.isFinite(
+            Number(
+                expiresInMinutes
+            )
+        ) &&
+        Number(
+            expiresInMinutes
+        ) > 0
+            ? `${Number(expiresInMinutes)}m`
+            : process.env.ACCESS_TOKEN_EXPIRES;
+
 
     return jwt.sign(
         payload,
-
         process.env.ACCESS_TOKEN_SECRET,
-
         {
-            expiresIn:
-                process.env.ACCESS_TOKEN_EXPIRES
+            expiresIn
         }
     );
 
 }
 
-function generateRefreshToken(payload) {
+
+function generateRefreshToken(
+    payload,
+    expiresInMinutes
+) {
+
+    const expiresIn =
+        Number.isFinite(
+            Number(
+                expiresInMinutes
+            )
+        ) &&
+        Number(
+            expiresInMinutes
+        ) > 0
+            ? `${Number(expiresInMinutes)}m`
+            : process.env.REFRESH_TOKEN_EXPIRES;
+
 
     return jwt.sign(
         payload,
         process.env.REFRESH_TOKEN_SECRET,
         {
-            expiresIn: 
-                process.env.REFRESH_TOKEN_EXPIRES
+            expiresIn
         }
     );
 
 }
 
-function verifyAccessToken(token) {
+
+function verifyAccessToken(
+    token
+) {
 
     return jwt.verify(
         token,
@@ -41,7 +73,10 @@ function verifyAccessToken(token) {
 
 }
 
-function verifyRefreshToken(token) {
+
+function verifyRefreshToken(
+    token
+) {
 
     return jwt.verify(
         token,
@@ -49,6 +84,7 @@ function verifyRefreshToken(token) {
     );
 
 }
+
 
 module.exports = {
 

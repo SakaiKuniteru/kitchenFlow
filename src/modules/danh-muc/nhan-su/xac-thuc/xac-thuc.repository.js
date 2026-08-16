@@ -31,6 +31,9 @@ class XacThucRepository {
             soLanDangNhapSai:
                 row.so_lan_dang_nhap_sai,
 
+            biKhoa:
+                row.bi_khoa,
+
             khoaDen:
                 row.khoa_den,
 
@@ -143,6 +146,7 @@ class XacThucRepository {
                 tk.active,
                 tk.doi_mat_khau_lan_dau,
                 tk.so_lan_dang_nhap_sai,
+                tk.khoa_den,
                 tk.khoa_den,
                 tk.lan_dang_nhap_cuoi,
 
@@ -414,21 +418,51 @@ class XacThucRepository {
 
     }
 
-    async increaseFailedLogin(taiKhoanId) {
+    async increaseFailedLogin(
+        taiKhoanId
+    ) {
 
         const sql = `
             UPDATE dm_tai_khoan
-
             SET
-                so_lan_dang_nhap_sai = so_lan_dang_nhap_sai + 1,
-                updated_at = NOW()
+                so_lan_dang_nhap_sai =
+                    COALESCE(
+                        so_lan_dang_nhap_sai,
+                        0
+                    ) + 1,
+
+                updated_at =
+                    NOW()
 
             WHERE id = $1
+
+            RETURNING
+                so_lan_dang_nhap_sai
         `;
 
-        await pool.query(
-            sql,
-            [taiKhoanId]
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    taiKhoanId
+                ]
+            );
+
+
+        if (
+            result.rows.length ===
+            0
+        ) {
+
+            return 0;
+
+        }
+
+
+        return Number(
+            result.rows[0]
+                .so_lan_dang_nhap_sai
         );
 
     }
@@ -459,42 +493,73 @@ class XacThucRepository {
 
     }
 
-    async resetFailedLogin(taiKhoanId) {
+    async resetFailedLogin(
+        taiKhoanId
+    ) {
 
         const sql = `
             UPDATE dm_tai_khoan
-
             SET
                 so_lan_dang_nhap_sai = 0,
+                bi_khoa = FALSE,
                 khoa_den = NULL,
                 updated_at = NOW()
-
             WHERE id = $1
         `;
 
+
         await pool.query(
             sql,
-            [taiKhoanId]
+            [
+                taiKhoanId
+            ]
         );
 
     }
 
-    async lockAccount(taiKhoanId, lockUntil) {
+    async lockAccount(
+        taiKhoanId,
+        lockUntil = null
+    ) {
 
         const sql = `
             UPDATE dm_tai_khoan
-
             SET
+                bi_khoa = TRUE,
                 khoa_den = $1,
                 updated_at = NOW()
-
             WHERE id = $2
         `;
+
 
         await pool.query(
             sql,
             [
                 lockUntil,
+                taiKhoanId
+            ]
+        );
+
+    }
+
+    async unlockAccount(
+        taiKhoanId
+    ) {
+
+        const sql = `
+            UPDATE dm_tai_khoan
+            SET
+                so_lan_dang_nhap_sai = 0,
+                bi_khoa = FALSE,
+                khoa_den = NULL,
+                updated_at = NOW()
+            WHERE id = $1
+        `;
+
+
+        await pool.query(
+            sql,
+            [
                 taiKhoanId
             ]
         );
@@ -693,6 +758,7 @@ class XacThucRepository {
                 tk.active,
                 tk.doi_mat_khau_lan_dau,
                 tk.so_lan_dang_nhap_sai,
+                tk.khoa_den,
                 tk.khoa_den,
                 tk.lan_dang_nhap_cuoi,
 
@@ -990,6 +1056,7 @@ class XacThucRepository {
                 tk.active AS tai_khoan_active,
                 tk.doi_mat_khau_lan_dau,
                 tk.so_lan_dang_nhap_sai,
+                tk.khoa_den,
                 tk.khoa_den,
                 tk.lan_dang_nhap_cuoi,
 

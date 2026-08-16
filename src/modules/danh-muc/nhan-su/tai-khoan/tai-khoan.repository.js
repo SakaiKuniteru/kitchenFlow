@@ -29,6 +29,9 @@ class TaiKhoanRepository {
             soLanDangNhapSai:
                 row.so_lan_dang_nhap_sai,
 
+            biKhoa:
+                row.bi_khoa,
+
             khoaDen:
                 row.khoa_den,
 
@@ -96,6 +99,7 @@ class TaiKhoanRepository {
                 tk.nhan_vien_id,
                 tk.ten_dang_nhap,
                 tk.so_lan_dang_nhap_sai,
+                tk.bi_khoa,
                 tk.khoa_den,
                 tk.lan_dang_nhap_cuoi,
                 tk.doi_mat_khau_lan_cuoi,
@@ -806,6 +810,7 @@ class TaiKhoanRepository {
                     ten_dang_nhap,
                     mat_khau_hash,
                     so_lan_dang_nhap_sai,
+                    bi_khoa,
                     khoa_den,
                     lan_dang_nhap_cuoi,
                     doi_mat_khau_lan_cuoi,
@@ -819,6 +824,7 @@ class TaiKhoanRepository {
                     $2,
                     $3,
                     0,
+                    FALSE,
                     NULL,
                     NULL,
                     NULL,
@@ -1049,6 +1055,7 @@ class TaiKhoanRepository {
                 doi_mat_khau_lan_cuoi = NOW(),
                 doi_mat_khau_lan_dau = FALSE,
                 so_lan_dang_nhap_sai = 0,
+                bi_khoa = FALSE,
                 khoa_den = NULL,
                 updated_at = NOW()
             WHERE id = $2
@@ -1086,6 +1093,7 @@ class TaiKhoanRepository {
                 doi_mat_khau_lan_dau = TRUE,
                 doi_mat_khau_lan_cuoi = NULL,
                 so_lan_dang_nhap_sai = 0,
+                bi_khoa = FALSE,
                 khoa_den = NULL,
                 updated_at = NOW()
             WHERE id = $2
@@ -1107,6 +1115,139 @@ class TaiKhoanRepository {
 
         return await this.getChiTiet(
             taiKhoanId
+        );
+
+    }
+
+    async tangSoLanDangNhapSai(
+        taiKhoanId
+    ) {
+
+        const sql = `
+            UPDATE dm_tai_khoan
+            SET
+                so_lan_dang_nhap_sai =
+                    COALESCE(
+                        so_lan_dang_nhap_sai,
+                        0
+                    ) + 1,
+                updated_at = NOW()
+            WHERE id = $1
+            RETURNING
+                so_lan_dang_nhap_sai
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    taiKhoanId
+                ]
+            );
+
+
+        if (
+            result.rows.length === 0
+        ) {
+
+            return null;
+
+        }
+
+
+        return Number(
+            result.rows[0]
+                .so_lan_dang_nhap_sai
+        );
+
+    }
+
+    async khoaTaiKhoan(
+        taiKhoanId,
+        khoaDen = null
+    ) {
+
+        const sql = `
+            UPDATE dm_tai_khoan
+            SET
+                bi_khoa = TRUE,
+                khoa_den = $1,
+                updated_at = NOW()
+            WHERE id = $2
+            RETURNING id
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    khoaDen,
+                    taiKhoanId
+                ]
+            );
+
+
+        return (
+            result.rows.length >
+            0
+        );
+
+    }
+
+    async moKhoaTaiKhoan(
+        taiKhoanId
+    ) {
+
+        const sql = `
+            UPDATE dm_tai_khoan
+            SET
+                so_lan_dang_nhap_sai = 0,
+                bi_khoa = FALSE,
+                khoa_den = NULL,
+                updated_at = NOW()
+            WHERE id = $1
+            RETURNING id
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    taiKhoanId
+                ]
+            );
+
+
+        return (
+            result.rows.length >
+            0
+        );
+
+    }
+
+    async resetDangNhapSai(
+        taiKhoanId
+    ) {
+
+        const sql = `
+            UPDATE dm_tai_khoan
+            SET
+                so_lan_dang_nhap_sai = 0,
+                bi_khoa = FALSE,
+                khoa_den = NULL,
+                updated_at = NOW()
+            WHERE id = $1
+        `;
+
+
+        await pool.query(
+            sql,
+            [
+                taiKhoanId
+            ]
         );
 
     }
