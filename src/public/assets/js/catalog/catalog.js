@@ -447,8 +447,10 @@ class MCSCatalog {
             );
 
 
+        this.lastIsMobile =
+            this.detailPanel
+                .isMobile();
         this.bindEvents();
-
     }
 
 
@@ -491,7 +493,6 @@ class MCSCatalog {
                         .debounce
                 )
             );
-
 
         this.elements.clearSearch
             ?.addEventListener(
@@ -540,7 +541,6 @@ class MCSCatalog {
                 }
             );
 
-
         this.elements.create
             ?.addEventListener(
                 "click",
@@ -555,7 +555,6 @@ class MCSCatalog {
 
                 }
             );
-
 
         this.elements.utilityToggle
             ?.addEventListener(
@@ -621,23 +620,24 @@ class MCSCatalog {
                             )
                         );
 
-
-                    const label =
-                        this.elements
-                            .expandTable
-                            .querySelector(
-                                "[data-expand-table-label]"
-                            );
-
-
-                    if (label) {
-
-                        label.textContent =
+                    this.elements
+                        .expandTable
+                        .setAttribute(
+                            "aria-label",
                             expanded
-                                ? "Thu nhỏ"
-                                : "Mở rộng";
+                                ? "Thu nhỏ danh sách"
+                                : "Mở rộng danh sách"
+                        );
 
-                    }
+
+                    this.elements
+                        .expandTable
+                        .setAttribute(
+                            "title",
+                            expanded
+                                ? "Thu nhỏ danh sách"
+                                : "Mở rộng danh sách"
+                        );
 
                 }
             );
@@ -671,27 +671,29 @@ class MCSCatalog {
                                 "aria-pressed",
                                 "false"
                             );
-
-
-                        const tableLabel =
+                        if (
                             this.elements
                                 .expandTable
-                                ?.querySelector(
-                                    "[data-expand-table-label]"
+                        ) {
+
+                            this.elements
+                                .expandTable
+                                .setAttribute(
+                                    "aria-label",
+                                    "Mở rộng danh sách"
                                 );
 
 
-                        if (
-                            tableLabel
-                        ) {
-
-                            tableLabel.textContent =
-                                "Mở rộng";
+                            this.elements
+                                .expandTable
+                                .setAttribute(
+                                    "title",
+                                    "Mở rộng danh sách"
+                                );
 
                         }
 
                     }
-
 
                     const expanded =
                         !this.root
@@ -718,25 +720,24 @@ class MCSCatalog {
                             )
                         );
 
-
-                    const label =
-                        this.elements
-                            .expandInfo
-                            .querySelector(
-                                "[data-expand-info-label]"
-                            );
-
-
-                    if (
-                        label
-                    ) {
-
-                        label.textContent =
+                    this.elements
+                        .expandInfo
+                        .setAttribute(
+                            "aria-label",
                             expanded
                                 ? "Thu nhỏ thông tin"
-                                : "Mở rộng thông tin";
+                                : "Mở rộng thông tin"
+                        );
 
-                    }
+
+                    this.elements
+                        .expandInfo
+                        .setAttribute(
+                            "title",
+                            expanded
+                                ? "Thu nhỏ thông tin"
+                                : "Mở rộng thông tin"
+                        );
 
                 }
             );
@@ -761,7 +762,6 @@ class MCSCatalog {
                 }
             );
 
-
         this.elements.importButton
             ?.addEventListener(
                 "click",
@@ -781,7 +781,6 @@ class MCSCatalog {
 
                 }
             );
-
 
         this.elements.refresh
             ?.addEventListener(
@@ -822,7 +821,6 @@ class MCSCatalog {
                 }
             );
 
-
         this.elements.filterToggle
             ?.addEventListener(
                 "click",
@@ -837,7 +835,6 @@ class MCSCatalog {
 
                 }
             );
-
 
         this.root.addEventListener(
             "input",
@@ -870,7 +867,6 @@ class MCSCatalog {
             }
         );
 
-
         this.root.addEventListener(
             "change",
             event => {
@@ -902,7 +898,6 @@ class MCSCatalog {
             }
         );
 
-
         this.elements.clearFilters
             ?.addEventListener(
                 "click",
@@ -918,7 +913,6 @@ class MCSCatalog {
                 }
             );
 
-
         this.elements.overlay
             ?.addEventListener(
                 "click",
@@ -931,16 +925,211 @@ class MCSCatalog {
                         .close();
                 }
             );
+
+        this.handleWindowResize =
+            this.debounce(
+                () => {
+
+                    this.syncResponsiveState();
+
+                },
+                120
+            );
+
+        window.addEventListener(
+            "resize",
+            this.handleWindowResize
+        );
     }
 
     async initialize() {
+
         await this.load();
-        this.openCreate();
+
+
+        if (
+            this.detailPanel
+                .isMobile()
+        ) {
+
+            this.detailPanel
+                .close();
+
+        } else {
+
+            this.openCreate();
+
+        }
+
+
         return this;
+
+    }
+    initializeDefaultDetail() {
+
+        if (
+            this.detailPanel
+                .isMobile()
+        ) {
+
+            this.detailPanel
+                .close();
+
+
+            this.table
+                .clearSelection();
+
+
+            this.state
+                .selectedId =
+                null;
+
+
+            return;
+
+        }
+
+
+        this.openCreate();
+
     }
 
-    initializeDefaultDetail() {
-        this.openCreate();
+    syncResponsiveState() {
+
+        const isMobile =
+            this.detailPanel
+                .isMobile();
+
+
+        if (
+            isMobile ===
+            this.lastIsMobile
+        ) {
+
+            return;
+
+        }
+
+
+        this.lastIsMobile =
+            isMobile;
+
+        if (
+            isMobile
+        ) {
+
+            this.root
+                .classList
+                .remove(
+                    "is-list-expanded",
+                    "is-info-expanded"
+                );
+
+
+            this.elements
+                .expandTable
+                ?.setAttribute(
+                    "aria-pressed",
+                    "false"
+                );
+
+
+            this.elements
+                .expandInfo
+                ?.setAttribute(
+                    "aria-pressed",
+                    "false"
+                );
+
+
+            if (
+                this.elements
+                    .detailRoot
+            ) {
+
+                this.elements
+                    .detailRoot
+                    .classList
+                    .remove(
+                        "is-open",
+                        "is-expanded"
+                    );
+
+
+                this.elements
+                    .detailRoot
+                    .hidden =
+                    true;
+
+
+                this.elements
+                    .detailRoot
+                    .dataset
+                    .panelMode =
+                    "closed";
+
+            }
+
+
+            document.body
+                .classList
+                .remove(
+                    "catalog-panel-open"
+                );
+
+
+            return;
+
+        }
+
+        if (
+            this.elements
+                .detailRoot
+        ) {
+
+            this.elements
+                .detailRoot
+                .hidden =
+                false;
+
+
+            this.elements
+                .detailRoot
+                .classList
+                .add(
+                    "is-open"
+                );
+
+
+            this.elements
+                .detailRoot
+                .dataset
+                .panelMode =
+                this.detailPanel
+                    .mode;
+
+        }
+
+
+        document.body
+            .classList
+            .remove(
+                "catalog-panel-open"
+            );
+
+        if (
+            this.detailPanel
+                .mode ===
+                "view" &&
+            this.state
+                .selectedId ===
+                null
+        ) {
+
+            this.openCreate();
+
+        }
+
     }
 
     toggleFilterRow() {

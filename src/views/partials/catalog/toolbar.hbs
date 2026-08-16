@@ -50,32 +50,13 @@
 
         </div>
 
-
         <div class="catalog-toolbar__search">
 
             <span
                 class="catalog-toolbar__search-icon"
                 aria-hidden="true">
 
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round">
-
-                    <circle
-                        cx="11"
-                        cy="11"
-                        r="7">
-                    </circle>
-
-                    <path
-                        d="m20 20-3.5-3.5">
-                    </path>
-
-                </svg>
+                <i class="fa-solid fa-magnifying-glass"></i>
 
             </span>
 
@@ -86,7 +67,24 @@
                 class="catalog-toolbar__search-input"
                 placeholder="{{#if searchPlaceholder}}{{searchPlaceholder}}{{else}}Tìm kiếm theo mã, tên, mô tả...{{/if}}"
                 autocomplete="off"
-                data-catalog-search>
+                data-catalog-search
+            >
+
+
+            <button
+                type="button"
+                class="catalog-toolbar__search-clear"
+                data-catalog-clear-search
+                aria-label="Xóa nội dung tìm kiếm"
+                title="Xóa tìm kiếm"
+                hidden>
+
+                <i
+                    class="fa-solid fa-xmark"
+                    aria-hidden="true">
+                </i>
+
+            </button>
 
         </div>
 
@@ -113,10 +111,6 @@
 
                     <span>
                         Tiện ích
-                    </span>
-
-                    <span aria-hidden="true">
-                        ⌄
                     </span>
 
                 </button>
@@ -176,34 +170,38 @@
 
             <button
                 type="button"
-                class="catalog-toolbar__button catalog-toolbar__button--secondary"
+                class="
+                    catalog-toolbar__icon-button
+                    catalog-toolbar__icon-button--expand-table
+                "
                 data-catalog-expand-table
-                aria-pressed="false">
+                aria-pressed="false"
+                aria-label="Mở rộng danh sách"
+                title="Mở rộng danh sách">
 
-                <span aria-hidden="true">
-                    ↗
-                </span>
-
-                <span data-expand-table-label>
-                    Mở rộng
-                </span>
+                <i
+                    class="fa-solid fa-arrows-left-right"
+                    aria-hidden="true">
+                </i>
 
             </button>
 
 
             <button
                 type="button"
-                class="catalog-toolbar__button catalog-toolbar__button--secondary"
+                class="
+                    catalog-toolbar__icon-button
+                    catalog-toolbar__icon-button--expand-info
+                "
                 data-catalog-expand-info
-                aria-pressed="false">
+                aria-pressed="false"
+                aria-label="Mở rộng thông tin"
+                title="Mở rộng thông tin">
 
-                <span aria-hidden="true">
-                    ⇱
-                </span>
-
-                <span data-expand-info-label>
-                    Mở rộng thông tin
-                </span>
+                <i
+                    class="fa-solid fa-table-columns"
+                    aria-hidden="true">
+                </i>
 
             </button>
 

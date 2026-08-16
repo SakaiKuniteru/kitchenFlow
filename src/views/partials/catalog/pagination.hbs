@@ -3,41 +3,106 @@
     class="catalog-pagination"
     data-catalog-pagination>
 
-    <label class="catalog-pagination__page-size">
+    <div class="catalog-pagination__page-size">
 
-        <span>
+        <span class="catalog-pagination__page-size-label">
             Hiển thị
         </span>
 
-        <span class="catalog-pagination__select-wrapper">
+    <div
+        class="catalog-pagination__size-picker"
+        data-pagination-size-picker>
 
-            <select
-                data-pagination-size
-                aria-label="Số bản ghi trên mỗi trang">
+        <select
+            data-pagination-size
+            aria-label="Số bản ghi trên mỗi trang"
+            hidden>
 
-                <option value="10">
-                    10 dòng
-                </option>
+            <option value="10">
+                10 dòng
+            </option>
 
-                <option
-                    value="20"
-                    selected>
-                    20 dòng
-                </option>
+            <option
+                value="20"
+                selected>
+                20 dòng
+            </option>
 
-                <option value="50">
-                    50 dòng
-                </option>
+            <option value="50">
+                50 dòng
+            </option>
 
-                <option value="100">
-                    100 dòng
-                </option>
+            <option value="100">
+                100 dòng
+            </option>
 
-            </select>
+        </select>
 
-        </span>
 
-    </label>
+        <button
+            type="button"
+            class="catalog-pagination__size-button"
+            data-pagination-size-toggle
+            aria-expanded="false">
+
+            <span data-pagination-size-label>
+                20 dòng
+            </span>
+
+            <i
+                class="fa-solid fa-chevron-down"
+                aria-hidden="true">
+            </i>
+
+        </button>
+
+
+        <div
+            class="catalog-pagination__size-menu"
+            data-pagination-size-menu
+            hidden>
+
+            <button
+                type="button"
+                class="catalog-pagination__size-option"
+                data-pagination-size-value="10">
+
+                10 dòng
+
+            </button>
+
+            <button
+                type="button"
+                class="catalog-pagination__size-option is-selected"
+                data-pagination-size-value="20">
+
+                20 dòng
+
+            </button>
+
+            <button
+                type="button"
+                class="catalog-pagination__size-option"
+                data-pagination-size-value="50">
+
+                50 dòng
+
+            </button>
+
+            <button
+                type="button"
+                class="catalog-pagination__size-option"
+                data-pagination-size-value="100">
+
+                100 dòng
+
+            </button>
+
+        </div>
+
+    </div>
+
+    </div>
 
     <div
         class="catalog-pagination__summary"
@@ -47,21 +112,22 @@
             0
         </strong>
 
-        <span> – </span>
+        <span>–</span>
 
         <strong data-pagination-to>
             0
         </strong>
 
-        <span> trong </span>
+        <span>trong</span>
 
         <strong data-pagination-total>
             0
         </strong>
 
-        <span> bản ghi</span>
+        <span>bản ghi</span>
 
     </div>
+
 
     <nav
         class="catalog-pagination__navigation"
@@ -72,42 +138,73 @@
             class="catalog-pagination__button"
             data-pagination-first
             aria-label="Trang đầu"
+            title="Trang đầu"
             disabled>
-            «
+
+            <i
+                class="fa-solid fa-angles-left"
+                aria-hidden="true">
+            </i>
+
         </button>
+
 
         <button
             type="button"
             class="catalog-pagination__button"
             data-pagination-previous
             aria-label="Trang trước"
+            title="Trang trước"
             disabled>
-            ‹
+
+            <i
+                class="fa-solid fa-angle-left"
+                aria-hidden="true">
+            </i>
+
         </button>
+
 
         <span
             class="catalog-pagination__current"
             data-pagination-current-page>
+
             1
+
         </span>
+
 
         <button
             type="button"
             class="catalog-pagination__button"
             data-pagination-next
             aria-label="Trang tiếp theo"
+            title="Trang tiếp theo"
             disabled>
-            ›
+
+            <i
+                class="fa-solid fa-angle-right"
+                aria-hidden="true">
+            </i>
+
         </button>
+
 
         <button
             type="button"
             class="catalog-pagination__button"
             data-pagination-last
             aria-label="Trang cuối"
+            title="Trang cuối"
             disabled>
-            »
+
+            <i
+                class="fa-solid fa-angles-right"
+                aria-hidden="true">
+            </i>
+
         </button>
+
 
         <span
             data-pagination-total-pages

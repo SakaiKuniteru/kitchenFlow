@@ -451,14 +451,14 @@ class MCSDetailPanel {
         }
 
 
+        this.root.classList.remove(
+            "is-expanded"
+        );
+
+
         if (
             !this.isMobile()
         ) {
-
-            this.root.classList.remove(
-                "is-expanded"
-            );
-
 
             return;
 
@@ -466,8 +466,7 @@ class MCSDetailPanel {
 
 
         this.root.classList.remove(
-            "is-open",
-            "is-expanded"
+            "is-open"
         );
 
 

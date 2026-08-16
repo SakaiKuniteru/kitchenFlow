@@ -1,11 +1,3 @@
-/* =========================================================
-   Bảng danh mục
-   ========================================================= */
-
-/* =========================================================
-   Bảng danh mục
-   ========================================================= */
-
 .catalog-table-wrapper {
     position: relative;
 
@@ -38,14 +30,22 @@
 }
 
 .catalog-table {
-    width: max-content;
+    width: 100%;
     min-width: 100%;
 
-    table-layout: auto;
+    table-layout: fixed;
     border-collapse: collapse;
 
     background:
         var(--color-surface);
+}
+
+.catalog-table__col--checkbox {
+    width: 46px;
+}
+
+.catalog-table__col--index {
+    width: 66px;
 }
 
 .catalog-table__cell--checkbox,
@@ -65,18 +65,28 @@
     top: 0;
     z-index: 4;
     background: var(--color-surface-secondary);
-    min-width: 110px;
-    max-width: 280px;
 }
 
 .catalog-table__cell {
     padding: 12px 14px;
+
+    min-width: 0;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
     border-bottom: 1px solid
         var(--color-border-light);
-    color: var(--color-text-secondary);
+
+    color:
+        var(--color-text-secondary);
+
     text-align: left;
     vertical-align: middle;
-    font-size: var(--font-size-sm);
+
+    font-size:
+        var(--font-size-sm);
 }
 
 .catalog-table__head
@@ -149,7 +159,6 @@
 }
 
 .catalog-table__cell--ellipsis {
-    max-width: 220px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -171,10 +180,6 @@
 .catalog-table__sort-button:hover {
     color: var(--color-primary);
 }
-
-/* =========================================================
-   Filter row
-   ========================================================= */
 
 .catalog-table__filter-row {
     position: sticky;
@@ -232,10 +237,6 @@
     background: var(--color-danger-soft);
 }
 
-/* =========================================================
-   Loading và empty
-   ========================================================= */
-
 .catalog-table__loading {
     position: absolute;
     inset: 0;
@@ -265,10 +266,6 @@
         linear
         infinite;
 }
-
-/* =========================================================
-   Trạng thái bảng không có dữ liệu
-   ========================================================= */
 
 .catalog-table__empty-row {
     cursor: default !important;
@@ -338,10 +335,6 @@
 
 }
 
-/* =========================================================
-   Status badge
-   ========================================================= */
-
 .status-badge {
     display: inline-flex;
     align-items: center;
@@ -387,10 +380,6 @@
     color: var(--color-text-secondary);
     background: #f1f5f9;
 }
-
-/* =========================================================
-   Action menu
-   ========================================================= */
 
 .table-action-menu {
     position: relative;
@@ -467,10 +456,6 @@
     background: var(--color-border-light);
 }
 
-/* =========================================================
-   Sort icon
-   ========================================================= */
-
 .sort-icon {
     display: inline-flex;
     flex-direction: column;
@@ -500,15 +485,13 @@
     opacity: 1;
 }
 
-/* =========================================================
-   Responsive bảng
-   ========================================================= */
-
 @media (max-width: 820px) {
 
     .catalog-table {
-        width: max-content;
+        width: 100%;
         min-width: 720px;
+
+        table-layout: fixed;
     }
 
     .catalog-table__cell {
@@ -516,13 +499,16 @@
             10px
             12px;
 
-        font-size: 13px;
+        font-size:
+            13px;
     }
 
     .catalog-table__head
     .catalog-table__cell {
         height: 42px;
-        font-size: 11px;
+
+        font-size:
+            11px;
     }
 
     .catalog-table__body

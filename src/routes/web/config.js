@@ -46,7 +46,8 @@ function textColumn(
 
 function booleanColumn(
     key = "active",
-    label = "Hiệu lực"
+    label = "Hiệu lực",
+    options = {}
 ) {
 
     return {
@@ -56,29 +57,39 @@ function booleanColumn(
         label,
 
         sortable:
-            true,
+            options.sortable !==
+            false,
 
         searchable:
             false,
 
         filterable:
-            true,
+            options.filterable !==
+            false,
 
         filterOptions: [
             {
-                value: "true",
-                label: "Đang hoạt động"
+                value:
+                    "true",
+
+                label:
+                    "Đang hoạt động"
             },
             {
-                value: "false",
-                label: "Đã khóa"
+                value:
+                    "false",
+
+                label:
+                    "Đã khóa"
             }
         ],
 
         className:
+            options.className ||
             "catalog-table__cell--center",
 
         width:
+            options.width ||
             "140px"
 
     };
@@ -239,6 +250,7 @@ const danhMucPages = [
             "Tìm theo mã, tên hoặc địa chỉ...",
 
         columns: [
+
             textColumn(
                 "maCoSo",
                 "Mã cơ sở",
@@ -247,15 +259,57 @@ const danhMucPages = [
                         "150px"
                 }
             ),
+
             textColumn(
                 "tenCoSo",
-                "Tên cơ sở"
+                "Tên cơ sở",
+                {
+                    width:
+                        "220px"
+                }
             ),
+
             textColumn(
                 "diaChi",
                 "Địa chỉ"
             ),
-            booleanColumn()
+
+            textColumn(
+                "tenQuocGia",
+                "Quốc gia",
+                {
+                    width:
+                        "150px"
+                }
+            ),
+
+            textColumn(
+                "tenTinhThanh",
+                "Tỉnh/Thành",
+                {
+                    width:
+                        "180px"
+                }
+            ),
+
+            textColumn(
+                "tenXaPhuong",
+                "Xã/Phường",
+                {
+                    width:
+                        "180px"
+                }
+            ),
+
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
+
         ]
 
     }),
@@ -288,6 +342,7 @@ const danhMucPages = [
             "Tìm theo mã hoặc tên phòng ban...",
 
         columns: [
+
             textColumn(
                 "maPhongBan",
                 "Mã phòng ban",
@@ -296,15 +351,39 @@ const danhMucPages = [
                         "160px"
                 }
             ),
+
             textColumn(
                 "tenPhongBan",
-                "Tên phòng ban"
+                "Tên phòng ban",
+                {
+                    width:
+                        "220px"
+                }
             ),
+
             textColumn(
                 "tenCoSo",
-                "Cơ sở"
+                "Cơ sở",
+                {
+                    width:
+                        "220px"
+                }
             ),
-            booleanColumn()
+
+            textColumn(
+                "moTa",
+                "Mô tả"
+            ),
+
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
+
         ]
 
     }),
@@ -334,6 +413,7 @@ const danhMucPages = [
             "chuc-vu",
 
         columns: [
+
             textColumn(
                 "maChucVu",
                 "Mã chức vụ",
@@ -342,15 +422,30 @@ const danhMucPages = [
                         "160px"
                 }
             ),
+
             textColumn(
                 "tenChucVu",
-                "Tên chức vụ"
+                "Tên chức vụ",
+                {
+                    width:
+                        "240px"
+                }
             ),
+
             textColumn(
-                "ghiChu",
-                "Ghi chú"
+                "moTa",
+                "Mô tả"
             ),
-            booleanColumn()
+
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
+
         ]
 
     }),
@@ -380,6 +475,7 @@ const danhMucPages = [
             "nha-an",
 
         columns: [
+
             textColumn(
                 "maNhaAn",
                 "Mã nhà ăn",
@@ -388,19 +484,30 @@ const danhMucPages = [
                         "150px"
                 }
             ),
+
             textColumn(
                 "tenNhaAn",
                 "Tên nhà ăn"
             ),
+
             textColumn(
                 "tenCoSo",
-                "Cơ sở"
+                "Cơ sở",
+                {
+                    width:
+                        "210px"
+                }
             ),
-            numberColumn(
-                "sucChua",
-                "Sức chứa"
-            ),
-            booleanColumn()
+
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
+
         ]
 
     }),
@@ -430,6 +537,7 @@ const danhMucPages = [
             "kho",
 
         columns: [
+
             textColumn(
                 "maKho",
                 "Mã kho",
@@ -438,19 +546,57 @@ const danhMucPages = [
                         "140px"
                 }
             ),
+
             textColumn(
                 "tenKho",
-                "Tên kho"
+                "Tên kho",
+                {
+                    width:
+                        "200px"
+                }
             ),
+
             textColumn(
                 "tenNhaAn",
-                "Nhà ăn"
+                "Nhà ăn",
+                {
+                    width:
+                        "200px"
+                }
             ),
+
             textColumn(
-                "viTri",
-                "Vị trí"
+                "loaiKhoText",
+                "Loại kho",
+                {
+                    width:
+                        "160px"
+                }
             ),
-            booleanColumn()
+
+            textColumn(
+                "diaDiem",
+                "Địa điểm",
+                {
+                    width:
+                        "200px"
+                }
+            ),
+
+            textColumn(
+                "moTa",
+                "Mô tả"
+            ),
+
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
+
         ]
 
     }),
@@ -482,21 +628,13 @@ const danhMucPages = [
             true,
 
         columns: [
-            textColumn(
-                "loaiDiaChi",
-                "Loại",
-                {
-                    width:
-                        "120px"
-                }
-            ),
 
             textColumn(
                 "maDiaChi",
-                "Mã",
+                "Mã địa chỉ",
                 {
                     width:
-                        "130px"
+                        "140px"
                 }
             ),
 
@@ -506,27 +644,86 @@ const danhMucPages = [
             ),
 
             textColumn(
-                "tenTinhThanh",
-                "Tỉnh/Thành phố",
+                "tenQuocGia",
+                "Tên quốc gia",
                 {
                     width:
-                        "220px"
+                        "180px"
                 }
             ),
 
             textColumn(
-                "tenQuocGia",
-                "Quốc gia",
+                "tenTiengAnh",
+                "Tên tiếng Anh",
                 {
                     width:
-                        "150px"
+                        "200px"
                 }
             ),
 
-            booleanColumn(
-                "active",
-                "Hiệu lực"
+            textColumn(
+                "quocGiaTenVietTat",
+                "Tên viết tắt QG",
+                {
+                    width:
+                        "160px"
+                }
+            ),
+
+            textColumn(
+                "maIso2",
+                "ISO2",
+                {
+                    width:
+                        "90px"
+                }
+            ),
+
+            textColumn(
+                "maIso3",
+                "ISO3",
+                {
+                    width:
+                        "90px"
+                }
+            ),
+
+            textColumn(
+                "tenTinhThanh",
+                "Tên Tỉnh/TP",
+                {
+                    width:
+                        "190px"
+                }
+            ),
+
+            textColumn(
+                "tinhThanhTenVietTat",
+                "Tên viết tắt Tỉnh/TP",
+                {
+                    width:
+                        "190px"
+                }
+            ),
+
+            textColumn(
+                "tenXaPhuong",
+                "Tên Xã/Phường",
+                {
+                    width:
+                        "190px"
+                }
+            ),
+
+            textColumn(
+                "xaPhuongTenVietTat",
+                "Tên viết tắt Xã/Phường",
+                {
+                    width:
+                        "190px"
+                }
             )
+
         ]
 
     }),
@@ -556,39 +753,66 @@ const danhMucPages = [
             "quoc-gia",
 
         columns: [
+
             textColumn(
                 "maQuocGia",
                 "Mã quốc gia",
                 {
                     width:
-                        "150px"
+                        "140px"
                 }
             ),
+
             textColumn(
                 "tenQuocGia",
                 "Tên quốc gia"
             ),
+
             textColumn(
                 "tenTiengAnh",
-                "Tên tiếng Anh"
+                "Tên tiếng Anh",
+                {
+                    width:
+                        "220px"
+                }
             ),
+
+            textColumn(
+                "tenVietTat",
+                "Tên viết tắt",
+                {
+                    width:
+                        "160px"
+                }
+            ),
+
             textColumn(
                 "maIso2",
                 "ISO2",
                 {
                     width:
-                        "100px"
+                        "85px"
                 }
             ),
+
             textColumn(
                 "maIso3",
                 "ISO3",
                 {
                     width:
-                        "100px"
+                        "85px"
                 }
             ),
-            booleanColumn()
+
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
+
         ]
 
     }),
@@ -638,7 +862,14 @@ const danhMucPages = [
                 "tenQuocGia",
                 "Quốc gia"
             ),
-            booleanColumn()
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
         ]
 
     }),
@@ -668,6 +899,7 @@ const danhMucPages = [
             "xa-phuong",
 
         columns: [
+
             textColumn(
                 "maXaPhuong",
                 "Mã xã phường",
@@ -676,21 +908,49 @@ const danhMucPages = [
                         "160px"
                 }
             ),
+
             textColumn(
                 "tenXaPhuong",
                 "Tên xã phường"
             ),
+
             textColumn(
                 "tenVietTat",
-                "Tên viết tắt"
+                "Tên viết tắt",
+                {
+                    width:
+                        "160px"
+                }
             ),
+
             textColumn(
                 "tenTinhThanh",
-                "Tỉnh thành"
+                "Tỉnh thành",
+                {
+                    width:
+                        "200px"
+                }
             ),
-            booleanColumn()
-        ]
 
+            textColumn(
+                "tenQuocGia",
+                "Quốc gia",
+                {
+                    width:
+                        "170px"
+                }
+            ),
+
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
+
+        ]
     }),
 
 
@@ -746,7 +1006,14 @@ const danhMucPages = [
                         "130px"
                 }
             ),
-            booleanColumn()
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
         ]
 
     }),
@@ -788,7 +1055,14 @@ const danhMucPages = [
                 "moTa",
                 "Mô tả"
             ),
-            booleanColumn()
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
         ]
 
     }),
@@ -818,23 +1092,75 @@ const danhMucPages = [
             "mon-an",
 
         columns: [
+
             textColumn(
                 "maMonAn",
-                "Mã món ăn"
+                "Mã món ăn",
+                {
+                    width:
+                        "140px"
+                }
             ),
+
             textColumn(
                 "tenMonAn",
-                "Tên món ăn"
+                "Tên món ăn",
+                {
+                    width:
+                        "220px"
+                }
             ),
+
             textColumn(
                 "tenNhomMonAn",
-                "Nhóm món ăn"
+                "Nhóm món ăn",
+                {
+                    width:
+                        "200px"
+                }
             ),
+
             numberColumn(
-                "donGia",
-                "Đơn giá"
+                "giaTien",
+                "Giá tiền",
+                {
+                    width:
+                        "140px"
+                }
             ),
-            booleanColumn()
+
+            numberColumn(
+                "giaDuKien",
+                "Giá dự kiến",
+                {
+                    width:
+                        "150px"
+                }
+            ),
+
+            numberColumn(
+                "calories",
+                "Calories",
+                {
+                    width:
+                        "120px"
+                }
+            ),
+
+            textColumn(
+                "moTa",
+                "Mô tả"
+            ),
+
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
+
         ]
 
     }),
@@ -864,23 +1190,120 @@ const danhMucPages = [
             "thuc-pham",
 
         columns: [
+
             textColumn(
                 "maThucPham",
-                "Mã thực phẩm"
+                "Mã thực phẩm",
+                {
+                    width:
+                        "150px"
+                }
             ),
+
             textColumn(
                 "tenThucPham",
-                "Tên thực phẩm"
+                "Tên thực phẩm",
+                {
+                    width:
+                        "220px"
+                }
             ),
+
             textColumn(
-                "tenDonViTinh",
-                "Đơn vị tính"
+                "tenDonViSoCap",
+                "Đơn vị sơ cấp",
+                {
+                    width:
+                        "160px"
+                }
             ),
+
+            textColumn(
+                "tenDonViSuDung",
+                "Đơn vị sử dụng",
+                {
+                    width:
+                        "160px"
+                }
+            ),
+
+            numberColumn(
+                "heSoQuyDoi",
+                "Hệ số quy đổi",
+                {
+                    width:
+                        "140px"
+                }
+            ),
+
             textColumn(
                 "quyCach",
-                "Quy cách"
+                "Quy cách",
+                {
+                    width:
+                        "180px"
+                }
             ),
-            booleanColumn()
+
+            numberColumn(
+                "giaNhap",
+                "Giá nhập",
+                {
+                    width:
+                        "140px"
+                }
+            ),
+
+            numberColumn(
+                "tyLeHaoHutDuKien",
+                "Tỷ lệ hao hụt",
+                {
+                    width:
+                        "150px"
+                }
+            ),
+
+            textColumn(
+                "xuatXu",
+                "Xuất xứ",
+                {
+                    width:
+                        "180px"
+                }
+            ),
+
+            textColumn(
+                "dieuKienBaoQuan",
+                "Điều kiện bảo quản",
+                {
+                    width:
+                        "220px"
+                }
+            ),
+
+            textColumn(
+                "moTa",
+                "Mô tả"
+            ),
+
+            textColumn(
+                "ghiChu",
+                "Ghi chú",
+                {
+                    width:
+                        "220px"
+                }
+            ),
+
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
+
         ]
 
     }),
@@ -926,7 +1349,14 @@ const danhMucPages = [
                 "kyHieu",
                 "Ký hiệu"
             ),
-            booleanColumn()
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
         ]
 
     }),
@@ -954,29 +1384,170 @@ const danhMucPages = [
         activeSubmenu:
             "nhan-vien",
 
-        columns: [
-            textColumn(
-                "maNhanVien",
-                "Mã nhân viên"
-            ),
-            textColumn(
-                "hoTen",
-                "Họ tên"
-            ),
-            textColumn(
-                "tenCoSo",
-                "Cơ sở"
-            ),
-            textColumn(
-                "tenPhongBan",
-                "Phòng ban"
-            ),
-            textColumn(
-                "tenChucVu",
-                "Chức vụ"
-            ),
-            booleanColumn()
-        ]
+    columns: [
+
+        textColumn(
+            "maNhanVien",
+            "Mã nhân viên",
+            {
+                width:
+                    "150px"
+            }
+        ),
+
+        textColumn(
+            "tenDangNhap",
+            "Tên đăng nhập",
+            {
+                width:
+                    "170px"
+            }
+        ),
+
+        textColumn(
+            "hoTen",
+            "Họ tên",
+            {
+                width:
+                    "220px"
+            }
+        ),
+
+        textColumn(
+            "email",
+            "Email",
+            {
+                width:
+                    "220px"
+            }
+        ),
+
+        textColumn(
+            "soDienThoai",
+            "Số điện thoại",
+            {
+                width:
+                    "150px"
+            }
+        ),
+
+        textColumn(
+            "ngaySinh",
+            "Ngày sinh",
+            {
+                width:
+                    "130px"
+            }
+        ),
+
+        textColumn(
+            "gioiTinh",
+            "Giới tính",
+            {
+                width:
+                    "120px",
+
+                format:
+                    value => {
+
+                        const labels = {
+                            0: "Nữ",
+                            1: "Nam",
+                            2: "Khác"
+                        };
+
+                        return labels[value] ?? "";
+                    }
+            }
+        ),
+
+        textColumn(
+            "tenChucVu",
+            "Chức vụ",
+            {
+                width:
+                    "180px"
+            }
+        ),
+
+        textColumn(
+            "tenPhongBan",
+            "Phòng ban",
+            {
+                width:
+                    "190px"
+            }
+        ),
+
+        textColumn(
+            "tenCoSo",
+            "Cơ sở",
+            {
+                width:
+                    "190px"
+            }
+        ),
+
+        textColumn(
+            "diaChi",
+            "Địa chỉ"
+        ),
+
+        textColumn(
+            "tenQuocGia",
+            "Quốc gia",
+            {
+                width:
+                    "160px"
+            }
+        ),
+
+        textColumn(
+            "tenTinhThanh",
+            "Tỉnh/Thành",
+            {
+                width:
+                    "180px"
+            }
+        ),
+
+        textColumn(
+            "tenXaPhuong",
+            "Xã/Phường",
+            {
+                width:
+                    "180px"
+            }
+        ),
+
+        textColumn(
+            "maThe",
+            "Mã thẻ",
+            {
+                width:
+                    "150px"
+            }
+        ),
+
+        textColumn(
+            "ghiChu",
+            "Ghi chú",
+            {
+                width:
+                    "220px"
+            }
+        ),
+
+        booleanColumn(
+            "active",
+            "Hiệu lực",
+            {
+                width:
+                    "130px"
+            }
+        )
+
+    ]
 
     }),
 
@@ -1005,23 +1576,66 @@ const danhMucPages = [
             "tai-khoan",
 
         columns: [
+
+            textColumn(
+                "maNhanVien",
+                "Mã nhân viên",
+                {
+                    width:
+                        "150px"
+                }
+            ),
+
             textColumn(
                 "tenDangNhap",
-                "Tên đăng nhập"
+                "Tên đăng nhập",
+                {
+                    width:
+                        "170px"
+                }
             ),
+
             textColumn(
                 "hoTenNhanVien",
-                "Nhân viên"
+                "Tên nhân viên"
             ),
+
+            numberColumn(
+                "soLanDangNhapSai",
+                "Số lần nhập sai",
+                {
+                    width:
+                        "150px"
+                }
+            ),
+
+            booleanColumn(
+                "biKhoa",
+                "Bị khóa",
+                {
+                    width:
+                        "120px"
+                }
+            ),
+
             textColumn(
-                "tenVaiTro",
-                "Vai trò"
+                "khoaDen",
+                "Khóa đến",
+                {
+                    width:
+                        "170px"
+                }
             ),
-            textColumn(
-                "lanDangNhapCuoi",
-                "Đăng nhập cuối"
-            ),
-            booleanColumn()
+
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
+
         ]
 
     }),
@@ -1063,11 +1677,14 @@ const danhMucPages = [
                 "moTa",
                 "Mô tả"
             ),
-            numberColumn(
-                "soLuongQuyen",
-                "Số quyền"
-            ),
-            booleanColumn()
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
         ]
 
     }),
@@ -1113,7 +1730,14 @@ const danhMucPages = [
                 "moTa",
                 "Mô tả"
             ),
-            booleanColumn()
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
         ]
 
     }),
@@ -1155,11 +1779,14 @@ const danhMucPages = [
                 "moTa",
                 "Mô tả"
             ),
-            numberColumn(
-                "thuTu",
-                "Thứ tự"
-            ),
-            booleanColumn()
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
         ]
 
     }),
@@ -1188,27 +1815,57 @@ const danhMucPages = [
             "voucher",
 
         columns: [
+
             textColumn(
                 "maVoucher",
-                "Mã voucher"
+                "Mã voucher",
+                {
+                    width:
+                        "150px"
+                }
             ),
+
             textColumn(
                 "tenVoucher",
                 "Tên voucher"
             ),
+
             textColumn(
-                "loaiVoucherText",
-                "Loại voucher"
+                "loaiMienGiamText",
+                "Loại",
+                {
+                    width:
+                        "170px"
+                }
             ),
+
             numberColumn(
                 "giaTri",
-                "Giá trị"
+                "Giá trị",
+                {
+                    width:
+                        "140px"
+                }
             ),
-            textColumn(
-                "ngayKetThuc",
-                "Ngày kết thúc"
+
+            numberColumn(
+                "soLuong",
+                "Số lượng",
+                {
+                    width:
+                        "120px"
+                }
             ),
-            booleanColumn()
+
+            booleanColumn(
+                "active",
+                "Trạng thái",
+                {
+                    width:
+                        "130px"
+                }
+            )
+
         ]
 
     }),
@@ -1238,27 +1895,57 @@ const danhMucPages = [
             "chinh-sach",
 
         columns: [
+
             textColumn(
                 "maChinhSach",
-                "Mã chính sách"
+                "Mã chính sách",
+                {
+                    width:
+                        "160px"
+                }
             ),
+
             textColumn(
                 "tenChinhSach",
-                "Tên chính sách"
+                "Tên chính sách",
+                {
+                    width:
+                        "220px"
+                }
             ),
+
             textColumn(
                 "loaiChinhSachText",
-                "Loại chính sách"
+                "Loại chính sách",
+                {
+                    width:
+                        "180px"
+                }
             ),
+
             textColumn(
-                "ngayBatDau",
-                "Ngày bắt đầu"
+                "tenVoucher",
+                "Tên voucher",
+                {
+                    width:
+                        "220px"
+                }
             ),
+
             textColumn(
-                "ngayKetThuc",
-                "Ngày kết thúc"
+                "moTa",
+                "Mô tả"
             ),
-            booleanColumn()
+
+            booleanColumn(
+                "active",
+                "Trạng thái",
+                {
+                    width:
+                        "130px"
+                }
+            )
+
         ]
 
     }),
@@ -1288,23 +1975,48 @@ const danhMucPages = [
             "thiet-lap",
 
         columns: [
+
             textColumn(
                 "maThietLap",
-                "Mã thiết lập"
+                "Mã thiết lập",
+                {
+                    width:
+                        "230px"
+                }
             ),
+
             textColumn(
                 "tenThietLap",
-                "Tên thiết lập"
+                "Tên thiết lập",
+                {
+                    width:
+                        "220px"
+                }
             ),
+
             textColumn(
                 "giaTri",
-                "Giá trị"
+                "Giá trị",
+                {
+                    width:
+                        "160px"
+                }
             ),
+
             textColumn(
                 "moTa",
                 "Mô tả"
             ),
-            booleanColumn()
+
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
+
         ]
 
     }),
@@ -1351,27 +2063,57 @@ const danhMucPages = [
 
         },
         columns: [
+
             textColumn(
-                "maBaoCao",
-                "Mã báo cáo",
+                "maThietLap",
+                "Mã thiết lập",
+                {
+                    width:
+                        "230px"
+                }
+            ),
+
+            textColumn(
+                "tenThietLap",
+                "Tên thiết lập",
+                {
+                    width:
+                        "220px"
+                }
+            ),
+
+            textColumn(
+                "giaTri",
+                "Giá trị",
                 {
                     width:
                         "160px"
                 }
             ),
+
             textColumn(
-                "tenBaoCao",
-                "Tên báo cáo"
+                "nhomTinhNang",
+                "Nhóm tính năng",
+                {
+                    width:
+                        "180px"
+                }
             ),
-            textColumn(
-                "loaiXuatFileText",
-                "Loại xuất file"
-            ),
+
             textColumn(
                 "moTa",
                 "Mô tả"
             ),
-            booleanColumn()
+
+            booleanColumn(
+                "active",
+                "Hiệu lực",
+                {
+                    width:
+                        "130px"
+                }
+            )
+
         ]
 
     })

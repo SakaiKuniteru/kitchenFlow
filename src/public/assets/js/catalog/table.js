@@ -381,6 +381,7 @@ class MCSTable {
                         "td"
                     );
 
+
                 cell.className =
                     [
                         "catalog-table__cell",
@@ -388,6 +389,10 @@ class MCSTable {
                     ]
                         .filter(Boolean)
                         .join(" ");
+
+
+                cell.dataset.columnKey =
+                    column.key;
 
                 const value =
                     this.resolveValue(

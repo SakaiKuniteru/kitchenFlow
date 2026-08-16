@@ -76,6 +76,31 @@ class MCSPagination {
                     "[data-pagination-size]"
                 ),
 
+            pageSizePicker:
+                this.root?.querySelector(
+                    "[data-pagination-size-picker]"
+                ),
+
+            pageSizeToggle:
+                this.root?.querySelector(
+                    "[data-pagination-size-toggle]"
+                ),
+
+            pageSizeLabel:
+                this.root?.querySelector(
+                    "[data-pagination-size-label]"
+                ),
+
+            pageSizeMenu:
+                this.root?.querySelector(
+                    "[data-pagination-size-menu]"
+                ),
+
+            pageSizeOptions:
+                this.root?.querySelectorAll(
+                    "[data-pagination-size-value]"
+                ),
+                
             first:
                 this.root?.querySelector(
                     "[data-pagination-first]"
@@ -97,19 +122,6 @@ class MCSPagination {
                 )
 
         };
-
-
-        if (
-            this.elements.pageSize
-        ) {
-
-            this.elements.pageSize.value =
-                String(
-                    this.options.pageSize
-                );
-
-        }
-
 
         this.bindEvents();
 
@@ -173,6 +185,141 @@ class MCSPagination {
                 }
             );
 
+        this.elements.pageSizeToggle
+            ?.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
+
+
+                    const menu =
+                        this.elements
+                            .pageSizeMenu;
+
+
+                    if (!menu) {
+                        return;
+                    }
+
+
+                    const willOpen =
+                        menu.hidden;
+
+
+                    menu.hidden =
+                        !willOpen;
+
+
+                    this.elements
+                        .pageSizeToggle
+                        .setAttribute(
+                            "aria-expanded",
+                            String(
+                                willOpen
+                            )
+                        );
+
+
+                    this.elements
+                        .pageSizePicker
+                        ?.classList
+                        .toggle(
+                            "is-open",
+                            willOpen
+                        );
+
+                }
+            );
+
+        this.elements.pageSizeOptions
+            ?.forEach(
+                option => {
+
+                    option.addEventListener(
+                        "click",
+                        event => {
+
+                            event.preventDefault();
+
+                            event.stopPropagation();
+
+
+                            const value =
+                                option.dataset
+                                    .paginationSizeValue;
+
+
+                            const pageSize =
+                                Number(
+                                    value
+                                );
+
+
+                            if (
+                                !Number.isInteger(
+                                    pageSize
+                                ) ||
+                                pageSize <= 0
+                            ) {
+
+                                return;
+
+                            }
+
+
+                            this.elements
+                                .pageSize
+                                .value =
+                                String(
+                                    pageSize
+                                );
+
+
+                            this.elements
+                                .pageSize
+                                .dispatchEvent(
+                                    new Event(
+                                        "change",
+                                        {
+                                            bubbles:
+                                                true
+                                        }
+                                    )
+                                );
+
+
+                            this.closePageSizeMenu();
+
+                        }
+                    );
+
+                }
+            );
+
+        document.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    this.elements
+                        .pageSizePicker
+                        ?.contains(
+                            event.target
+                        )
+                ) {
+
+                    return;
+
+                }
+
+
+                this.closePageSizeMenu();
+
+            }
+        );
 
         this.elements.pageSize
             ?.addEventListener(
@@ -211,6 +358,37 @@ class MCSPagination {
 
     }
 
+    closePageSizeMenu() {
+
+        if (
+            this.elements
+                .pageSizeMenu
+        ) {
+
+            this.elements
+                .pageSizeMenu
+                .hidden =
+                true;
+
+        }
+
+
+        this.elements
+            .pageSizeToggle
+            ?.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+
+        this.elements
+            .pageSizePicker
+            ?.classList
+            .remove(
+                "is-open"
+            );
+
+    }
 
     get totalPages() {
 
@@ -454,18 +632,49 @@ class MCSPagination {
 
         }
 
-
         if (
             this.elements.pageSize
         ) {
 
-            this.elements.pageSize.value =
+            const value =
                 String(
                     pageSize
                 );
 
-        }
 
+            this.elements.pageSize.value =
+                value;
+
+
+            if (
+                this.elements
+                    .pageSizeLabel
+            ) {
+
+                this.elements
+                    .pageSizeLabel
+                    .textContent =
+                    `${pageSize} dòng`;
+
+            }
+
+
+            this.elements
+                .pageSizeOptions
+                ?.forEach(
+                    option => {
+
+                        option.classList.toggle(
+                            "is-selected",
+                            option.dataset
+                                .paginationSizeValue ===
+                            value
+                        );
+
+                    }
+                );
+
+        }
 
         const isFirstPage =
             page <= 1;

@@ -31,7 +31,14 @@
 .catalog-page__list {
     display: flex;
     flex-direction: column;
+
+    width: 100%;
+    min-width: 0;
+
     overflow: hidden;
+
+    container-type: inline-size;
+    container-name: catalog-list;
 }
 
 .catalog-page__list-content {
@@ -267,11 +274,6 @@
         right: 0;
         bottom: 0;
         z-index: 1250;
-
-        width: min(
-            420px,
-            92vw
-        );
 
         border-radius: 0;
 

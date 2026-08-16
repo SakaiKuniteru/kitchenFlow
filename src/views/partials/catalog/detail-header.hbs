@@ -4,6 +4,21 @@
 
     <div class="detail-panel__heading">
 
+        <button
+            type="button"
+            class="detail-panel__back"
+            data-detail-back
+            aria-label="Quay lại danh sách"
+            title="Quay lại danh sách">
+
+            <i
+                class="fa-solid fa-arrow-left"
+                aria-hidden="true">
+            </i>
+
+        </button>
+
+
         <div class="detail-panel__heading-content">
 
             <h2
@@ -11,12 +26,17 @@
                 data-detail-title>
 
                 {{#if title}}
+
                     {{title}}
+
                 {{else}}
+
                     Thông tin
+
                 {{/if}}
 
             </h2>
+
 
             <p
                 class="detail-panel__subtitle"
@@ -31,15 +51,21 @@
 
     </div>
 
+
     <button
         type="button"
-        class="detail-panel__header-button detail-panel__header-button--close"
+        class="
+            detail-panel__header-button
+            detail-panel__header-button--close
+        "
         data-detail-close
-        aria-label="Đóng panel">
+        aria-label="Đóng panel"
+        title="Đóng">
 
-        <span aria-hidden="true">
-            ×
-        </span>
+        <i
+            class="fa-solid fa-xmark"
+            aria-hidden="true">
+        </i>
 
     </button>
 

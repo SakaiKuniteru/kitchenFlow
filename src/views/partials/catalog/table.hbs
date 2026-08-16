@@ -25,6 +25,38 @@
             class="catalog-table {{#if tableClass}}{{tableClass}}{{/if}}"
             data-catalog-table>
 
+            <colgroup>
+
+                {{#if selectable}}
+
+                    <col
+                        class="catalog-table__col catalog-table__col--checkbox"
+                        style="width: 46px;">
+
+                {{/if}}
+
+                {{#if showIndex}}
+
+                    <col
+                        class="catalog-table__col catalog-table__col--index"
+                        style="width: 66px;">
+
+                {{/if}}
+
+                {{#each columns}}
+
+                    <col
+                        class="catalog-table__col"
+                        data-column-key="{{key}}"
+                        {{#if width}}
+                            style="width: {{width}};"
+                        {{/if}}
+                    >
+
+                {{/each}}
+
+            </colgroup>
+
             <thead class="catalog-table__head">
 
                 <tr data-table-header-row>
@@ -60,8 +92,7 @@
                         <th
                             class="catalog-table__cell {{#if className}}{{className}}{{/if}}"
                             scope="col"
-                            data-column-key="{{key}}"
-                            {{#if width}}style="width: {{width}};"{{/if}}>
+                            data-column-key="{{key}}">
 
                             {{#if sortable}}
 
