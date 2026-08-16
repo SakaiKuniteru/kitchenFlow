@@ -206,3 +206,57 @@ Nếu:
 thì chức năng tự động đăng xuất do không hoạt động sẽ không được áp dụng.
 
 Thiết lập này độc lập với thời gian hết hạn của Access Token và Refresh Token.
+
+---
+
+## 8. SIDEBAR_DONG_MAC_DINH
+
+**Mã:** `SIDEBAR_DONG_MAC_DINH`
+
+**Giá trị:** `true` hoặc `false`.
+
+**Mô tả:**
+
+Quy định trạng thái mặc định của Sidebar khi người dùng tải hoặc tải lại trang.
+
+Nếu giá trị là:
+
+`true`
+
+thì Sidebar mặc định được **đóng** sau mỗi lần tải hoặc tải lại trang.
+
+Nếu giá trị là:
+
+`false`
+
+thì Sidebar mặc định được **mở** sau mỗi lần tải hoặc tải lại trang.
+
+Giá trị `true` và `false` không phân biệt chữ hoa, chữ thường.
+
+Ví dụ các giá trị sau đều được hiểu là `true`:
+
+- `true`
+- `TRUE`
+- `True`
+- `tRuE`
+
+Thiết lập chỉ làm Sidebar mặc định đóng khi:
+
+- Thiết lập tồn tại.
+- `active = TRUE`.
+- Giá trị sau khi loại bỏ khoảng trắng và chuyển về chữ thường là `true`.
+
+Nếu:
+
+- Không tồn tại thiết lập.
+- Thiết lập bị tắt (`active = FALSE`).
+- Giá trị để trống.
+- Giá trị là `false`.
+- Giá trị không hợp lệ.
+
+thì Sidebar mặc định được **mở**.
+
+Thiết lập này chỉ quy định trạng thái Sidebar khi tải hoặc tải lại trang, không làm thay đổi chức năng đóng/mở Sidebar của người dùng trong quá trình sử dụng.
+
+---
+

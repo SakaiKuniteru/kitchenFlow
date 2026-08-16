@@ -25,7 +25,10 @@ const MA_THIET_LAP = {
         "THOI_GIAN_REFRESH_TOKEN",
 
     THOI_GIAN_TIMEOUT:
-        "THOI_GIAN_TIMEOUT"
+        "THOI_GIAN_TIMEOUT",
+    
+    SIDEBAR_MAC_DINH_DONG:
+        "SIDEBAR_MAC_DINH_DONG"
 
 };
 
@@ -125,7 +128,6 @@ class CauHinhService {
 
         }
 
-
         switch (
             maThietLap
         ) {
@@ -138,6 +140,20 @@ class CauHinhService {
                         thietLap
                     );
 
+
+            case MA_THIET_LAP
+                .SIDEBAR_MAC_DINH_DONG:
+
+                return {
+
+                    ma:
+                        maThietLap,
+
+                    giaTri:
+                        await this
+                            .getSidebarDongMacDinh()
+
+                };
 
             default:
 
@@ -536,6 +552,40 @@ class CauHinhService {
 
 
         return soPhut;
+
+    }
+
+    async getSidebarDongMacDinh() {
+
+        const thietLap =
+            await cauHinhRepository
+                .getThietLapByMa(
+                    MA_THIET_LAP
+                        .SIDEBAR_MAC_DINH_DONG
+                );
+
+
+        if (
+            !thietLap ||
+            thietLap.active !== true
+        ) {
+
+            return false;
+
+        }
+
+
+        const giaTri =
+            String(
+                thietLap.gia_tri ??
+                ""
+            )
+                .trim()
+                .toLowerCase();
+
+
+        return giaTri ===
+            "true";
 
     }
 }

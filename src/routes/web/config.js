@@ -215,7 +215,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/co-so",
+            "/to-chuc/co-so",
 
         view:
             "pages/danh-muc/to-chuc/co-so/index",
@@ -264,7 +264,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/phong-ban",
+            "/to-chuc/phong-ban",
 
         view:
             "pages/danh-muc/to-chuc/phong-ban/index",
@@ -313,7 +313,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/chuc-vu",
+            "/to-chuc/chuc-vu",
 
         view:
             "pages/danh-muc/to-chuc/chuc-vu/index",
@@ -359,7 +359,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/nha-an",
+            "/to-chuc/nha-an",
 
         view:
             "pages/danh-muc/to-chuc/nha-an/index",
@@ -409,7 +409,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/kho",
+            "/to-chuc/kho",
 
         view:
             "pages/danh-muc/to-chuc/kho/index",
@@ -458,7 +458,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/dia-chi-hanh-chinh",
+            "/dia-chi/dia-chi-hanh-chinh",
 
         view:
             "pages/danh-muc/dia-chi-hanh-chinh/tong-hop/index",
@@ -535,7 +535,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/quoc-gia",
+            "/dia-chi/quoc-gia",
 
         view:
             "pages/danh-muc/dia-chi-hanh-chinh/quoc-gia/index",
@@ -597,7 +597,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/tinh-thanh",
+            "/dia-chi/tinh-thanh",
 
         view:
             "pages/danh-muc/dia-chi-hanh-chinh/tinh-thanh/index",
@@ -647,7 +647,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/xa-phuong",
+            "/dia-chi/xa-phuong",
 
         view:
             "pages/danh-muc/dia-chi-hanh-chinh/xa-phuong/index",
@@ -697,7 +697,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/ca-an",
+            "/suat-an/ca-an",
 
         view:
             "pages/danh-muc/suat-an/ca-an/index",
@@ -755,7 +755,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/nhom-mon-an",
+            "/he-thong/nhom-mon-an",
 
         view:
             "pages/danh-muc/he-thong/nhom-mon-an/index",
@@ -767,7 +767,7 @@ const danhMucPages = [
             "Quản lý các nhóm phân loại món ăn.",
 
         group:
-            "Suất ăn",
+            "Hệ thống",
 
         page:
             "Nhóm món ăn",
@@ -797,7 +797,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/mon-an",
+            "/suat-an/mon-an",
 
         view:
             "pages/danh-muc/suat-an/mon-an/index",
@@ -843,7 +843,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/thuc-pham",
+            "/suat-an/thuc-pham",
 
         view:
             "pages/danh-muc/suat-an/thuc-pham/index",
@@ -889,7 +889,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/don-vi-tinh",
+            "/suat-an/don-vi-tinh",
 
         view:
             "pages/danh-muc/suat-an/don-vi-tinh/index",
@@ -934,7 +934,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/nhan-vien",
+            "/to-chuc/nhan-vien",
 
         view:
             "pages/danh-muc/nhan-su/nhan-vien/index",
@@ -946,7 +946,7 @@ const danhMucPages = [
             "Quản lý hồ sơ và thông tin nhân viên.",
 
         group:
-            "Nhân sự",
+            "Tổ chức",
 
         page:
             "Nhân viên",
@@ -984,7 +984,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/tai-khoan",
+            "/phan-quyen/tai-khoan",
 
         view:
             "pages/danh-muc/nhan-su/tai-khoan/index",
@@ -996,7 +996,7 @@ const danhMucPages = [
             "Quản lý tài khoản đăng nhập và vai trò.",
 
         group:
-            "Nhân sự",
+            "Phân quyền",
 
         page:
             "Tài khoản",
@@ -1030,7 +1030,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/vai-tro",
+            "/phan-quyen/vai-tro",
 
         view:
             "pages/danh-muc/he-thong/vai-tro/index",
@@ -1042,7 +1042,7 @@ const danhMucPages = [
             "Quản lý vai trò và danh sách quyền.",
 
         group:
-            "Nhân sự",
+            "Phân quyền",
 
         page:
             "Vai trò",
@@ -1076,7 +1076,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/quyen",
+            "/phan-quyen/quyen",
 
         view:
             "pages/danh-muc/he-thong/quyen/index",
@@ -1088,7 +1088,7 @@ const danhMucPages = [
             "Quản lý quyền truy cập chức năng.",
 
         group:
-            "Nhân sự",
+            "Phân quyền",
 
         page:
             "Quyền",
@@ -1122,7 +1122,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/nhom-tinh-nang",
+            "/he-thong/nhom-tinh-nang",
 
         view:
             "pages/danh-muc/he-thong/nhom-tinh-nang/index",
@@ -1134,7 +1134,7 @@ const danhMucPages = [
             "Phân nhóm các quyền và chức năng hệ thống.",
 
         group:
-            "Nhân sự",
+            "Hệ thống",
 
         page:
             "Nhóm tính năng",
@@ -1167,7 +1167,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/voucher",
+            "/chuong-trinh/voucher",
 
         view:
             "pages/danh-muc/chinh-sach/voucher/index",
@@ -1217,7 +1217,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/chinh-sach",
+            "/chuong-trinh/chinh-sach",
 
         view:
             "pages/danh-muc/chinh-sach/chinh-sach/index",
@@ -1267,7 +1267,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/thiet-lap",
+            "/he-thong/thiet-lap",
 
         view:
             "pages/danh-muc/he-thong/thiet-lap/index",
@@ -1312,7 +1312,7 @@ const danhMucPages = [
     createPage({
 
         path:
-            "/danh-muc/bao-cao",
+            "/he-thong/bao-cao",
 
         view:
             "pages/danh-muc/he-thong/bao-cao/index",

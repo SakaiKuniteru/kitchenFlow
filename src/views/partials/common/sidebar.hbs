@@ -4,42 +4,29 @@
     data-app-sidebar
     aria-label="Thanh điều hướng chính">
 
-    <div class="app-sidebar__brand">
-
-        <a
-            href="/"
-            class="app-sidebar__brand-link">
-
-            <img
-                src="/assets/images/logo/logo.png"
-                alt="Logo MCS KitchenFlow"
-                class="app-sidebar__logo">
-
-            <span class="app-sidebar__brand-text">
-                MCS KITCHENFLOW
-            </span>
-
-        </a>
-
-    </div>
-
 
     <div class="app-sidebar__tools">
 
         <div class="app-sidebar__search">
 
-            <span
-                class="app-sidebar__search-icon"
+            <i
+                class="fa-solid fa-magnifying-glass app-sidebar__search-icon"
                 aria-hidden="true">
-                🔎
-            </span>
+            </i>
+
 
             <input
                 type="search"
                 class="app-sidebar__search-input"
-                placeholder="Tìm chức năng..."
+                placeholder="Tìm kiếm menu..."
                 autocomplete="off"
                 data-sidebar-search>
+
+            <span
+                class="app-sidebar__search-shortcut"
+                data-sidebar-search-shortcut>
+                ⌘K
+            </span>
 
             <button
                 type="button"
@@ -47,54 +34,20 @@
                 data-sidebar-search-clear
                 aria-label="Xóa tìm kiếm"
                 hidden>
-                ×
+
+                <i class="fa-solid fa-xmark"></i>
+
             </button>
-
-        </div>
-
-        <div class="app-sidebar__more">
-
-            <button
-                type="button"
-                class="app-sidebar__more-button"
-                data-sidebar-more-toggle
-                aria-label="Tùy chọn sidebar"
-                aria-expanded="false">
-                ⋮
-            </button>
-
-            <div
-                class="app-sidebar__more-menu"
-                data-sidebar-more-menu
-                hidden>
-
-                <button
-                    type="button"
-                    data-sidebar-expand-all>
-                    Mở tất cả
-                </button>
-
-                <button
-                    type="button"
-                    data-sidebar-collapse-all>
-                    Thu gọn tất cả
-                </button>
-
-                <button
-                    type="button"
-                    data-sidebar-sort-start>
-                    Sắp xếp
-                </button>
-
-            </div>
 
         </div>
 
     </div>
 
+
     <nav
         class="app-sidebar__navigation"
         aria-label="Danh sách chức năng">
+
 
         <ul class="app-sidebar__menu">
 
@@ -105,63 +58,41 @@
                     class="app-sidebar__menu-link"
                     data-sidebar-link="trang-chu">
 
-                    <span
-                        class="app-sidebar__menu-icon"
-                        aria-hidden="true">
-                        🏠
+                    <span class="app-sidebar__menu-icon">
+                        <i class="fa-solid fa-house"></i>
                     </span>
 
                     <span class="app-sidebar__menu-text">
-                        Trang chủ
+                        Tổng quan
                     </span>
 
                 </a>
 
             </li>
 
-            <li class="app-sidebar__menu-group">
+            <li
+                class="app-sidebar__menu-group"
+                data-sidebar-group-item>
+
 
                 <button
                     type="button"
-                    class="app-sidebar__group-button"
+                    class="app-sidebar__group-title"
                     data-sidebar-toggle="thuc-don"
                     aria-controls="sidebarThucDon"
                     aria-expanded="false">
 
-                    <span class="app-sidebar__group-label">
-
-                        <span
-                            class="app-sidebar__menu-icon"
-                            aria-hidden="true">
-                            🍽️
+                    <span class="app-sidebar__group-content">
+                        <span class="app-sidebar__group-icon">
+                            <i class="fa-solid fa-clipboard-list"></i>
                         </span>
-
-                        <span class="app-sidebar__menu-text">
-                            Thực đơn
-                        </span>
-
+                        <span>Thực đơn</span>
                     </span>
 
-                    <span
-                        class="app-sidebar__group-arrow"
-                        aria-hidden="true">
-
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round">
-
-                            <path d="m9 18 6-6-6-6">
-                            </path>
-
-                        </svg>
-
-                    </span>
+                    <i class="fa-solid fa-chevron-down"></i>
 
                 </button>
+
 
                 <ul
                     id="sidebarThucDon"
@@ -169,14 +100,19 @@
                     data-sidebar-submenu="thuc-don"
                     hidden>
 
-                    <li class="app-sidebar__submenu-group">
+
+                    <li>
 
                         <a
                             href="/thuc-don/danh-sach-thuc-don"
-                            class="app-sidebar__submenu-button"
+                            class="app-sidebar__menu-link"
                             data-sidebar-link="thuc-don">
 
-                            <span>
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-utensils"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
                                 Danh sách thực đơn
                             </span>
 
@@ -188,593 +124,659 @@
 
             </li>
 
-            <li class="app-sidebar__menu-group">
+            <li
+                class="app-sidebar__menu-group"
+                data-sidebar-group-item>
+
 
                 <button
                     type="button"
-                    class="app-sidebar__group-button"
-                    data-sidebar-toggle="danh-muc"
-                    aria-controls="sidebarDanhMuc"
+                    class="app-sidebar__group-title"
+                    data-sidebar-toggle="to-chuc"
+                    aria-controls="sidebarToChuc"
                     aria-expanded="false">
 
-                    <span class="app-sidebar__group-label">
-
-                        <span
-                            class="app-sidebar__menu-icon"
-                            aria-hidden="true">
-                            📚
+                    <span class="app-sidebar__group-content">
+                        <span class="app-sidebar__group-icon">
+                            <i class="fa-solid fa-sitemap"></i>
                         </span>
-
-                        <span class="app-sidebar__menu-text">
-                            Danh mục
-                        </span>
-
+                        <span>Tổ chức</span>
                     </span>
 
-                    <span
-                        class="app-sidebar__group-arrow"
-                        aria-hidden="true">
-
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round">
-
-                            <path d="m9 18 6-6-6-6">
-                            </path>
-
-                        </svg>
-
-                    </span>
+                    <i class="fa-solid fa-chevron-down"></i>
 
                 </button>
 
+
                 <ul
-                    id="sidebarDanhMuc"
+                    id="sidebarToChuc"
                     class="app-sidebar__submenu"
-                    data-sidebar-submenu="danh-muc"
+                    data-sidebar-submenu="to-chuc"
                     hidden>
 
-                    <li class="app-sidebar__submenu-group">
 
-                        <button
-                            type="button"
-                            class="app-sidebar__submenu-button"
-                            data-sidebar-child-toggle="chinh-sach"
-                            aria-controls="sidebarChinhSach"
-                            aria-expanded="false">
+                    <li>
 
-                            <span>
+                        <a
+                            href="/to-chuc/co-so"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="co-so">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-regular fa-building"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
+                                Cơ sở
+                            </span>
+
+                        </a>
+
+                    </li>
+
+
+                    <li>
+
+                        <a
+                            href="/to-chuc/nha-an"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="nha-an">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-building-columns"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
+                                Nhà ăn
+                            </span>
+
+                        </a>
+
+                    </li>
+
+
+                    <li>
+
+                        <a
+                            href="/to-chuc/phong-ban"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="phong-ban">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-people-group"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
+                                Phòng ban
+                            </span>
+
+                        </a>
+
+                    </li>
+
+
+                    <li>
+
+                        <a
+                            href="/to-chuc/chuc-vu"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="chuc-vu">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-regular fa-id-badge"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
+                                Chức vụ
+                            </span>
+
+                        </a>
+
+                    </li>
+
+
+                    <li>
+
+                        <a
+                            href="/to-chuc/nhan-vien"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="nhan-vien">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-users"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
+                                Nhân viên
+                            </span>
+
+                        </a>
+
+                    </li>
+
+
+                    <li>
+
+                        <a
+                            href="/to-chuc/kho"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="kho">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-warehouse"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
+                                Kho
+                            </span>
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+            <li
+                class="app-sidebar__menu-group"
+                data-sidebar-group-item>
+
+
+                <button
+                    type="button"
+                    class="app-sidebar__group-title"
+                    data-sidebar-toggle="phan-quyen"
+                    aria-controls="sidebarPhanQuyen"
+                    aria-expanded="false">
+
+                    <span class="app-sidebar__group-content">
+                        <span class="app-sidebar__group-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </span>
+                        <span>Phân quyền</span>
+                    </span>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </button>
+
+
+                <ul
+                    id="sidebarPhanQuyen"
+                    class="app-sidebar__submenu"
+                    data-sidebar-submenu="phan-quyen"
+                    hidden>
+
+
+                    <li>
+
+                        <a
+                            href="/phan-quyen/vai-tro"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="vai-tro">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-user-shield"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
+                                Vai trò
+                            </span>
+
+                        </a>
+
+                    </li>
+
+
+                    <li>
+
+                        <a
+                            href="/phan-quyen/quyen"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="quyen">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
+                                Quyền
+                            </span>
+
+                        </a>
+
+                    </li>
+
+
+                    <li>
+
+                        <a
+                            href="/phan-quyen/tai-khoan"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="tai-khoan">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-user-gear"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
+                                Tài khoản
+                            </span>
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+            <li
+                class="app-sidebar__menu-group"
+                data-sidebar-group-item>
+
+
+                <button
+                    type="button"
+                    class="app-sidebar__group-title"
+                    data-sidebar-toggle="suat-an"
+                    aria-controls="sidebarSuatAn"
+                    aria-expanded="false">
+
+                    <span class="app-sidebar__group-content">
+                        <span class="app-sidebar__group-icon">
+                            <i class="fa-solid fa-utensils"></i>
+                        </span>
+                        <span>Suất ăn</span>
+                    </span>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </button>
+
+
+                <ul
+                    id="sidebarSuatAn"
+                    class="app-sidebar__submenu"
+                    data-sidebar-submenu="suat-an"
+                    hidden>
+
+
+                    <li>
+
+                        <a
+                            href="/suat-an/ca-an"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="ca-an">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-regular fa-clock"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
+                                Ca ăn
+                            </span>
+
+                        </a>
+
+                    </li>
+
+
+                    <li>
+
+                        <a
+                            href="/suat-an/mon-an"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="mon-an">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-bowl-food"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
+                                Món ăn
+                            </span>
+
+                        </a>
+
+                    </li>
+
+
+                    <li>
+
+                        <a
+                            href="/suat-an/thuc-pham"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="thuc-pham">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-basket-shopping"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
+                                Thực phẩm
+                            </span>
+
+                        </a>
+
+                    </li>
+
+
+                    <li>
+
+                        <a
+                            href="/suat-an/don-vi-tinh"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="don-vi-tinh">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-scale-balanced"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
+                                Đơn vị tính
+                            </span>
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+            <li
+                class="app-sidebar__menu-group"
+                data-sidebar-group-item>
+
+
+                <button
+                    type="button"
+                    class="app-sidebar__group-title"
+                    data-sidebar-toggle="chinh-sach"
+                    aria-controls="sidebarChinhSach"
+                    aria-expanded="false">
+
+                    <span class="app-sidebar__group-content">
+                        <span class="app-sidebar__group-icon">
+                            <i class="fa-solid fa-file-contract"></i>
+                        </span>
+                        <span>Chính sách</span>
+                    </span>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </button>
+
+
+                <ul
+                    id="sidebarChinhSach"
+                    class="app-sidebar__submenu"
+                    data-sidebar-submenu="chinh-sach"
+                    hidden>
+
+
+                    <li>
+
+                        <a
+                            href="/chuong-trinh/chinh-sach"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="chinh-sach">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-regular fa-file-lines"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
                                 Chính sách
                             </span>
 
-                            <span
-                                class="app-sidebar__submenu-arrow"
-                                aria-hidden="true">
-
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round">
-
-                                    <path d="m9 18 6-6-6-6">
-                                    </path>
-
-                                </svg>
-
-                            </span>
-
-                        </button>
-
-                        <ul
-                            id="sidebarChinhSach"
-                            class="app-sidebar__submenu-list"
-                            data-sidebar-child-submenu="chinh-sach"
-                            hidden>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/chinh-sach"
-                                    data-sidebar-link="chinh-sach">
-
-                                    Chính sách
-
-                                </a>
-
-                            </li>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/voucher"
-                                    data-sidebar-link="voucher">
-
-                                    Voucher
-
-                                </a>
-
-                            </li>
-
-                        </ul>
+                        </a>
 
                     </li>
 
-                    <li class="app-sidebar__submenu-group">
 
-                        <button
-                            type="button"
-                            class="app-sidebar__submenu-button"
-                            data-sidebar-child-toggle="dia-chi-hanh-chinh"
-                            aria-controls="sidebarDiaChiHanhChinh"
-                            aria-expanded="false">
+                    <li>
 
-                            <span>
-                                Địa chỉ hành chính
+                        <a
+                            href="/chuong-trinh/voucher"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="voucher">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-ticket"></i>
                             </span>
 
-                            <span
-                                class="app-sidebar__submenu-arrow"
-                                aria-hidden="true">
-
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round">
-
-                                    <path d="m9 18 6-6-6-6">
-                                    </path>
-
-                                </svg>
-
+                            <span class="app-sidebar__menu-text">
+                                Voucher
                             </span>
 
-                        </button>
-
-                        <ul
-                            id="sidebarDiaChiHanhChinh"
-                            class="app-sidebar__submenu-list"
-                            data-sidebar-child-submenu="dia-chi-hanh-chinh"
-                            hidden>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/dia-chi-hanh-chinh"
-                                    data-sidebar-link="tong-hop-dia-chi">
-
-                                    Tổng hợp
-
-                                </a>
-
-                            </li>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/quoc-gia"
-                                    data-sidebar-link="quoc-gia">
-
-                                    Quốc gia
-
-                                </a>
-
-                            </li>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/tinh-thanh"
-                                    data-sidebar-link="tinh-thanh">
-
-                                    Tỉnh thành
-
-                                </a>
-
-                            </li>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/xa-phuong"
-                                    data-sidebar-link="xa-phuong">
-
-                                    Xã phường
-
-                                </a>
-
-                            </li>
-
-                        </ul>
+                        </a>
 
                     </li>
 
-                    <li class="app-sidebar__submenu-group">
+                </ul>
 
-                        <button
-                            type="button"
-                            class="app-sidebar__submenu-button"
-                            data-sidebar-child-toggle="he-thong"
-                            aria-controls="sidebarHeThong"
-                            aria-expanded="false">
+            </li>
 
-                            <span>
-                                Hệ thống
+            <li
+                class="app-sidebar__menu-group"
+                data-sidebar-group-item>
+
+
+                <button
+                    type="button"
+                    class="app-sidebar__group-title"
+                    data-sidebar-toggle="dia-chi"
+                    aria-controls="sidebarDiaChi"
+                    aria-expanded="false">
+
+                    <span class="app-sidebar__group-content">
+                        <span class="app-sidebar__group-icon">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                        </span>
+                        <span>Địa chỉ hành chính</span>
+                    </span>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </button>
+
+
+                <ul
+                    id="sidebarDiaChi"
+                    class="app-sidebar__submenu"
+                    data-sidebar-submenu="dia-chi"
+                    hidden>
+
+
+                    <li>
+
+                        <a
+                            href="/dia-chi/dia-chi-hanh-chinh"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="tong-hop-dia-chi">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-map"></i>
                             </span>
 
-                            <span
-                                class="app-sidebar__submenu-arrow"
-                                aria-hidden="true">
-
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round">
-
-                                    <path d="m9 18 6-6-6-6">
-                                    </path>
-
-                                </svg>
-
+                            <span class="app-sidebar__menu-text">
+                                Tổng hợp
                             </span>
 
-                        </button>
-
-                        <ul
-                            id="sidebarHeThong"
-                            class="app-sidebar__submenu-list"
-                            data-sidebar-child-submenu="he-thong"
-                            hidden>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/bao-cao"
-                                    data-sidebar-link="bao-cao">
-
-                                    Báo cáo
-
-                                </a>
-
-                            </li>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/nhom-mon-an"
-                                    data-sidebar-link="nhom-mon-an">
-
-                                    Nhóm món ăn
-
-                                </a>
-
-                            </li>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/nhom-tinh-nang"
-                                    data-sidebar-link="nhom-tinh-nang">
-
-                                    Nhóm tính năng
-
-                                </a>
-
-                            </li>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/quyen"
-                                    data-sidebar-link="quyen">
-
-                                    Quyền
-
-                                </a>
-
-                            </li>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/thiet-lap"
-                                    data-sidebar-link="thiet-lap">
-
-                                    Thiết lập
-
-                                </a>
-
-                            </li>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/vai-tro"
-                                    data-sidebar-link="vai-tro">
-
-                                    Vai trò
-
-                                </a>
-
-                            </li>
-
-                        </ul>
+                        </a>
 
                     </li>
 
-                    <li class="app-sidebar__submenu-group">
 
-                        <button
-                            type="button"
-                            class="app-sidebar__submenu-button"
-                            data-sidebar-child-toggle="nhan-su"
-                            aria-controls="sidebarNhanSu"
-                            aria-expanded="false">
+                    <li>
 
-                            <span>
-                                Nhân sự
+                        <a
+                            href="/dia-chi/quoc-gia"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="quoc-gia">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-earth-asia"></i>
                             </span>
 
-                            <span
-                                class="app-sidebar__submenu-arrow"
-                                aria-hidden="true">
-
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round">
-
-                                    <path d="m9 18 6-6-6-6">
-                                    </path>
-
-                                </svg>
-
+                            <span class="app-sidebar__menu-text">
+                                Quốc gia
                             </span>
 
-                        </button>
-
-                        <ul
-                            id="sidebarNhanSu"
-                            class="app-sidebar__submenu-list"
-                            data-sidebar-child-submenu="nhan-su"
-                            hidden>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/nhan-vien"
-                                    data-sidebar-link="nhan-vien">
-
-                                    Nhân viên
-
-                                </a>
-
-                            </li>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/tai-khoan"
-                                    data-sidebar-link="tai-khoan">
-
-                                    Tài khoản
-
-                                </a>
-
-                            </li>
-
-                        </ul>
+                        </a>
 
                     </li>
 
-                    <li class="app-sidebar__submenu-group">
 
-                        <button
-                            type="button"
-                            class="app-sidebar__submenu-button"
-                            data-sidebar-child-toggle="suat-an"
-                            aria-controls="sidebarSuatAn"
-                            aria-expanded="false">
+                    <li>
 
-                            <span>
-                                Suất ăn
+                        <a
+                            href="/dia-chi/tinh-thanh"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="tinh-thanh">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-location-dot"></i>
                             </span>
 
-                            <span
-                                class="app-sidebar__submenu-arrow"
-                                aria-hidden="true">
-
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round">
-
-                                    <path d="m9 18 6-6-6-6">
-                                    </path>
-
-                                </svg>
-
+                            <span class="app-sidebar__menu-text">
+                                Tỉnh thành
                             </span>
 
-                        </button>
-
-                        <ul
-                            id="sidebarSuatAn"
-                            class="app-sidebar__submenu-list"
-                            data-sidebar-child-submenu="suat-an"
-                            hidden>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/ca-an"
-                                    data-sidebar-link="ca-an">
-
-                                    Ca ăn
-
-                                </a>
-
-                            </li>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/don-vi-tinh"
-                                    data-sidebar-link="don-vi-tinh">
-
-                                    Đơn vị tính
-
-                                </a>
-
-                            </li>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/mon-an"
-                                    data-sidebar-link="mon-an">
-
-                                    Món ăn
-
-                                </a>
-
-                            </li>
-
-                            <li>
-
-                                <a
-                                    href="/danh-muc/thuc-pham"
-                                    data-sidebar-link="thuc-pham">
-
-                                    Thực phẩm
-
-                                </a>
-
-                            </li>
-
-                        </ul>
+                        </a>
 
                     </li>
 
-                    <li class="app-sidebar__submenu-group">
 
-                        <button
-                            type="button"
-                            class="app-sidebar__submenu-button"
-                            data-sidebar-child-toggle="to-chuc"
-                            aria-controls="sidebarToChuc"
-                            aria-expanded="false">
+                    <li>
 
-                            <span>
-                                Tổ chức
+                        <a
+                            href="/dia-chi/xa-phuong"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="xa-phuong">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-map-pin"></i>
                             </span>
 
-                            <span
-                                class="app-sidebar__submenu-arrow"
-                                aria-hidden="true">
-
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round">
-
-                                    <path d="m9 18 6-6-6-6">
-                                    </path>
-
-                                </svg>
-
+                            <span class="app-sidebar__menu-text">
+                                Xã phường
                             </span>
 
-                        </button>
+                        </a>
 
-                        <ul
-                            id="sidebarToChuc"
-                            class="app-sidebar__submenu-list"
-                            data-sidebar-child-submenu="to-chuc"
-                            hidden>
+                    </li>
 
-                            <li>
+                </ul>
 
-                                <a
-                                    href="/danh-muc/chuc-vu"
-                                    data-sidebar-link="chuc-vu">
+            </li>
 
-                                    Chức vụ
+            <li
+                class="app-sidebar__menu-group"
+                data-sidebar-group-item>
 
-                                </a>
 
-                            </li>
+                <button
+                    type="button"
+                    class="app-sidebar__group-title"
+                    data-sidebar-toggle="he-thong"
+                    aria-controls="sidebarHeThong"
+                    aria-expanded="false">
 
-                            <li>
+                    <span class="app-sidebar__group-content">
+                        <span class="app-sidebar__group-icon">
+                            <i class="fa-solid fa-gears"></i>
+                        </span>
+                        <span>Hệ thống</span>
+                    </span>
 
-                                <a
-                                    href="/danh-muc/co-so"
-                                    data-sidebar-link="co-so">
+                    <i class="fa-solid fa-chevron-down"></i>
 
-                                    Cơ sở
+                </button>
 
-                                </a>
 
-                            </li>
+                <ul
+                    id="sidebarHeThong"
+                    class="app-sidebar__submenu"
+                    data-sidebar-submenu="he-thong"
+                    hidden>
 
-                            <li>
+                    <li>
 
-                                <a
-                                    href="/danh-muc/nha-an"
-                                    data-sidebar-link="nha-an">
+                        <a
+                            href="/he-thong/nhom-tinh-nang"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="nhom-tinh-nang">
 
-                                    Nhà ăn
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </span>
 
-                                </a>
+                            <span class="app-sidebar__menu-text">
+                                Nhóm tính năng
+                            </span>
 
-                            </li>
+                        </a>
 
-                            <li>
+                    </li>
 
-                                <a
-                                    href="/danh-muc/kho"
-                                    data-sidebar-link="kho">
+                    <li>
 
-                                    Kho
+                        <a
+                            href="/he-thong/nhom-mon-an"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="nhom-mon-an">
 
-                                </a>
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-shapes"></i>
+                            </span>
 
-                            </li>
+                            <span class="app-sidebar__menu-text">
+                                Nhóm món ăn
+                            </span>
 
-                            <li>
+                        </a>
 
-                                <a
-                                    href="/danh-muc/phong-ban"
-                                    data-sidebar-link="phong-ban">
+                    </li>
 
-                                    Phòng ban
+                    <li>
 
-                                </a>
+                        <a
+                            href="/he-thong/bao-cao"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="bao-cao">
 
-                            </li>
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-chart-column"></i>
+                            </span>
 
-                        </ul>
+                            <span class="app-sidebar__menu-text">
+                                Báo cáo
+                            </span>
+
+                        </a>
+
+                    </li>
+
+                    <li>
+
+                        <a
+                            href="/he-thong/thiet-lap"
+                            class="app-sidebar__menu-link"
+                            data-sidebar-link="thiet-lap">
+
+                            <span class="app-sidebar__menu-icon">
+                                <i class="fa-solid fa-gear"></i>
+                            </span>
+
+                            <span class="app-sidebar__menu-text">
+                                Thiết lập
+                            </span>
+
+                        </a>
 
                     </li>
 
@@ -791,13 +793,20 @@
         data-sidebar-sort-actions
         hidden>
 
+
         <button
             type="button"
             class="app-sidebar__sort-reset"
             data-sidebar-sort-reset>
-            <span aria-hidden="true">↺</span>
-            <span>Mặc định</span>
+
+            <i class="fa-solid fa-arrow-rotate-left"></i>
+
+            <span>
+                Mặc định
+            </span>
+
         </button>
+
 
         <div class="app-sidebar__sort-confirm">
 
@@ -805,27 +814,58 @@
                 type="button"
                 class="app-sidebar__sort-cancel"
                 data-sidebar-sort-cancel>
+
                 Hủy
+
             </button>
+
 
             <button
                 type="button"
                 class="app-sidebar__sort-save"
                 data-sidebar-sort-save>
+
                 Lưu
+
             </button>
 
         </div>
 
     </div>
 
-    <div class="app-sidebar__footer">
+    <footer class="app-sidebar__footer">
 
-        <small>
-            Phiên bản {{appVersion}}
-        </small>
 
-    </div>
+        <button
+            type="button"
+            class="app-sidebar__footer-button"
+            data-sidebar-expand-toggle>
+
+            <i
+                class="fa-solid fa-angles-down"
+                data-sidebar-expand-icon>
+            </i>
+
+            <span data-sidebar-expand-label>
+                Mở rộng
+            </span>
+
+        </button>
+
+        <button
+            type="button"
+            class="app-sidebar__footer-button"
+            data-sidebar-sort-start>
+
+            <i class="fa-solid fa-arrow-down-up-across-line"></i>
+
+            <span>
+                Sắp xếp menu
+            </span>
+
+        </button>
+
+    </footer>
 
 </aside>
 

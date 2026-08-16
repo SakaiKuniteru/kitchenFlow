@@ -55,14 +55,11 @@ body {
         margin-left var(--transition-base);
 }
 
-body.sidebar-collapsed
+body.sidebar-hidden
 .app-content {
-    width: calc(
-        100% - var(--sidebar-collapsed-width)
-    );
+    width: 100%;
 
-    margin-left:
-        var(--sidebar-collapsed-width);
+    margin-left: 0;
 }
 
 .breadcrumb {
@@ -132,13 +129,13 @@ body.sidebar-collapsed
     margin-top: auto;
 }
 
-
 @media (max-width: 1024px) {
 
     .app-content,
-    body.sidebar-collapsed
+    body.sidebar-hidden
     .app-content {
         width: 100%;
+
         margin-left: 0;
     }
 
