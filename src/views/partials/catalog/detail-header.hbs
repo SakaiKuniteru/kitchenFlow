@@ -4,19 +4,6 @@
 
     <div class="detail-panel__heading">
 
-        <button
-            type="button"
-            class="detail-panel__back-button"
-            data-detail-back
-            aria-label="Quay lại danh sách"
-            hidden>
-
-            <span aria-hidden="true">
-                ←
-            </span>
-
-        </button>
-
         <div class="detail-panel__heading-content">
 
             <h2
@@ -24,13 +11,9 @@
                 data-detail-title>
 
                 {{#if title}}
-
                     {{title}}
-
                 {{else}}
-
-                    Thông tin chi tiết
-
+                    Thông tin
                 {{/if}}
 
             </h2>
@@ -48,40 +31,16 @@
 
     </div>
 
-    <div class="detail-panel__header-actions">
+    <button
+        type="button"
+        class="detail-panel__header-button detail-panel__header-button--close"
+        data-detail-close
+        aria-label="Đóng panel">
 
-        {{#if showEditButton}}
+        <span aria-hidden="true">
+            ×
+        </span>
 
-            <button
-                type="button"
-                class="detail-panel__header-button"
-                data-detail-edit
-                aria-label="Cập nhật dữ liệu">
-
-                <span aria-hidden="true">
-                    ✎
-                </span>
-
-                <span>
-                    Cập nhật
-                </span>
-
-            </button>
-
-        {{/if}}
-
-        <button
-            type="button"
-            class="detail-panel__header-button detail-panel__header-button--close"
-            data-detail-close
-            aria-label="Đóng bảng thông tin">
-
-            <span aria-hidden="true">
-                ×
-            </span>
-
-        </button>
-
-    </div>
+    </button>
 
 </header>

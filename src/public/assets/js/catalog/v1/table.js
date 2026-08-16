@@ -32,7 +32,7 @@ class MCSTable {
                 true,
 
             showActions:
-                false,
+                true,
 
             selectable:
                 false,
@@ -111,6 +111,51 @@ class MCSTable {
             "click",
             event => {
 
+                const actionButton =
+                    event.target.closest(
+                        "[data-action]"
+                    );
+
+                if (actionButton) {
+
+                    event.stopPropagation();
+
+                    const action =
+                        actionButton.dataset
+                            .action;
+
+                    const recordId =
+                        actionButton.dataset
+                            .recordId;
+
+                    this.options.onAction?.(
+                        action,
+                        recordId
+                    );
+
+                    this.closeActionMenus();
+
+                    return;
+
+                }
+
+                const actionTrigger =
+                    event.target.closest(
+                        "[data-action-menu-trigger]"
+                    );
+
+                if (actionTrigger) {
+
+                    event.stopPropagation();
+
+                    this.toggleActionMenu(
+                        actionTrigger
+                    );
+
+                    return;
+
+                }
+
                 const sortButton =
                     event.target.closest(
                         "[data-sort-key]"
@@ -155,7 +200,34 @@ class MCSTable {
 
             }
         );
-        
+
+        document.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    !event.target.closest(
+                        "[data-action-menu]"
+                    )
+                ) {
+
+                    this.closeActionMenus();
+
+                }
+
+            }
+        );
+
+        window.addEventListener(
+            "scroll",
+            () => {
+
+                this.closeActionMenus();
+
+            },
+            true
+        );
+
         window.addEventListener(
             "resize",
             () => {
@@ -440,9 +512,232 @@ class MCSTable {
             }
         );
 
+        if (
+            this.options.showActions !==
+            false
+        ) {
+
+            row.appendChild(
+                this.createActionCell(
+                    record
+                )
+            );
+
+        }
+
         return row;
 
     }
+
+
+    createActionCell(record) {
+
+        const cell =
+            document.createElement(
+                "td"
+            );
+
+        cell.className =
+            "catalog-table__cell " +
+            "catalog-table__cell--actions";
+
+        const menu =
+            document.createElement(
+                "div"
+            );
+
+        menu.className =
+            "table-action-menu";
+
+        menu.dataset.actionMenu =
+            "";
+
+        const trigger =
+            document.createElement(
+                "button"
+            );
+
+        trigger.type =
+            "button";
+
+        trigger.className =
+            "table-action-menu__trigger";
+
+        trigger.dataset
+            .actionMenuTrigger =
+            "";
+
+        trigger.setAttribute(
+            "aria-label",
+            "Mở danh sách thao tác"
+        );
+
+        trigger.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+        trigger.innerHTML =
+            "<span aria-hidden=\"true\">⋮</span>";
+
+        const dropdown =
+            document.createElement(
+                "div"
+            );
+
+        dropdown.className =
+            "table-action-menu__dropdown";
+
+        dropdown.dataset
+            .actionMenuDropdown =
+            "";
+
+        dropdown.hidden =
+            true;
+
+        const actions =
+            this.getActions(record);
+
+        actions.forEach(
+            action => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+                button.type =
+                    "button";
+
+                button.className =
+                    [
+                        "table-action-menu__item",
+                        action.className || ""
+                    ]
+                        .filter(Boolean)
+                        .join(" ");
+
+                button.dataset.action =
+                    action.key;
+
+                button.dataset.recordId =
+                    record[
+                        this.options.rowKey
+                    ];
+
+                button.innerHTML = `
+                    <span
+                        class="table-action-menu__icon"
+                        aria-hidden="true">
+                        ${action.icon || ""}
+                    </span>
+
+                    <span>
+                        ${window.MCS.escapeHtml(
+                            action.label
+                        )}
+                    </span>
+                `;
+
+                dropdown.appendChild(
+                    button
+                );
+
+            }
+        );
+
+        menu.append(
+            trigger,
+            dropdown
+        );
+
+        cell.appendChild(
+            menu
+        );
+
+        return cell;
+
+    }
+
+
+    getActions(record) {
+
+        if (
+            typeof this.options.actions ===
+            "function"
+        ) {
+
+            return (
+                this.options.actions(
+                    record
+                ) || []
+            );
+
+        }
+
+        const actions = [
+            {
+                key:
+                    "view",
+
+                label:
+                    "Xem chi tiết",
+
+                icon:
+                    "◉"
+            },
+            {
+                key:
+                    "edit",
+
+                label:
+                    "Cập nhật",
+
+                icon:
+                    "✎"
+            }
+        ];
+
+        if (
+            record.active === false
+        ) {
+
+            actions.push({
+                key:
+                    "unlock",
+
+                label:
+                    "Mở khóa",
+
+                icon:
+                    "🔓",
+
+                className:
+                    "table-action-menu__item--success"
+            });
+
+        } else {
+
+            actions.push({
+                key:
+                    "lock",
+
+                label:
+                    "Khóa",
+
+                icon:
+                    "🔒",
+
+                className:
+                    "table-action-menu__item--warning"
+            });
+
+        }
+
+        return actions;
+
+    }
+
 
     resolveValue(
         object,
@@ -902,6 +1197,16 @@ class MCSTable {
 
         }
 
+        if (
+            this.options.showActions !==
+            false
+        ) {
+
+            count +=
+                1;
+
+        }
+
         return Math.max(
             count,
             1
@@ -995,6 +1300,90 @@ class MCSTable {
                         key === this.sort.key
                             ? this.sort.direction
                             : "none";
+
+                }
+            );
+
+    }
+
+
+    toggleActionMenu(trigger) {
+
+        const menu =
+            trigger.closest(
+                "[data-action-menu]"
+            );
+
+        const dropdown =
+            menu?.querySelector(
+                "[data-action-menu-dropdown]"
+            );
+
+        if (!dropdown) {
+            return;
+        }
+
+        const willOpen =
+            dropdown.hidden;
+
+        this.closeActionMenus();
+
+        if (!willOpen) {
+            return;
+        }
+
+        dropdown.hidden =
+            false;
+
+        trigger.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+
+        const rectangle =
+            trigger.getBoundingClientRect();
+
+        dropdown.style.top =
+            `${rectangle.bottom + 5}px`;
+
+        dropdown.style.left =
+            `${
+                Math.max(
+                    8,
+                    rectangle.right -
+                    185
+                )
+            }px`;
+
+    }
+
+
+    closeActionMenus() {
+
+        document
+            .querySelectorAll(
+                "[data-action-menu-dropdown]"
+            )
+            .forEach(
+                dropdown => {
+
+                    dropdown.hidden =
+                        true;
+
+                }
+            );
+
+        document
+            .querySelectorAll(
+                "[data-action-menu-trigger]"
+            )
+            .forEach(
+                trigger => {
+
+                    trigger.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
 
                 }
             );

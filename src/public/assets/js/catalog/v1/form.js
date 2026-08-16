@@ -293,14 +293,33 @@ class MCSForm {
 
     updateSubmitLabel() {
 
-        if (!this.elements.submitLabel) {
+        if (
+            !this.elements
+                .submitLabel
+        ) {
             return;
         }
 
-        this.elements.submitLabel.textContent =
-            "Lưu";
+        const labels = {
+            create:
+                "Thêm mới",
+
+            update:
+                "Lưu thay đổi",
+
+            view:
+                "Lưu dữ liệu"
+        };
+
+        this.elements.submitLabel
+            .textContent =
+            labels[
+                this.options.mode
+            ] ||
+            "Lưu dữ liệu";
 
     }
+
 
     setData(data = {}) {
 
@@ -544,38 +563,27 @@ class MCSForm {
 
     validateNative() {
 
-        const invalidFields =
-            Array.from(
-                this.form.querySelectorAll(
-                    ":invalid"
-                )
-            );
+        if (
+            this.form.checkValidity()
+        ) {
 
-        if (invalidFields.length === 0) {
             return true;
+
         }
 
-        invalidFields.forEach(
-            field => {
+        const invalid =
+            this.form.querySelector(
+                ":invalid"
+            );
 
-                if (!field.name) {
-                    return;
-                }
+        invalid?.focus();
 
-                this.setFieldError(
-                    field.name,
-                    field.validationMessage ||
-                    "Dữ liệu không hợp lệ."
-                );
-
-            }
-        );
-
-        invalidFields[0]?.focus();
+        this.form.reportValidity();
 
         return false;
 
     }
+
 
     setErrors(errors) {
 

@@ -13,20 +13,21 @@
             searchInputId=searchInputId
             searchPlaceholder=searchPlaceholder
             createButtonId=createButtonId
+            createButtonLabel=createButtonLabel
+            showRefreshButton=true
+            showFilterButton=true
             showExportButton=showExportButton
-            showImportButton=showImportButton
             hideCreateButton=hideCreateButton
         }}
 
-        <div
-            class="catalog-page__table-section"
-            data-catalog-table-section>
+        <div class="catalog-page__table-section">
 
             {{> catalog/table
                 tableId=tableId
                 tableBodyId=tableBodyId
                 columns=columns
                 showIndex=true
+                showActions=showActions
                 showFilterRow=true
             }}
 
@@ -40,9 +41,9 @@
 
     <aside
         id="{{detailPanelId}}"
-        class="catalog-page__detail is-open"
+        class="catalog-page__detail"
         data-catalog-detail-panel
-        data-panel-mode="create"
+        data-panel-mode="view"
         aria-label="{{detailTitle}}">
 
         {{> catalog/detail-panel
@@ -50,6 +51,7 @@
             formId=formId
             title=detailTitle
             formPartial=formPartial
+            showEditButton=showEditButton
             showCloseButton=true
         }}
 
@@ -66,5 +68,14 @@
 <script
     type="application/json"
     id="{{moduleName}}PageConfig">
-    {"moduleName":"{{moduleName}}","apiBase":"{{apiBase}}","listEndpoint":"{{apiBase}}/tong-hop","detailEndpoint":"{{apiBase}}","createEndpoint":"{{apiBase}}/them-moi","updateEndpoint":"{{apiBase}}/cap-nhat","deleteEndpoint":"{{apiBase}}/xoa"}
+
+    {
+        "moduleName": "{{moduleName}}",
+        "apiBase": "{{apiBase}}",
+        "listEndpoint": "{{apiBase}}/tong-hop",
+        "detailEndpoint": "{{apiBase}}",
+        "createEndpoint": "{{apiBase}}/them-moi",
+        "updateEndpoint": "{{apiBase}}/cap-nhat"
+    }
+
 </script>

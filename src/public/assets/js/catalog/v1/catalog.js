@@ -189,46 +189,6 @@ class MCSCatalog {
                     "[data-catalog-filter-toggle]"
                 ),
 
-            filterToggleLabel:
-                this.root.querySelector(
-                    "[data-filter-toggle-label]"
-                ),
-
-            utilityToggle:
-                this.root.querySelector(
-                    "[data-catalog-utility-toggle]"
-                ),
-
-            utilityMenu:
-                this.root.querySelector(
-                    "[data-catalog-utility-menu]"
-                ),
-
-            expandTable:
-                this.root.querySelector(
-                    "[data-catalog-expand-table]"
-                ),
-
-            expandInfo:
-                this.root.querySelector(
-                    "[data-catalog-expand-info]"
-                ),
-
-            exportButton:
-                this.root.querySelector(
-                    "[data-catalog-export]"
-                ),
-
-            importButton:
-                this.root.querySelector(
-                    "[data-catalog-import]"
-                ),
-
-            tableSection:
-                this.root.querySelector(
-                    "[data-catalog-table-section]"
-                ),
-
             filterRow:
                 this.root.querySelector(
                     "[data-table-filter-row]"
@@ -281,7 +241,12 @@ class MCSCatalog {
                         true,
 
                     showActions:
-                        false,
+                        true,
+
+                    actions:
+                        this.options
+                            .table
+                            .actions,
 
                     onRowClick:
                         record => {
@@ -306,11 +271,21 @@ class MCSCatalog {
                             }
 
 
-                            this.openUpdate(
+                            this.openDetail(
                                 id
                             );
 
                         },
+
+                    onAction:
+                        (
+                            action,
+                            id
+                        ) =>
+                            this.handleAction(
+                                action,
+                                id
+                            ),
 
                     onSort:
                         sort => {
@@ -557,232 +532,6 @@ class MCSCatalog {
             );
 
 
-        this.elements.utilityToggle
-            ?.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    const menu =
-                        this.elements.utilityMenu;
-
-                    if (!menu) {
-                        return;
-                    }
-
-                    const open =
-                        menu.hidden;
-
-                    menu.hidden =
-                        !open;
-
-                    this.elements.utilityToggle
-                        .setAttribute(
-                            "aria-expanded",
-                            String(open)
-                        );
-
-                }
-            );
-
-        this.elements.expandTable
-            ?.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-                    event.stopPropagation();
-
-
-                    const expanded =
-                        !this.root
-                            .classList
-                            .contains(
-                                "is-list-expanded"
-                            );
-
-
-                    this.root
-                        .classList
-                        .toggle(
-                            "is-list-expanded",
-                            expanded
-                        );
-
-
-                    this.elements
-                        .expandTable
-                        .setAttribute(
-                            "aria-pressed",
-                            String(
-                                expanded
-                            )
-                        );
-
-
-                    const label =
-                        this.elements
-                            .expandTable
-                            .querySelector(
-                                "[data-expand-table-label]"
-                            );
-
-
-                    if (label) {
-
-                        label.textContent =
-                            expanded
-                                ? "Thu nhỏ"
-                                : "Mở rộng";
-
-                    }
-
-                }
-            );
-
-        this.elements.expandInfo
-            ?.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    if (
-                        this.root
-                            .classList
-                            .contains(
-                                "is-list-expanded"
-                            )
-                    ) {
-
-                        this.root
-                            .classList
-                            .remove(
-                                "is-list-expanded"
-                            );
-
-
-                        this.elements
-                            .expandTable
-                            ?.setAttribute(
-                                "aria-pressed",
-                                "false"
-                            );
-
-
-                        const tableLabel =
-                            this.elements
-                                .expandTable
-                                ?.querySelector(
-                                    "[data-expand-table-label]"
-                                );
-
-
-                        if (
-                            tableLabel
-                        ) {
-
-                            tableLabel.textContent =
-                                "Mở rộng";
-
-                        }
-
-                    }
-
-
-                    const expanded =
-                        !this.root
-                            .classList
-                            .contains(
-                                "is-info-expanded"
-                            );
-
-
-                    this.root
-                        .classList
-                        .toggle(
-                            "is-info-expanded",
-                            expanded
-                        );
-
-
-                    this.elements
-                        .expandInfo
-                        .setAttribute(
-                            "aria-pressed",
-                            String(
-                                expanded
-                            )
-                        );
-
-
-                    const label =
-                        this.elements
-                            .expandInfo
-                            .querySelector(
-                                "[data-expand-info-label]"
-                            );
-
-
-                    if (
-                        label
-                    ) {
-
-                        label.textContent =
-                            expanded
-                                ? "Thu nhỏ thông tin"
-                                : "Mở rộng thông tin";
-
-                    }
-
-                }
-            );
-
-        this.elements.exportButton
-            ?.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    this.elements.utilityMenu.hidden =
-                        true;
-
-                    this.options.onAction?.(
-                        "export",
-                        null,
-                        this
-                    );
-
-                }
-            );
-
-
-        this.elements.importButton
-            ?.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    this.elements.utilityMenu.hidden =
-                        true;
-
-                    this.options.onAction?.(
-                        "import",
-                        null,
-                        this
-                    );
-
-                }
-            );
-
-
         this.elements.refresh
             ?.addEventListener(
                 "click",
@@ -929,19 +678,80 @@ class MCSCatalog {
 
                     this.detailPanel
                         .close();
+
                 }
             );
+
     }
+
 
     async initialize() {
+
+        this.initializeDefaultDetail();
+
+
         await this.load();
-        this.openCreate();
+
+
         return this;
+
     }
 
+
     initializeDefaultDetail() {
-        this.openCreate();
+
+        this.state.selectedId =
+            null;
+
+
+        this.table
+            .clearSelection();
+
+
+        this.form
+            .clear();
+
+
+        this.form
+            .setMode(
+                "view"
+            );
+
+
+        this.form
+            .setData(
+                this.options
+                    .defaultValues ||
+                {
+                    active:
+                        true
+                }
+            );
+
+
+        this.detailPanel
+            .showDefault({
+
+                title:
+                    this.options
+                        .detailTitle ||
+                    "Thông tin chi tiết",
+
+                subtitle:
+                    ""
+
+            });
+
+
+        this.options
+            .onRecordLoaded?.(
+                null,
+                "view",
+                this
+            );
+
     }
+
 
     toggleFilterRow() {
 
@@ -981,29 +791,6 @@ class MCSCatalog {
             "aria-expanded",
             String(willOpen)
         );
-
-
-        if (this.elements.filterToggleLabel) {
-
-            this.elements.filterToggleLabel.textContent =
-                willOpen
-                    ? "Đóng tìm kiếm chi tiết"
-                    : "Tìm kiếm chi tiết";
-
-        }
-
-
-        if (this.elements.utilityMenu) {
-
-            this.elements.utilityMenu.hidden =
-                true;
-
-            this.elements.utilityToggle?.setAttribute(
-                "aria-expanded",
-                "false"
-            );
-
-        }
 
 
         if (willOpen) {
@@ -1862,7 +1649,25 @@ class MCSCatalog {
             await this.load();
 
 
-            this.initializeDefaultDetail();
+            const savedId =
+                saved?.[
+                    this.options
+                        .rowKey
+                ] ||
+                id;
+
+
+            if (savedId) {
+
+                await this.openDetail(
+                    savedId
+                );
+
+            } else {
+
+                this.initializeDefaultDetail();
+
+            }
 
 
             return saved;
@@ -1923,9 +1728,26 @@ class MCSCatalog {
 
     finishCancel() {
 
+        if (
+            this.state
+                .selectedId !== null
+        ) {
+
+            this.openDetail(
+                this.state
+                    .selectedId
+            );
+
+
+            return;
+
+        }
+
+
         this.initializeDefaultDetail();
 
     }
+
 
     async handleAction(
         action,
@@ -1937,6 +1759,14 @@ class MCSCatalog {
         ) {
 
             case "view":
+
+                await this.openDetail(
+                    id
+                );
+
+                break;
+
+
             case "edit":
 
                 await this.openUpdate(
@@ -1944,6 +1774,7 @@ class MCSCatalog {
                 );
 
                 break;
+
 
             case "lock":
 
@@ -1953,6 +1784,7 @@ class MCSCatalog {
                 );
 
                 break;
+
 
             case "unlock":
 
@@ -1976,6 +1808,7 @@ class MCSCatalog {
         }
 
     }
+
 
     async confirmActiveChange(
         id,

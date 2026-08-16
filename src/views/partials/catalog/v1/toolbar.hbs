@@ -1,0 +1,172 @@
+<header
+    class="catalog-toolbar {{#if toolbarClass}}{{toolbarClass}}{{/if}}"
+    data-catalog-toolbar>
+
+    <div class="catalog-toolbar__heading">
+
+        <div class="catalog-toolbar__title-group">
+
+            <h1 class="catalog-toolbar__title">
+
+                {{#if title}}
+
+                    {{title}}
+
+                {{else}}
+
+                    Danh mục
+
+                {{/if}}
+
+            </h1>
+
+            {{#if description}}
+
+                <p class="catalog-toolbar__description">
+                    {{description}}
+                </p>
+
+            {{/if}}
+
+        </div>
+
+        {{#if totalLabel}}
+
+            <span
+                class="catalog-toolbar__total"
+                data-catalog-total>
+
+                {{totalLabel}}
+
+            </span>
+
+        {{/if}}
+
+    </div>
+
+    <div class="catalog-toolbar__controls">
+
+        <div class="catalog-toolbar__search">
+
+            <span
+                class="catalog-toolbar__search-icon"
+                aria-hidden="true">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="7">
+                    </circle>
+
+                    <path d="m20 20-3.5-3.5">
+                    </path>
+
+                </svg>
+
+            </span>
+
+            <input
+                id="{{searchInputId}}"
+                type="search"
+                class="catalog-toolbar__search-input"
+                placeholder="{{#if searchPlaceholder}}{{searchPlaceholder}}{{else}}Tìm theo mã hoặc tên...{{/if}}"
+                autocomplete="off"
+                data-catalog-search>
+
+        </div>
+
+        {{#if showRefreshButton}}
+
+            <button
+                type="button"
+                id="{{#if refreshButtonId}}{{refreshButtonId}}{{else}}catalogRefreshButton{{/if}}"
+                class="catalog-toolbar__button catalog-toolbar__button--secondary"
+                data-catalog-refresh>
+
+                <span aria-hidden="true">
+                    ↻
+                </span>
+
+                <span>
+                    Làm mới
+                </span>
+
+            </button>
+
+        {{/if}}
+
+        {{#if showFilterButton}}
+
+            <button
+                type="button"
+                id="{{#if filterButtonId}}{{filterButtonId}}{{else}}catalogFilterButton{{/if}}"
+                class="catalog-toolbar__button catalog-toolbar__button--secondary"
+                data-catalog-filter-toggle
+                aria-expanded="false">
+
+                <span aria-hidden="true">
+                    ⚲
+                </span>
+
+                <span>
+                    Bộ lọc
+                </span>
+
+            </button>
+
+        {{/if}}
+
+        {{#if showExportButton}}
+
+            <button
+                type="button"
+                id="{{#if exportButtonId}}{{exportButtonId}}{{else}}catalogExportButton{{/if}}"
+                class="catalog-toolbar__button catalog-toolbar__button--secondary"
+                data-catalog-export>
+
+                <span aria-hidden="true">
+                    ⇩
+                </span>
+
+                <span>
+                    Xuất dữ liệu
+                </span>
+
+            </button>
+
+        {{/if}}
+
+        {{#unless hideCreateButton}}
+
+            <button
+                type="button"
+                id="{{createButtonId}}"
+                class="
+                    catalog-toolbar__button
+                    catalog-toolbar__button--primary
+                "
+                data-catalog-create>
+
+                <span aria-hidden="true">
+                    +
+                </span>
+
+                <span>
+                    {{createButtonLabel}}
+                </span>
+
+            </button>
+
+        {{/unless}}
+
+    </div>
+
+</header>

@@ -5,13 +5,15 @@
 
     {{#if selectable}}
 
-        <th class="catalog-table__filter-cell"></th>
+        <th class="catalog-table__filter-cell">
+        </th>
 
     {{/if}}
 
     {{#if showIndex}}
 
-        <th class="catalog-table__filter-cell"></th>
+        <th class="catalog-table__filter-cell">
+        </th>
 
     {{/if}}
 
@@ -47,11 +49,10 @@
                     <input
                         type="{{#if filterType}}{{filterType}}{{else}}text{{/if}}"
                         class="catalog-table__filter-input"
-                        placeholder="Tìm {{label}}..."
+                        placeholder="Lọc..."
                         data-filter-key="{{key}}"
                         autocomplete="off"
-                        aria-label="Lọc theo {{label}}"
-                    >
+                        aria-label="Lọc theo {{label}}">
 
                 {{/if}}
 
@@ -60,5 +61,21 @@
         </th>
 
     {{/each}}
+
+    {{#if showActions}}
+
+        <th class="catalog-table__filter-cell">
+
+            <button
+                type="button"
+                class="catalog-table__clear-filter"
+                data-clear-table-filters
+                aria-label="Xóa tất cả bộ lọc">
+                ×
+            </button>
+
+        </th>
+
+    {{/if}}
 
 </tr>

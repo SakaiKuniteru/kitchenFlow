@@ -3,6 +3,42 @@
     class="catalog-pagination"
     data-catalog-pagination>
 
+    <label class="catalog-pagination__page-size">
+
+        <span>
+            Hiển thị
+        </span>
+
+        <span class="catalog-pagination__select-wrapper">
+
+            <select
+                data-pagination-size
+                aria-label="Số bản ghi trên mỗi trang">
+
+                <option value="10">
+                    10 dòng
+                </option>
+
+                <option
+                    value="20"
+                    selected>
+                    20 dòng
+                </option>
+
+                <option value="50">
+                    50 dòng
+                </option>
+
+                <option value="100">
+                    100 dòng
+                </option>
+
+            </select>
+
+        </span>
+
+    </label>
+
     <div
         class="catalog-pagination__summary"
         aria-live="polite">
@@ -11,203 +47,74 @@
             0
         </strong>
 
-        <span aria-hidden="true">
-            –
-        </span>
+        <span> – </span>
 
         <strong data-pagination-to>
             0
         </strong>
 
-        <span class="catalog-pagination__summary-divider">
-            /
-        </span>
+        <span> trong </span>
 
         <strong data-pagination-total>
             0
         </strong>
 
-        <span class="catalog-pagination__summary-label">
-            bản ghi
+        <span> bản ghi</span>
+
+    </div>
+
+    <nav
+        class="catalog-pagination__navigation"
+        aria-label="Điều hướng phân trang">
+
+        <button
+            type="button"
+            class="catalog-pagination__button"
+            data-pagination-first
+            aria-label="Trang đầu"
+            disabled>
+            «
+        </button>
+
+        <button
+            type="button"
+            class="catalog-pagination__button"
+            data-pagination-previous
+            aria-label="Trang trước"
+            disabled>
+            ‹
+        </button>
+
+        <span
+            class="catalog-pagination__current"
+            data-pagination-current-page>
+            1
         </span>
 
-    </div>
+        <button
+            type="button"
+            class="catalog-pagination__button"
+            data-pagination-next
+            aria-label="Trang tiếp theo"
+            disabled>
+            ›
+        </button>
 
+        <button
+            type="button"
+            class="catalog-pagination__button"
+            data-pagination-last
+            aria-label="Trang cuối"
+            disabled>
+            »
+        </button>
 
-    <div class="catalog-pagination__controls">
+        <span
+            data-pagination-total-pages
+            hidden>
+            1
+        </span>
 
-        <label class="catalog-pagination__page-size">
-
-            <span class="catalog-pagination__page-size-label">
-                Hiển thị
-            </span>
-
-            <span class="catalog-pagination__select-wrapper">
-
-                <select
-                    data-pagination-size
-                    aria-label="Số bản ghi trên mỗi trang">
-
-                    <option value="10">
-                        10 dòng
-                    </option>
-
-                    <option
-                        value="20"
-                        selected>
-                        20 dòng
-                    </option>
-
-                    <option value="50">
-                        50 dòng
-                    </option>
-
-                    <option value="100">
-                        100 dòng
-                    </option>
-
-                </select>
-
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true">
-
-                    <path d="m6 9 6 6 6-6"></path>
-
-                </svg>
-
-            </span>
-
-        </label>
-
-
-        <nav
-            class="catalog-pagination__navigation"
-            aria-label="Điều hướng phân trang">
-
-            <button
-                type="button"
-                class="catalog-pagination__button"
-                data-pagination-first
-                aria-label="Trang đầu"
-                title="Trang đầu"
-                disabled>
-
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true">
-
-                    <path d="m11 17-5-5 5-5"></path>
-                    <path d="m18 17-5-5 5-5"></path>
-
-                </svg>
-
-            </button>
-
-            <button
-                type="button"
-                class="catalog-pagination__button"
-                data-pagination-previous
-                aria-label="Trang trước"
-                title="Trang trước"
-                disabled>
-
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true">
-
-                    <path d="m15 18-6-6 6-6"></path>
-
-                </svg>
-
-            </button>
-
-
-            <div class="catalog-pagination__page-information">
-
-                <span>
-                    Trang
-                </span>
-
-                <strong data-pagination-current-page>
-                    1
-                </strong>
-
-                <span>
-                    /
-                </span>
-
-                <strong data-pagination-total-pages>
-                    1
-                </strong>
-
-            </div>
-
-
-            <button
-                type="button"
-                class="catalog-pagination__button"
-                data-pagination-next
-                aria-label="Trang tiếp theo"
-                title="Trang tiếp theo"
-                disabled>
-
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true">
-
-                    <path d="m9 18 6-6-6-6"></path>
-
-                </svg>
-
-            </button>
-
-            <button
-                type="button"
-                class="catalog-pagination__button"
-                data-pagination-last
-                aria-label="Trang cuối"
-                title="Trang cuối"
-                disabled>
-
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true">
-
-                    <path d="m6 17 5-5-5-5"></path>
-                    <path d="m13 17 5-5-5-5"></path>
-
-                </svg>
-
-            </button>
-
-        </nav>
-
-    </div>
+    </nav>
 
 </footer>

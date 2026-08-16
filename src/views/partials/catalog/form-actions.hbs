@@ -2,56 +2,31 @@
     class="detail-panel__form-actions"
     data-form-actions>
 
-    <div class="detail-panel__form-status">
+    <button
+        type="button"
+        class="form-action-button form-action-button--secondary"
+        data-form-cancel>
+
+        Hủy bỏ
+
+    </button>
+
+    <button
+        type="submit"
+        class="form-action-button form-action-button--primary"
+        data-form-submit>
 
         <span
-            class="detail-panel__unsaved-indicator"
-            data-form-unsaved
+            class="form-action-button__spinner"
+            data-submit-spinner
+            aria-hidden="true"
             hidden>
-            Có thay đổi chưa được lưu
         </span>
 
-    </div>
+        <span data-submit-label>
+            Lưu
+        </span>
 
-    <div class="detail-panel__form-buttons">
-
-        <button
-            type="button"
-            class="form-action-button form-action-button--secondary"
-            data-form-cancel>
-
-            Hủy
-
-        </button>
-
-        <button
-            type="button"
-            class="form-action-button form-action-button--secondary"
-            data-form-reset
-            hidden>
-
-            Đặt lại
-
-        </button>
-
-        <button
-            type="submit"
-            class="form-action-button form-action-button--primary"
-            data-form-submit>
-
-            <span
-                class="form-action-button__spinner"
-                data-submit-spinner
-                aria-hidden="true"
-                hidden>
-            </span>
-
-            <span data-submit-label>
-                Lưu dữ liệu
-            </span>
-
-        </button>
-
-    </div>
+    </button>
 
 </footer>

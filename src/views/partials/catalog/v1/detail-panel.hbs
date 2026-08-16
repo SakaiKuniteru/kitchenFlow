@@ -2,11 +2,13 @@
     id="{{#if panelId}}{{panelId}}{{else}}detailPanelContent{{/if}}"
     class="detail-panel {{#if panelClass}}{{panelClass}}{{/if}}"
     data-detail-panel
-    data-mode="closed">
+    data-mode="{{#if mode}}{{mode}}{{else}}view{{/if}}">
 
     {{> catalog/detail-header
         title=title
         subtitle=subtitle
+        showEditButton=showEditButton
+        showCloseButton=showCloseButton
     }}
 
     <div class="detail-panel__body">
@@ -22,8 +24,7 @@
                 type="hidden"
                 id="{{formId}}Id"
                 name="id"
-                data-record-id
-            >
+                data-record-id>
 
             <div class="detail-panel__form-content">
 

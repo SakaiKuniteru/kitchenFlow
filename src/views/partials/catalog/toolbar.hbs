@@ -2,49 +2,54 @@
     class="catalog-toolbar {{#if toolbarClass}}{{toolbarClass}}{{/if}}"
     data-catalog-toolbar>
 
-    <div class="catalog-toolbar__heading">
+    <div class="catalog-toolbar__top">
 
-        <div class="catalog-toolbar__title-group">
+        <div class="catalog-toolbar__heading">
 
-            <h1 class="catalog-toolbar__title">
+            <div class="catalog-toolbar__title-group">
 
-                {{#if title}}
+                <h1 class="catalog-toolbar__title">
 
-                    {{title}}
+                    {{#if title}}
 
-                {{else}}
+                        {{title}}
 
-                    Danh mục
+                    {{else}}
+
+                        Danh mục
+
+                    {{/if}}
+
+                </h1>
+
+
+                {{#if description}}
+
+                    <p class="catalog-toolbar__description">
+
+                        {{description}}
+
+                    </p>
 
                 {{/if}}
 
-            </h1>
+            </div>
 
-            {{#if description}}
 
-                <p class="catalog-toolbar__description">
-                    {{description}}
-                </p>
+            {{#if totalLabel}}
+
+                <span
+                    class="catalog-toolbar__total"
+                    data-catalog-total>
+
+                    {{totalLabel}}
+
+                </span>
 
             {{/if}}
 
         </div>
 
-        {{#if totalLabel}}
-
-            <span
-                class="catalog-toolbar__total"
-                data-catalog-total>
-
-                {{totalLabel}}
-
-            </span>
-
-        {{/if}}
-
-    </div>
-
-    <div class="catalog-toolbar__controls">
 
         <div class="catalog-toolbar__search">
 
@@ -66,106 +71,164 @@
                         r="7">
                     </circle>
 
-                    <path d="m20 20-3.5-3.5">
+                    <path
+                        d="m20 20-3.5-3.5">
                     </path>
 
                 </svg>
 
             </span>
 
+
             <input
                 id="{{searchInputId}}"
                 type="search"
                 class="catalog-toolbar__search-input"
-                placeholder="{{#if searchPlaceholder}}{{searchPlaceholder}}{{else}}Tìm theo mã hoặc tên...{{/if}}"
+                placeholder="{{#if searchPlaceholder}}{{searchPlaceholder}}{{else}}Tìm kiếm theo mã, tên, mô tả...{{/if}}"
                 autocomplete="off"
                 data-catalog-search>
 
         </div>
 
-        {{#if showRefreshButton}}
+    </div>
+
+
+    <div class="catalog-toolbar__bottom">
+
+        <div class="catalog-toolbar__actions">
+
+            <div
+                class="catalog-toolbar__utility"
+                data-catalog-utility>
+
+                <button
+                    type="button"
+                    class="catalog-toolbar__button catalog-toolbar__button--secondary"
+                    data-catalog-utility-toggle
+                    aria-expanded="false">
+
+                    <span aria-hidden="true">
+                        ⚙
+                    </span>
+
+                    <span>
+                        Tiện ích
+                    </span>
+
+                    <span aria-hidden="true">
+                        ⌄
+                    </span>
+
+                </button>
+
+
+                <div
+                    class="catalog-toolbar__utility-menu"
+                    data-catalog-utility-menu
+                    hidden>
+
+                    <button
+                        type="button"
+                        class="catalog-toolbar__utility-item"
+                        data-catalog-filter-toggle
+                        aria-expanded="false">
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        <span data-filter-toggle-label>
+                            Tìm kiếm chi tiết
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="catalog-toolbar__utility-item"
+                        data-catalog-export>
+
+                        <i class="fa-solid fa-file-export"></i>
+
+                        <span>
+                            Export dữ liệu
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="catalog-toolbar__utility-item"
+                        data-catalog-import>
+
+                        <i class="fa-solid fa-file-import"></i>
+
+                        <span>
+                            Import dữ liệu
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
 
             <button
                 type="button"
-                id="{{#if refreshButtonId}}{{refreshButtonId}}{{else}}catalogRefreshButton{{/if}}"
                 class="catalog-toolbar__button catalog-toolbar__button--secondary"
-                data-catalog-refresh>
+                data-catalog-expand-table
+                aria-pressed="false">
 
                 <span aria-hidden="true">
-                    ↻
+                    ↗
                 </span>
 
-                <span>
-                    Làm mới
+                <span data-expand-table-label>
+                    Mở rộng
                 </span>
 
             </button>
 
-        {{/if}}
-
-        {{#if showFilterButton}}
 
             <button
                 type="button"
-                id="{{#if filterButtonId}}{{filterButtonId}}{{else}}catalogFilterButton{{/if}}"
                 class="catalog-toolbar__button catalog-toolbar__button--secondary"
-                data-catalog-filter-toggle
-                aria-expanded="false">
+                data-catalog-expand-info
+                aria-pressed="false">
 
                 <span aria-hidden="true">
-                    ⚲
+                    ⇱
                 </span>
 
-                <span>
-                    Bộ lọc
+                <span data-expand-info-label>
+                    Mở rộng thông tin
                 </span>
 
             </button>
 
-        {{/if}}
 
-        {{#if showExportButton}}
+            {{#unless hideCreateButton}}
 
-            <button
-                type="button"
-                id="{{#if exportButtonId}}{{exportButtonId}}{{else}}catalogExportButton{{/if}}"
-                class="catalog-toolbar__button catalog-toolbar__button--secondary"
-                data-catalog-export>
+                <button
+                    type="button"
+                    id="{{createButtonId}}"
+                    class="catalog-toolbar__button catalog-toolbar__button--primary"
+                    data-catalog-create>
 
-                <span aria-hidden="true">
-                    ⇩
-                </span>
+                    <span aria-hidden="true">
+                        +
+                    </span>
 
-                <span>
-                    Xuất dữ liệu
-                </span>
+                    <span>
+                        Thêm mới
+                    </span>
 
-            </button>
+                </button>
 
-        {{/if}}
+            {{/unless}}
 
-        {{#unless hideCreateButton}}
-
-            <button
-                type="button"
-                id="{{createButtonId}}"
-                class="
-                    catalog-toolbar__button
-                    catalog-toolbar__button--primary
-                "
-                data-catalog-create>
-
-                <span aria-hidden="true">
-                    +
-                </span>
-
-                <span>
-                    {{createButtonLabel}}
-                </span>
-
-            </button>
-
-        {{/unless}}
+        </div>
 
     </div>
 

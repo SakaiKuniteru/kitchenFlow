@@ -38,8 +38,7 @@
                             <input
                                 type="checkbox"
                                 data-table-select-all
-                                aria-label="Chọn tất cả dữ liệu"
-                            >
+                                aria-label="Chọn tất cả dữ liệu">
 
                         </th>
 
@@ -50,7 +49,9 @@
                         <th
                             class="catalog-table__cell catalog-table__cell--index"
                             scope="col">
+
                             STT
+
                         </th>
 
                     {{/if}}
@@ -89,6 +90,18 @@
 
                     {{/each}}
 
+                    {{#if showActions}}
+
+                        <th
+                            class="catalog-table__cell catalog-table__cell--actions"
+                            scope="col">
+
+                            Thao tác
+
+                        </th>
+
+                    {{/if}}
+
                 </tr>
 
                 {{#if showFilterRow}}
@@ -97,6 +110,7 @@
                         columns=columns
                         selectable=selectable
                         showIndex=showIndex
+                        showActions=showActions
                     }}
 
                 {{/if}}
@@ -107,6 +121,12 @@
                 id="{{#if tableBodyId}}{{tableBodyId}}{{else}}catalogTableBody{{/if}}"
                 class="catalog-table__body"
                 data-catalog-table-body>
+
+                {{!--
+                    Dữ liệu hoặc trạng thái rỗng
+                    được render bằng table.js
+                --}}
+
             </tbody>
 
         </table>

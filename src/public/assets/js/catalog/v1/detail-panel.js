@@ -202,7 +202,7 @@ class MCSDetailPanel {
         }
 
 
-        this.close();
+        this.closeMobile();
 
     }
 
@@ -273,7 +273,7 @@ class MCSDetailPanel {
         }
 
 
-        this.open();
+        this.openMobile();
 
     }
 
@@ -408,82 +408,21 @@ class MCSDetailPanel {
     }
 
 
-    open() {
-
-        if (!this.root) {
-            return;
-        }
-
-        this.root.hidden =
-            false;
-
-        this.root.classList.add(
-            "is-open"
-        );
-
-        this.root.dataset.panelMode =
-            this.mode;
+    close() {
 
         if (this.isMobile()) {
 
-            document.body.classList.add(
-                "catalog-panel-open"
-            );
-
-        }
-
-    }
-
-
-    setExpanded(expanded) {
-
-        this.root?.classList.toggle(
-            "is-expanded",
-            Boolean(expanded)
-        );
-
-    }
-
-    close() {
-
-        if (!this.root) {
-            return;
-        }
-
-
-        if (
-            !this.isMobile()
-        ) {
-
-            this.root.classList.remove(
-                "is-expanded"
-            );
-
+            this.closeMobile();
 
             return;
 
         }
 
 
-        this.root.classList.remove(
-            "is-open",
-            "is-expanded"
-        );
-
-
-        this.root.hidden =
-            true;
-
-
-        this.root.dataset.panelMode =
-            "closed";
-
-
-        document.body.classList.remove(
-            "catalog-panel-open"
-        );
+        this.showDefault();
 
     }
+
 
     isMobile() {
 
