@@ -25,11 +25,11 @@ document.addEventListener(
             currentUserEndpoint:
                 "/api/mcs/v1/auth/nhan-vien-hien-tai",
 
-            systemSettingEndpoint:
-                "/api/mcs/v1/dm-thiet-lap/tong-hop",
+            systemNameEndpoint:
+                "/api/mcs/v1/thiet-lap/gia-tri?ma=TEN_HE_THONG",
 
-            facilityEndpoint:
-                "/api/mcs/v1/dm-co-so/tong-hop",
+            systemLogoEndpoint:
+                "/api/mcs/v1/thiet-lap/gia-tri?ma=LOGO_CO_SO_MAC_DINH",
 
             currentUserKey:
                 "currentUser",
@@ -367,108 +367,136 @@ document.addEventListener(
 
         async function loadSystemInformation() {
 
+            let systemName =
+                CONFIG.fallbackSystemName;
+
+
+            let systemLogo =
+                CONFIG.fallbackSystemLogo;
+
+
             try {
 
-                const settingResult =
-                    await authenticatedRequest(
-                        CONFIG.systemSettingEndpoint,
-                        {
-                            method:
-                                "GET"
-                        }
-                    );
+                const [
+                    nameResult,
+                    logoResult
+                ] =
+                    await Promise.allSettled([
 
-                const settings =
-                    extractArrayData(
-                        settingResult
-                    );
+                        authenticatedRequest(
+                            CONFIG.systemNameEndpoint,
+                            {
+                                method:
+                                    "GET"
+                            }
+                        ),
 
-                const systemNameSetting =
-                    findSettingByCode(
-                        settings,
-                        "TEN_HE_THONG"
-                    );
+                        authenticatedRequest(
+                            CONFIG.systemLogoEndpoint,
+                            {
+                                method:
+                                    "GET"
+                            }
+                        )
 
-                const defaultFacilitySetting =
-                    findSettingByCode(
-                        settings,
-                        "LOGO_CO_SO_MAC_DINH"
-                    );
+                    ]);
 
-                const systemName =
-                    systemNameSetting?.giaTri ||
-                    CONFIG.fallbackSystemName;
 
-                if (elements.systemName) {
+                /*
+                * TÊN HỆ THỐNG
+                */
+                if (
+                    nameResult.status ===
+                    "fulfilled"
+                ) {
 
-                    elements.systemName.textContent =
-                        systemName;
+                    const value =
+                        String(
+                            nameResult.value
+                                ?.data
+                                ?.giaTri ??
+                            ""
+                        ).trim();
+
+
+                    if (
+                        value
+                    ) {
+
+                        systemName =
+                            value;
+
+                    }
 
                 }
 
-                const facilityCode =
-                    defaultFacilitySetting?.giaTri;
 
-                if (!facilityCode) {
+                /*
+                * LOGO HỆ THỐNG
+                *
+                * Backend đã xử lý:
+                * LOGO_CO_SO_MAC_DINH
+                * -> lấy mã cơ sở
+                * -> tìm dm_co_so
+                * -> trả về logo.
+                */
+                if (
+                    logoResult.status ===
+                    "fulfilled"
+                ) {
 
-                    renderSystemLogo(
-                        CONFIG.fallbackSystemLogo,
-                        systemName
-                    );
+                    const value =
+                        String(
+                            logoResult.value
+                                ?.data
+                                ?.giaTri ??
+                            ""
+                        ).trim();
 
-                    return;
+
+                    if (
+                        value
+                    ) {
+
+                        systemLogo =
+                            value;
+
+                    }
 
                 }
 
-                const facilityResult =
-                    await authenticatedRequest(
-                        CONFIG.facilityEndpoint,
-                        {
-                            method:
-                                "GET"
-                        }
-                    );
 
-                const facilities =
-                    extractArrayData(
-                        facilityResult
-                    );
-
-                const facility =
-                    findFacilityByCode(
-                        facilities,
-                        facilityCode
-                    );
-
-                const logo =
-                    facility?.logo ||
-                    CONFIG.fallbackSystemLogo;
-
-                renderSystemLogo(
-                    logo,
-                    systemName
-                );
-
-            } catch (error) {
+            }
+            catch (
+                error
+            ) {
 
                 console.error(
                     "Không thể tải thông tin hệ thống:",
                     error
                 );
 
-                if (elements.systemName) {
+            }
 
-                    elements.systemName.textContent =
-                        CONFIG.fallbackSystemName;
 
-                }
+            /*
+            * Luôn render.
+            * API lỗi/rỗng => dùng fallback.
+            */
+            if (
+                elements.systemName
+            ) {
 
-                renderSystemLogo(
-                    CONFIG.fallbackSystemLogo,
-                    CONFIG.fallbackSystemName
-                );
+                elements.systemName.textContent =
+                    systemName;
 
             }
+
+
+            renderSystemLogo(
+                systemLogo,
+                systemName
+            );
 
         }
 
@@ -1564,54 +1592,6 @@ document.addEventListener(
                         CONFIG.fallbackSystemLogo;
 
                 };
-
-        }
-
-        function findSettingByCode(
-            settings,
-            code
-        ) {
-
-            if (!Array.isArray(settings)) {
-                return null;
-            }
-
-            return settings.find(
-                item =>
-                    String(
-                        item?.maThietLap || ""
-                    )
-                        .trim()
-                        .toUpperCase()
-                    ===
-                    String(code)
-                        .trim()
-                        .toUpperCase()
-            ) || null;
-
-        }
-
-        function findFacilityByCode(
-            facilities,
-            code
-        ) {
-
-            if (!Array.isArray(facilities)) {
-                return null;
-            }
-
-            return facilities.find(
-                item =>
-                    String(
-                        item?.maCoSo || ""
-                    )
-                        .trim()
-                        .toUpperCase()
-                    ===
-                    String(code)
-                        .trim()
-                        .toUpperCase()
-            ) || null;
 
         }
 

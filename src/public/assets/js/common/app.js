@@ -93,10 +93,85 @@ window.MCS.storage = {
 
 };
 
-
 window.MCS.api = {
 
+    refreshPromise:
+        null,
+
+
     async request(
+        url,
+        options = {}
+    ) {
+
+        let result =
+            await this.send(
+                url,
+                options
+            );
+
+
+        if (
+            result.response.status ===
+                401 &&
+            options.allowRefresh !==
+                false
+        ) {
+
+            const refreshed =
+                await this.refreshAuthentication();
+
+
+            if (
+                refreshed
+            ) {
+
+                result =
+                    await this.send(
+                        url,
+                        {
+                            ...options,
+
+                            allowRefresh:
+                                false
+                        }
+                    );
+
+            }
+
+        }
+
+
+        if (
+            !result.response.ok
+        ) {
+
+            const error =
+                new Error(
+                    result.data?.message ||
+                    "Yêu cầu không thành công."
+                );
+
+
+            error.statusCode =
+                result.response.status;
+
+
+            error.data =
+                result.data?.data;
+
+
+            throw error;
+
+        }
+
+
+        return result.data;
+
+    },
+
+
+    async send(
         url,
         options = {}
     ) {
@@ -104,6 +179,7 @@ window.MCS.api = {
         const accessToken =
             window.MCS.storage
                 .getAccessToken();
+
 
         const headers = {
 
@@ -114,11 +190,12 @@ window.MCS.api = {
 
         };
 
+
         if (
             options.body &&
             !(
-                options.body
-                instanceof FormData
+                options.body instanceof
+                FormData
             )
         ) {
 
@@ -129,32 +206,54 @@ window.MCS.api = {
 
         }
 
-        if (accessToken) {
+
+        if (
+            accessToken &&
+            options.withoutAccessToken !==
+                true
+        ) {
 
             headers.Authorization =
                 `Bearer ${accessToken}`;
 
         }
 
+
+        const fetchOptions = {
+
+            credentials:
+                "include",
+
+            ...options,
+
+            headers
+
+        };
+
+
+        delete fetchOptions
+            .allowRefresh;
+
+        delete fetchOptions
+            .withoutAccessToken;
+
+
         const response =
             await fetch(
                 url,
-                {
-                    credentials:
-                        "include",
-
-                    ...options,
-
-                    headers
-                }
+                fetchOptions
             );
+
 
         const contentType =
             response.headers.get(
                 "content-type"
             ) || "";
 
-        let result = null;
+
+        let data =
+            null;
+
 
         if (
             contentType.includes(
@@ -162,44 +261,176 @@ window.MCS.api = {
             )
         ) {
 
-            result =
-                await response.json();
+            try {
 
-        }
+                data =
+                    await response.json();
 
-        if (!response.ok) {
+            }
+            catch {
 
-            if (
-                response.status === 401
-            ) {
-
-                window.MCS.storage
-                    .clearAuthentication();
+                data =
+                    null;
 
             }
 
-            const error =
-                new Error(
-                    result?.message ||
-                    "Yêu cầu không thành công."
-                );
+        }
 
-            error.statusCode =
-                response.status;
 
-            error.data =
-                result?.data;
+        return {
 
-            throw error;
+            response,
+
+            data
+
+        };
+
+    },
+
+
+    async refreshAuthentication() {
+
+        const refreshToken =
+            window.MCS.storage
+                .getRefreshToken();
+
+
+        if (
+            !refreshToken
+        ) {
+
+            return false;
 
         }
 
-        return result;
+
+        if (
+            this.refreshPromise
+        ) {
+
+            return await this.refreshPromise;
+
+        }
+
+
+        this.refreshPromise =
+            this.performRefresh(
+                refreshToken
+            );
+
+
+        try {
+
+            return await this.refreshPromise;
+
+        }
+        finally {
+
+            this.refreshPromise =
+                null;
+
+        }
+
+    },
+
+
+    async performRefresh(
+        refreshToken
+    ) {
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/mcs/v1/auth/lam-moi-token",
+                    {
+                        method:
+                            "POST",
+
+                        credentials:
+                            "include",
+
+                        headers: {
+
+                            Accept:
+                                "application/json",
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        body:
+                            JSON.stringify({
+                                refreshToken
+                            })
+
+                    }
+                );
+
+
+            if (
+                !response.ok
+            ) {
+
+                return false;
+
+            }
+
+
+            const result =
+                await response.json();
+
+
+            const data =
+                result?.data ??
+                result;
+
+
+            if (
+                !data?.accessToken ||
+                !data?.refreshToken
+            ) {
+
+                return false;
+
+            }
+
+
+            localStorage.setItem(
+                window.MCS.config
+                    .accessTokenKey,
+                data.accessToken
+            );
+
+
+            localStorage.setItem(
+                window.MCS.config
+                    .refreshTokenKey,
+                data.refreshToken
+            );
+
+
+            return true;
+
+        }
+        catch (
+            error
+        ) {
+
+            console.warn(
+                "[Auth] Không thể làm mới token:",
+                error
+            );
+
+
+            return false;
+
+        }
 
     }
 
 };
-
 
 window.MCS.escapeHtml =
     value => {

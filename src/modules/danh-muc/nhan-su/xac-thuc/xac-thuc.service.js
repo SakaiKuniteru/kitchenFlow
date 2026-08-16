@@ -357,16 +357,6 @@ taoThongBaoKhoa({
                 refreshExpiresAt
             );
 
-        await authRepository.saveRefreshToken(
-
-            account.id,
-
-            refreshToken,
-
-            refreshExpiresAt
-
-        );
-
         return {
 
             accessToken,
@@ -620,26 +610,6 @@ taoThongBaoKhoa({
                 newRefreshToken,
                 expiresAt
             );
-
-        await authRepository.revokeRefreshToken(
-            refreshToken
-        );
-
-        expiresAt.setMinutes(
-            expiresAt.getMinutes() +
-            refreshTokenMinutes
-        );
-
-        expiresAt.setMinutes(
-            expiresAt.getMinutes() +
-            refreshTokenMinutes
-        );
-
-        await authRepository.saveRefreshToken(
-            account.id,
-            newRefreshToken,
-            expiresAt
-        );
 
         return {
 

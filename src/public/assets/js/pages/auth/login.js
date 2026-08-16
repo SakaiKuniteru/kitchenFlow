@@ -13,6 +13,18 @@ document.addEventListener(
             changePasswordEndpoint:
                 "/api/mcs/v1/auth/doi-mat-khau",
 
+            systemNameEndpoint:
+                "/api/mcs/v1/thiet-lap/gia-tri-public?ma=TEN_HE_THONG",
+
+            systemLogoEndpoint:
+                "/api/mcs/v1/thiet-lap/gia-tri-public?ma=LOGO_CO_SO_MAC_DINH",
+
+            defaultSystemName:
+                "MCS KITCHENFLOW",
+
+            defaultSystemLogo:
+                "/assets/images/logo/logo.png",
+
             homePath:
                 "/",
 
@@ -32,6 +44,16 @@ document.addEventListener(
 
 
         const elements = {
+
+            systemNames:
+                document.querySelectorAll(
+                    "[data-system-name]"
+                ),
+
+            systemLogos:
+                document.querySelectorAll(
+                    "[data-system-logo]"
+                ),
 
             loginForm:
                 document.getElementById(
@@ -120,8 +142,9 @@ document.addEventListener(
         let mustChangePassword =
             false;
 
-
         function initialize() {
+
+            loadSystemBranding();
 
             restoreRememberedAccount();
 
@@ -130,7 +153,283 @@ document.addEventListener(
             bindChangePasswordEvents();
 
         }
+        
+        async function loadSystemBranding() {
 
+            setSystemName(
+                CONFIG.defaultSystemName
+            );
+
+            setSystemLogo(
+                CONFIG.defaultSystemLogo
+            );
+
+
+            await Promise.allSettled([
+
+                loadSystemName(),
+
+                loadSystemLogo()
+
+            ]);
+
+        }
+
+        async function loadSystemName() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        CONFIG.systemNameEndpoint,
+                        {
+                            method:
+                                "GET",
+
+                            headers: {
+
+                                Accept:
+                                    "application/json"
+
+                            },
+
+                            credentials:
+                                "include"
+
+                        }
+                    );
+
+
+                if (
+                    !response.ok
+                ) {
+
+                    return;
+
+                }
+
+
+                const result =
+                    await parseJsonResponse(
+                        response
+                    );
+
+
+                const data =
+                    result?.data ??
+                    result;
+
+
+                const systemName =
+                    String(
+                        data?.giaTri ??
+                        ""
+                    ).trim();
+
+
+                if (
+                    !systemName
+                ) {
+
+                    return;
+
+                }
+
+
+                setSystemName(
+                    systemName
+                );
+
+            }
+            catch (error) {
+
+                console.warn(
+                    "[Login] Không thể tải tên hệ thống:",
+                    error
+                );
+
+            }
+
+        }
+
+        async function loadSystemLogo() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        CONFIG.systemLogoEndpoint,
+                        {
+                            method:
+                                "GET",
+
+                            headers: {
+
+                                Accept:
+                                    "application/json"
+
+                            },
+
+                            credentials:
+                                "include"
+
+                        }
+                    );
+
+
+                if (
+                    !response.ok
+                ) {
+
+                    return;
+
+                }
+
+
+                const result =
+                    await parseJsonResponse(
+                        response
+                    );
+
+
+                const data =
+                    result?.data ??
+                    result;
+
+
+                const logo =
+                    String(
+                        data?.giaTri ??
+                        ""
+                    ).trim();
+
+
+                if (
+                    !logo
+                ) {
+
+                    return;
+
+                }
+
+
+                setSystemLogo(
+                    normalizeLogoUrl(
+                        logo
+                    )
+                );
+
+            }
+            catch (error) {
+
+                console.warn(
+                    "[Login] Không thể tải logo hệ thống:",
+                    error
+                );
+
+            }
+
+        }
+
+        function setSystemName(
+            name
+        ) {
+
+            const value =
+                String(
+                    name ??
+                    ""
+                ).trim() ||
+                CONFIG.defaultSystemName;
+
+
+            elements.systemNames
+                ?.forEach(
+                    element => {
+
+                        element.textContent =
+                            value;
+
+                    }
+                );
+
+        }
+
+        function setSystemLogo(
+            src
+        ) {
+
+            const value =
+                String(
+                    src ??
+                    ""
+                ).trim() ||
+                CONFIG.defaultSystemLogo;
+
+
+            elements.systemLogos
+                ?.forEach(
+                    image => {
+
+                        image.onerror =
+                            () => {
+
+                                image.onerror =
+                                    null;
+
+
+                                image.src =
+                                    CONFIG.defaultSystemLogo;
+
+                            };
+
+
+                        image.src =
+                            value;
+
+                    }
+                );
+
+        }
+
+        function normalizeLogoUrl(
+            value
+        ) {
+
+            const logo =
+                String(
+                    value ??
+                    ""
+                ).trim();
+
+
+            if (
+                !logo
+            ) {
+
+                return CONFIG
+                    .defaultSystemLogo;
+
+            }
+
+
+            if (
+                /^https?:\/\//i.test(
+                    logo
+                ) ||
+                logo.startsWith(
+                    "/"
+                )
+            ) {
+
+                return logo;
+
+            }
+
+
+            return `/${logo}`;
+
+        }
 
         function bindLoginEvents() {
 
@@ -184,7 +483,6 @@ document.addEventListener(
 
         }
 
-
         function bindChangePasswordEvents() {
 
             if (
@@ -217,7 +515,6 @@ document.addEventListener(
 
         }
 
-
         function restoreRememberedAccount() {
 
             if (
@@ -247,7 +544,6 @@ document.addEventListener(
 
         }
 
-
         function saveRememberedAccount(
             taiKhoan
         ) {
@@ -271,7 +567,6 @@ document.addEventListener(
             );
 
         }
-
 
         function togglePasswordVisibility() {
 
@@ -328,7 +623,6 @@ document.addEventListener(
             elements.matKhau.focus();
 
         }
-
 
         async function handleLoginSubmit(
             event
@@ -451,7 +745,6 @@ document.addEventListener(
 
         }
 
-
         function validateLoginForm(
             taiKhoan,
             matKhau
@@ -524,7 +817,6 @@ document.addEventListener(
             return valid;
 
         }
-
 
         function saveAuthenticationData(
             loginData
@@ -618,7 +910,6 @@ document.addEventListener(
             );
 
         }
-
 
         function openRequiredChangePasswordModal() {
 

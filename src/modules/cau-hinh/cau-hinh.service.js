@@ -31,6 +31,60 @@ const MA_THIET_LAP = {
 
 class CauHinhService {
 
+    async getGiaTriPublic(
+        ma
+    ) {
+
+        if (!ma) {
+
+            throw new ApiError(
+                400,
+                "Mã thiết lập không được để trống."
+            );
+
+        }
+
+
+        const maThietLap =
+            String(
+                ma
+            )
+                .trim()
+                .toUpperCase();
+
+
+        const PUBLIC_SETTINGS =
+            new Set([
+
+                MA_THIET_LAP
+                    .TEN_HE_THONG,
+
+                MA_THIET_LAP
+                    .LOGO_CO_SO_MAC_DINH
+
+            ]);
+
+
+        if (
+            !PUBLIC_SETTINGS.has(
+                maThietLap
+            )
+        ) {
+
+            throw new ApiError(
+                403,
+                "Thiết lập này không được phép truy cập công khai."
+            );
+
+        }
+
+
+        return this.getGiaTri(
+            maThietLap
+        );
+
+    }
+
     async getGiaTri(
         ma
     ) {
