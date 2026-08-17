@@ -264,8 +264,8 @@ window.createStatusBadge =
             <span>
                 ${
                     value
-                        ? "Đang hoạt động"
-                        : "Đã khóa"
+                        ? "TRUE"
+                        : "FALSE"
                 }
             </span>
         `;

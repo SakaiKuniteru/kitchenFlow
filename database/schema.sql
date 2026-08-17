@@ -877,10 +877,10 @@ ALTER TABLE ct_dot_binh_chon_chinh_sach
     ON UPDATE CASCADE
     ON DELETE CASCADE;
 
-ALTER TABLE ct_dot_binh_chon_chinh_sach
-    ADD CONSTRAINT fk_ct_dot_binh_chon
-    FOREIGN KEY (dot_binh_chon_id)
-    REFERENCES nv_dot_binh_chon (id);
+-- ALTER TABLE ct_dot_binh_chon_chinh_sach
+--     ADD CONSTRAINT fk_ct_dot_binh_chon
+--     FOREIGN KEY (dot_binh_chon_id)
+--     REFERENCES nv_dot_binh_chon (id);
 ALTER TABLE ct_dot_binh_chon_chuc_vu
     ADD CONSTRAINT fk_dot_bc_chuc_vu
     FOREIGN KEY (dot_binh_chon_id)

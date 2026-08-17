@@ -55,10 +55,10 @@ class MCSTable {
             statusLabels: {
 
                 true:
-                    "Đang hoạt động",
+                    "TRUE",
 
                 false:
-                    "Đã khóa"
+                    "FALSE"
 
             },
 
@@ -82,6 +82,14 @@ class MCSTable {
                 "[data-table-loading]"
             );
 
+        this.table =
+            this.root?.querySelector(
+                "[data-catalog-table]"
+            );
+
+
+        this.applyColumnWidths();
+
         this.data =
             [];
 
@@ -100,6 +108,82 @@ class MCSTable {
 
     }
 
+    applyColumnWidths() {
+
+        if (!this.table) {
+            return;
+        }
+
+
+        const DEFAULT_WIDTH =
+            180;
+
+
+        let totalWidth =
+            0;
+
+
+        if (
+            this.options.selectable
+        ) {
+
+            totalWidth +=
+                46;
+
+        }
+
+
+        if (
+            this.options.showIndex
+        ) {
+
+            totalWidth +=
+                66;
+
+        }
+
+
+        this.options.columns
+            .forEach(
+                column => {
+
+                    const rawWidth =
+                        String(
+                            column.width ||
+                            `${DEFAULT_WIDTH}px`
+                        )
+                            .trim();
+
+
+                    const match =
+                        rawWidth.match(
+                            /^(\d+(?:\.\d+)?)px$/
+                        );
+
+
+                    const width =
+                        match
+                            ? Number(
+                                match[1]
+                            )
+                            : DEFAULT_WIDTH;
+
+
+                    totalWidth +=
+                        width;
+
+                }
+            );
+
+
+        this.table.style.width =
+            `max(100%, ${totalWidth}px)`;
+
+
+        this.table.style.minWidth =
+            `${totalWidth}px`;
+
+    }
 
     bindEvents() {
 
@@ -392,40 +476,123 @@ class MCSTable {
 
 
                 cell.dataset.columnKey =
-                    column.key;
+                        column.key;
 
-                const value =
-                    this.resolveValue(
-                        record,
-                        column.key
-                    );
 
-                if (
-                    typeof column.render ===
-                    "function"
-                ) {
+                    if (
+                        column.width
+                    ) {
 
-                    const rendered =
-                        column.render(
-                            value,
+                        cell.style.width =
+                            column.width;
+
+                        cell.style.maxWidth =
+                            column.width;
+
+                    }
+
+
+                    const value =
+                        this.resolveValue(
                             record,
-                            index
+                            column.key
                         );
 
-                    this.appendRenderedValue(
-                        cell,
-                        rendered
-                    );
+                    if (
+                        column.isBoolean
+                    ) {
 
-                } else {
+                        const badge =
+                            document.createElement(
+                                "span"
+                            );
 
-                    cell.textContent =
-                        this.formatValue(
-                            value,
-                            column
+
+                        const isTrue =
+                            value === true ||
+                            value === 1 ||
+                            value === "1" ||
+                            String(value)
+                                .toLowerCase() ===
+                                "true";
+
+
+                        badge.className =
+                            [
+                                "status-badge",
+                                isTrue
+                                    ? "status-badge--success"
+                                    : "status-badge--neutral"
+                            ].join(" ");
+
+
+                        const dot =
+                            document.createElement(
+                                "span"
+                            );
+
+                        dot.className =
+                            "status-badge__dot";
+
+
+                        const label =
+                            document.createElement(
+                                "span"
+                            );
+
+                        label.className =
+                            "status-badge__label";
+
+
+                        label.textContent =
+                            isTrue
+                                ? (
+                                    column.trueLabel ||
+                                    "TRUE"
+                                )
+                                : (
+                                    column.falseLabel ||
+                                    "FALSE"
+                                );
+
+
+                        badge.append(
+                            dot,
+                            label
                         );
 
-                }
+
+                        cell.appendChild(
+                            badge
+                        );
+
+                    } else if (
+                        typeof column.render ===
+                        "function"
+                    ) {
+
+                        const rendered =
+                            column.render(
+                                value,
+                                record,
+                                index
+                            );
+
+
+                        this.appendRenderedValue(
+                            cell,
+                            rendered
+                        );
+
+                    } else {
+
+                        cell.textContent =
+                            this.formatValue(
+                                value,
+                                column
+                            );
+
+                    }
 
                 if (
                     column.title !== false

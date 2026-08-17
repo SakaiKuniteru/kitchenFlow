@@ -56,10 +56,17 @@ document.addEventListener(
                             id
                         );
 
-
                 const data =
                     res?.data ??
                     res;
+
+
+                await window.ThucDon
+                    .options
+                    .init(
+                        root,
+                        data
+                    );
 
 
                 form.setData(

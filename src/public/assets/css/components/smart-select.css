@@ -16,7 +16,7 @@
     height: 44px;
     min-height: 44px;
 
-    padding: 0 42px 0 12px;
+    padding: 0 6px 0 12px;
 
     border: 1px solid #d8e0eb;
     border-radius: 10px;
@@ -29,6 +29,11 @@
         border-color 160ms ease,
         box-shadow 160ms ease,
         background-color 160ms ease;
+}
+
+.smart-select:not(:has(.smart-select__single))
+.smart-select__control {
+    padding-right: 42px;
 }
 
 .smart-select__control:hover {
@@ -57,13 +62,16 @@
 
 .smart-select__selection {
     display: flex;
-    flex: 0 1 auto;
-    flex-wrap: wrap;
+    flex: 1 1 auto;
     align-items: center;
-    gap: 5px;
 
+    width: 100%;
     min-width: 0;
     max-width: 100%;
+
+    gap: 5px;
+
+    overflow: hidden;
 }
 
 .smart-select__placeholder {
@@ -115,11 +123,6 @@
 
 .smart-select__search::placeholder {
     color: #94a3b8;
-}
-
-.smart-select[data-select-mode="single"].is-searching
-.smart-select__selection {
-    display: none;
 }
 
 .smart-select[data-select-mode="multiple"]
@@ -397,31 +400,36 @@
 
 .smart-select[data-select-mode="single"]
 .smart-select__search {
-    position: absolute;
+    display: none;
 
-    width: 1px;
-    min-width: 0;
-    height: 1px;
-    padding: 0;
-
-    opacity: 0;
-    pointer-events: none;
-}
-
-.smart-select[data-select-mode="single"].is-searching
-.smart-select__search,
-.smart-select[data-select-mode="single"].is-open
-.smart-select__search:focus {
-    position: static;
-
-    flex: 1 1 100%;
+    flex: 1 1 auto;
 
     width: 100%;
     min-width: 0;
     height: 30px;
 
-    opacity: 1;
-    pointer-events: auto;
+    padding: 0;
+
+    border: 0;
+    outline: 0;
+
+    color: #1e293b;
+    background: transparent;
+
+    font-family: inherit;
+    font-size: 13px;
+}
+
+
+.smart-select[data-select-mode="single"].is-searching
+.smart-select__selection {
+    display: none;
+}
+
+
+.smart-select[data-select-mode="single"].is-searching
+.smart-select__search {
+    display: block;
 }
 
 @keyframes smart-select-enter {
@@ -443,10 +451,6 @@
     }
 
 }
-
-/* =========================================================
-   SMART SELECT - SCROLL
-   ========================================================= */
 
 [data-smart-select-dropdown] {
     max-height: min(
@@ -504,4 +508,78 @@
     background: #cbd5e1;
 
     border-radius: 999px;
+}
+
+.smart-select__single {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-width: 0;
+
+    gap: 8px;
+}
+
+.smart-select__single-value {
+    flex: 1 1 auto;
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    color:
+        var(--color-text-primary);
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+.smart-select__single-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex:
+        0
+        0
+        32px;
+
+    width: 32px;
+    height: 32px;
+
+    margin-left: auto;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 8px;
+
+    color: #94a3b8;
+
+    background:
+        transparent;
+
+    cursor: pointer;
+
+    transition:
+        color 160ms ease,
+        background-color 160ms ease;
+}
+
+.smart-select__single-remove:hover {
+    color: #dc2626;
+
+    background:
+        #fef2f2;
+}
+
+.smart-select__single-remove i {
+    pointer-events: none;
+
+    font-size: 15px;
+}
+
+.smart-select__search[hidden] {
+    display: none !important;
 }

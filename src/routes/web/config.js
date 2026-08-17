@@ -67,20 +67,36 @@ function booleanColumn(
             options.filterable !==
             false,
 
+        isBoolean:
+            true,
+
+        type:
+            "boolean",
+
+        trueLabel:
+            options.trueLabel ||
+            "TRUE",
+
+        falseLabel:
+            options.falseLabel ||
+            "FALSE",
+
         filterOptions: [
             {
                 value:
                     "true",
 
                 label:
-                    "Đang hoạt động"
+                    options.trueLabel ||
+                    "TRUE"
             },
             {
                 value:
                     "false",
 
                 label:
-                    "Đã khóa"
+                    options.falseLabel ||
+                    "FALSE"
             }
         ],
 
@@ -184,40 +200,40 @@ function createPage({
     formOptions = {}
 }) {
 
-    return {
+return {
 
-        path,
+    path,
 
-        view,
+    view,
 
-        title,
+    title,
 
-        description,
+    description,
 
-        activeMenu:
-            "danh-muc",
+    activeMenu:
+        "danh-muc",
 
-        activeSubmenu,
+    activeSubmenu,
 
-        columns,
+    columns,
 
-        searchPlaceholder,
+    searchPlaceholder,
 
-        showActions,
+    showActions,
 
-        showFilterRow,
+    showFilterRow,
 
-        hideCreateButton,
+    hideCreateButton,
 
-        formOptions,
+    formOptions,
 
-        breadcrumbs:
-            createBreadcrumbs(
-                group,
-                page
-            )
+    breadcrumbs:
+        createBreadcrumbs(
+            group,
+            page
+        )
 
-    };
+};
 
 }
 
@@ -372,7 +388,11 @@ const danhMucPages = [
 
             textColumn(
                 "moTa",
-                "Mô tả"
+                "Mô tả",
+                {
+                    width:
+                        "250px"
+                }
             ),
 
             booleanColumn(
@@ -434,7 +454,11 @@ const danhMucPages = [
 
             textColumn(
                 "moTa",
-                "Mô tả"
+                "Mô tả",
+                {
+                    width:
+                        "250px"
+                }
             ),
 
             booleanColumn(
@@ -585,7 +609,11 @@ const danhMucPages = [
 
             textColumn(
                 "moTa",
-                "Mô tả"
+                "Mô tả",
+                {
+                    width:
+                        "250px"
+                }
             ),
 
             booleanColumn(
@@ -911,7 +939,11 @@ const danhMucPages = [
 
             textColumn(
                 "tenXaPhuong",
-                "Tên xã phường"
+                "Tên xã phường",
+                {
+                    width:
+                        "200px"
+                }
             ),
 
             textColumn(
@@ -1053,7 +1085,11 @@ const danhMucPages = [
             ),
             textColumn(
                 "moTa",
-                "Mô tả"
+                "Mô tả",
+                {
+                    width:
+                        "250px"
+                }
             ),
             booleanColumn(
                 "active",
@@ -1149,7 +1185,11 @@ const danhMucPages = [
 
             textColumn(
                 "moTa",
-                "Mô tả"
+                "Mô tả",
+                {
+                    width:
+                        "250px"
+                }
             ),
 
             booleanColumn(
@@ -1283,7 +1323,11 @@ const danhMucPages = [
 
             textColumn(
                 "moTa",
-                "Mô tả"
+                "Mô tả",
+                {
+                    width:
+                        "250px"
+                }
             ),
 
             textColumn(
@@ -1934,7 +1978,11 @@ const danhMucPages = [
 
             textColumn(
                 "moTa",
-                "Mô tả"
+                "Mô tả",
+                {
+                    width:
+                        "250px"
+                }
             ),
 
             booleanColumn(
@@ -2005,7 +2053,11 @@ const danhMucPages = [
 
             textColumn(
                 "moTa",
-                "Mô tả"
+                "Mô tả",
+                {
+                    width:
+                        "250px"
+                }
             ),
 
             booleanColumn(
@@ -2102,7 +2154,11 @@ const danhMucPages = [
 
             textColumn(
                 "moTa",
-                "Mô tả"
+                "Mô tả",
+                {
+                    width:
+                        "250px"
+                }
             ),
 
             booleanColumn(

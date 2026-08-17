@@ -5,8 +5,7 @@ document.addEventListener(
     "DOMContentLoaded",
     () => {
 
-        const API_BASE =
-            "/api/mcs/v1/thuc-don";
+        const API_BASE = "/api/mcs/v1/thuc-don";
 
         const TRANG_THAI_THUC_DON =
             Object.freeze({
@@ -25,37 +24,6 @@ document.addEventListener(
 
             });
 
-
-        const TRANG_THAI_THUC_DON_LABEL =
-            Object.freeze({
-
-                10: "Tạo mới/Chờ duyệt",
-
-                20: "Chờ duyệt",
-
-                30: "Đang áp dụng",
-
-                40: "Chờ duyệt lại",
-
-                50: "Đã hủy",
-
-                60: "Đã kết thúc"
-
-            });
-
-
-        const LOAI_THUC_DON_LABEL =
-            Object.freeze({
-
-                10: "Theo ngày",
-
-                20: "Theo tuần",
-
-                30: "Theo tháng",
-
-                40: "Theo thời gian"
-
-            });
 
         const ACTIONS = {
 
@@ -107,6 +75,10 @@ document.addEventListener(
 
         const lookupData = {
 
+            loaiThucDon: [],
+
+            trangThai: [],
+
             coSo: [],
 
             nhaAn: [],
@@ -153,40 +125,97 @@ document.addEventListener(
                     "[data-list-filter-reset]"
                 ),
 
+            clearFilter:
+                document.querySelector(
+                    "[data-list-filter-clear]"
+                ),
+
             pagination:
                 document.querySelector(
-                    "[data-list-pagination]"
+                    "#thucDonPagination"
                 )
 
         };
 
+        let pagination = null;
+
 
         initialize();
-
         async function initialize() {
+
+            initializePagination();
 
             bindEvents();
 
-
             await loadFilterOptions();
-
 
             await loadData();
 
         }
 
-        function bindEvents() {
+        function initializePagination() {
 
-            bindFilter();
+            if (
+                !elements.pagination ||
+                !window.MCS
+                    ?.catalog
+                    ?.Pagination
+            ) {
 
-            bindSearch();
+                return;
 
-            bindTableActions();
+            }
 
-            bindFilterDependencies();
+
+            pagination =
+                new window.MCS
+                    .catalog
+                    .Pagination(
+                        elements.pagination,
+                        {
+                            page:
+                                state.page,
+
+                            pageSize:
+                                state.limit,
+
+                            total:
+                                0,
+
+                            onChange:
+                                async paginationState => {
+
+                                    state.page =
+                                        paginationState.page;
+
+                                    state.limit =
+                                        paginationState.pageSize;
+
+
+                                    await loadData();
+
+                                }
+                        }
+                    );
 
         }
 
+        function bindEvents() {
+            bindFilter();
+            bindSearch();
+            bindTableActions();
+            bindFilterDependencies();
+            bindClearFilter();
+        }
+
+        function openDetail(
+            id
+        ) {
+
+            window.location.href =
+                `/thuc-don/thong-tin-chi-tiet-thuc-don/${id}`;
+
+        }
 
         function bindFilter() {
 
@@ -237,6 +266,27 @@ document.addEventListener(
 
                         state.page =
                             1;
+
+                        await loadData();
+
+                    }
+                );
+
+        }
+
+        function bindClearFilter() {
+
+            elements.clearFilter
+                ?.addEventListener(
+                    "click",
+                    async () => {
+
+                        resetFilters();
+
+
+                        state.page =
+                            1;
+
 
                         await loadData();
 
@@ -363,25 +413,75 @@ document.addEventListener(
                             );
 
 
-                        if (!button) {
+                        if (
+                            button
+                        ) {
+
+                            event.preventDefault();
+
+                            event.stopPropagation();
+
+
+                            const action =
+                                button.dataset.action;
+
+
+                            const id =
+                                Number(
+                                    button.dataset.id
+                                );
+
+
+                            if (!id) {
+                                return;
+                            }
+
+
+                            switch (
+                                action
+                            ) {
+
+                                case "view":
+
+                                    openDetail(
+                                        id
+                                    );
+
+                                    return;
+
+
+                                case "print":
+
+                                    return;
+
+
+                                case "delete":
+
+                                    await deleteRecord(
+                                        id
+                                    );
+
+                                    return;
+
+                            }
+
+                        }
+
+
+                        const row =
+                            event.target.closest(
+                                "tr[data-record-id]"
+                            );
+
+
+                        if (!row) {
                             return;
                         }
 
 
-                        event.preventDefault();
-
-                        event.stopPropagation();
-
-
-                        const action =
-                            button.dataset
-                                .action;
-
-
                         const id =
                             Number(
-                                button.dataset
-                                    .id
+                                row.dataset.recordId
                             );
 
 
@@ -390,32 +490,9 @@ document.addEventListener(
                         }
 
 
-                        switch (
-                            action
-                        ) {
-
-                            case "view":
-
-                                window.location.href =
-                                    `/thuc-don/thong-tin-chi-tiet-thuc-don/${id}`;
-
-                                break;
-
-                            case "print":
-
-                                return;
-
-
-
-                            case "delete":
-
-                                await deleteRecord(
-                                    id
-                                );
-
-                                break;
-
-                        }
+                        openDetail(
+                            id
+                        );
 
                     }
                 );
@@ -452,9 +529,17 @@ document.addEventListener(
                 );
 
 
-                renderPagination(
-                    result
-                );
+                pagination
+                    ?.setData({
+                        page:
+                            result.page,
+
+                        pageSize:
+                            result.limit,
+
+                        total:
+                            result.total
+                    });
 
             } catch (
                 error
@@ -729,8 +814,8 @@ document.addEventListener(
 
         }
 
-
         function resetFilters() {
+
             state.loaiThucDon =
                 [];
 
@@ -746,8 +831,9 @@ document.addEventListener(
             state.trangThai =
                 [];
 
-            document
-                .querySelectorAll(
+
+            elements.filterPanel
+                ?.querySelectorAll(
                     "[data-smart-select]"
                 )
                 .forEach(
@@ -791,8 +877,12 @@ document.addEventListener(
                     }
                 );
 
-        }
 
+            refreshNhaAnFilter(
+                []
+            );
+
+        }
 
         function resetDateRange(
             id,
@@ -954,6 +1044,10 @@ document.addEventListener(
                             "tr"
                         );
 
+                    row.dataset.recordId =
+                        String(
+                            item.id
+                        );
 
                     row.innerHTML = `
                         <td>
@@ -1086,10 +1180,10 @@ document.addEventListener(
 
 
             const label =
-                LOAI_THUC_DON_LABEL[
+                getEnumLabel(
+                    lookupData.loaiThucDon,
                     type
-                ] ||
-                "-";
+                );
 
 
             return `
@@ -1119,10 +1213,10 @@ document.addEventListener(
 
 
             const text =
-                TRANG_THAI_THUC_DON_LABEL[
+                getEnumLabel(
+                    lookupData.trangThai,
                     status
-                ] ||
-                "-";
+                );
 
 
             return `
@@ -1148,6 +1242,38 @@ document.addEventListener(
 
                 </span>
             `;
+
+        }
+
+        function getEnumLabel(
+            list,
+            value
+        ) {
+
+            const item =
+                (
+                    Array.isArray(
+                        list
+                    )
+                        ? list
+                        : []
+                )
+                    .find(
+                        option =>
+                            String(
+                                option.value
+                            ) ===
+                            String(
+                                value
+                            )
+                    );
+
+
+            return (
+                item?.label ||
+                item?.name ||
+                "-"
+            );
 
         }
 
@@ -1306,145 +1432,6 @@ document.addEventListener(
 
         }
 
-
-        function renderPagination(
-            result
-        ) {
-
-            if (
-                !elements.pagination
-            ) {
-                return;
-            }
-
-
-            const total =
-                Number(
-                    result.total ||
-                    0
-                );
-
-            const limit =
-                Number(
-                    result.limit ||
-                    state.limit
-                );
-
-            const currentPage =
-                Number(
-                    result.page ||
-                    state.page
-                );
-
-
-            const totalPages =
-                Math.max(
-                    1,
-                    Math.ceil(
-                        total /
-                        limit
-                    )
-                );
-
-
-            if (
-                totalPages <= 1
-            ) {
-
-                elements.pagination
-                    .innerHTML =
-                    "";
-
-                return;
-
-            }
-
-
-            elements.pagination
-                .innerHTML =
-                `
-                    <button
-                        type="button"
-                        data-page="${
-                            currentPage -
-                            1
-                        }"
-                        ${
-                            currentPage <=
-                            1
-                                ? "disabled"
-                                : ""
-                        }>
-                        ‹
-                    </button>
-
-                    <span>
-                        Trang
-                        ${currentPage}
-                        /
-                        ${totalPages}
-                    </span>
-
-                    <button
-                        type="button"
-                        data-page="${
-                            currentPage +
-                            1
-                        }"
-                        ${
-                            currentPage >=
-                            totalPages
-                                ? "disabled"
-                                : ""
-                        }>
-                        ›
-                    </button>
-                `;
-
-
-            elements.pagination
-                .querySelectorAll(
-                    "[data-page]"
-                )
-                .forEach(
-                    button => {
-
-                        button.addEventListener(
-                            "click",
-                            async () => {
-
-                                const page =
-                                    Number(
-                                        button
-                                            .dataset
-                                            .page
-                                    );
-
-
-                                if (
-                                    page < 1 ||
-                                    page >
-                                        totalPages
-                                ) {
-                                    return;
-                                }
-
-
-                                state.page =
-                                    page;
-
-
-                                await loadData();
-
-                            }
-                        );
-
-                    }
-                );
-
-        }
-
-
         function setLoading(
             loading
         ) {
@@ -1568,126 +1555,127 @@ document.addEventListener(
 
         }
 
-function refreshSelectOptions(
-    id,
-    records,
-    getValue,
-    getLabel
-) {
+        function refreshSelectOptions(
+            id,
+            records,
+            getValue,
+            getLabel
+        ) {
 
-    const select =
-        document.getElementById(
-            id
-        );
-
-
-    if (!select) {
-        return;
-    }
-
-
-    const allOption =
-        select.querySelector(
-            'option[value="__ALL__"]'
-        );
-
-
-    select.innerHTML =
-        "";
-
-
-    if (allOption) {
-
-        select.appendChild(
-            allOption
-        );
-
-    } else {
-
-        const option =
-            document.createElement(
-                "option"
-            );
-
-
-        option.value =
-            "__ALL__";
-
-        option.textContent =
-            "Tất cả";
-
-
-        select.appendChild(
-            option
-        );
-
-    }
-
-
-    records.forEach(
-        record => {
-
-            const option =
-                document.createElement(
-                    "option"
+            const select =
+                document.getElementById(
+                    id
                 );
 
 
-            option.value =
-                String(
-                    getValue(
-                        record
-                    )
+            if (!select) {
+                return;
+            }
+
+
+            const allOption =
+                select.querySelector(
+                    'option[value="__ALL__"]'
                 );
 
 
-            option.textContent =
-                getLabel(
-                    record
-                ) || "";
+            select.innerHTML =
+                "";
 
 
-            select.appendChild(
-                option
+            if (allOption) {
+
+                select.appendChild(
+                    allOption
+                );
+
+            } else {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    "__ALL__";
+
+                option.textContent =
+                    "Tất cả";
+
+
+                select.appendChild(
+                    option
+                );
+
+            }
+
+
+            records.forEach(
+                record => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        String(
+                            getValue(
+                                record
+                            )
+                        );
+
+
+                    option.textContent =
+                        getLabel(
+                            record
+                        ) || "";
+
+
+                    select.appendChild(
+                        option
+                    );
+
+                }
             );
+
+
+            const smartSelectRoot =
+                select.closest(
+                    "[data-smart-select]"
+                );
+
+
+            if (
+                smartSelectRoot
+                    ?.smartSelect
+                    ?.refresh
+            ) {
+
+                smartSelectRoot
+                    .smartSelect
+                    .refresh();
+
+            } else {
+
+                window.MCS
+                    ?.smartSelect
+                    ?.initialize(
+                        smartSelectRoot
+                    );
+
+            }
 
         }
-    );
-
-
-    const smartSelectRoot =
-        select.closest(
-            "[data-smart-select]"
-        );
-
-
-    if (
-        smartSelectRoot
-            ?.smartSelect
-            ?.refresh
-    ) {
-
-        smartSelectRoot
-            .smartSelect
-            .refresh();
-
-    } else {
-
-        window.MCS
-            ?.smartSelect
-            ?.initialize(
-                smartSelectRoot
-            );
-
-    }
-
-}
 
         async function loadFilterOptions() {
 
             try {
 
                 const [
+                    enumsResponse,
                     coSoResponse,
                     nhaAnResponse,
                     caAnResponse
@@ -1696,19 +1684,45 @@ function refreshSelectOptions(
                         [
 
                             window.MCS.api.request(
-                                "/api/mcs/v1/dm-co-so/tong-hop"
+                                "/api/mcs/v1/enums"
                             ),
 
                             window.MCS.api.request(
-                                "/api/mcs/v1/dm-nha-an/tong-hop"
+                                "/api/mcs/v1/dm-co-so/tong-hop?active=true"
                             ),
 
                             window.MCS.api.request(
-                                "/api/mcs/v1/dm-ca-an/tong-hop"
+                                "/api/mcs/v1/dm-nha-an/tong-hop?active=true"
+                            ),
+
+                            window.MCS.api.request(
+                                "/api/mcs/v1/dm-ca-an/tong-hop?active=true"
                             )
 
                         ]
                     );
+
+
+                const enums =
+                    enumsResponse?.data ??
+                    enumsResponse ??
+                    {};
+
+
+                lookupData.loaiThucDon =
+                    Array.isArray(
+                        enums.loaiThucDon
+                    )
+                        ? enums.loaiThucDon
+                        : [];
+
+
+                lookupData.trangThai =
+                    Array.isArray(
+                        enums.trangThaiThucDon
+                    )
+                        ? enums.trangThaiThucDon
+                        : [];
 
 
                 lookupData.coSo =
@@ -1727,6 +1741,30 @@ function refreshSelectOptions(
                     normalizeActiveRecords(
                         caAnResponse?.data
                     );
+
+
+                refreshSelectOptions(
+                    "loaiThucDon",
+                    lookupData.loaiThucDon,
+                    item =>
+                        item.value,
+                    item =>
+                        item.label ||
+                        item.name ||
+                        "-"
+                );
+
+
+                refreshSelectOptions(
+                    "trangThai",
+                    lookupData.trangThai,
+                    item =>
+                        item.value,
+                    item =>
+                        item.label ||
+                        item.name ||
+                        "-"
+                );
 
 
                 refreshSelectOptions(
@@ -1759,7 +1797,9 @@ function refreshSelectOptions(
                 );
 
 
-            } catch (error) {
+            } catch (
+                error
+            ) {
 
                 console.error(
                     "Không tải được dữ liệu bộ lọc:",

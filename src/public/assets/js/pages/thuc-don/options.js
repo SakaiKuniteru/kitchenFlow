@@ -15,6 +15,7 @@ window.ThucDon.options =
         ) {
 
             const [
+                enumsResponse,
                 coSo,
                 nhaAn,
                 caAn,
@@ -24,28 +25,32 @@ window.ThucDon.options =
             ] =
                 await Promise.all([
 
+                    window.ThucDon
+                        .api
+                        .enums(),
+
                     getList(
-                        "/api/mcs/v1/dm-co-so/tong-hop"
+                        "/api/mcs/v1/dm-co-so/tong-hop?active=true"
                     ),
 
                     getList(
-                        "/api/mcs/v1/dm-nha-an/tong-hop"
+                        "/api/mcs/v1/dm-nha-an/tong-hop?active=true"
                     ),
 
                     getList(
-                        "/api/mcs/v1/dm-ca-an/tong-hop"
+                        "/api/mcs/v1/dm-ca-an/tong-hop?active=true"
                     ),
 
                     getList(
-                        "/api/mcs/v1/dm-nhom-mon-an/tong-hop"
+                        "/api/mcs/v1/dm-nhom-mon-an/tong-hop?active=true"
                     ),
 
                     getList(
-                        "/api/mcs/v1/dm-mon-an/tong-hop"
+                        "/api/mcs/v1/dm-mon-an/tong-hop?active=true"
                     ),
 
                     getList(
-                        "/api/mcs/v1/dm-don-vi-tinh/tong-hop"
+                        "/api/mcs/v1/dm-don-vi-tinh/tong-hop?active=true"
                     )
                         .catch(
                             () => []
@@ -53,7 +58,23 @@ window.ThucDon.options =
 
                 ]);
 
+
+            const enums =
+                enumsResponse?.data ??
+                enumsResponse ??
+                {};
+
+
+            const loaiThucDon =
+                Array.isArray(
+                    enums.loaiThucDon
+                )
+                    ? enums.loaiThucDon
+                    : [];
+
+
             root._tdOptions = {
+                loaiThucDon,
                 coSo,
                 nhaAn,
                 caAn,
@@ -61,6 +82,15 @@ window.ThucDon.options =
                 monAn,
                 donViTinh
             };
+
+
+            fillEnum(
+                root.querySelector(
+                    '[name="loaiThucDon"]'
+                ),
+                loaiThucDon,
+                data?.loaiThucDon
+            );
 
 
             fill(
@@ -84,11 +114,13 @@ window.ThucDon.options =
                 data?.caAnId
             );
 
+
             refreshNhaAn(
                 root,
                 data?.coSoId,
                 data?.nhaAnId
             );
+
 
             fill(
                 root.querySelector(
@@ -106,7 +138,6 @@ window.ThucDon.options =
             );
 
         }
-
 
         function bindDependencies(
             root
@@ -144,7 +175,6 @@ window.ThucDon.options =
 
         }
 
-
         function refreshNhaAn(
             root,
             coSoId,
@@ -162,6 +192,12 @@ window.ThucDon.options =
             }
 
 
+            const wrapper =
+                select.closest(
+                    "[data-smart-select]"
+                );
+
+
             if (!coSoId) {
 
                 fill(
@@ -173,10 +209,24 @@ window.ThucDon.options =
                 );
 
 
+                if (wrapper) {
+
+                    wrapper.dataset.selectPlaceholder =
+                        "Chọn cơ sở trước";
+
+                }
+
+
                 disable(
                     select,
                     true
                 );
+
+
+                wrapper
+                    ?.smartSelect
+                    ?.refresh
+                    ?.();
 
 
                 return;
@@ -215,6 +265,16 @@ window.ThucDon.options =
                     );
 
 
+            if (wrapper) {
+
+                wrapper.dataset.selectPlaceholder =
+                    list.length
+                        ? "Chọn nhà ăn"
+                        : "Cơ sở chưa có nhà ăn";
+
+            }
+
+
             fill(
                 select,
                 list,
@@ -226,8 +286,14 @@ window.ThucDon.options =
 
             disable(
                 select,
-                false
+                list.length === 0
             );
+
+
+            wrapper
+                ?.smartSelect
+                ?.refresh
+                ?.();
 
         }
 
@@ -666,6 +732,60 @@ window.ThucDon.options =
 
         }
 
+        async function getEnums() {
+
+            const token =
+                localStorage.getItem(
+                    "accessToken"
+                );
+
+
+            const response =
+                await fetch(
+                    "/api/mcs/v1/enums",
+                    {
+                        method:
+                            "GET",
+
+                        headers: {
+
+                            Accept:
+                                "application/json",
+
+                            Authorization:
+                                `Bearer ${token}`
+
+                        },
+
+                        credentials:
+                            "include"
+
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result?.message ||
+                    "Không thể tải enums."
+                );
+
+            }
+
+
+            return (
+                result?.data ||
+                result ||
+                {}
+            );
+
+        }
+
         async function getList(
             url
         ) {
@@ -742,7 +862,7 @@ window.ThucDon.options =
             list,
             valueKey,
             labelKey,
-            selected
+            selected = null
         ) {
 
             if (!select) {
@@ -750,11 +870,44 @@ window.ThucDon.options =
             }
 
 
+            const normalizedSelected =
+                selected === null ||
+                selected === undefined ||
+                selected === ""
+                    ? ""
+                    : String(
+                        selected
+                    );
+
+
             select.innerHTML =
                 "";
 
+            const emptyOption =
+                document.createElement(
+                    "option"
+                );
 
-            list.forEach(
+
+            emptyOption.value =
+                "";
+
+            emptyOption.textContent =
+                "";
+
+
+            select.appendChild(
+                emptyOption
+            );
+
+
+            (
+                Array.isArray(
+                    list
+                )
+                    ? list
+                    : []
+            ).forEach(
                 item => {
 
                     const option =
@@ -775,6 +928,13 @@ window.ThucDon.options =
                         "-";
 
 
+                    option.selected =
+                        String(
+                            item[valueKey]
+                        ) ===
+                        normalizedSelected;
+
+
                     select.appendChild(
                         option
                     );
@@ -783,15 +943,33 @@ window.ThucDon.options =
             );
 
 
+            select.value =
+                normalizedSelected;
+
+
+            if (
+                !normalizedSelected
+            ) {
+
+                select.selectedIndex =
+                    0;
+
+            }
+
+
             const wrapper =
                 select.closest(
                     "[data-smart-select]"
                 );
 
 
+            if (!wrapper) {
+                return;
+            }
+
+
             const api =
-                wrapper
-                    ?.smartSelect ||
+                wrapper.smartSelect ||
                 window.MCS
                     ?.smartSelect
                     ?.initialize(
@@ -802,27 +980,138 @@ window.ThucDon.options =
             api?.refresh?.();
 
 
+            api?.setValue?.(
+                normalizedSelected,
+                false
+            );
+
+        }
+
+        function fillEnum(
+            select,
+            list,
+            selected = null
+        ) {
+
+            if (!select) {
+                return;
+            }
+
+
+            const normalizedSelected =
+                selected === null ||
+                selected === undefined ||
+                selected === ""
+                    ? ""
+                    : String(
+                        selected
+                    );
+
+
+            select.innerHTML =
+                "";
+
+            const emptyOption =
+                document.createElement(
+                    "option"
+                );
+
+
+            emptyOption.value =
+                "";
+
+            emptyOption.textContent =
+                "";
+
+
+            select.appendChild(
+                emptyOption
+            );
+
+
+            (
+                Array.isArray(
+                    list
+                )
+                    ? list
+                    : []
+            ).forEach(
+                item => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        String(
+                            item.value
+                        );
+
+
+                    option.textContent =
+                        item.label ||
+                        item.name ||
+                        "-";
+
+
+                    option.selected =
+                        String(
+                            item.value
+                        ) ===
+                        normalizedSelected;
+
+
+                    select.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+            select.value =
+                normalizedSelected;
+
+
             if (
-                selected !== null &&
-                selected !== undefined &&
-                selected !== ""
+                !normalizedSelected
             ) {
 
-                api?.setValue?.(
-                    String(
-                        selected
-                    ),
-                    false
-                );
+                select.selectedIndex =
+                    0;
 
             }
-            else {
 
-                api?.clear?.(
-                    false
+
+            const wrapper =
+                select.closest(
+                    "[data-smart-select]"
                 );
 
+
+            if (!wrapper) {
+                return;
             }
+
+
+            const api =
+                wrapper.smartSelect ||
+                window.MCS
+                    ?.smartSelect
+                    ?.initialize(
+                        wrapper
+                    );
+
+
+            api?.refresh?.();
+
+
+            api?.setValue?.(
+                normalizedSelected,
+                false
+            );
 
         }
 

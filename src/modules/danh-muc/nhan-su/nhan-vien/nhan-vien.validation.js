@@ -50,7 +50,7 @@ const createSchema = Joi.object({
             "number.integer":
                 "Giới tính phải là số nguyên.",
             "any.only":
-                "Giới tính chỉ nhận giá trị 0, 1 hoặc 2.",
+                "Vui lòng chọn giới tính",
             "any.required":
                 "Giới tính là bắt buộc."
         }),
@@ -393,7 +393,7 @@ const updateSchema = Joi.object({
             "number.integer":
                 "Giới tính phải là số nguyên.",
             "any.only":
-                "Giới tính chỉ nhận giá trị 1, 2 hoặc 3."
+                "Vui lòng chọn giới tính"
         }),
 
     soDienThoai: Joi.string()

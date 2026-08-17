@@ -7,6 +7,9 @@ document.addEventListener(
 
         const CONFIG = {
 
+            enumsEndpoint:
+                "/api/mcs/v1/enums",
+
             employeeDetailEndpoint:
                 "/api/mcs/v1/dm-nhan-vien",
 
@@ -14,13 +17,13 @@ document.addEventListener(
                 "/api/mcs/v1/dm-nhan-vien/cap-nhat",
 
             countryEndpoint:
-                "/api/mcs/v1/dm-quoc-gia/tong-hop",
+                "/api/mcs/v1/dm-quoc-gia/tong-hop?active=true",
 
             provinceEndpoint:
-                "/api/mcs/v1/dm-tinh-thanh/tong-hop",
+                "/api/mcs/v1/dm-tinh-thanh/tong-hop?active=true",
 
             wardEndpoint:
-                "/api/mcs/v1/dm-xa-phuong/tong-hop",
+                "/api/mcs/v1/dm-xa-phuong/tong-hop?active=true",
 
             currentUserEndpoint:
                 "/api/mcs/v1/auth/nhan-vien-hien-tai",
@@ -146,6 +149,11 @@ document.addEventListener(
                     "[data-employee-profile-message]"
                 ),
 
+            genderSelect:
+                document.getElementById(
+                    "gioiTinh"
+                ),
+
             countrySelect:
                 document.getElementById(
                     "quocGiaId"
@@ -160,6 +168,11 @@ document.addEventListener(
                 document.getElementById(
                     "xaPhuongId"
                 )
+        };
+
+        const enumState = {
+            gioiTinh:
+                []
         };
 
         const addressState = {
@@ -225,6 +238,78 @@ document.addEventListener(
                 loadCurrentUser(),
                 loadSystemInformation()
             ]);
+
+        }
+
+        async function loadProfileEnums() {
+
+            try {
+
+                const result =
+                    await authenticatedRequest(
+                        CONFIG.enumsEndpoint,
+                        {
+                            method:
+                                "GET"
+                        }
+                    );
+
+
+                const enums =
+                    result?.data ||
+                    result ||
+                    {};
+
+
+                enumState.gioiTinh =
+                    Array.isArray(
+                        enums.gioiTinh
+                    )
+                        ? enums.gioiTinh
+                        : [];
+
+
+                setSmartSelectOptions(
+                    elements.genderSelect,
+
+                    enumState.gioiTinh.map(
+                        item => ({
+
+                            value:
+                                String(
+                                    item.value
+                                ),
+
+                            label:
+                                item.label ||
+                                item.name ||
+                                ""
+
+                        })
+                    ),
+
+                    null
+                );
+
+            } catch (
+                error
+            ) {
+
+                console.error(
+                    "Không thể tải enum cho thông tin nhân viên:",
+                    error
+                );
+
+                enumState.gioiTinh =
+                    [];
+
+                setSmartSelectOptions(
+                    elements.genderSelect,
+                    [],
+                    null
+                );
+
+            }
 
         }
 
@@ -558,9 +643,12 @@ document.addEventListener(
                     .employeeId =
                     String(nhanVienId);
 
-                await loadAddressOptions(
-                    employee
-                );
+                await Promise.all([
+                    loadProfileEnums(),
+                    loadAddressOptions(
+                        employee
+                    )
+                ]);
 
                 fillEmployeeProfile(
                     employee
@@ -1296,22 +1384,29 @@ document.addEventListener(
 
             ]);
 
-
             addressState.countries =
                 extractArrayData(
                     countryResult
+                ).filter(
+                    item =>
+                        item.active === true
                 );
 
             addressState.provinces =
                 extractArrayData(
                     provinceResult
+                ).filter(
+                    item =>
+                        item.active === true
                 );
 
             addressState.wards =
                 extractArrayData(
                     wardResult
+                ).filter(
+                    item =>
+                        item.active === true
                 );
-
 
             const currentCountryId =
                 toPositiveInteger(
@@ -1339,10 +1434,7 @@ document.addEventListener(
                         label:
                             getCountryLabel(
                                 country
-                            ),
-
-                        disabled:
-                            country.active === false
+                            )
 
                     })
                 ),
@@ -1834,10 +1926,7 @@ document.addEventListener(
                         label:
                             getProvinceLabel(
                                 province
-                            ),
-
-                        disabled:
-                            province.active === false
+                            )
 
                     })
                 ),
@@ -1892,10 +1981,7 @@ document.addEventListener(
                         label:
                             getWardLabel(
                                 ward
-                            ),
-
-                        disabled:
-                            ward.active === false
+                            )
 
                     })
                 ),
@@ -3015,9 +3101,6 @@ document.addEventListener(
                 isDisabled
             );
 
-            /*
-            * Cập nhật placeholder chính của component.
-            */
             if (placeholder) {
 
                 smartSelectRoot.dataset
@@ -3040,9 +3123,6 @@ document.addEventListener(
 
             }
 
-            /*
-            * Render lại để placeholder và giá trị không chồng nhau.
-            */
             if (
                 typeof api?.refresh ===
                 "function"
@@ -3491,11 +3571,27 @@ document.addEventListener(
                     )?.value || ""
                 ).trim();
 
+            const ngaySinhField =
+                form.querySelector(
+                    '[data-form-field="ngaySinh"]'
+                );
+
+
             const ngaySinh =
                 String(
                     form.elements.namedItem(
                         "ngaySinh"
                     )?.value || ""
+                ).trim();
+
+
+            const ngaySinhDisplay =
+                String(
+                    ngaySinhField
+                        ?.querySelector(
+                            "[data-date-input]"
+                        )
+                        ?.value || ""
                 ).trim();
 
             const gioiTinh =
@@ -3620,7 +3716,10 @@ document.addEventListener(
 
             }
 
-            if (!ngaySinh) {
+            if (
+                !ngaySinh &&
+                !ngaySinhDisplay
+            ) {
 
                 setProfileFieldError(
                     "ngaySinh",
@@ -3631,6 +3730,7 @@ document.addEventListener(
                     false;
 
             } else if (
+                !ngaySinh ||
                 !isValidDatabaseDate(
                     ngaySinh
                 )
@@ -3645,11 +3745,24 @@ document.addEventListener(
                     false;
 
             }
+            
+            if (!gioiTinh) {
 
-            if (
-                gioiTinh &&
-                !["0", "1", "2"].includes(
-                    gioiTinh
+                setProfileFieldError(
+                    "gioiTinh",
+                    "Vui lòng chọn giới tính."
+                );
+
+                valid =
+                    false;
+
+            } else if (
+                !enumState.gioiTinh.some(
+                    item =>
+                        String(
+                            item.value
+                        ) ===
+                        gioiTinh
                 )
             ) {
 
@@ -3662,7 +3775,6 @@ document.addEventListener(
                     false;
 
             }
-
 
             if (!quocGiaId) {
 

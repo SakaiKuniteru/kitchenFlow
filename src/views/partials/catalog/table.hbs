@@ -48,9 +48,14 @@
                     <col
                         class="catalog-table__col"
                         data-column-key="{{key}}"
-                        {{#if width}}
-                            style="width: {{width}};"
-                        {{/if}}
+                        style="
+                            width:
+                                {{#if width}}
+                                    {{width}}
+                                {{else}}
+                                    180px
+                                {{/if}};
+                        "
                     >
 
                 {{/each}}

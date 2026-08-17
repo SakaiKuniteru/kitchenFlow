@@ -107,6 +107,12 @@ window.ThucDon.api =
 
         return {
 
+            enums:
+                () =>
+                    request(
+                        "/api/mcs/v1/enums"
+                    ),
+
             detail:
                 id =>
                     request(

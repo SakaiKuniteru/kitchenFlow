@@ -88,25 +88,6 @@ window.ThucDon.form =
 
             });
 
-
-        const TYPE_LABEL =
-            Object.freeze({
-
-                10:
-                    "Theo ngày",
-
-                20:
-                    "Theo tuần",
-
-                30:
-                    "Theo tháng",
-
-                40:
-                    "Theo thời gian"
-
-            });
-
-
         const PLACEHOLDER_IMAGE =
             "/uploads/danh-muc/mon-an/mon-an.png";
 
@@ -556,19 +537,17 @@ window.ThucDon.form =
                     d.tenThucDon
                 );
 
-
                 setText(
                     root,
                     "[data-detail-loai]",
                     d.loaiThucDonText ||
-                    TYPE_LABEL[
-                        Number(
-                            d.loaiThucDon
-                        )
-                    ] ||
+                    getEnumLabel(
+                        root,
+                        "loaiThucDon",
+                        d.loaiThucDon
+                    ) ||
                     "-"
                 );
-
 
                 setText(
                     root,
@@ -2208,6 +2187,56 @@ window.ThucDon.form =
                     "-";
 
             }
+
+        }
+
+        function getEnumLabel(
+            root,
+            enumName,
+            value
+        ) {
+
+            if (
+                value === null ||
+                value === undefined ||
+                value === ""
+            ) {
+
+                return "";
+
+            }
+
+
+            const pageRoot =
+                root.closest(
+                    "[data-thuc-don-page]"
+                );
+
+
+            const list =
+                pageRoot
+                    ?._tdOptions
+                    ?.[enumName] ||
+                [];
+
+
+            const item =
+                list.find(
+                    option =>
+                        String(
+                            option.value
+                        ) ===
+                        String(
+                            value
+                        )
+                );
+
+
+            return (
+                item?.label ||
+                item?.name ||
+                ""
+            );
 
         }
 

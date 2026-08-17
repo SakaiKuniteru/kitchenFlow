@@ -90,9 +90,14 @@ window.MCS.smartSelect = {
             root.dataset.selectMode ||
             "single";
 
-        const placeholder =
-            root.dataset.selectPlaceholder ||
-            "Chọn dữ liệu...";
+        function getPlaceholder() {
+
+            return (
+                root.dataset.selectPlaceholder ||
+                "Chọn dữ liệu..."
+            );
+
+        }
 
         const allLabel =
             root.dataset.selectAllLabel ||
@@ -125,12 +130,13 @@ window.MCS.smartSelect = {
 
         }
 
-
         function getNormalOptions() {
 
             return getOptions()
                 .filter(
                     option =>
+                        option.value !==
+                            "" &&
                         option.value !==
                             "__ALL__" &&
                         !option.disabled
@@ -138,19 +144,17 @@ window.MCS.smartSelect = {
 
         }
 
-
         function getSelectedOptions() {
 
             return getOptions()
                 .filter(
                     option =>
                         option.selected &&
-                        option.value !==
-                            "__ALL__"
+                        option.value !== "" &&
+                        option.value !== "__ALL__"
                 );
 
         }
-
 
         function getAllOption() {
 
@@ -179,13 +183,50 @@ window.MCS.smartSelect = {
                 "click",
                 event => {
 
+                    const removeButton =
+                        event.target.closest(
+                            '[data-smart-select-remove="single"]'
+                        );
+
+
+                    if (
+                        removeButton
+                    ) {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+
+                        clear(
+                            true
+                        );
+
+
+                        return;
+
+                    }
+
+
                     if (
                         event.target.closest(
                             "[data-smart-select-remove]"
                         )
                     ) {
+
+                        return;
+
+                    }
+
+
+                    if (
+                        event.target.closest(
+                            "[data-smart-select-toggle]"
+                        )
+                    ) {
                         return;
                     }
+
 
                     if (
                         elements.native.disabled
@@ -193,13 +234,23 @@ window.MCS.smartSelect = {
                         return;
                     }
 
+
                     open();
+
+
+                    state.searching =
+                        true;
+
+
+                    root.classList.add(
+                        "is-searching"
+                    );
+
 
                     elements.search.focus();
 
                 }
             );
-
 
             elements.toggle?.addEventListener(
                 "click",
@@ -338,12 +389,15 @@ window.MCS.smartSelect = {
             state.opened =
                 true;
 
+
             elements.dropdown.hidden =
                 false;
+
 
             root.classList.add(
                 "is-open"
             );
+
 
             elements.toggle?.setAttribute(
                 "aria-expanded",
@@ -351,26 +405,8 @@ window.MCS.smartSelect = {
             );
 
 
-            const hasSelection =
-                isAllSelected() ||
-                getSelectedOptions().length > 0;
-
-
-            if (
-                document.activeElement ===
-                    elements.search &&
-                !hasSelection
-            ) {
-
-                elements.search.placeholder =
-                    "Nhập để tìm kiếm...";
-
-            } else {
-
-                elements.search.placeholder =
-                    "";
-
-            }
+            elements.search.placeholder =
+                "Nhập để tìm kiếm...";
 
 
             renderOptions(
@@ -499,12 +535,22 @@ window.MCS.smartSelect = {
 
             }
 
+
             open();
+
+
+            state.searching =
+                true;
+
+
+            root.classList.add(
+                "is-searching"
+            );
+
 
             elements.search.focus();
 
         }
-
 
         function renderOptions(
             keyword = ""
@@ -518,16 +564,23 @@ window.MCS.smartSelect = {
             elements.options.innerHTML =
                 "";
 
-
             const visibleOptions =
                 getOptions()
                     .filter(
                         option => {
 
+                            if (
+                                option.value === ""
+                            ) {
+                                return false;
+                            }
+
+
                             const label =
                                 normalizeSearchText(
                                     option.textContent
                                 );
+
 
                             return (
                                 !normalizedKeyword ||
@@ -538,7 +591,6 @@ window.MCS.smartSelect = {
 
                         }
                     );
-
 
             visibleOptions.forEach(
                 option => {
@@ -847,11 +899,20 @@ window.MCS.smartSelect = {
             const selectedOptions =
                 getSelectedOptions();
 
-
             if (
                 selectedOptions.length ===
                 0
             ) {
+
+                if (
+                    mode !== "multiple" &&
+                    elements.toggle
+                ) {
+
+                    elements.toggle.hidden =
+                        false;
+
+                }
 
                 const placeholderElement =
                     document.createElement(
@@ -862,7 +923,7 @@ window.MCS.smartSelect = {
                     "smart-select__placeholder";
 
                 placeholderElement.textContent =
-                    placeholder;
+                    getPlaceholder();
 
                 elements.selection.appendChild(
                     placeholderElement
@@ -872,11 +933,20 @@ window.MCS.smartSelect = {
 
             }
 
-
             if (
                 mode !==
                 "multiple"
             ) {
+
+                if (
+                    elements.toggle
+                ) {
+
+                    elements.toggle.hidden =
+                        true;
+
+                }
+
 
                 appendSingleValue(
                     selectedOptions[0]
@@ -884,10 +954,10 @@ window.MCS.smartSelect = {
                         .trim()
                 );
 
+
                 return;
 
             }
-
 
             selectedOptions.forEach(
                 option => {
@@ -905,6 +975,15 @@ window.MCS.smartSelect = {
             label
         ) {
 
+            const wrapper =
+                document.createElement(
+                    "div"
+                );
+
+            wrapper.className =
+                "smart-select__single";
+
+
             const value =
                 document.createElement(
                     "span"
@@ -916,12 +995,49 @@ window.MCS.smartSelect = {
             value.textContent =
                 label;
 
-            elements.selection.appendChild(
+
+            const remove =
+                document.createElement(
+                    "button"
+                );
+
+            remove.type =
+                "button";
+
+            remove.className =
+                "smart-select__single-remove";
+
+            remove.dataset.smartSelectRemove =
+                "single";
+
+            remove.setAttribute(
+                "aria-label",
+                `Bỏ chọn ${label}`
+            );
+
+            remove.innerHTML =
+                `
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true">
+                    </i>
+                `;
+
+
+            wrapper.appendChild(
                 value
             );
 
-        }
+            wrapper.appendChild(
+                remove
+            );
 
+
+            elements.selection.appendChild(
+                wrapper
+            );
+
+        }
 
         function appendTag(
             option
@@ -1263,7 +1379,6 @@ window.MCS.smartSelect = {
 
         }
 
-
         function setDisabled(
             disabled = true
         ) {
@@ -1271,14 +1386,13 @@ window.MCS.smartSelect = {
             const isDisabled =
                 Boolean(disabled);
 
+
             elements.native.disabled =
                 isDisabled;
 
             elements.search.disabled =
                 isDisabled;
 
-            elements.search.placeholder =
-                "";
 
             if (
                 elements.toggle
@@ -1289,19 +1403,28 @@ window.MCS.smartSelect = {
 
             }
 
+
             root.classList.toggle(
                 "is-disabled",
                 isDisabled
             );
 
-            if (isDisabled) {
+
+            if (
+                isDisabled
+            ) {
 
                 close();
+
+            } else {
+
+                renderOptions();
+
+                renderSelection();
 
             }
 
         }
-
 
         const api = {
 

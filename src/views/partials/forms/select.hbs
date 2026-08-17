@@ -39,16 +39,7 @@
         data-select-mode="{{#if mode}}{{mode}}{{else}}single{{/if}}"
         data-select-placeholder="{{#if placeholder}}{{placeholder}}{{else}}Chọn dữ liệu...{{/if}}"
         data-select-all-label="{{#if allLabel}}{{allLabel}}{{else}}Tất cả{{/if}}">
-
-        {{!--
-            Select thật.
-
-            Đây là phần giữ:
-            - name gửi backend
-            - giá trị hiện tại
-            - danh sách options
-            - trạng thái disabled/required/multiple
-        --}}
+        
         <select
             id="{{id}}"
             name="{{name}}"

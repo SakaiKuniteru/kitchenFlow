@@ -153,46 +153,46 @@ const LOAI_XUAT_FILE = [
 const TRANG_THAI_THUC_DON = [
     {
         value: 10,
-        label: "Tạo mới/Chờ duyệt"
+        name: "Tạo mới/Chờ duyệt"
     },
     {
         value: 20,
-        label: "Chờ duyệt"
+        name: "Chờ duyệt"
     },
     {
         value: 30,
-        label: "Đang áp dụng"
+        name: "Đang áp dụng"
     },
     {
         value: 40,
-        label: "Chờ duyệt lại"
+        name: "Chờ duyệt lại"
     },
     {
         value: 50,
-        label: "Đã hủy"
+        name: "Đã hủy"
     },
     {
         value: 60,
-        label: "Đã kết thúc"
+        name: "Đã kết thúc"
     }
 ];
 
 const LOAI_THUC_DON = [
     {
         value: 10,
-        label: "Theo ngày"
+        name: "Theo ngày"
     },
     {
         value: 20,
-        label: "Theo tuần"
+        name: "Theo tuần"
     },
     {
         value: 30,
-        label: "Theo tháng"
+        name: "Theo tháng"
     },
     {
         value: 40,
-        label: "Theo thời gian"
+        name: "Theo thời gian"
     }
 ];
 
