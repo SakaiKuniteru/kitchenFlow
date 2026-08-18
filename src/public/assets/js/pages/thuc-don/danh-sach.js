@@ -125,11 +125,6 @@ document.addEventListener(
                     "[data-list-filter-reset]"
                 ),
 
-            clearFilter:
-                document.querySelector(
-                    "[data-list-filter-clear]"
-                ),
-
             pagination:
                 document.querySelector(
                     "#thucDonPagination"
@@ -142,14 +137,344 @@ document.addEventListener(
 
         initialize();
         async function initialize() {
-
             initializePagination();
-
             bindEvents();
-
             await loadFilterOptions();
-
+            initializeFilterClearButtons();
+            initializeFilterSearchBehavior();
             await loadData();
+        }
+
+        function initializeFilterClearButtons() {
+
+            const ids = [
+
+                "loaiThucDon",
+
+                "coSoId",
+
+                "nhaAnId",
+
+                "caAnId",
+
+                "trangThai"
+
+            ];
+
+
+            ids.forEach(
+                id => {
+
+                    initializeFilterClearButton(
+                        id
+                    );
+
+                }
+            );
+
+        }
+
+        function initializeFilterSearchBehavior() {
+
+            const roots =
+                document.querySelectorAll(
+                    ".thuc-don-list-filter [data-smart-select]"
+                );
+
+
+            roots.forEach(
+                root => {
+
+                    const search =
+                        root.querySelector(
+                            "[data-smart-select-search]"
+                        );
+
+
+                    if (
+                        !search ||
+                        search.dataset
+                            .thucDonFilterSearchBound ===
+                            "true"
+                    ) {
+                        return;
+                    }
+
+
+                    search.dataset
+                        .thucDonFilterSearchBound =
+                        "true";
+
+
+                    const clearPlaceholder =
+                        () => {
+
+                            search.placeholder =
+                                "";
+
+                        };
+
+
+                    search.addEventListener(
+                        "focus",
+                        clearPlaceholder
+                    );
+
+
+                    search.addEventListener(
+                        "input",
+                        clearPlaceholder
+                    );
+
+
+                    root.addEventListener(
+                        "click",
+                        () => {
+
+                            requestAnimationFrame(
+                                clearPlaceholder
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+        }
+
+        function initializeFilterClearButton(
+            id
+        ) {
+
+            const select =
+                document.getElementById(
+                    id
+                );
+
+
+            if (!select) {
+                return;
+            }
+
+
+            const root =
+                select.closest(
+                    "[data-smart-select]"
+                );
+
+
+            const control =
+                root?.querySelector(
+                    "[data-smart-select-control]"
+                );
+
+
+            if (
+                !root ||
+                !control
+            ) {
+                return;
+            }
+
+
+            let clearButton =
+                control.querySelector(
+                    "[data-filter-select-clear]"
+                );
+
+
+            if (!clearButton) {
+
+                clearButton =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                clearButton.type =
+                    "button";
+
+
+                clearButton.className =
+                    "thuc-don-filter-select__clear";
+
+
+                clearButton.dataset
+                    .filterSelectClear =
+                    id;
+
+
+                clearButton.setAttribute(
+                    "aria-label",
+                    "Xóa lựa chọn"
+                );
+
+
+                clearButton.setAttribute(
+                    "title",
+                    "Xóa lựa chọn"
+                );
+
+
+                clearButton.innerHTML = `
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true">
+                    </i>
+                `;
+
+
+                clearButton.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+
+                        clearFilterSelect(
+                            id
+                        );
+
+                    }
+                );
+
+
+                control.appendChild(
+                    clearButton
+                );
+
+            }
+
+
+            const updateClearButton =
+                () => {
+
+                    const hasValue =
+                        Array
+                            .from(
+                                select.selectedOptions ||
+                                []
+                            )
+                            .some(
+                                option =>
+                                    option.value
+                            );
+
+
+                    clearButton.hidden =
+                        !hasValue;
+
+
+                    root.classList.toggle(
+                        "has-filter-value",
+                        hasValue
+                    );
+
+                };
+
+
+            if (
+                !select.dataset
+                    .filterClearBound
+            ) {
+
+                select.addEventListener(
+                    "change",
+                    updateClearButton
+                );
+
+
+                select.dataset
+                    .filterClearBound =
+                    "true";
+
+            }
+
+
+            updateClearButton();
+
+        }
+
+        function clearFilterSelect(
+            id
+        ) {
+
+            const select =
+                document.getElementById(
+                    id
+                );
+
+
+            if (!select) {
+                return;
+            }
+
+
+            Array
+                .from(
+                    select.options
+                )
+                .forEach(
+                    option => {
+
+                        option.selected =
+                            false;
+
+                    }
+                );
+
+
+            select.dispatchEvent(
+                new Event(
+                    "change",
+                    {
+                        bubbles:
+                            true
+                    }
+                )
+            );
+
+
+            const root =
+                select.closest(
+                    "[data-smart-select]"
+                );
+
+
+            if (
+                root
+                    ?.smartSelect
+                    ?.refresh
+            ) {
+
+                root.smartSelect
+                    .refresh();
+
+            }
+
+
+            readFilterState();
+
+
+            state.page =
+                1;
+
+            if (
+                id ===
+                "coSoId"
+            ) {
+
+                refreshNhaAnFilter(
+                    []
+                );
+
+            }
+
+
+            loadData();
 
         }
 
@@ -205,7 +530,6 @@ document.addEventListener(
             bindSearch();
             bindTableActions();
             bindFilterDependencies();
-            bindClearFilter();
         }
 
         function openDetail(
@@ -266,27 +590,6 @@ document.addEventListener(
 
                         state.page =
                             1;
-
-                        await loadData();
-
-                    }
-                );
-
-        }
-
-        function bindClearFilter() {
-
-            elements.clearFilter
-                ?.addEventListener(
-                    "click",
-                    async () => {
-
-                        resetFilters();
-
-
-                        state.page =
-                            1;
-
 
                         await loadData();
 
@@ -371,6 +674,10 @@ document.addEventListener(
                     item.id,
                 item =>
                     item.tenNhaAn
+            );
+
+            initializeFilterClearButton(
+                "nhaAnId"
             );
 
         }

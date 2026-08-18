@@ -110,7 +110,6 @@ window.MCS.api = {
                 options
             );
 
-
         if (
             result.response.status ===
                 401 &&
@@ -137,10 +136,39 @@ window.MCS.api = {
                         }
                     );
 
+            } else {
+
+                window.MCS.storage
+                    .clearAuthentication();
+
+
+                if (
+                    window.location.pathname !==
+                    window.MCS.config.loginPath
+                ) {
+
+                    window.location.replace(
+                        window.MCS.config.loginPath
+                    );
+
+                }
+
+
+                const error =
+                    new Error(
+                        "Phiên đăng nhập đã hết hạn."
+                    );
+
+
+                error.statusCode =
+                    401;
+
+
+                throw error;
+
             }
 
         }
-
 
         if (
             !result.response.ok

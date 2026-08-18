@@ -446,7 +446,10 @@ window.MCS.sessionTimeout =
                                 body:
                                     JSON.stringify({
                                         refreshToken
-                                    })
+                                    }),
+
+                                allowRefresh:
+                                    false
                             }
                         );
 

@@ -872,91 +872,23 @@ document.addEventListener(
             options = {}
         ) {
 
-            const accessToken =
-                localStorage.getItem(
-                    CONFIG.accessTokenKey
-                );
-
-            if (!accessToken) {
-
-                throw new Error(
-                    "Phiên đăng nhập không tồn tại."
-                );
-
-            }
-
-            const headers = {
-                Accept:
-                    "application/json",
-
-                Authorization:
-                    `Bearer ${accessToken}`,
-
-                ...(options.headers || {})
-            };
-
             if (
-                options.body &&
-                !(options.body instanceof FormData)
+                !window.MCS?.api?.request
             ) {
 
-                headers["Content-Type"] =
-                    "application/json";
-
-            }
-
-            const response =
-                await fetch(
-                    url,
-                    {
-                        ...options,
-                        headers,
-                        body:
-                            options.body instanceof FormData
-                                ? options.body
-                                : (
-                                    options.body
-                                        ? JSON.stringify(
-                                            options.body
-                                        )
-                                        : undefined
-                                )
-                    }
+                throw new Error(
+                    "MCS API chưa được khởi tạo."
                 );
 
-            const result =
-                await response.json()
-                    .catch(
-                        () => null
-                    );
-
-            if (!response.ok) {
-
-                const error =
-                    new Error(
-                        result?.message ||
-                        "Yêu cầu không thành công."
-                    );
-
-                error.status =
-                    response.status;
-
-                error.data =
-                    result?.data;
-
-                error.errors =
-                    result?.errors ||
-                    result?.data?.errors ||
-                    null;
-
-                error.responseData =
-                    result;
-
-                throw error;
-
             }
 
-            return result;
+
+            return await window.MCS
+                .api
+                .request(
+                    url,
+                    options
+                );
 
         }
 

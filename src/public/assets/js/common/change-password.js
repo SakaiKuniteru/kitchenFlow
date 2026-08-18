@@ -215,43 +215,32 @@ document.addEventListener(
 
                         }
 
-                        const response =
-                            await fetch(
-                                CHANGE_PASSWORD_ENDPOINT,
-                                {
-                                    method:
-                                        "POST",
+                        const result =
+                            await window.MCS
+                                .api
+                                .request(
+                                    CHANGE_PASSWORD_ENDPOINT,
+                                    {
+                                        method:
+                                            "POST",
 
-                                    headers: {
+                                        body:
+                                            JSON.stringify({
 
-                                        Accept:
-                                            "application/json",
+                                                matKhauCu:
+                                                    fields
+                                                        .matKhauCu
+                                                        .value,
 
-                                        "Content-Type":
-                                            "application/json",
+                                                matKhauMoi:
+                                                    fields
+                                                        .matKhauMoi
+                                                        .value
 
-                                        Authorization:
-                                            `Bearer ${accessToken}`
+                                            })
 
-                                    },
-
-                                    body:
-                                        JSON.stringify({
-
-                                            matKhauCu:
-                                                fields
-                                                    .matKhauCu
-                                                    .value,
-
-                                            matKhauMoi:
-                                                fields
-                                                    .matKhauMoi
-                                                    .value
-
-                                        })
-
-                                }
-                            );
+                                    }
+                                );
 
                         let result = null;
 
