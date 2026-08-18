@@ -12,7 +12,7 @@ const controller = require("./thiet-lap.controller");
 
 const uploadImportExcel = require( "../../../../middlewares/upload-import-excel.middleware" );
 
-const chucVuExcel = require( "./thiet-lap.excel" );
+const thietLapExcel = require( "./thiet-lap.excel" );
 
 router.get(
     "/tong-hop",
@@ -23,7 +23,7 @@ router.get(
 router.get(
     "/xuat-du-lieu",
     authenticate,
-    chucVuExcel.exportData
+    thietLapExcel.exportData
 );
 
 router.post(
@@ -32,7 +32,7 @@ router.post(
     uploadImportExcel.single(
         "file"
     ),
-    chucVuExcel.importData
+    thietLapExcel.importData
 );
 
 router.get(

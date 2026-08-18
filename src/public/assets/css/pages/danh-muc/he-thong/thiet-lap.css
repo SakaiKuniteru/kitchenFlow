@@ -1,0 +1,82 @@
+.thiet-lap-nhom-tinh-nang__clear {
+
+    position:
+        absolute;
+
+    top:
+        50%;
+
+    right:
+        6px;
+
+    z-index:
+        3;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    width:
+        32px;
+
+    height:
+        32px;
+
+    margin:
+        0;
+
+    padding:
+        0;
+
+    border:
+        0;
+
+    border-radius:
+        8px;
+
+    color:
+        #64748b;
+
+    background:
+        transparent;
+
+    cursor:
+        pointer;
+
+    transform:
+        translateY(-50%);
+
+}
+
+
+.thiet-lap-nhom-tinh-nang__clear:hover {
+
+    color:
+        #dc2626;
+
+    background:
+        #fef2f2;
+
+}
+
+
+.thiet-lap-nhom-tinh-nang__clear[hidden] {
+
+    display:
+        none !important;
+
+}
+
+
+[data-smart-select]
+[data-smart-select-toggle][hidden] {
+
+    display:
+        none !important;
+
+}

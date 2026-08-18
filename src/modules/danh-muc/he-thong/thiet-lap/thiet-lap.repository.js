@@ -54,6 +54,13 @@ class ThietLapRepository {
 
             dsNhomTinhNang,
 
+            nhomTinhNang:
+                dsNhomTinhNang .map(
+                        item => item.tenNhomTinhNang
+                    )
+                    .join( ", " ),
+
+
             active:
                 row.active,
 
@@ -398,6 +405,7 @@ class ThietLapRepository {
             FROM dm_nhom_tinh_nang
 
             WHERE id = ANY($1::BIGINT[])
+            AND active = TRUE
         `;
 
         const result =
@@ -443,6 +451,8 @@ class ThietLapRepository {
                         UNNEST($1::TEXT[])
                     )
                 )
+
+            AND active = TRUE
         `;
 
         const result =

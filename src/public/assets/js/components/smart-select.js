@@ -406,7 +406,7 @@ window.MCS.smartSelect = {
 
 
             elements.search.placeholder =
-                "Nhập để tìm kiếm...";
+                placeholder;;
 
 
             renderOptions(

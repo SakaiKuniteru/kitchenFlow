@@ -2052,6 +2052,15 @@ const danhMucPages = [
             ),
 
             textColumn(
+                "nhomTinhNang",
+                "Nhóm tính năng",
+                {
+                    width:
+                        "220px"
+                }
+            ),
+
+            textColumn(
                 "moTa",
                 "Mô tả",
                 {

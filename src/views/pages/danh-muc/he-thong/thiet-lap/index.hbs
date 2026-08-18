@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/assets/css/pages/danh-muc/he-thong/thiet-lap.css" >
+
 {{> catalog/module-page
     moduleName="thiet-lap"
     apiBase="/api/mcs/v1/dm-thiet-lap"
@@ -12,14 +14,17 @@
     detailPanelId="thietLapDetailPanel"
     detailContentId="thietLapDetailContent"
     formId="thietLapForm"
-    formPartial="catalog/forms/thiet-lap-form"
+    formPartial="catalog/forms/he-thong/thiet-lap-form"
     detailTitle="Thông tin thiết lập"
     showEditButton=true
     showActions=true
+    showImportButton=true
+    showExportButton=true
     mobilePanelId="thietLapMobilePanel"
     columns=columns
 }}
 
 {{> scripts/catalog-page
     folder="he-thong"
-    page="thiet-lap"}}
+    page="thiet-lap"
+}}
