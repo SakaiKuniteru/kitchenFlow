@@ -260,3 +260,112 @@ Thiết lập này chỉ quy định trạng thái Sidebar khi tải hoặc tả
 
 ---
 
+## 9. NGAY_BAT_DAU_TUAN_THUC_DON
+
+**Mã:** `NGAY_BAT_DAU_TUAN_THUC_DON`
+
+**Giá trị:** `0` hoặc `1`.
+
+**Mô tả:**
+
+Quy định ngày bắt đầu và kết thúc tuần khi người dùng tạo hoặc cập nhật thực đơn có loại **Thực đơn tuần**.
+
+Nếu giá trị là:
+
+`0`
+
+thì một tuần thực đơn được tính từ **Thứ 2 đến Chủ nhật** theo thứ tự:
+
+- Thứ 2
+- Thứ 3
+- Thứ 4
+- Thứ 5
+- Thứ 6
+- Thứ 7
+- Chủ nhật
+
+Nếu giá trị là:
+
+`1`
+
+thì một tuần thực đơn được tính từ **Thứ 7 đến Thứ 6** theo thứ tự:
+
+- Thứ 7
+- Chủ nhật
+- Thứ 2
+- Thứ 3
+- Thứ 4
+- Thứ 5
+- Thứ 6
+
+Thiết lập chỉ áp dụng chế độ **Thứ 7 đến Thứ 6** khi:
+
+- Thiết lập tồn tại.
+- `active = TRUE`.
+- Giá trị sau khi loại bỏ khoảng trắng là `1`.
+
+Nếu:
+
+- Không tồn tại thiết lập.
+- Thiết lập bị tắt (`active = FALSE`).
+- Giá trị để trống.
+- Giá trị là `0`.
+- Giá trị khác `1`.
+- Giá trị không hợp lệ.
+
+thì mặc định một tuần thực đơn được tính từ **Thứ 2 đến Chủ nhật**.
+
+Thiết lập này chỉ dùng để quy định cách xác định tuần trên giao diện tạo và cập nhật thực đơn, không làm thay đổi dữ liệu thực đơn đã được lưu trước đó.
+
+---
+
+## 10. THUC_DON_BAT_BUOC_DU_SO_NGAY
+
+**Mã:** `THUC_DON_BAT_BUOC_DU_SO_NGAY`
+
+**Giá trị:** `true` hoặc `false`.
+
+**Mô tả:**
+
+Quy định việc người dùng có bắt buộc phải nhập đầy đủ số ngày của thực đơn theo khoảng thời gian đã chọn hay không.
+
+Nếu giá trị là:
+
+`true`
+
+thì người dùng **bắt buộc phải nhập đầy đủ các ngày** thuộc khoảng thời gian của thực đơn trước khi có thể lưu thực đơn.
+
+Nếu giá trị là:
+
+`false`
+
+thì người dùng **không bắt buộc phải nhập đầy đủ các ngày** thuộc khoảng thời gian của thực đơn.
+
+Giá trị `true` và `false` không phân biệt chữ hoa, chữ thường.
+
+Ví dụ các giá trị sau đều được hiểu là `true`:
+
+- `true`
+- `TRUE`
+- `True`
+- `tRuE`
+
+Thiết lập chỉ bật chế độ bắt buộc nhập đầy đủ số ngày khi:
+
+- Thiết lập tồn tại.
+- `active = TRUE`.
+- Giá trị sau khi loại bỏ khoảng trắng và chuyển về chữ thường là `true`.
+
+Nếu:
+
+- Không tồn tại thiết lập.
+- Thiết lập bị tắt (`active = FALSE`).
+- Giá trị để trống.
+- Giá trị là `false`.
+- Giá trị không hợp lệ.
+
+thì mặc định **không bắt buộc** người dùng phải nhập đầy đủ số ngày.
+
+Thiết lập này chỉ dùng để ràng buộc và kiểm tra dữ liệu trên giao diện tạo và cập nhật thực đơn, không làm thay đổi dữ liệu thực đơn đã được lưu trước đó.
+
+---

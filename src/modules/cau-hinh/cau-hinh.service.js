@@ -28,7 +28,13 @@ const MA_THIET_LAP = {
         "THOI_GIAN_TIMEOUT",
     
     SIDEBAR_MAC_DINH_DONG:
-        "SIDEBAR_MAC_DINH_DONG"
+        "SIDEBAR_MAC_DINH_DONG",
+
+    NGAY_BAT_DAU_TUAN_THUC_DON:
+        "NGAY_BAT_DAU_TUAN_THUC_DON",
+
+    THUC_DON_BAT_BUOC_DU_SO_NGAY:
+        "THUC_DON_BAT_BUOC_DU_SO_NGAY"
 
 };
 
@@ -152,6 +158,35 @@ class CauHinhService {
                     giaTri:
                         await this
                             .getSidebarDongMacDinh()
+
+                };
+
+            case MA_THIET_LAP
+                .NGAY_BAT_DAU_TUAN_THUC_DON:
+
+                return {
+
+                    ma:
+                        maThietLap,
+
+                    giaTri:
+                        await this
+                            .getThucDonTuanBatDauThuBay()
+
+                };
+
+
+            case MA_THIET_LAP
+                .THUC_DON_BAT_BUOC_DU_SO_NGAY:
+
+                return {
+
+                    ma:
+                        maThietLap,
+
+                    giaTri:
+                        await this
+                            .getThucDonBatBuocDuSoNgay()
 
                 };
 
@@ -562,6 +597,73 @@ class CauHinhService {
                 .getThietLapByMa(
                     MA_THIET_LAP
                         .SIDEBAR_MAC_DINH_DONG
+                );
+
+
+        if (
+            !thietLap ||
+            thietLap.active !== true
+        ) {
+
+            return false;
+
+        }
+
+
+        const giaTri =
+            String(
+                thietLap.gia_tri ??
+                ""
+            )
+                .trim()
+                .toLowerCase();
+
+
+        return giaTri ===
+            "true";
+
+    }
+
+    async getThucDonTuanBatDauThuBay() {
+
+        const thietLap =
+            await cauHinhRepository
+                .getThietLapByMa(
+                    MA_THIET_LAP
+                        .NGAY_BAT_DAU_TUAN_THUC_DON
+                );
+
+
+        if (
+            !thietLap ||
+            thietLap.active !== true
+        ) {
+
+            return 0;
+
+        }
+
+
+        const giaTri =
+            String(
+                thietLap.gia_tri ??
+                ""
+            ).trim();
+
+
+        return giaTri === "1"
+            ? 1
+            : 0;
+
+    }
+
+    async getThucDonBatBuocDuSoNgay() {
+
+        const thietLap =
+            await cauHinhRepository
+                .getThietLapByMa(
+                    MA_THIET_LAP
+                        .THUC_DON_BAT_BUOC_DU_SO_NGAY
                 );
 
 
