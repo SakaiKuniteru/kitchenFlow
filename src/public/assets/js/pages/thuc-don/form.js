@@ -2526,44 +2526,6 @@ window.ThucDon.form =
 
         }
 
-        function setDate(
-            root,
-            name,
-            val
-        ) {
-
-            const el =
-                root.querySelector(
-                    `[name="${name}"][data-date-value]`
-                );
-
-
-            if (!el) return;
-
-
-            const normalized =
-                normalizeDate(
-                    val
-                );
-
-
-            el.value =
-                normalized;
-
-
-            el
-                .closest(
-                    "[data-date-picker]"
-                )
-                ?.datePicker
-                ?.setValue
-                ?.(
-                    normalized,
-                    false
-                );
-
-        }
-
         function value(
             root,
             name

@@ -1346,9 +1346,7 @@ window.ThucDon.options =
                     .tdTimeApplicationBound ===
                 "true"
             ) {
-
                 return;
-
             }
 
 
@@ -1366,37 +1364,33 @@ window.ThucDon.options =
 
 
                     if (
-                        !target ||
-                        !target.name
+                        !(target instanceof HTMLElement)
                     ) {
-
                         return;
-
                     }
-
 
                     switch (
                         target.name
                     ) {
 
-                        case "ngayApDung":
+                        case "ngayApDung": {
 
-                            readDayTime(
-                                root
+                            const ngay =
+                                normalizeDate(
+                                    target.value
+                                );
+
+
+                            setCanonicalTime(
+                                root,
+                                ngay,
+                                ngay
                             );
+
 
                             break;
 
-
-                        case "tuNgayKhoang":
-                        case "denNgayKhoang":
-
-                            readRangeTime(
-                                root
-                            );
-
-                            break;
-
+                        }
 
                         case "tuanApDung":
 
@@ -1421,11 +1415,44 @@ window.ThucDon.options =
 
                             break;
 
-
                         case "thangApDung":
 
                             syncMonthValue(
                                 root
+                            );
+
+                            break;
+
+                        case "tuNgayKhoang":
+
+                            setCanonicalTime(
+                                root,
+                                normalizeDate(
+                                    target.value
+                                ),
+                                normalizeDate(
+                                    fieldValue(
+                                        root,
+                                        "denNgayKhoang"
+                                    )
+                                )
+                            );
+
+                            break;
+
+                        case "denNgayKhoang":
+
+                            setCanonicalTime(
+                                root,
+                                normalizeDate(
+                                    fieldValue(
+                                        root,
+                                        "tuNgayKhoang"
+                                    )
+                                ),
+                                normalizeDate(
+                                    target.value
+                                )
                             );
 
                             break;
@@ -2239,14 +2266,13 @@ window.ThucDon.options =
 
                 case LOAI_THUC_DON.NGAY:
 
-                    writeDateValue(
+                    setDatePickerValue(
                         root,
                         "ngayApDung",
                         from
                     );
 
                     break;
-
 
                 case LOAI_THUC_DON.TUAN:
 
@@ -2321,13 +2347,13 @@ window.ThucDon.options =
 
                 case LOAI_THUC_DON.KHOANG_NGAY:
 
-                    writeDateValue(
+                    setDatePickerValue(
                         root,
                         "tuNgayKhoang",
                         from
                     );
 
-                    writeDateValue(
+                    setDatePickerValue(
                         root,
                         "denNgayKhoang",
                         to
@@ -2335,6 +2361,110 @@ window.ThucDon.options =
 
                     break;
             }
+        }
+
+        function clearDatePicker(
+            root,
+            fieldName
+        ) {
+
+            const fieldContainer =
+                root.querySelector(
+                    `[data-form-field="${fieldName}"]`
+                );
+
+
+            if (!fieldContainer) {
+                return;
+            }
+
+
+            const hiddenInput =
+                fieldContainer.querySelector(
+                    "[data-date-value]"
+                );
+
+
+            const displayInput =
+                fieldContainer.querySelector(
+                    "[data-date-input]"
+                );
+
+
+            if (
+                hiddenInput
+            ) {
+
+                hiddenInput.value =
+                    "";
+
+            }
+
+
+            if (
+                displayInput
+            ) {
+
+                displayInput.value =
+                    "";
+
+            }
+
+
+            fieldContainer
+                .datePicker
+                ?.setValue(
+                    "",
+                    false
+                );
+
+        }
+
+        function clearTimeControls(
+            root
+        ) {
+
+            clearDatePicker(
+                root,
+                "ngayApDung"
+            );
+
+
+            clearSelect(
+                root,
+                "tuanApDung"
+            );
+
+
+            clearSelect(
+                root,
+                "namApDung"
+            );
+
+
+            clearSelect(
+                root,
+                "thangApDung"
+            );
+
+
+            disableMonthSelect(
+                root,
+                true
+            );
+
+
+            clearDatePicker(
+                root,
+                "tuNgayKhoang"
+            );
+
+
+            clearDatePicker(
+                root,
+                "denNgayKhoang"
+            );
+
         }
 
         function syncTimeValue(
@@ -2350,72 +2480,241 @@ window.ThucDon.options =
                 );
 
 
+            let from =
+                "";
+
+            let to =
+                "";
+
+
             switch (
                 type
             ) {
 
                 case LOAI_THUC_DON.NGAY:
 
-                    readDayTime(
-                        root
-                    );
+                    from =
+                        normalizeDate(
+                            fieldValue(
+                                root,
+                                "ngayApDung"
+                            )
+                        );
+
+
+                    to =
+                        from;
 
                     break;
 
+                case LOAI_THUC_DON.TUAN: {
 
-                case LOAI_THUC_DON.TUAN:
+                    const value =
+                        fieldValue(
+                            root,
+                            "tuanApDung"
+                        );
 
-                    syncWeekValue(
-                        root
-                    );
+
+                    const parts =
+                        value.split(
+                            "|"
+                        );
+
+
+                    from =
+                        normalizeDate(
+                            parts[0] ||
+                            ""
+                        );
+
+
+                    to =
+                        normalizeDate(
+                            parts[1] ||
+                            ""
+                        );
 
                     break;
 
+                }
 
-                case LOAI_THUC_DON.THANG:
+                case LOAI_THUC_DON.THANG: {
 
-                    syncMonthValue(
-                        root
-                    );
+                    const year =
+                        Number(
+                            fieldValue(
+                                root,
+                                "namApDung"
+                            )
+                        );
+
+
+                    const month =
+                        Number(
+                            fieldValue(
+                                root,
+                                "thangApDung"
+                            )
+                        );
+
+
+                    if (
+                        Number.isInteger(year) &&
+                        Number.isInteger(month) &&
+                        year > 0 &&
+                        month >= 1 &&
+                        month <= 12
+                    ) {
+
+                        from =
+                            isoDate(
+                                year,
+                                month,
+                                1
+                            );
+
+
+                        const lastDay =
+                            new Date(
+                                year,
+                                month,
+                                0
+                            )
+                                .getDate();
+
+
+                        to =
+                            isoDate(
+                                year,
+                                month,
+                                lastDay
+                            );
+
+                    }
 
                     break;
 
+                }
 
                 case LOAI_THUC_DON.KHOANG_NGAY:
 
-                    readRangeTime(
-                        root
-                    );
+                    from =
+                        normalizeDate(
+                            fieldValue(
+                                root,
+                                "tuNgayKhoang"
+                            )
+                        );
 
-                    break;
 
-
-                default:
-
-                    clearCanonicalTime(
-                        root
-                    );
+                    to =
+                        normalizeDate(
+                            fieldValue(
+                                root,
+                                "denNgayKhoang"
+                            )
+                        );
 
                     break;
 
             }
 
 
+            setCanonicalTime(
+                root,
+                from,
+                to
+            );
+
+
             return {
 
                 tuNgay:
-                    fieldValue(
-                        root,
-                        "tuNgay"
-                    ),
+                    from,
 
                 denNgay:
-                    fieldValue(
-                        root,
-                        "denNgay"
-                    )
+                    to
 
             };
+
+        }
+
+        function setDatePickerValue(
+            root,
+            fieldName,
+            value
+        ) {
+
+            const fieldContainer =
+                root.querySelector(
+                    `[data-form-field="${fieldName}"]`
+                );
+
+
+            if (!fieldContainer) {
+                return;
+            }
+
+
+            const hiddenInput =
+                fieldContainer.querySelector(
+                    "[data-date-value]"
+                );
+
+
+            const displayInput =
+                fieldContainer.querySelector(
+                    "[data-date-input]"
+                );
+
+
+            const databaseValue =
+                normalizeDate(
+                    value
+                );
+
+
+            const displayValue =
+                formatIsoDate(
+                    databaseValue
+                );
+
+
+            if (
+                hiddenInput
+            ) {
+
+                hiddenInput.value =
+                    databaseValue;
+
+            }
+
+
+            if (
+                displayInput
+            ) {
+
+                displayInput.value =
+                    displayValue;
+
+            }
+
+
+            const datePickerApi =
+                fieldContainer.datePicker;
+
+
+            if (
+                datePickerApi?.setValue
+            ) {
+
+                datePickerApi.setValue(
+                    databaseValue,
+                    false
+                );
+
+            }
 
         }
 
