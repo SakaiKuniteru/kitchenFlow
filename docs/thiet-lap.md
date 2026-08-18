@@ -369,3 +369,334 @@ thì mặc định **không bắt buộc** người dùng phải nhập đầy �
 Thiết lập này chỉ dùng để ràng buộc và kiểm tra dữ liệu trên giao diện tạo và cập nhật thực đơn, không làm thay đổi dữ liệu thực đơn đã được lưu trước đó.
 
 ---
+
+## 11. SO_TUAN_HIEN_THI_THUC_DON
+
+**Mã:** `SO_TUAN_HIEN_THI_THUC_DON`
+
+**Giá trị:** Số nguyên dương.
+
+**Mô tả:**
+
+Quy định số tuần được hiển thị để người dùng lựa chọn khi tạo hoặc cập nhật thực đơn có loại **Thực đơn tuần**.
+
+Danh sách tuần được hệ thống sinh tự động bắt đầu từ **tuần hiện tại** hoặc **tuần gần nhất hợp lệ** theo thiết lập:
+
+`NGAY_BAT_DAU_TUAN_THUC_DON`
+
+Mỗi tuần được hiển thị theo định dạng:
+
+`dd/mm/yyyy - dd/mm/yyyy`
+
+Ví dụ:
+
+`SO_TUAN_HIEN_THI_THUC_DON = 5`
+
+thì hệ thống hiển thị **5 tuần liên tiếp** để người dùng lựa chọn.
+
+Ví dụ:
+
+- `17/08/2026 - 23/08/2026`
+- `24/08/2026 - 30/08/2026`
+- `31/08/2026 - 06/09/2026`
+- `07/09/2026 - 13/09/2026`
+- `14/09/2026 - 20/09/2026`
+
+Ngày bắt đầu và ngày kết thúc của từng tuần phụ thuộc vào thiết lập:
+
+`NGAY_BAT_DAU_TUAN_THUC_DON`
+
+Khi người dùng chọn một tuần:
+
+- `tuNgay` tự động bằng ngày đầu tiên của tuần.
+- `denNgay` tự động bằng ngày cuối cùng của tuần.
+- Người dùng không nhập trực tiếp `tuNgay`.
+- Người dùng không nhập trực tiếp `denNgay`.
+
+Thiết lập chỉ được sử dụng khi:
+
+- Thiết lập tồn tại.
+- `active = TRUE`.
+- Giá trị sau khi loại bỏ khoảng trắng là số nguyên.
+- Giá trị lớn hơn `0`.
+
+Nếu:
+
+- Không tồn tại thiết lập.
+- Thiết lập bị tắt (`active = FALSE`).
+- Giá trị để trống.
+- Giá trị không phải số nguyên.
+- Giá trị nhỏ hơn hoặc bằng `0`.
+- Giá trị không hợp lệ.
+
+thì hệ thống sử dụng giá trị mặc định:
+
+`5`
+
+Thiết lập này chỉ áp dụng cho loại **Thực đơn tuần**.
+
+---
+
+## 12. SO_NAM_HIEN_THI_THUC_DON_THANG
+
+**Mã:** `SO_NAM_HIEN_THI_THUC_DON_THANG`
+
+**Giá trị:** Số nguyên dương.
+
+**Mô tả:**
+
+Quy định số năm được phép lựa chọn khi tạo hoặc cập nhật thực đơn có loại **Thực đơn tháng**.
+
+Danh sách năm được sinh tự động bắt đầu từ **năm hiện tại**.
+
+Ví dụ:
+
+`SO_NAM_HIEN_THI_THUC_DON_THANG = 5`
+
+và năm hiện tại là:
+
+`2026`
+
+thì hệ thống cho phép lựa chọn các năm:
+
+- `2026`
+- `2027`
+- `2028`
+- `2029`
+- `2030`
+
+Đối với **năm hiện tại**, hệ thống chỉ cho phép lựa chọn từ **tháng hiện tại trở đi**.
+
+Ví dụ thời điểm hiện tại là:
+
+`08/2026`
+
+thì năm `2026` chỉ hiển thị:
+
+- `08/2026`
+- `09/2026`
+- `10/2026`
+- `11/2026`
+- `12/2026`
+
+Đối với các **năm tương lai**, hệ thống hiển thị đầy đủ 12 tháng:
+
+- `01`
+- `02`
+- `03`
+- `04`
+- `05`
+- `06`
+- `07`
+- `08`
+- `09`
+- `10`
+- `11`
+- `12`
+
+Khi người dùng chọn một tháng:
+
+- `tuNgay` tự động bằng ngày đầu tiên của tháng.
+- `denNgay` tự động bằng ngày cuối cùng của tháng.
+- Người dùng không nhập trực tiếp `tuNgay`.
+- Người dùng không nhập trực tiếp `denNgay`.
+
+Hệ thống phải tự xác định chính xác số ngày của từng tháng.
+
+Ví dụ:
+
+- Tháng 01 → 31 ngày.
+- Tháng 04 → 30 ngày.
+- Tháng 02 → 28 ngày đối với năm thường.
+- Tháng 02 → 29 ngày đối với năm nhuận.
+
+Việc xác định năm nhuận phải tuân theo quy tắc lịch Gregorian:
+
+- Năm chia hết cho `400` là năm nhuận.
+- Hoặc năm chia hết cho `4` nhưng không chia hết cho `100` là năm nhuận.
+
+Thiết lập chỉ được sử dụng khi:
+
+- Thiết lập tồn tại.
+- `active = TRUE`.
+- Giá trị sau khi loại bỏ khoảng trắng là số nguyên.
+- Giá trị lớn hơn `0`.
+
+Nếu:
+
+- Không tồn tại thiết lập.
+- Thiết lập bị tắt (`active = FALSE`).
+- Giá trị để trống.
+- Giá trị không phải số nguyên.
+- Giá trị nhỏ hơn hoặc bằng `0`.
+- Giá trị không hợp lệ.
+
+thì hệ thống sử dụng giá trị mặc định:
+
+`5`
+
+Thiết lập này chỉ áp dụng cho loại **Thực đơn tháng**.
+
+---
+
+## Quy tắc hiển thị thời gian áp dụng theo loại thực đơn
+
+Phần **Thời gian áp dụng** thay đổi theo giá trị của `loaiThucDon`.
+
+### Thực đơn ngày
+
+Hiển thị một trường:
+
+`Ngày áp dụng`
+
+Sử dụng:
+
+`{{> forms/date }}`
+
+Người dùng chọn một ngày duy nhất.
+
+Khi chọn ngày:
+
+`tuNgay = ngày áp dụng`
+
+`denNgay = ngày áp dụng`
+
+Ví dụ:
+
+`Ngày áp dụng = 18/08/2026`
+
+thì:
+
+`tuNgay = 18/08/2026`
+
+`denNgay = 18/08/2026`
+
+---
+
+### Thực đơn tuần
+
+Hiển thị một trường:
+
+`Tuần áp dụng`
+
+Sử dụng:
+
+`{{> forms/select }}`
+
+Danh sách tuần được sinh tự động dựa trên:
+
+- `NGAY_BAT_DAU_TUAN_THUC_DON`
+- `SO_TUAN_HIEN_THI_THUC_DON`
+
+Option hiển thị theo định dạng:
+
+`dd/mm/yyyy - dd/mm/yyyy`
+
+Ví dụ:
+
+`17/08/2026 - 23/08/2026`
+
+Khi người dùng chọn:
+
+`tuNgay = 17/08/2026`
+
+`denNgay = 23/08/2026`
+
+Người dùng không nhập trực tiếp hai giá trị này.
+
+---
+
+### Thực đơn tháng
+
+Hiển thị lựa chọn:
+
+- `Năm`
+- `Tháng`
+
+Danh sách năm được sinh dựa trên:
+
+`SO_NAM_HIEN_THI_THUC_DON_THANG`
+
+Năm bắt đầu luôn là năm hiện tại.
+
+Đối với năm hiện tại:
+
+- Chỉ hiển thị tháng hiện tại và các tháng phía sau.
+
+Đối với năm tương lai:
+
+- Hiển thị từ tháng `01` đến tháng `12`.
+
+Khi người dùng chọn năm và tháng, hệ thống tự động xác định:
+
+`tuNgay = ngày đầu tiên của tháng`
+
+`denNgay = ngày cuối cùng của tháng`
+
+Ví dụ:
+
+`Tháng = 02/2028`
+
+thì:
+
+`tuNgay = 01/02/2028`
+
+`denNgay = 29/02/2028`
+
+---
+
+### Thực đơn từ ngày đến ngày
+
+Hiển thị hai trường:
+
+- `Từ ngày`
+- `Đến ngày`
+
+Sử dụng:
+
+`{{> forms/date }}`
+
+Người dùng được phép tự chọn khoảng thời gian.
+
+Điều kiện:
+
+`tuNgay <= denNgay`
+
+Nếu:
+
+`tuNgay > denNgay`
+
+thì không cho phép lưu thực đơn và thông báo:
+
+`Từ ngày không được lớn hơn đến ngày.`
+
+---
+
+## Quy tắc chung
+
+Khi người dùng thay đổi `loaiThucDon`, giao diện **Thời gian áp dụng** phải được cập nhật ngay theo loại thực đơn vừa chọn.
+
+Khi chuyển từ loại thực đơn này sang loại thực đơn khác:
+
+- Xóa giá trị lựa chọn thời gian của loại thực đơn trước.
+- Tính lại `tuNgay`.
+- Tính lại `denNgay`.
+- Không giữ khoảng thời gian không còn phù hợp với loại thực đơn mới.
+
+`tuNgay` và `denNgay` vẫn là hai trường dữ liệu chuẩn được gửi lên Backend.
+
+Các trường như:
+
+- Ngày áp dụng.
+- Tuần áp dụng.
+- Năm.
+- Tháng.
+
+chỉ là các trường hỗ trợ lựa chọn trên giao diện và không cần gửi lên Backend nếu Backend không yêu cầu.
+
+Phần **Thêm ngày** trong nội dung thực đơn tiếp tục sử dụng khoảng:
+
+`tuNgay -> denNgay`
+
+để sinh danh sách ngày có thể lựa chọn.
+

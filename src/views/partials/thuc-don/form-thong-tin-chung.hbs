@@ -83,12 +83,84 @@
             required=true
         }}
 
+        <input
+            type="hidden"
+            name="tuNgay"
+            data-menu-canonical-from>
 
-        <div data-menu-from-date>
+        <input
+            type="hidden"
+            name="denNgay"
+            data-menu-canonical-to>
+
+        <div
+            class="td-general__time-field"
+            data-menu-time-day
+            hidden>
 
             {{> forms/date
-                id="tuNgay"
-                name="tuNgay"
+                id="ngayApDung"
+                name="ngayApDung"
+                label="Ngày áp dụng"
+                placeholder="dd/mm/yyyy"
+                defaultTime="00:00:00"
+                required=true
+            }}
+
+        </div>
+
+        <div
+            class="td-general__time-field"
+            data-menu-time-week
+            hidden>
+
+            {{> forms/select
+                id="tuanApDung"
+                name="tuanApDung"
+                label="Tuần áp dụng"
+                mode="single"
+                placeholder="Chọn tuần áp dụng"
+                options=null
+                required=true
+            }}
+
+        </div>
+
+        <div
+            class="td-general__time-month"
+            data-menu-time-month
+            hidden>
+
+            {{> forms/select
+                id="namApDung"
+                name="namApDung"
+                label="Năm"
+                mode="single"
+                placeholder="Chọn năm"
+                options=null
+                required=true
+            }}
+
+            {{> forms/select
+                id="thangApDung"
+                name="thangApDung"
+                label="Tháng"
+                mode="single"
+                placeholder="Chọn tháng"
+                options=null
+                required=true
+            }}
+
+        </div>
+
+        <div
+            class="td-general__time-field"
+            data-menu-time-range-from
+            hidden>
+
+            {{> forms/date
+                id="tuNgayKhoang"
+                name="tuNgayKhoang"
                 label="Từ ngày"
                 placeholder="dd/mm/yyyy"
                 defaultTime="00:00:00"
@@ -97,12 +169,14 @@
 
         </div>
 
-
-        <div data-menu-to-date>
+        <div
+            class="td-general__time-field"
+            data-menu-time-range-to
+            hidden>
 
             {{> forms/date
-                id="denNgay"
-                name="denNgay"
+                id="denNgayKhoang"
+                name="denNgayKhoang"
                 label="Đến ngày"
                 placeholder="dd/mm/yyyy"
                 defaultTime="23:59:59"
@@ -110,7 +184,6 @@
             }}
 
         </div>
-
 
         <div class="td-general__description">
 

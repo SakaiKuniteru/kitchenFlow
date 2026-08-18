@@ -113,6 +113,13 @@ window.ThucDon.api =
                         "/api/mcs/v1/enums"
                     ),
 
+            setting:
+                ma =>
+                    request(
+                        "/api/mcs/v1/thiet-lap/gia-tri" +
+                        `?ma=${encodeURIComponent(ma)}`
+                    ),
+
             detail:
                 id =>
                     request(
