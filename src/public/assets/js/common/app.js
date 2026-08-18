@@ -20,7 +20,9 @@ window.MCS.config = {
         "/auth/login",
 
     homePath:
-        "/"
+        "/",
+
+    accessTokenRefreshBeforeSeconds: 120,
 
 };
 
@@ -88,6 +90,293 @@ window.MCS.storage = {
             window.MCS.config
                 .currentUserKey
         );
+
+    }
+
+};
+
+window.MCS.authSession = {
+
+    refreshTimer:
+        null,
+
+
+    decodeAccessToken(
+        token
+    ) {
+
+        if (!token) {
+            return null;
+        }
+
+
+        try {
+
+            const parts =
+                token.split(
+                    "."
+                );
+
+
+            if (
+                parts.length !== 3
+            ) {
+
+                return null;
+
+            }
+
+
+            let payload =
+                parts[1]
+                    .replace(
+                        /-/g,
+                        "+"
+                    )
+                    .replace(
+                        /_/g,
+                        "/"
+                    );
+
+
+            while (
+                payload.length %
+                4
+            ) {
+
+                payload +=
+                    "=";
+
+            }
+
+
+            const decoded =
+                decodeURIComponent(
+                    atob(
+                        payload
+                    )
+                        .split(
+                            ""
+                        )
+                        .map(
+                            character =>
+                                "%" +
+                                (
+                                    "00" +
+                                    character
+                                        .charCodeAt(
+                                            0
+                                        )
+                                        .toString(
+                                            16
+                                        )
+                                )
+                                    .slice(
+                                        -2
+                                    )
+                        )
+                        .join(
+                            ""
+                        )
+                );
+
+
+            return JSON.parse(
+                decoded
+            );
+
+        } catch (
+            error
+        ) {
+
+            console.warn(
+                "[Auth] Không thể đọc Access Token:",
+                error
+            );
+
+
+            return null;
+
+        }
+
+    },
+
+
+    clearRefreshTimer() {
+
+        if (
+            this.refreshTimer
+        ) {
+
+            clearTimeout(
+                this.refreshTimer
+            );
+
+
+            this.refreshTimer =
+                null;
+
+        }
+
+    },
+
+
+    scheduleAccessTokenRefresh() {
+
+        this.clearRefreshTimer();
+
+
+        const accessToken =
+            window.MCS.storage
+                .getAccessToken();
+
+
+        const refreshToken =
+            window.MCS.storage
+                .getRefreshToken();
+
+
+        if (
+            !accessToken ||
+            !refreshToken
+        ) {
+
+            return;
+
+        }
+
+
+        const payload =
+            this.decodeAccessToken(
+                accessToken
+            );
+
+
+        if (
+            !payload?.exp
+        ) {
+
+            return;
+
+        }
+
+
+        const expiresAt =
+            Number(
+                payload.exp
+            ) *
+            1000;
+
+
+        const refreshBefore =
+            window.MCS.config
+                .accessTokenRefreshBeforeSeconds *
+            1000;
+
+
+        const now =
+            Date.now();
+
+
+        const delay =
+            expiresAt -
+            now -
+            refreshBefore;
+
+        if (
+            delay <= 0
+        ) {
+
+            this.refreshAccessTokenNow();
+
+            return;
+
+        }
+
+
+        this.refreshTimer =
+            setTimeout(
+                () => {
+
+                    this.refreshAccessTokenNow();
+
+                },
+                delay
+            );
+
+    },
+
+
+    async refreshAccessTokenNow() {
+
+        if (
+            window.location.pathname ===
+            window.MCS.config.loginPath
+        ) {
+
+            return;
+
+        }
+
+
+        const refreshToken =
+            window.MCS.storage
+                .getRefreshToken();
+
+
+        if (!refreshToken) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const refreshed =
+                await window.MCS.api
+                    .refreshAuthentication();
+
+
+            if (
+                !refreshed
+            ) {
+
+                window.MCS.storage
+                    .clearAuthentication();
+
+
+                this.clearRefreshTimer();
+
+
+                if (
+                    window.location.pathname !==
+                    window.MCS.config.loginPath
+                ) {
+
+                    window.location.replace(
+                        window.MCS.config.loginPath
+                    );
+
+                }
+
+
+                return;
+
+            }
+
+            this.scheduleAccessTokenRefresh();
+
+        } catch (
+            error
+        ) {
+
+            console.warn(
+                "[Auth] Làm mới Access Token tự động thất bại:",
+                error
+            );
+
+        }
 
     }
 
@@ -438,6 +727,8 @@ window.MCS.api = {
                 data.refreshToken
             );
 
+            window.MCS.authSession
+                ?.scheduleAccessTokenRefresh();
 
             return true;
 
@@ -480,6 +771,9 @@ document.addEventListener(
     "DOMContentLoaded",
     () => {
 
+        window.MCS.authSession
+            .scheduleAccessTokenRefresh();
+            
         const currentUser =
             window.MCS.storage
                 .getCurrentUser();
