@@ -299,10 +299,13 @@ window.ThucDon.payload =
 
         }
 
-
         function validate(
             d
         ) {
+
+            const errors =
+                [];
+
 
             if (
                 !String(
@@ -311,10 +314,10 @@ window.ThucDon.payload =
                 ).trim()
             ) {
 
-                return [
+                errors.push([
                     "maThucDon",
                     "Mã thực đơn không được để trống."
-                ];
+                ]);
 
             }
 
@@ -326,10 +329,10 @@ window.ThucDon.payload =
                 ).trim()
             ) {
 
-                return [
+                errors.push([
                     "tenThucDon",
                     "Tên thực đơn không được để trống."
-                ];
+                ]);
 
             }
 
@@ -338,10 +341,10 @@ window.ThucDon.payload =
                 !d.loaiThucDon
             ) {
 
-                return [
+                errors.push([
                     "loaiThucDon",
                     "Vui lòng chọn loại thực đơn."
-                ];
+                ]);
 
             }
 
@@ -350,10 +353,10 @@ window.ThucDon.payload =
                 !d.coSoId
             ) {
 
-                return [
+                errors.push([
                     "coSoId",
                     "Vui lòng chọn cơ sở."
-                ];
+                ]);
 
             }
 
@@ -362,10 +365,10 @@ window.ThucDon.payload =
                 !d.nhaAnId
             ) {
 
-                return [
+                errors.push([
                     "nhaAnId",
                     "Vui lòng chọn nhà ăn."
-                ];
+                ]);
 
             }
 
@@ -374,42 +377,140 @@ window.ThucDon.payload =
                 !d.caAnId
             ) {
 
-                return [
+                errors.push([
                     "caAnId",
                     "Vui lòng chọn ca ăn."
-                ];
+                ]);
 
             }
 
 
-            if (
-                !d.tuNgay
+            const loaiThucDon =
+                Number(
+                    d.loaiThucDon
+                );
+
+
+            const from =
+                date(
+                    d.tuNgay
+                );
+
+
+            const to =
+                date(
+                    d.denNgay
+                );
+
+
+            switch (
+                loaiThucDon
             ) {
 
-                return [
-                    "tuNgay",
-                    "Vui lòng chọn từ ngày."
-                ];
+                case 10:
+
+                    if (
+                        !from
+                    ) {
+
+                        errors.push([
+                            "ngayApDung",
+                            "Vui lòng chọn ngày áp dụng."
+                        ]);
+
+                    }
+
+                    break;
+
+
+                case 20:
+
+                    if (
+                        !from ||
+                        !to
+                    ) {
+
+                        errors.push([
+                            "tuanApDung",
+                            "Vui lòng chọn tuần áp dụng."
+                        ]);
+
+                    }
+
+                    break;
+
+
+                case 30: {
+
+                    /*
+                    * Payload chỉ có tuNgay/denNgay.
+                    * Khi chưa tạo được khoảng tháng,
+                    * báo vào phần chọn tháng.
+                    */
+                    if (
+                        !from ||
+                        !to
+                    ) {
+
+                        errors.push([
+                            "thangApDung",
+                            "Vui lòng chọn tháng áp dụng."
+                        ]);
+
+                    }
+
+                    break;
+
+                }
+
+
+                case 40:
+
+                    if (
+                        !from
+                    ) {
+
+                        errors.push([
+                            "tuNgayKhoang",
+                            "Vui lòng chọn từ ngày."
+                        ]);
+
+                    }
+
+
+                    if (
+                        !to
+                    ) {
+
+                        errors.push([
+                            "denNgayKhoang",
+                            "Vui lòng chọn đến ngày."
+                        ]);
+
+                    }
+
+
+                    if (
+                        from &&
+                        to &&
+                        from > to
+                    ) {
+
+                        errors.push([
+                            "denNgayKhoang",
+                            "Đến ngày phải lớn hơn hoặc bằng từ ngày."
+                        ]);
+
+                    }
+
+                    break;
 
             }
 
 
-            if (
-                !d.denNgay
-            ) {
-
-                return [
-                    "denNgay",
-                    "Vui lòng chọn đến ngày."
-                ];
-
-            }
-
-
-            return null;
+            return errors;
 
         }
-
 
         function persisted(
             id

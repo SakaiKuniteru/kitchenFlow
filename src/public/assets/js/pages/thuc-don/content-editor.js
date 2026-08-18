@@ -374,7 +374,7 @@ window.ThucDon.contentEditor =
             ) {
 
                 error(
-                    "Vui lòng chọn từ ngày và đến ngày trước."
+                    "Vui lòng chọn thời gian áp dụng trước."
                 );
 
 

@@ -120,8 +120,7 @@ document.addEventListener(
                         status
                     );
 
-
-            const invalid =
+            const errors =
                 window.ThucDon
                     .payload
                     .validate(
@@ -129,20 +128,34 @@ document.addEventListener(
                     );
 
 
+            form.clearErrors();
+
+
             if (
-                invalid
+                errors.length
             ) {
 
-                window.MCS
-                    ?.toast
-                    ?.error
-                    ?.(invalid[1]);
+                errors.forEach(
+                    ([
+                        fieldName,
+                        message
+                    ]) => {
+
+                        form.setFieldError(
+                            fieldName,
+                            message
+                        );
+
+                    }
+                );
+
+
+                form.focusFirstError();
 
 
                 return;
 
             }
-
 
             try {
 

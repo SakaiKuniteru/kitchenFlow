@@ -155,20 +155,7 @@ document.addEventListener(
                             status
                         );
 
-console.log(
-    "[UPDATE THUC DON]",
-    {
-        denNgay:
-            payload.denNgay,
-
-        trangThai:
-            payload.trangThai,
-
-        payload
-    }
-);
-
-                const invalid =
+                const errors =
                     window.ThucDon
                         .payload
                         .validate(
@@ -176,22 +163,34 @@ console.log(
                         );
 
 
+                form.clearErrors();
+
+
                 if (
-                    invalid
+                    errors.length
                 ) {
 
-                    window.MCS
-                        ?.toast
-                        ?.error
-                        ?.(
-                            invalid[1]
-                        );
+                    errors.forEach(
+                        ([
+                            fieldName,
+                            message
+                        ]) => {
+
+                            form.setFieldError(
+                                fieldName,
+                                message
+                            );
+
+                        }
+                    );
+
+
+                    form.focusFirstError();
 
 
                     return;
 
                 }
-
 
                 try {
 

@@ -88,8 +88,7 @@ window.ThucDon.form =
 
             });
 
-        const PLACEHOLDER_IMAGE =
-            "/uploads/danh-muc/mon-an/mon-an.png";
+        const PLACEHOLDER_IMAGE = "/uploads/danh-muc/mon-an/mon-an.png";
 
         function init(
             root,
@@ -162,6 +161,11 @@ window.ThucDon.form =
                 state
             );
 
+            bindGeneralFieldEvents(
+                root,
+                state
+            );
+
             return {
 
                 setData(
@@ -219,10 +223,55 @@ window.ThucDon.form =
 
                 },
 
-
                 setWorkingData(
                     data
                 ) {
+
+                    if (
+                        state.data &&
+                        state.mode !==
+                        "detail"
+                    ) {
+
+                        syncGeneral(
+                            root,
+                            state
+                        );
+
+                    }
+
+
+                    const currentGeneral = {
+
+                        maThucDon:
+                            state.data?.maThucDon,
+
+                        tenThucDon:
+                            state.data?.tenThucDon,
+
+                        loaiThucDon:
+                            state.data?.loaiThucDon,
+
+                        coSoId:
+                            state.data?.coSoId,
+
+                        nhaAnId:
+                            state.data?.nhaAnId,
+
+                        caAnId:
+                            state.data?.caAnId,
+
+                        tuNgay:
+                            state.data?.tuNgay,
+
+                        denNgay:
+                            state.data?.denNgay,
+
+                        moTa:
+                            state.data?.moTa
+
+                    };
+
 
                     state.data =
                         normalizeData(
@@ -233,11 +282,10 @@ window.ThucDon.form =
                         );
 
 
-                    renderGeneral(
-                        root,
-                        state
+                    Object.assign(
+                        state.data,
+                        currentGeneral
                     );
-
 
                     renderContent(
                         root,
@@ -246,6 +294,45 @@ window.ThucDon.form =
 
                 },
 
+                setFieldError(
+                    fieldName,
+                    message
+                ) {
+
+                    setFieldError(
+                        root,
+                        fieldName,
+                        message
+                    );
+
+                },
+
+                clearFieldError(
+                    fieldName
+                ) {
+
+                    clearFieldError(
+                        root,
+                        fieldName
+                    );
+
+                },
+
+                clearErrors() {
+
+                    clearAllFieldErrors(
+                        root
+                    );
+
+                },
+
+                focusFirstError() {
+
+                    focusFirstFieldError(
+                        root
+                    );
+
+                },
 
                 render() {
 
@@ -262,7 +349,6 @@ window.ThucDon.form =
 
                 },
 
-
                 selectDay(
                     id
                 ) {
@@ -276,7 +362,6 @@ window.ThucDon.form =
 
                 },
 
-
                 selectGroup(
                     id
                 ) {
@@ -287,7 +372,6 @@ window.ThucDon.form =
                             : String(
                                 id
                             );
-
                 }
 
             };
@@ -645,20 +729,13 @@ window.ThucDon.form =
                 d.caAnId
             );
 
-
-            setDate(
-                root,
-                "tuNgay",
-                d.tuNgay
-            );
-
-
-            setDate(
-                root,
-                "denNgay",
-                d.denNgay
-            );
-
+            window.ThucDon
+                .options
+                ?.setTimeValue
+                ?.(
+                    root,
+                    d
+                );
 
             setField(
                 root,
@@ -729,24 +806,26 @@ window.ThucDon.form =
                     "caAnId"
                 );
 
+            const time =
+                window.ThucDon
+                    .options
+                    ?.syncTimeValue
+                    ?.(
+                        root
+                    ) ||
+                {};
+
 
             d.tuNgay =
                 normalizeDate(
-                    value(
-                        root,
-                        "tuNgay"
-                    )
+                    time.tuNgay
                 );
 
 
             d.denNgay =
                 normalizeDate(
-                    value(
-                        root,
-                        "denNgay"
-                    )
+                    time.denNgay
                 );
-
 
             d.moTa =
                 value(
@@ -1874,6 +1953,361 @@ window.ThucDon.form =
 
                     }
                 );
+
+        }
+
+        function bindGeneralFieldEvents(
+            root,
+            state
+        ) {
+
+            if (
+                root.dataset
+                    .tdGeneralFieldsBound ===
+                "true"
+            ) {
+
+                return;
+
+            }
+
+
+            root.dataset
+                .tdGeneralFieldsBound =
+                "true";
+
+
+            root.addEventListener(
+                "input",
+                event => {
+
+                    const fieldName =
+                        resolveFieldName(
+                            event.target
+                        );
+
+
+                    if (
+                        fieldName
+                    ) {
+
+                        clearFieldError(
+                            root,
+                            fieldName
+                        );
+
+                    }
+
+                }
+            );
+
+
+            root.addEventListener(
+                "change",
+                event => {
+
+                    const fieldName =
+                        resolveFieldName(
+                            event.target
+                        );
+
+
+                    if (
+                        fieldName
+                    ) {
+
+                        clearFieldError(
+                            root,
+                            fieldName
+                        );
+
+                    }
+
+                    if (
+                        state.data &&
+                        state.mode !==
+                        "detail"
+                    ) {
+
+                        syncGeneral(
+                            root,
+                            state
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+        function resolveFieldName(
+            target
+        ) {
+
+            if (
+                !(target instanceof Element)
+            ) {
+
+                return null;
+
+            }
+
+
+            if (
+                target.matches(
+                    "[data-date-input]"
+                )
+            ) {
+
+                return target
+                    .closest(
+                        "[data-form-field]"
+                    )
+                    ?.dataset
+                    ?.formField ||
+                    null;
+
+            }
+
+
+            const named =
+                target.closest(
+                    "[name]"
+                );
+
+
+            if (
+                named?.name
+            ) {
+
+                return named.name;
+
+            }
+
+
+            return target
+                .closest(
+                    "[data-form-field]"
+                )
+                ?.dataset
+                ?.formField ||
+                null;
+
+        }
+
+        function setFieldError(
+            root,
+            fieldName,
+            message
+        ) {
+
+            if (
+                !fieldName
+            ) {
+
+                return;
+
+            }
+
+
+            const container =
+                root.querySelector(
+                    `[data-form-field="${fieldName}"]`
+                );
+
+
+            if (
+                !container
+            ) {
+
+                return;
+
+            }
+
+
+            const errorElement =
+                container.querySelector(
+                    `[data-field-error="${fieldName}"]`
+                );
+
+
+            container.classList.add(
+                "is-invalid"
+            );
+
+
+            container
+                .querySelector(
+                    "[data-smart-select]"
+                )
+                ?.classList
+                .add(
+                    "is-invalid"
+                );
+
+
+            if (
+                errorElement
+            ) {
+
+                errorElement.textContent =
+                    message ||
+                    "Dữ liệu không hợp lệ.";
+
+
+                errorElement.hidden =
+                    false;
+
+            }
+
+        }
+
+        function clearFieldError(
+            root,
+            fieldName
+        ) {
+
+            if (
+                !fieldName
+            ) {
+
+                return;
+
+            }
+
+
+            const container =
+                root.querySelector(
+                    `[data-form-field="${fieldName}"]`
+                );
+
+
+            if (
+                !container
+            ) {
+
+                return;
+
+            }
+
+
+            container.classList.remove(
+                "is-invalid"
+            );
+
+
+            container
+                .querySelector(
+                    "[data-smart-select]"
+                )
+                ?.classList
+                .remove(
+                    "is-invalid"
+                );
+
+
+            const errorElement =
+                container.querySelector(
+                    `[data-field-error="${fieldName}"]`
+                );
+
+
+            if (
+                errorElement
+            ) {
+
+                errorElement.textContent =
+                    "";
+
+
+                errorElement.hidden =
+                    true;
+
+            }
+
+        }
+
+        function clearAllFieldErrors(
+            root
+        ) {
+
+            root
+                .querySelectorAll(
+                    "[data-form-field]"
+                )
+                .forEach(
+                    container => {
+
+                        const fieldName =
+                            container.dataset
+                                .formField;
+
+
+                        if (
+                            fieldName
+                        ) {
+
+                            clearFieldError(
+                                root,
+                                fieldName
+                            );
+
+                        }
+
+                    }
+                );
+
+        }
+
+        function focusFirstFieldError(
+            root
+        ) {
+
+            const invalid =
+                root.querySelector(
+                    ".form-field.is-invalid"
+                );
+
+
+            if (
+                !invalid
+            ) {
+
+                return;
+
+            }
+
+
+            const target =
+                invalid.querySelector(
+                    `
+                        [data-date-input],
+                        [data-smart-select-control],
+                        input:not([type="hidden"]),
+                        textarea,
+                        button
+                    `
+                );
+
+
+            invalid.scrollIntoView({
+                behavior:
+                    "smooth",
+
+                block:
+                    "center"
+            });
+
+
+            setTimeout(
+                () => {
+
+                    target?.focus?.();
+
+                },
+                250
+            );
 
         }
 

@@ -9,6 +9,19 @@ window.ThucDon =
 window.ThucDon.options =
     (() => {
 
+        const LOAI_THUC_DON = {
+            NGAY: 10,
+            TUAN: 20,
+            THANG: 30,
+            KHOANG_NGAY: 40
+        };
+
+        const DEFAULT_SETTINGS = {
+            ngayBatDauTuan: 0,
+            soTuanHienThi: 5,
+            soNamHienThiThang: 5
+        };
+
         async function init(
             root,
             data = null
@@ -21,7 +34,10 @@ window.ThucDon.options =
                 caAn,
                 nhomMonAn,
                 monAn,
-                donViTinh
+                donViTinh,
+                ngayBatDauTuan,
+                soTuanHienThi,
+                soNamHienThiThang
             ] =
                 await Promise.all([
 
@@ -54,7 +70,22 @@ window.ThucDon.options =
                     )
                         .catch(
                             () => []
-                        )
+                        ),
+
+                    getSetting(
+                        "NGAY_BAT_DAU_TUAN_THUC_DON",
+                        DEFAULT_SETTINGS.ngayBatDauTuan
+                    ),
+
+                    getSetting(
+                        "SO_TUAN_HIEN_THI_THUC_DON",
+                        DEFAULT_SETTINGS.soTuanHienThi
+                    ),
+
+                    getSetting(
+                        "SO_NAM_HIEN_THI_THUC_DON_THANG",
+                        DEFAULT_SETTINGS.soNamHienThiThang
+                    )
 
                 ]);
 
@@ -80,7 +111,25 @@ window.ThucDon.options =
                 caAn,
                 nhomMonAn,
                 monAn,
-                donViTinh
+                donViTinh,
+                settings: {
+                    ngayBatDauTuan:
+                        normalizeWeekStart(
+                            ngayBatDauTuan
+                        ),
+
+                    soTuanHienThi:
+                        positiveInteger(
+                            soTuanHienThi,
+                            DEFAULT_SETTINGS.soTuanHienThi
+                        ),
+
+                    soNamHienThiThang:
+                        positiveInteger(
+                            soNamHienThiThang,
+                            DEFAULT_SETTINGS.soNamHienThiThang
+                        )
+                }
             };
 
 
@@ -137,6 +186,11 @@ window.ThucDon.options =
                 root
             );
 
+            initTimeApplication(
+                root,
+                data
+            );
+
         }
 
         function bindDependencies(
@@ -173,6 +227,41 @@ window.ThucDon.options =
 
             }
 
+            const loaiThucDonSelect =
+                root.querySelector(
+                    '[name="loaiThucDon"]'
+                );
+
+            if (
+                loaiThucDonSelect &&
+                !loaiThucDonSelect
+                    .dataset
+                    .tdTimeBound
+            ) {
+
+                loaiThucDonSelect
+                    .dataset
+                    .tdTimeBound =
+                    "true";
+
+                loaiThucDonSelect
+                    .addEventListener(
+                        "change",
+                        () => {
+
+                            applyTimeType(
+                                root,
+                                Number(
+                                    loaiThucDonSelect.value
+                                ),
+                                {
+                                    clear:
+                                        true
+                                }
+                            );
+                        }
+                    );
+            }
         }
 
         function refreshNhaAn(
@@ -1144,20 +1233,1542 @@ window.ThucDon.options =
 
         }
 
+        async function getSetting(
+            ma,
+            fallback
+        ) {
+
+            try {
+
+                const response =
+                    await window.ThucDon
+                        .api
+                        .setting(
+                            ma
+                        );
+
+
+                const data =
+                    response?.data ??
+                    response;
+
+
+                return (
+                    data?.giaTri ??
+                    fallback
+                );
+
+            }
+            catch {
+
+                return fallback;
+
+            }
+
+        }
+
+        function normalizeWeekStart(
+            value
+        ) {
+
+            return String(
+                value ??
+                ""
+            ).trim() === "1"
+                ? 1
+                : 0;
+
+        }
+
+        function positiveInteger(
+            value,
+            fallback
+        ) {
+
+            const number =
+                Number(
+                    value
+                );
+
+
+            if (
+                !Number.isInteger(
+                    number
+                ) ||
+                number <= 0
+            ) {
+
+                return fallback;
+
+            }
+
+
+            return number;
+
+        }
+
+        function initTimeApplication(
+            root,
+            data = null
+        ) {
+
+            buildWeekOptions(
+                root,
+                data
+            );
+
+
+            buildYearOptions(
+                root,
+                data
+            );
+
+
+            bindTimeEvents(
+                root
+            );
+
+
+            setTimeValue(
+                root,
+                data ||
+                {}
+            );
+
+        }
+
+        function bindTimeEvents(
+            root
+        ) {
+
+            if (
+                root.dataset
+                    .tdTimeApplicationBound ===
+                "true"
+            ) {
+
+                return;
+
+            }
+
+
+            root.dataset
+                .tdTimeApplicationBound =
+                "true";
+
+
+            root.addEventListener(
+                "change",
+                event => {
+
+                    const target =
+                        event.target;
+
+
+                    if (
+                        !target ||
+                        !target.name
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    switch (
+                        target.name
+                    ) {
+
+                        case "ngayApDung":
+
+                            readDayTime(
+                                root
+                            );
+
+                            break;
+
+
+                        case "tuNgayKhoang":
+                        case "denNgayKhoang":
+
+                            readRangeTime(
+                                root
+                            );
+
+                            break;
+
+
+                        case "tuanApDung":
+
+                            syncWeekValue(
+                                root
+                            );
+
+                            break;
+
+                        case "namApDung":
+
+                            refreshMonthOptions(
+                                root,
+                                target.value,
+                                null
+                            );
+
+
+                            clearCanonicalTime(
+                                root
+                            );
+
+                            break;
+
+
+                        case "thangApDung":
+
+                            syncMonthValue(
+                                root
+                            );
+
+                            break;
+
+                    }
+
+                }
+            );
+
+        }
+
+        function applyTimeType(
+            root,
+            loaiThucDon,
+            {
+                clear = false
+            } = {}
+        ) {
+
+            const type =
+                Number(
+                    loaiThucDon
+                );
+
+
+            toggle(
+                root,
+                "[data-menu-time-day]",
+                type ===
+                    LOAI_THUC_DON.NGAY
+            );
+
+
+            toggle(
+                root,
+                "[data-menu-time-week]",
+                type ===
+                    LOAI_THUC_DON.TUAN
+            );
+
+
+            toggle(
+                root,
+                "[data-menu-time-month]",
+                type ===
+                    LOAI_THUC_DON.THANG
+            );
+
+
+            toggle(
+                root,
+                "[data-menu-time-range-from]",
+                type ===
+                    LOAI_THUC_DON.KHOANG_NGAY
+            );
+
+
+            toggle(
+                root,
+                "[data-menu-time-range-to]",
+                type ===
+                    LOAI_THUC_DON.KHOANG_NGAY
+            );
+
+
+            if (
+                clear
+            ) {
+
+                clearTimeControls(
+                    root
+                );
+
+
+                clearCanonicalTime(
+                    root
+                );
+
+            }
+
+        }
+
+        function toggle(
+            root,
+            selector,
+            visible
+        ) {
+
+            const element =
+                root.querySelector(
+                    selector
+                );
+
+
+            if (
+                element
+            ) {
+
+                element.hidden =
+                    !visible;
+
+            }
+
+        }
+
+        function clearTimeControls(
+            root
+        ) {
+
+            clearDateValue(
+                root,
+                "ngayApDung"
+            );
+
+
+            clearSelect(
+                root,
+                "tuanApDung"
+            );
+
+
+            clearSelect(
+                root,
+                "namApDung"
+            );
+
+
+            clearSelect(
+                root,
+                "thangApDung"
+            );
+
+
+            disableMonthSelect(
+                root,
+                true
+            );
+
+
+            clearDateValue(
+                root,
+                "tuNgayKhoang"
+            );
+
+
+            clearDateValue(
+                root,
+                "denNgayKhoang"
+            );
+
+        }
+
+        function clearCanonicalTime(
+            root
+        ) {
+
+            setCanonicalTime(
+                root,
+                "",
+                ""
+            );
+
+        }
+
+        function setCanonicalTime(
+            root,
+            from,
+            to
+        ) {
+
+            const fromInput =
+                root.querySelector(
+                    '[name="tuNgay"]'
+                );
+
+
+            const toInput =
+                root.querySelector(
+                    '[name="denNgay"]'
+                );
+
+
+            if (
+                fromInput
+            ) {
+
+                fromInput.value =
+                    from ||
+                    "";
+
+            }
+
+
+            if (
+                toInput
+            ) {
+
+                toInput.value =
+                    to ||
+                    "";
+
+            }
+
+        }
+
+        function syncWeekValue(
+            root
+        ) {
+
+            const value =
+                fieldValue(
+                    root,
+                    "tuanApDung"
+                );
+
+
+            const [
+                from = "",
+                to = ""
+            ] =
+                value.split(
+                    "|"
+                );
+
+
+            setCanonicalTime(
+                root,
+                normalizeDate(
+                    from
+                ),
+                normalizeDate(
+                    to
+                )
+            );
+
+        }
+
+        function syncMonthValue(
+            root
+        ) {
+
+            const year =
+                Number(
+                    fieldValue(
+                        root,
+                        "namApDung"
+                    )
+                );
+
+
+            const month =
+                Number(
+                    fieldValue(
+                        root,
+                        "thangApDung"
+                    )
+                );
+
+
+            if (
+                !Number.isInteger(
+                    year
+                ) ||
+                !Number.isInteger(
+                    month
+                )
+            ) {
+
+                clearCanonicalTime(
+                    root
+                );
+
+
+                return;
+
+            }
+
+
+            const from =
+                isoDate(
+                    year,
+                    month,
+                    1
+                );
+
+
+            const lastDay =
+                new Date(
+                    year,
+                    month,
+                    0
+                )
+                    .getDate();
+
+
+            const to =
+                isoDate(
+                    year,
+                    month,
+                    lastDay
+                );
+
+
+            setCanonicalTime(
+                root,
+                from,
+                to
+            );
+
+        }
+
+        function buildWeekOptions(
+            root,
+            data = null
+        ) {
+
+            const select =
+                root.querySelector(
+                    '[name="tuanApDung"]'
+                );
+
+
+            if (!select) {
+                return;
+            }
+
+
+            const settings =
+                root._tdOptions
+                    ?.settings ||
+                {};
+
+
+            const count =
+                positiveInteger(
+                    settings.soTuanHienThi,
+                    DEFAULT_SETTINGS
+                        .soTuanHienThi
+                );
+
+
+            const startMode =
+                normalizeWeekStart(
+                    settings.ngayBatDauTuan
+                );
+
+
+            const startDay =
+                startMode === 1
+                    ? 6
+                    : 1;
+
+
+            const today =
+                todayVietnam();
+
+
+            const weekStart =
+                new Date(
+                    today.getFullYear(),
+                    today.getMonth(),
+                    today.getDate()
+                );
+
+
+            const difference =
+                (
+                    weekStart.getDay() -
+                    startDay +
+                    7
+                ) % 7;
+
+
+            weekStart.setDate(
+                weekStart.getDate() -
+                difference
+            );
+
+
+            const list =
+                [];
+
+
+            for (
+                let index = 0;
+                index < count;
+                index += 1
+            ) {
+
+                const from =
+                    new Date(
+                        weekStart
+                    );
+
+
+                from.setDate(
+                    weekStart.getDate() +
+                    (
+                        index *
+                        7
+                    )
+                );
+
+
+                const to =
+                    new Date(
+                        from
+                    );
+
+
+                to.setDate(
+                    from.getDate() +
+                    6
+                );
+
+
+                const fromIso =
+                    dateToIso(
+                        from
+                    );
+
+
+                const toIso =
+                    dateToIso(
+                        to
+                    );
+
+
+                list.push({
+
+                    value:
+                        `${fromIso}|${toIso}`,
+
+                    label:
+                        `${formatIsoDate(fromIso)} - ${formatIsoDate(toIso)}`
+
+                });
+
+            }
+
+
+            const currentFrom =
+                normalizeDate(
+                    data?.tuNgay
+                );
+
+
+            const currentTo =
+                normalizeDate(
+                    data?.denNgay
+                );
+
+
+            let selected =
+                "";
+
+
+            if (
+                currentFrom &&
+                currentTo
+            ) {
+
+                selected =
+                    `${currentFrom}|${currentTo}`;
+
+
+                if (
+                    !list.some(
+                        item =>
+                            item.value ===
+                            selected
+                    )
+                ) {
+
+                    list.unshift({
+
+                        value:
+                            selected,
+
+                        label:
+                            `${formatIsoDate(currentFrom)} - ${formatIsoDate(currentTo)}`
+
+                    });
+
+                }
+
+            }
+
+
+            fillSimpleOptions(
+                select,
+                list,
+                selected
+            );
+
+        }
+
+        function buildYearOptions(
+            root,
+            data = null
+        ) {
+
+            const select =
+                root.querySelector(
+                    '[name="namApDung"]'
+                );
+
+
+            if (!select) {
+                return;
+            }
+
+
+            const today =
+                todayVietnam();
+
+
+            const currentYear =
+                today.getFullYear();
+
+
+            const count =
+                positiveInteger(
+                    root._tdOptions
+                        ?.settings
+                        ?.soNamHienThiThang,
+                    DEFAULT_SETTINGS
+                        .soNamHienThiThang
+                );
+
+
+            const list =
+                [];
+
+
+            for (
+                let offset = 0;
+                offset < count;
+                offset += 1
+            ) {
+
+                const year =
+                    currentYear +
+                    offset;
+
+
+                list.push({
+
+                    value:
+                        String(
+                            year
+                        ),
+
+                    label:
+                        String(
+                            year
+                        )
+
+                });
+
+            }
+
+
+            const selectedDate =
+                normalizeDate(
+                    data?.tuNgay
+                );
+
+
+            const selectedYear =
+                selectedDate
+                    ? selectedDate.slice(
+                        0,
+                        4
+                    )
+                    : "";
+
+
+            if (
+                selectedYear &&
+                !list.some(
+                    item =>
+                        item.value ===
+                        selectedYear
+                )
+            ) {
+
+                list.unshift({
+
+                    value:
+                        selectedYear,
+
+                    label:
+                        selectedYear
+
+                });
+
+            }
+
+
+            fillSimpleOptions(
+                select,
+                list,
+                selectedYear
+            );
+
+
+            refreshMonthOptions(
+                root,
+                selectedYear,
+                selectedDate
+                    ? Number(
+                        selectedDate.slice(
+                            5,
+                            7
+                        )
+                    )
+                    : null
+            );
+
+        }
+
+        function refreshMonthOptions(
+            root,
+            yearValue,
+            selectedMonth = null
+        ) {
+
+            const select =
+                root.querySelector(
+                    '[name="thangApDung"]'
+                );
+
+
+            if (!select) {
+                return;
+            }
+
+
+            const year =
+                Number(
+                    yearValue
+                );
+
+            if (
+                !Number.isInteger(
+                    year
+                ) ||
+                year <= 0
+            ) {
+
+                fillSimpleOptions(
+                    select,
+                    [],
+                    ""
+                );
+
+
+                disableMonthSelect(
+                    root,
+                    true
+                );
+
+
+                return;
+
+            }
+
+            disableMonthSelect(
+                root,
+                false
+            );
+
+
+            const today =
+                todayVietnam();
+
+
+            const currentYear =
+                today.getFullYear();
+
+
+            const currentMonth =
+                today.getMonth() +
+                1;
+
+
+            const firstMonth =
+                year === currentYear
+                    ? currentMonth
+                    : 1;
+
+
+            const list =
+                [];
+
+
+            for (
+                let month = firstMonth;
+                month <= 12;
+                month += 1
+            ) {
+
+                const value =
+                    String(
+                        month
+                    ).padStart(
+                        2,
+                        "0"
+                    );
+
+
+                list.push({
+
+                    value,
+
+                    label:
+                        `${value}/${year}`
+
+                });
+
+            }
+
+
+            const selected =
+                selectedMonth
+                    ? String(
+                        selectedMonth
+                    ).padStart(
+                        2,
+                        "0"
+                    )
+                    : "";
+
+
+            if (
+                selected &&
+                !list.some(
+                    item =>
+                        item.value ===
+                        selected
+                )
+            ) {
+
+                list.unshift({
+
+                    value:
+                        selected,
+
+                    label:
+                        `${selected}/${year}`
+
+                });
+
+            }
+
+
+            fillSimpleOptions(
+                select,
+                list,
+                selected
+            );
+
+
+            disableMonthSelect(
+                root,
+                false
+            );
+
+        }
+
+        function setTimeValue(
+            root,
+            data = {}
+        ) {
+
+            const type =
+                Number(
+                    data.loaiThucDon
+                );
+
+
+            const from =
+                normalizeDate(
+                    data.tuNgay
+                );
+
+
+            const to =
+                normalizeDate(
+                    data.denNgay
+                );
+
+
+            applyTimeType(
+                root,
+                type
+            );
+
+
+            setCanonicalTime(
+                root,
+                from,
+                to
+            );
+
+
+            switch (
+                type
+            ) {
+
+                case LOAI_THUC_DON.NGAY:
+
+                    writeDateValue(
+                        root,
+                        "ngayApDung",
+                        from
+                    );
+
+                    break;
+
+
+                case LOAI_THUC_DON.TUAN:
+
+                    buildWeekOptions(
+                        root,
+                        data
+                    );
+
+
+                    setSelectControl(
+                        root,
+                        "tuanApDung",
+                        from &&
+                        to
+                            ? `${from}|${to}`
+                            : ""
+                    );
+
+                    break;
+
+
+                case LOAI_THUC_DON.THANG: {
+
+                    const year =
+                        from
+                            ? from.slice(
+                                0,
+                                4
+                            )
+                            : "";
+
+
+                    const month =
+                        from
+                            ? from.slice(
+                                5,
+                                7
+                            )
+                            : "";
+
+
+                    buildYearOptions(
+                        root,
+                        data
+                    );
+
+
+                    setSelectControl(
+                        root,
+                        "namApDung",
+                        year
+                    );
+
+
+                    refreshMonthOptions(
+                        root,
+                        year,
+                        month
+                    );
+
+
+                    setSelectControl(
+                        root,
+                        "thangApDung",
+                        month
+                    );
+
+
+                    break;
+
+                }
+
+                case LOAI_THUC_DON.KHOANG_NGAY:
+
+                    writeDateValue(
+                        root,
+                        "tuNgayKhoang",
+                        from
+                    );
+
+                    writeDateValue(
+                        root,
+                        "denNgayKhoang",
+                        to
+                    );
+
+                    break;
+            }
+        }
+
+        function syncTimeValue(
+            root
+        ) {
+
+            const type =
+                Number(
+                    fieldValue(
+                        root,
+                        "loaiThucDon"
+                    )
+                );
+
+
+            switch (
+                type
+            ) {
+
+                case LOAI_THUC_DON.NGAY:
+
+                    readDayTime(
+                        root
+                    );
+
+                    break;
+
+
+                case LOAI_THUC_DON.TUAN:
+
+                    syncWeekValue(
+                        root
+                    );
+
+                    break;
+
+
+                case LOAI_THUC_DON.THANG:
+
+                    syncMonthValue(
+                        root
+                    );
+
+                    break;
+
+
+                case LOAI_THUC_DON.KHOANG_NGAY:
+
+                    readRangeTime(
+                        root
+                    );
+
+                    break;
+
+
+                default:
+
+                    clearCanonicalTime(
+                        root
+                    );
+
+                    break;
+
+            }
+
+
+            return {
+
+                tuNgay:
+                    fieldValue(
+                        root,
+                        "tuNgay"
+                    ),
+
+                denNgay:
+                    fieldValue(
+                        root,
+                        "denNgay"
+                    )
+
+            };
+
+        }
+
+        function disableMonthSelect(
+            root,
+            disabled
+        ) {
+
+            const select =
+                root.querySelector(
+                    '[name="thangApDung"]'
+                );
+
+
+            if (!select) {
+                return;
+            }
+
+
+            const wrapper =
+                select.closest(
+                    "[data-smart-select]"
+                );
+
+
+            select.disabled =
+                !!disabled;
+
+
+            if (
+                wrapper
+            ) {
+
+                wrapper.dataset
+                    .selectPlaceholder =
+                    disabled
+                        ? "Chọn năm trước"
+                        : "Chọn tháng";
+
+            }
+
+
+            wrapper
+                ?.smartSelect
+                ?.setDisabled
+                ?.(
+                    !!disabled
+                );
+
+
+            wrapper
+                ?.smartSelect
+                ?.refresh
+                ?.();
+
+        }
+
+        function fillSimpleOptions(
+            select,
+            list,
+            selected = ""
+        ) {
+
+            if (!select) {
+                return;
+            }
+
+
+            select.innerHTML =
+                "";
+
+
+            const empty =
+                document.createElement(
+                    "option"
+                );
+
+
+            empty.value =
+                "";
+
+            empty.textContent =
+                "";
+
+
+            select.appendChild(
+                empty
+            );
+
+
+            list.forEach(
+                item => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        String(
+                            item.value
+                        );
+
+
+                    option.textContent =
+                        item.label;
+
+
+                    select.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+            select.value =
+                selected ||
+                "";
+
+
+            const wrapper =
+                select.closest(
+                    "[data-smart-select]"
+                );
+
+
+            const api =
+                wrapper?.smartSelect ||
+                (
+                    wrapper
+                        ? window.MCS
+                            ?.smartSelect
+                            ?.initialize(
+                                wrapper
+                            )
+                        : null
+                );
+
+
+            api?.refresh?.();
+
+
+            api?.setValue?.(
+                selected ||
+                "",
+                false
+            );
+
+        }
+
+        function setSelectControl(
+            root,
+            name,
+            value
+        ) {
+
+            const select =
+                root.querySelector(
+                    `select[name="${name}"]`
+                );
+
+
+            if (!select) {
+                return;
+            }
+
+
+            select.value =
+                value ||
+                "";
+
+
+            select
+                .closest(
+                    "[data-smart-select]"
+                )
+                ?.smartSelect
+                ?.setValue
+                ?.(
+                    value ||
+                    "",
+                    false
+                );
+
+        }
+
+        function clearSelect(
+            root,
+            name
+        ) {
+
+            setSelectControl(
+                root,
+                name,
+                ""
+            );
+
+        }
+
+        function fieldValue(
+            root,
+            name
+        ) {
+
+            return (
+                root.querySelector(
+                    `[name="${name}"]`
+                )
+                    ?.value
+                    ?.trim
+                    ?.() ||
+                ""
+            );
+
+        }
+
+        function normalizeDate(
+            value
+        ) {
+
+            return window.ThucDon
+                .form
+                .normalizeDate(
+                    value
+                );
+
+        }
+
+        function todayVietnam() {
+
+            const parts =
+                new Intl.DateTimeFormat(
+                    "en-CA",
+                    {
+                        timeZone:
+                            "Asia/Ho_Chi_Minh",
+
+                        year:
+                            "numeric",
+
+                        month:
+                            "2-digit",
+
+                        day:
+                            "2-digit"
+                    }
+                )
+                    .formatToParts(
+                        new Date()
+                    );
+
+
+            const data =
+                Object.fromEntries(
+                    parts.map(
+                        item => [
+                            item.type,
+                            item.value
+                        ]
+                    )
+                );
+
+
+            return new Date(
+                Number(
+                    data.year
+                ),
+                Number(
+                    data.month
+                ) - 1,
+                Number(
+                    data.day
+                )
+            );
+
+        }
+
+        function dateToIso(
+            date
+        ) {
+
+            return isoDate(
+                date.getFullYear(),
+                date.getMonth() + 1,
+                date.getDate()
+            );
+
+        }
+
+        function isoDate(
+            year,
+            month,
+            day
+        ) {
+
+            return (
+                String(
+                    year
+                ) +
+                "-" +
+                String(
+                    month
+                ).padStart(
+                    2,
+                    "0"
+                ) +
+                "-" +
+                String(
+                    day
+                ).padStart(
+                    2,
+                    "0"
+                )
+            );
+
+        }
+
+        function formatIsoDate(
+            value
+        ) {
+
+            if (!value) {
+                return "";
+            }
+
+
+            const [
+                year,
+                month,
+                day
+            ] =
+                value.split(
+                    "-"
+                );
+
+
+            return (
+                `${day}/${month}/${year}`
+            );
+
+        }
+
         return {
-
             init,
-
             fill,
-
             refreshNhaAn,
-
             refreshDayOptions,
-
             refreshGroupOptions,
-
-            refreshFoodOptions
-
+            refreshFoodOptions,
+            setTimeValue,
+            syncTimeValue,
+            applyTimeType
         };
-
     })();

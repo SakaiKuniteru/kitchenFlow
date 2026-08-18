@@ -67,3 +67,159 @@
     display: flex;
     gap: 9px;
 }
+
+.td-general__time-field {
+    min-width: 0;
+}
+
+
+.td-general__time-month {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 12px;
+
+    min-width: 0;
+}
+
+
+.td-general__time-month[hidden],
+.td-general__time-field[hidden] {
+    display: none !important;
+}
+
+
+@media (max-width: 760px) {
+
+    .td-general__time-month {
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+.td-editor
+.form-field.is-invalid
+.form-input,
+.td-editor
+.form-field.is-invalid
+.form-textarea,
+.td-editor
+.form-field.is-invalid
+.date-picker__input {
+    border-color: var(--color-danger);
+
+    background:
+        var(--color-danger-soft);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(
+            220,
+            38,
+            38,
+            0.08
+        );
+}
+
+
+.td-editor
+.form-field.is-invalid
+.date-picker__toggle {
+    color:
+        var(--color-danger);
+}
+
+
+.td-editor
+.smart-select.is-invalid
+.smart-select__control,
+.td-editor
+.form-field.is-invalid
+.smart-select__control {
+    border-color:
+        var(--color-danger);
+
+    background:
+        var(--color-danger-soft);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(
+            220,
+            38,
+            38,
+            0.08
+        );
+}
+
+
+.td-editor
+.smart-select.is-invalid
+.smart-select__toggle,
+.td-editor
+.form-field.is-invalid
+.smart-select__toggle {
+    color:
+        var(--color-danger);
+}
+
+
+.td-editor
+.form-field__error {
+    position: relative;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 7px;
+
+    min-height: 18px;
+
+    margin-top: 7px;
+
+    color:
+        var(--color-danger);
+
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+
+.td-editor
+.form-field__error[hidden] {
+    display: none !important;
+}
+
+
+.td-editor
+.form-field__error::before {
+    content: "!";
+
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+
+    width: 16px;
+    height: 16px;
+
+    margin-top: 1px;
+
+    border-radius: 50%;
+
+    color: #ffffff;
+
+    background:
+        var(--color-danger);
+
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+}
