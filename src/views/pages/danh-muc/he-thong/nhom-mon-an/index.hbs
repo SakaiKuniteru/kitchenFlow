@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/assets/css/pages/danh-muc/he-thong/nhom-mon-an.css">
+
 {{> catalog/module-page
     moduleName="nhom-mon-an"
     apiBase="/api/mcs/v1/dm-nhom-mon-an"
@@ -16,10 +18,13 @@
     detailTitle="Thông tin nhóm món ăn"
     showEditButton=true
     showActions=true
+    showImportButton=true
+    showExportButton=true
     mobilePanelId="nhomMonAnMobilePanel"
     columns=columns
 }}
 
 {{> scripts/catalog-page
     folder="he-thong"
-    page="nhom-mon-an"}}
+    page="nhom-mon-an"
+}}

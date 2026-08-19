@@ -1,16 +1,14 @@
 <div class="detail-panel__section">
-
     <h3 class="detail-panel__section-title">
         Thông tin nhóm món ăn
     </h3>
 
     <div class="catalog-form-grid">
-
         {{> forms/input
             id="maNhomMonAn"
             name="maNhomMonAn"
             label="Mã nhóm món ăn"
-            placeholder="Nhập mã nhóm"
+            placeholder="Nhập mã nhóm món ăn"
             maxlength=50
             required=true
         }}
@@ -19,13 +17,12 @@
             id="tenNhomMonAn"
             name="tenNhomMonAn"
             label="Tên nhóm món ăn"
-            placeholder="Nhập tên nhóm"
+            placeholder="Nhập tên nhóm món ăn"
             maxlength=150
             required=true
         }}
 
         <div class="catalog-form-grid__full">
-
             {{> forms/textarea
                 id="moTa"
                 name="moTa"
@@ -34,21 +31,17 @@
                 maxlength=500
                 rows=4
                 showCounter=true
+                required=true
             }}
-
         </div>
-
     </div>
-
 </div>
 
 <div class="detail-panel__section">
-
     {{> forms/switch
         id="active"
         name="active"
         label="Đang hoạt động"
         checked=true
     }}
-
 </div>
