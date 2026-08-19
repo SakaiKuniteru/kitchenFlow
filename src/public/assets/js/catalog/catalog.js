@@ -284,7 +284,7 @@ class MCSCatalog {
                         false,
 
                     onRowClick:
-                        record => {
+                        async record => {
 
                             if (!record) {
                                 return;
@@ -306,7 +306,21 @@ class MCSCatalog {
                             }
 
 
-                            this.openUpdate(
+                            if (
+                                this.options
+                                    .viewOnly
+                            ) {
+
+                                await this.openDetail(
+                                    id
+                                );
+
+                                return;
+
+                            }
+
+
+                            await this.openUpdate(
                                 id
                             );
 
@@ -943,55 +957,54 @@ class MCSCatalog {
     }
 
     async initialize() {
-
         await this.load();
-
-
         if (
             this.detailPanel
                 .isMobile()
         ) {
-
             this.detailPanel
                 .close();
-
-        } else {
-
+        } else if (
+            !this.options
+                .viewOnly
+        ) {
             this.openCreate();
-
         }
-
-
         return this;
-
     }
-    initializeDefaultDetail() {
 
+    initializeDefaultDetail() {
         if (
             this.detailPanel
                 .isMobile()
         ) {
-
             this.detailPanel
                 .close();
-
-
             this.table
                 .clearSelection();
-
-
             this.state
                 .selectedId =
                 null;
-
-
             return;
-
         }
-
-
+        if (
+            this.options
+                .viewOnly
+        ) {
+            this.table
+                .clearSelection();
+            this.state
+                .selectedId =
+                null;
+            this.form
+                .clear();
+            this.form
+                .setMode(
+                    "view"
+                );
+            return;
+        }
         this.openCreate();
-
     }
 
     syncResponsiveState() {
@@ -1009,7 +1022,6 @@ class MCSCatalog {
             return;
 
         }
-
 
         this.lastIsMobile =
             isMobile;
@@ -1118,6 +1130,8 @@ class MCSCatalog {
             );
 
         if (
+            !this.options
+                .viewOnly &&
             this.detailPanel
                 .mode ===
                 "view" &&
@@ -1125,9 +1139,7 @@ class MCSCatalog {
                 .selectedId ===
                 null
         ) {
-
             this.openCreate();
-
         }
 
     }
@@ -1725,27 +1737,17 @@ class MCSCatalog {
 
 
     openCreate() {
-
-        this.state.selectedId =
-            null;
-
-
-        this.table
-            .clearSelection();
-
-
-        this.form
-            .clear();
-
-
-        this.form
-            .setMode(
-                "create"
-            );
-
-
-        this.form
-            .setData(
+        if (
+            this.options
+                .viewOnly
+        ) {
+            return;
+        }
+        this.state.selectedId = null;
+        this.table.clearSelection();
+        this.form.clear();
+        this.form.setMode("create");
+        this.form.setData(
                 this.options
                     .defaultValues ||
                 {
@@ -1753,7 +1755,6 @@ class MCSCatalog {
                         true
                 }
             );
-
 
         this.detailPanel
             .showForm({
@@ -1788,33 +1789,33 @@ class MCSCatalog {
     async openUpdate(
         id
     ) {
-
+        if (
+            this.options
+                .viewOnly
+        ) {
+            return;
+        }
         const record =
             await this.getDetail(
                 id
             );
 
-
         if (!record) {
             return;
         }
 
-
         this.state.selectedId =
             id;
-
 
         this.table
             .selectRow(
                 id
             );
 
-
         this.form
             .setMode(
                 "update"
             );
-
 
         this.form
             .setData(
@@ -1822,7 +1823,6 @@ class MCSCatalog {
                     record
                 )
             );
-
 
         this.detailPanel
             .showForm({
@@ -1841,9 +1841,7 @@ class MCSCatalog {
                     this.getRecordSubtitle(
                         record
                     )
-
             });
-
 
         this.options
             .onRecordLoaded?.(
@@ -2153,16 +2151,30 @@ class MCSCatalog {
         switch (
             action
         ) {
-
             case "view":
-            case "edit":
 
-                await this.openUpdate(
+                await this.openDetail(
                     id
                 );
 
                 break;
 
+
+            case "edit":
+
+                if (
+                    !this.options
+                        .viewOnly
+                ) {
+
+                    await this.openUpdate(
+                        id
+                    );
+
+                }
+
+                break;
+                
             case "lock":
 
                 await this.confirmActiveChange(

@@ -134,35 +134,29 @@
                         </span>
 
                     </button>
+                    {{#if showExportButton}}
+                        <button
+                            type="button"
+                            class="catalog-toolbar__utility-item"
+                            data-catalog-export>
+                            <i class="fa-solid fa-file-export"></i>
+                            <span>
+                                Export dữ liệu
+                            </span>
+                        </button>
+                    {{/if}}
 
-
-                    <button
-                        type="button"
-                        class="catalog-toolbar__utility-item"
-                        data-catalog-export>
-
-                        <i class="fa-solid fa-file-export"></i>
-
-                        <span>
-                            Export dữ liệu
-                        </span>
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="catalog-toolbar__utility-item"
-                        data-catalog-import>
-
-                        <i class="fa-solid fa-file-import"></i>
-
-                        <span>
-                            Import dữ liệu
-                        </span>
-
-                    </button>
-
+                    {{#if showImportButton}}
+                        <button
+                            type="button"
+                            class="catalog-toolbar__utility-item"
+                            data-catalog-import>
+                            <i class="fa-solid fa-file-import"></i>
+                            <span>
+                                Import dữ liệu
+                            </span>
+                        </button>
+                    {{/if}}
                 </div>
 
             </div>

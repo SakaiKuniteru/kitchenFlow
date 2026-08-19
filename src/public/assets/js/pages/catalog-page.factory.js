@@ -38,7 +38,8 @@ window.MCS.pages.createCatalogPage =
             mapDetailResponse,
             actions,
             onRecordLoaded,
-            onAction
+            onAction,
+            viewOnly = false
         } = options;
 
         if (!moduleName) {
@@ -112,8 +113,12 @@ window.MCS.pages.createCatalogPage =
                 ),
 
             detail:
-                pageConfig.detailEndpoint ||
-                apiBase,
+                viewOnly
+                    ? ""
+                    : (
+                        pageConfig.detailEndpoint ||
+                        apiBase
+                    ),
 
             create:
                 pageConfig.createEndpoint ||
@@ -354,25 +359,16 @@ window.MCS.pages.createCatalogPage =
 
         const catalog =
             new window.MCS.catalog.Catalog({
-
                 root,
-
                 endpoints,
-
                 columns,
-
                 detailTitle,
-
                 createTitle,
-
                 updateTitle,
-
                 defaultValues,
-
                 mapRecordToForm,
-
                 getRecordSubtitle,
-
+                viewOnly,
                 mapListResponse:
                     mapListResponse ||
                     (

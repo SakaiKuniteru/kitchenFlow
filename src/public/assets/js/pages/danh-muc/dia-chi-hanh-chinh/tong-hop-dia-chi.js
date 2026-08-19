@@ -1,9 +1,11 @@
 "use strict";
 
-
 document.addEventListener(
     "DOMContentLoaded",
     async () => {
+
+        const API_BASE =
+            "/api/mcs/v1/dm-dia-chi";
 
         const catalog =
             await window.MCS.pages
@@ -12,324 +14,258 @@ document.addEventListener(
                     moduleName:
                         "tong-hop-dia-chi",
 
+                    viewOnly:
+                        true,
+
                     detailTitle:
                         "Thông tin địa chỉ hành chính",
 
                     columns: [
                         {
                             key:
-                                "loaiDiaChi",
-
-                            label:
-                                "Loại",
-
-                            sortable:
-                                true,
-
-                            filterable:
-                                true
-                        },
-                        {
-                            key:
                                 "maDiaChi",
-
                             label:
-                                "Mã",
-
+                                "Mã địa chỉ",
+                            width:
+                                "140px",
                             sortable:
                                 true,
-
                             filterable:
                                 true
                         },
                         {
                             key:
                                 "tenDiaChi",
-
                             label:
                                 "Tên địa chỉ",
-
+                            width:
+                                "240px",
                             sortable:
                                 true,
-
-                            filterable:
-                                true
-                        },
-                        {
-                            key:
-                                "tenTinhThanh",
-
-                            label:
-                                "Tỉnh/Thành phố",
-
-                            sortable:
-                                true,
-
                             filterable:
                                 true
                         },
                         {
                             key:
                                 "tenQuocGia",
-
                             label:
-                                "Quốc gia",
-
+                                "Tên quốc gia",
+                            width:
+                                "180px",
                             sortable:
                                 true,
-
                             filterable:
                                 true
                         },
                         {
                             key:
-                                "active",
-
+                                "tenTiengAnh",
                             label:
-                                "Hiệu lực",
-
+                                "Tên tiếng Anh",
+                            width:
+                                "200px",
                             sortable:
                                 true,
-
                             filterable:
+                                true
+                        },
+                        {
+                            key:
+                                "quocGiaTenVietTat",
+                            label:
+                                "Tên viết tắt QG",
+                            width:
+                                "160px",
+                            sortable:
                                 true,
-
-                            render:
-                                createStatusBadge
+                            filterable:
+                                true
+                        },
+                        {
+                            key:
+                                "maIso2",
+                            label:
+                                "ISO2",
+                            width:
+                                "90px",
+                            sortable:
+                                true,
+                            filterable:
+                                true
+                        },
+                        {
+                            key:
+                                "maIso3",
+                            label:
+                                "ISO3",
+                            width:
+                                "90px",
+                            sortable:
+                                true,
+                            filterable:
+                                true
+                        },
+                        {
+                            key:
+                                "tenTinhThanh",
+                            label:
+                                "Tên Tỉnh/TP",
+                            width:
+                                "190px",
+                            sortable:
+                                true,
+                            filterable:
+                                true
+                        },
+                        {
+                            key:
+                                "tinhThanhTenVietTat",
+                            label:
+                                "Tên viết tắt Tỉnh/TP",
+                            width:
+                                "190px",
+                            sortable:
+                                true,
+                            filterable:
+                                true
+                        },
+                        {
+                            key:
+                                "tenXaPhuong",
+                            label:
+                                "Tên Xã/Phường",
+                            width:
+                                "190px",
+                            sortable:
+                                true,
+                            filterable:
+                                true
+                        },
+                        {
+                            key:
+                                "xaPhuongTenVietTat",
+                            label:
+                                "Tên viết tắt Xã/Phường",
+                            width:
+                                "190px",
+                            sortable:
+                                true,
+                            filterable:
+                                true
                         }
                     ],
 
-                    mapListResponse:
-                        response => {
+                    mapListResponse(
+                        response
+                    ) {
 
-                            const records =
-                                Array.isArray(
-                                    response?.data
-                                )
-                                    ? response.data
-                                    : [];
+                        const records =
+                            Array.isArray(
+                                response?.data
+                            )
+                                ? response.data
+                                : [];
 
-                            return records.map(
-                                record =>
-                                    mapAddressRecord(
-                                        record
-                                    )
-                            );
-
-                        },
-
-                    mapDetailResponse:
-                        response => {
-
-                            const record =
-                                response?.data ||
-                                null;
-
-                            return record
-                                ? mapAddressRecord(
+                        return records.map(
+                            record =>
+                                mapAddressRecord(
                                     record
                                 )
-                                : null;
+                        );
 
-                        },
+                    },
 
-                    mapRecordToForm:
-                        record =>
-                            mapAddressRecordToForm(
-                                record
-                            ),
+                    mapRecordToForm(
+                        record
+                    ) {
 
-                    getRecordSubtitle:
-                        record =>
-                            record.maDiaChi ||
-                            "",
+                        return mapAddressRecordToForm(
+                            record
+                        );
 
-                    actions:
-                        () => [
-                            {
-                                key:
-                                    "view",
+                    },
 
-                                label:
-                                    "Xem chi tiết",
+                    getRecordSubtitle(
+                        record
+                    ) {
 
-                                icon:
-                                    "◉"
-                            }
-                        ]
+                        return (
+                            record?.maDiaChi ||
+                            ""
+                        );
+
+                    },
+
+                    onAction(
+                        action
+                    ) {
+
+                        if (
+                            action ===
+                            "export"
+                        ) {
+
+                            exportData();
+
+                        }
+
+                    }
 
                 });
 
 
-        const createButton =
-            document.querySelector(
-                "[data-catalog-create]"
-            );
+        async function exportData() {
 
-        if (createButton) {
+            try {
 
-            createButton.hidden =
-                true;
+                const result =
+                    await window.MCS.api
+                        .requestFile(
+                            `${API_BASE}/xuat-du-lieu`,
+                            {
+                                method:
+                                    "GET"
+                            }
+                        );
+
+                window.MCS.api
+                    .downloadBlob(
+                        result.blob,
+                        result.fileName ||
+                        "tong_hop_dia_chi_hanh_chinh.xlsx"
+                    );
+
+                window.MCS.toast
+                    ?.success(
+                        "Xuất dữ liệu thành công."
+                    );
+
+            } catch (
+                error
+            ) {
+
+                console.error(
+                    "Xuất dữ liệu địa chỉ hành chính thất bại:",
+                    error
+                );
+
+                window.MCS.toast
+                    ?.error(
+                        error?.message ||
+                        "Xuất dữ liệu thất bại."
+                    );
+
+            }
 
         }
+
 
         return catalog;
 
     }
 );
 
-
 function mapAddressRecord(
-    record
-) {
-
-    if (
-        !record ||
-        typeof record !==
-        "object"
-    ) {
-
-        return {};
-
-    }
-
-    return {
-
-        ...record,
-
-        loaiDiaChi:
-            getAddressType(
-                record
-            ),
-
-        maDiaChi:
-            record.maDiaChi ||
-            record.xaPhuong?.ma ||
-            record.tinhThanh?.ma ||
-            record.quocGia?.ma ||
-            "—",
-
-        tenDiaChi:
-            record.tenDiaChi ||
-            record.xaPhuong?.ten ||
-            record.tinhThanh?.ten ||
-            record.quocGia?.ten ||
-            "—",
-
-        tenTinhThanh:
-            record.tinhThanh?.ten ||
-            "—",
-
-        tenQuocGia:
-            record.quocGia?.ten ||
-            "—",
-
-        active:
-            record.active !==
-            false
-
-    };
-
-}
-
-
-function getAddressType(
-    record
-) {
-
-    if (
-        record.xaPhuongId ||
-        record.xaPhuong
-    ) {
-
-        const name =
-            String(
-                record.xaPhuong?.ten ||
-                record.tenDiaChi ||
-                ""
-            )
-                .trim()
-                .toLowerCase();
-
-        if (
-            name.startsWith(
-                "phường"
-            )
-        ) {
-
-            return "Phường";
-
-        }
-
-        if (
-            name.startsWith(
-                "xã"
-            )
-        ) {
-
-            return "Xã";
-
-        }
-
-        if (
-            name.startsWith(
-                "thị trấn"
-            )
-        ) {
-
-            return "Thị trấn";
-
-        }
-
-        return "Xã/Phường";
-
-    }
-
-
-    if (
-        record.tinhThanhId ||
-        record.tinhThanh
-    ) {
-
-        const name =
-            String(
-                record.tinhThanh?.ten ||
-                record.tenDiaChi ||
-                ""
-            )
-                .trim()
-                .toLowerCase();
-
-        if (
-            name.startsWith(
-                "thành phố"
-            )
-        ) {
-
-            return "Thành phố";
-
-        }
-
-        return "Tỉnh/Thành phố";
-
-    }
-
-
-    if (
-        record.quocGiaId ||
-        record.quocGia
-    ) {
-
-        return "Quốc gia";
-
-    }
-
-
-    return "Không xác định";
-
-}
-
-function mapAddressRecordToForm(
     record
 ) {
 
@@ -361,115 +297,108 @@ function mapAddressRecordToForm(
 
     return {
 
-        /*
-         * ID
-         */
-        id:
-            record.id ||
-            null,
+        ...record,
 
-        quocGiaId:
-            record.quocGiaId ||
-            quocGia.id ||
-            null,
+        maDiaChi:
+            record.maDiaChi ||
+            xaPhuong.ma ||
+            xaPhuong.maXaPhuong ||
+            tinhThanh.ma ||
+            tinhThanh.maTinhThanh ||
+            quocGia.ma ||
+            quocGia.maQuocGia ||
+            "",
 
-        tinhThanhId:
-            record.tinhThanhId ||
-            tinhThanh.id ||
-            null,
+        tenDiaChi:
+            record.tenDiaChi ||
+            record.diaChiDayDu ||
+            xaPhuong.ten ||
+            xaPhuong.tenXaPhuong ||
+            tinhThanh.ten ||
+            tinhThanh.tenTinhThanh ||
+            quocGia.ten ||
+            quocGia.tenQuocGia ||
+            "",
 
-        xaPhuongId:
-            record.xaPhuongId ||
-            xaPhuong.id ||
-            null,
-
-
-        /*
-         * Quốc gia
-         */
         maQuocGia:
+            record.maQuocGia ||
             quocGia.ma ||
             quocGia.maQuocGia ||
             "",
 
         tenQuocGia:
+            record.tenQuocGia ||
             quocGia.ten ||
             quocGia.tenQuocGia ||
             "",
 
         tenTiengAnh:
+            record.tenTiengAnh ||
             quocGia.tenTiengAnh ||
             "",
 
-        tenVietTatQuocGia:
+        quocGiaTenVietTat:
+            record.quocGiaTenVietTat ||
+            record.tenVietTatQuocGia ||
             quocGia.tenVietTat ||
             "",
 
         maIso2:
+            record.maIso2 ||
             quocGia.maIso2 ||
             "",
 
         maIso3:
+            record.maIso3 ||
             quocGia.maIso3 ||
             "",
 
         maDienThoai:
+            record.maDienThoai ||
             quocGia.maDienThoai ||
             "",
 
-
-        /*
-         * Tỉnh thành
-         */
         maTinhThanh:
+            record.maTinhThanh ||
             tinhThanh.ma ||
             tinhThanh.maTinhThanh ||
             "",
 
         tenTinhThanh:
+            record.tenTinhThanh ||
             tinhThanh.ten ||
             tinhThanh.tenTinhThanh ||
             "",
 
-        tenVietTatTinhThanh:
+        tinhThanhTenVietTat:
+            record.tinhThanhTenVietTat ||
+            record.tenVietTatTinhThanh ||
             tinhThanh.tenVietTat ||
             "",
 
-
-        /*
-         * Xã phường
-         */
         maXaPhuong:
+            record.maXaPhuong ||
             xaPhuong.ma ||
             xaPhuong.maXaPhuong ||
             "",
 
         tenXaPhuong:
+            record.tenXaPhuong ||
             xaPhuong.ten ||
             xaPhuong.tenXaPhuong ||
             "",
 
-        tenVietTatXaPhuong:
+        xaPhuongTenVietTat:
+            record.xaPhuongTenVietTat ||
+            record.tenVietTatXaPhuong ||
             xaPhuong.tenVietTat ||
             "",
 
-
-        /*
-         * Địa chỉ tổng hợp
-         */
-        maDiaChi:
-            record.maDiaChi ||
-            "",
-
         diaChiDayDu:
-            record.tenDiaChi ||
             record.diaChiDayDu ||
+            record.tenDiaChi ||
             "",
 
-
-        /*
-         * Trạng thái
-         */
         quocGiaActive:
             quocGia.active !==
             false,
@@ -485,6 +414,91 @@ function mapAddressRecordToForm(
         active:
             record.active !==
             false
+
+    };
+
+}
+
+function mapAddressRecordToForm(
+    record
+) {
+
+    const data =
+        mapAddressRecord(
+            record
+        );
+
+
+    return {
+
+        id:
+            data.id ||
+            null,
+
+        maQuocGia:
+            data.maQuocGia ||
+            "",
+
+        tenQuocGia:
+            data.tenQuocGia ||
+            "",
+
+        tenTiengAnh:
+            data.tenTiengAnh ||
+            "",
+
+        tenVietTatQuocGia:
+            data.quocGiaTenVietTat ||
+            "",
+
+        maIso2:
+            data.maIso2 ||
+            "",
+
+        maIso3:
+            data.maIso3 ||
+            "",
+
+        maDienThoai:
+            data.maDienThoai ||
+            "",
+
+        maTinhThanh:
+            data.maTinhThanh ||
+            "",
+
+        tenTinhThanh:
+            data.tenTinhThanh ||
+            "",
+
+        tenVietTatTinhThanh:
+            data.tinhThanhTenVietTat ||
+            "",
+
+        maXaPhuong:
+            data.maXaPhuong ||
+            "",
+
+        tenXaPhuong:
+            data.tenXaPhuong ||
+            "",
+
+        tenVietTatXaPhuong:
+            data.xaPhuongTenVietTat ||
+            "",
+
+        diaChiDayDu:
+            data.diaChiDayDu ||
+            "",
+
+        quocGiaActive:
+            data.quocGiaActive,
+
+        tinhThanhActive:
+            data.tinhThanhActive,
+
+        xaPhuongActive:
+            data.xaPhuongActive
 
     };
 
