@@ -1,31 +1,25 @@
 <div class="detail-panel__section">
-
     <h3 class="detail-panel__section-title">
         Thông tin nhóm tính năng
     </h3>
-
     <div class="catalog-form-grid">
-
         {{> forms/input
             id="maNhomTinhNang"
             name="maNhomTinhNang"
             label="Mã nhóm tính năng"
-            placeholder="Nhập mã nhóm"
+            placeholder="Nhập mã nhóm tính năng"
             maxlength=50
             required=true
         }}
-
         {{> forms/input
             id="tenNhomTinhNang"
             name="tenNhomTinhNang"
             label="Tên nhóm tính năng"
-            placeholder="Nhập tên nhóm"
+            placeholder="Nhập tên nhóm tính năng"
             maxlength=255
             required=true
         }}
-
         <div class="catalog-form-grid__full">
-
             {{> forms/textarea
                 id="moTa"
                 name="moTa"
@@ -34,21 +28,16 @@
                 maxlength=500
                 rows=4
                 showCounter=true
+                required=true
             }}
-
         </div>
-
     </div>
-
 </div>
-
 <div class="detail-panel__section">
-
     {{> forms/switch
         id="active"
         name="active"
         label="Đang hoạt động"
         checked=true
     }}
-
 </div>
