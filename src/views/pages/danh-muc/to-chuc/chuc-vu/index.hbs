@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/assets/css/pages/danh-muc/to-chuc/chuc-vu.css">
+
 {{> catalog/module-page
     moduleName="chuc-vu"
     apiBase="/api/mcs/v1/dm-chuc-vu"
@@ -16,10 +18,13 @@
     detailTitle="Thông tin chức vụ"
     showEditButton=true
     showActions=true
+    showImportButton=true
+    showExportButton=true
     mobilePanelId="chucVuMobilePanel"
     columns=columns
 }}
 
 {{> scripts/catalog-page
     folder="to-chuc"
-    page="chuc-vu"}}
+    page="chuc-vu"
+}}

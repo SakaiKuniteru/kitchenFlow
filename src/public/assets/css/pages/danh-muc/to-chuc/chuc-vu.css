@@ -1,15 +1,15 @@
-#nhom-tinh-nangPage {
+#chuc-vuPage {
     min-width:
         0;
 }
 
-#nhomTinhNangDetailPanel
+#chucVuDetailPanel
 .catalog-form-grid {
     align-items:
         start;
 }
 
-#nhomTinhNangDetailPanel
+#chucVuDetailPanel
 textarea {
     min-height:
         110px;

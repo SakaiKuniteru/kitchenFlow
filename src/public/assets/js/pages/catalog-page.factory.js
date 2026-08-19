@@ -30,6 +30,9 @@ window.MCS.pages.createCatalogPage =
             updateTitle,
             mapRecordToForm,
             transformPayload,
+            validation = {},
+            validate,
+            onSubmitError,
             getRecordSubtitle,
             mapListResponse,
             mapDetailResponse,
@@ -37,7 +40,6 @@ window.MCS.pages.createCatalogPage =
             onRecordLoaded,
             onAction
         } = options;
-
 
         if (!moduleName) {
 
@@ -64,16 +66,13 @@ window.MCS.pages.createCatalogPage =
 
         }
 
-
         const configElement =
             document.getElementById(
                 `${moduleName}PageConfig`
             );
 
-
         let pageConfig =
             {};
-
 
         if (configElement) {
 
@@ -134,6 +133,224 @@ window.MCS.pages.createCatalogPage =
 
         };
 
+    let catalogInstance =
+        null;
+
+    const commonValidate =
+        async (
+            data,
+            form
+        ) => {
+
+            const errors =
+                {};
+
+
+            Object.entries(
+                validation
+            )
+                .forEach(
+                    ([
+                        fieldName,
+                        rules
+                    ]) => {
+
+                        const value =
+                            data?.[
+                                fieldName
+                            ];
+
+
+                        const text =
+                            value ===
+                                null ||
+                            value ===
+                                undefined
+                                ? ""
+                                : String(
+                                    value
+                                ).trim();
+
+
+                        if (
+                            rules.required ===
+                                true &&
+                            !text
+                        ) {
+
+                            errors[
+                                fieldName
+                            ] =
+                                rules.requiredMessage ||
+                                "Vui lòng điền vào trường này.";
+
+                            return;
+
+                        }
+
+
+                        if (
+                            rules.maxLength &&
+                            text.length >
+                                rules.maxLength
+                        ) {
+
+                            errors[
+                                fieldName
+                            ] =
+                                rules.maxLengthMessage ||
+                                `${
+                                    rules.label ||
+                                    fieldName
+                                } không được vượt quá ${
+                                    rules.maxLength
+                                } ký tự.`;
+
+                        }
+
+                    }
+                );
+
+
+            const currentId =
+                catalogInstance
+                    ?.state
+                    ?.selectedId;
+
+
+            Object.entries(
+                validation
+            )
+                .forEach(
+                    ([
+                        fieldName,
+                        rules
+                    ]) => {
+
+                        if (
+                            rules.unique !==
+                            true
+                        ) {
+                            return;
+                        }
+
+
+                        const value =
+                            data?.[
+                                fieldName
+                            ];
+
+
+                        const normalizedValue =
+                            normalizeValidationValue(
+                                value
+                            );
+
+
+                        if (
+                            !normalizedValue
+                        ) {
+                            return;
+                        }
+
+
+                        const duplicate =
+                            catalogInstance
+                                ?.state
+                                ?.allData
+                                ?.find(
+                                    record => {
+
+                                        if (
+                                            currentId !==
+                                                null &&
+                                            currentId !==
+                                                undefined &&
+                                            String(
+                                                record?.id
+                                            ) ===
+                                            String(
+                                                currentId
+                                            )
+                                        ) {
+
+                                            return false;
+
+                                        }
+
+
+                                        return (
+                                            normalizeValidationValue(
+                                                record?.[
+                                                    fieldName
+                                                ]
+                                            ) ===
+                                            normalizedValue
+                                        );
+
+                                    }
+                                );
+
+
+                        if (
+                            duplicate
+                        ) {
+
+                            errors[
+                                fieldName
+                            ] =
+                                rules.uniqueMessage ||
+                                `${
+                                    rules.label ||
+                                    fieldName
+                                } đã tồn tại.`;
+
+                        }
+
+                    }
+                );
+
+
+            if (
+                typeof validate ===
+                "function"
+            ) {
+
+                const customResult =
+                    await validate(
+                        data,
+                        form,
+                        catalogInstance
+                    );
+
+
+                if (
+                    customResult &&
+                    typeof customResult ===
+                        "object"
+                ) {
+
+                    Object.assign(
+                        errors,
+                        customResult.errors ||
+                        customResult
+                    );
+
+                } else if (
+                    customResult ===
+                    false
+                ) {
+
+                    return false;
+
+                }
+
+            }
+
+
+            return errors;
+
+        };
 
         const catalog =
             new window.MCS.catalog.Catalog({
@@ -177,15 +394,19 @@ window.MCS.pages.createCatalogPage =
                 },
 
                 form: {
-                    transformPayload
+                    transformPayload,
+                    validate: commonValidate
                 },
+
+                onSubmitError,
 
                 onRecordLoaded,
 
                 onAction
 
             });
-
+        
+        catalogInstance = catalog;
 
         window.MCS.pages.instances[
             moduleName
@@ -318,3 +539,23 @@ window.normalizeNumberArray =
             );
 
     };
+
+function normalizeValidationValue(
+    value
+) {
+
+    return String(
+        value ??
+        ""
+    )
+        .normalize(
+            "NFD"
+        )
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .trim()
+        .toLowerCase();
+
+}

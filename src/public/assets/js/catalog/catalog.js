@@ -1934,7 +1934,6 @@ class MCSCatalog {
 
     }
 
-
     async submitForm(
         data,
         form
@@ -2017,7 +2016,6 @@ class MCSCatalog {
                     .request(
                         url,
                         {
-
                             method,
 
                             body:
@@ -2027,7 +2025,6 @@ class MCSCatalog {
                                     : JSON.stringify(
                                         data
                                     )
-
                         }
                     );
 
@@ -2058,11 +2055,44 @@ class MCSCatalog {
 
         } catch (error) {
 
-            window.MCS.toast
-                ?.error(
-                    error.message ||
-                    "Không thể lưu dữ liệu."
-                );
+            let handled =
+                false;
+
+
+            if (
+                typeof this.options
+                    .onSubmitError ===
+                    "function"
+            ) {
+
+                handled =
+                    this.options
+                        .onSubmitError(
+                            error,
+                            {
+                                mode,
+                                id,
+                                form,
+                                catalog:
+                                    this
+                            }
+                        ) ===
+                        true;
+
+            }
+
+
+            if (
+                !handled
+            ) {
+
+                window.MCS.toast
+                    ?.error(
+                        error?.message ||
+                        "Không thể lưu dữ liệu."
+                    );
+
+            }
 
 
             throw error;
@@ -2070,8 +2100,7 @@ class MCSCatalog {
         }
 
     }
-
-
+    
     cancelForm() {
 
         if (

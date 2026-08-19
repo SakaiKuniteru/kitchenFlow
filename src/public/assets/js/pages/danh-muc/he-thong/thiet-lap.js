@@ -24,8 +24,6 @@ document.addEventListener(
             ]);
             syncCurrentCoSo();
             syncCurrentNhomTinhNang();
-            initializeCoSoUI();
-            initializeNhomTinhNangUI();
         }
 
         const coSoSelect =
@@ -73,39 +71,26 @@ document.addEventListener(
         ) {
 
             const {
-
                 selectId,
-
                 items,
-
                 getLabel,
-
-                clearClass
-
             } =
                 config;
 
-
             function getSelect() {
-
                 return document
                     .getElementById(
                         selectId
                     );
-
             }
 
-
             function getRoot() {
-
                 return getSelect()
                     ?.closest(
                         "[data-smart-select]"
                     ) ||
                     null;
-
             }
-
 
             function render(
                 selectedIds = []
@@ -263,426 +248,6 @@ document.addEventListener(
 
         }
 
-        function initializeNhomTinhNangUI() {
-            const select =
-                getNhomTinhNangSelect();
-
-            const root =
-                getNhomTinhNangRoot();
-
-            const control =
-                root?.querySelector(
-                    "[data-smart-select-control]"
-                );
-
-            if (
-                !select ||
-                !root ||
-                !control
-            ) {
-                return;
-            }
-
-            let clearButton =
-                control.querySelector(
-                    "[data-nhom-tinh-nang-clear]"
-                );
-
-
-            if (!clearButton) {
-
-                clearButton =
-                    document.createElement(
-                        "button"
-                    );
-
-
-                clearButton.type =
-                    "button";
-
-
-                clearButton.className =
-                    "thiet-lap-nhom-tinh-nang__clear";
-
-
-                clearButton.dataset
-                    .nhomTinhNangClear =
-                    "true";
-
-
-                clearButton.setAttribute(
-                    "title",
-                    "Xóa lựa chọn"
-                );
-
-
-                clearButton.setAttribute(
-                    "aria-label",
-                    "Xóa lựa chọn"
-                );
-
-
-                const icon =
-                    document.createElement(
-                        "i"
-                    );
-
-
-                icon.className =
-                    "fa-solid fa-xmark";
-
-
-                clearButton.appendChild(
-                    icon
-                );
-
-
-                control.appendChild(
-                    clearButton
-                );
-
-
-                clearButton.addEventListener(
-                    "click",
-                    event => {
-
-                        event.preventDefault();
-
-                        event.stopPropagation();
-
-
-                        clearNhomTinhNang();
-
-                    }
-                );
-
-            }
-
-            if (
-                select.dataset
-                    .nhomTinhNangUiBound !==
-                "true"
-            ) {
-
-                select.addEventListener(
-                    "change",
-                    () => {
-
-                        requestAnimationFrame(
-                            syncNhomTinhNangUI
-                        );
-
-                    }
-                );
-
-
-                select.dataset
-                    .nhomTinhNangUiBound =
-                    "true";
-
-            }
-
-            if (
-                root.dataset
-                    .nhomTinhNangRootBound !==
-                "true"
-            ) {
-
-                root.addEventListener(
-                    "click",
-                    () => {
-
-                        requestAnimationFrame(
-                            syncNhomTinhNangUI
-                        );
-
-                    }
-                );
-
-
-                root.dataset
-                    .nhomTinhNangRootBound =
-                    "true";
-
-            }
-
-            const search =
-                root.querySelector(
-                    "[data-smart-select-search]"
-                );
-
-
-            if (
-                search &&
-                search.dataset
-                    .nhomTinhNangSearchBound !==
-                    "true"
-            ) {
-
-                search.addEventListener(
-                    "focus",
-                    () => {
-
-                        requestAnimationFrame(
-                            syncNhomTinhNangUI
-                        );
-
-                    }
-                );
-
-
-                search.addEventListener(
-                    "input",
-                    () => {
-
-                        requestAnimationFrame(
-                            () => {
-
-                                syncNhomTinhNangUI();
-
-                                resizeNhomTinhNangSearch();
-
-                            }
-                        );
-
-                    }
-                );
-
-                search.dataset
-                    .nhomTinhNangSearchBound =
-                    "true";
-
-            }
-
-
-            syncNhomTinhNangUI();
-
-        }
-
-        function initializeCoSoUI() {
-            const root =
-                coSoSelect
-                    .getRoot();
-
-            if (!root) {
-                return;
-            }
-
-            root.smartSelect
-                ?.refresh?.();
-        }
-
-        function syncNhomTinhNangUI() {
-
-            const select =
-                getNhomTinhNangSelect();
-
-
-            const root =
-                getNhomTinhNangRoot();
-
-
-            if (
-                !select ||
-                !root
-            ) {
-                return;
-            }
-
-
-            const search =
-                root.querySelector(
-                    "[data-smart-select-search]"
-                );
-
-
-            const placeholder =
-                root.querySelector(
-                    ".smart-select__placeholder"
-                );
-
-
-            const toggle =
-                root.querySelector(
-                    "[data-smart-select-toggle]"
-                );
-
-
-            const clearButton =
-                root.querySelector(
-                    "[data-nhom-tinh-nang-clear]"
-                );
-
-
-            const hasValue =
-                Array
-                    .from(
-                        select.options
-                    )
-                    .some(
-                        option =>
-                            option.selected &&
-                            Boolean(
-                                option.value
-                            )
-                    );
-
-
-            const opened =
-                root.classList.contains(
-                    "is-open"
-                );
-
-            if (search) {
-
-                if (
-                    !opened &&
-                    !hasValue
-                ) {
-
-                    search.hidden =
-                        true;
-
-
-                    search.placeholder =
-                        "";
-
-                } else {
-
-                    search.hidden =
-                        false;
-
-
-                    if (
-                        opened &&
-                        !hasValue
-                    ) {
-
-                        search.placeholder =
-                            "Chọn nhóm tính năng...";
-
-                    } else {
-
-                        search.placeholder =
-                            "";
-
-                    }
-
-                }
-
-            }
-
-
-            if (
-                placeholder
-            ) {
-
-                placeholder.hidden =
-                    opened;
-
-            }
-
-            if (
-                clearButton
-            ) {
-
-                clearButton.hidden =
-                    !hasValue;
-
-            }
-
-
-            if (
-                toggle
-            ) {
-
-                toggle.hidden =
-                    hasValue;
-
-            }
-
-
-            root.classList.toggle(
-                "has-nhom-tinh-nang-value",
-                hasValue
-            );
-
-
-            root.classList.toggle(
-                "has-nhom-tinh-nang-clear",
-                hasValue
-            );
-
-            resizeNhomTinhNangSearch();
-
-        }
-
-        function clearNhomTinhNang() {
-
-            const select =
-                getNhomTinhNangSelect();
-
-
-            const root =
-                getNhomTinhNangRoot();
-
-
-            if (
-                !select ||
-                !root
-            ) {
-                return;
-            }
-
-            if (
-                root.smartSelect
-                    ?.clear
-            ) {
-
-                root.smartSelect
-                    .clear(
-                        true
-                    );
-
-            } else {
-
-                Array
-                    .from(
-                        select.options
-                    )
-                    .forEach(
-                        option => {
-
-                            option.selected =
-                                false;
-
-                        }
-                    );
-
-
-                select.dispatchEvent(
-                    new Event(
-                        "change",
-                        {
-                            bubbles:
-                                true
-                        }
-                    )
-                );
-
-            }
-
-
-            requestAnimationFrame(
-                () => {
-
-                    syncNhomTinhNangUI();
-
-                }
-            );
-
-        }
-
         async function initializeCatalog() {
 
             try {
@@ -811,6 +376,85 @@ document.addEventListener(
 
                             },
 
+                            validation: {
+                                maThietLap: {
+                                    label:
+                                        "Mã thiết lập",
+                                    required:
+                                        true,
+                                    maxLength:
+                                        100,
+                                    unique:
+                                        true,
+                                    requiredMessage:
+                                        "Vui lòng điền vào trường này.",
+                                    maxLengthMessage:
+                                        "Mã thiết lập không được vượt quá 100 ký tự.",
+                                    uniqueMessage:
+                                        "Mã thiết lập đã tồn tại."
+                                },
+
+                                tenThietLap: {
+                                    label:
+                                        "Tên thiết lập",
+                                    required:
+                                        true,
+                                    maxLength:
+                                        255,
+                                    unique:
+                                        true,
+                                    requiredMessage:
+                                        "Vui lòng điền vào trường này.",
+                                    maxLengthMessage:
+                                        "Tên thiết lập không được vượt quá 255 ký tự.",
+                                    uniqueMessage:
+                                        "Tên thiết lập đã tồn tại."
+                                },
+
+                                giaTri: {
+                                    label:
+                                        "Giá trị",
+                                    required:
+                                        true,
+                                    maxLength:
+                                        500,
+                                    requiredMessage:
+                                        "Vui lòng điền vào trường này.",
+                                    maxLengthMessage:
+                                        "Giá trị không được vượt quá 500 ký tự."
+                                },
+
+                                dsNhomTinhNangId: {
+                                    label:
+                                        "Nhóm tính năng",
+                                    required:
+                                        true,
+                                    requiredMessage:
+                                        "Vui lòng chọn ít nhất một nhóm tính năng."
+                                },
+
+                                dsCoSoId: {
+                                    label:
+                                        "Cơ sở",
+                                    required:
+                                        true,
+                                    requiredMessage:
+                                        "Vui lòng chọn ít nhất một cơ sở."
+                                },
+
+                                moTa: {
+                                    label:
+                                        "Mô tả",
+                                    required:
+                                        true,
+                                    maxLength:
+                                        500,
+                                    requiredMessage:
+                                        "Vui lòng điền vào trường này.",
+                                    maxLengthMessage:
+                                        "Mô tả không được vượt quá 500 ký tự."
+                                }
+                            },
 
                             detailTitle:
                                 "Thông tin thiết lập",
@@ -964,14 +608,12 @@ document.addEventListener(
                                 record,
                                 mode
                             ) {
-
                                 const dsCoSoId =
                                     Array.isArray(
                                         record?.dsCoSoId
                                     )
                                         ? record.dsCoSoId
                                         : [];
-
 
                                 const dsNhomTinhNangId =
                                     Array.isArray(
@@ -980,28 +622,29 @@ document.addEventListener(
                                         ? record.dsNhomTinhNangId
                                         : [];
 
-
                                 coSoSelect.render(
                                     dsCoSoId
                                 );
-
 
                                 nhomTinhNangSelect.render(
                                     dsNhomTinhNangId
                                 );
 
+                                coSoSelect
+                                    .getRoot()
+                                    ?.smartSelect
+                                    ?.setDisabled?.(
+                                        mode ===
+                                            "view"
+                                    );
 
-                                setCoSoReadonly(
-                                    mode ===
-                                        "view"
-                                );
-
-
-                                setNhomTinhNangReadonly(
-                                    mode ===
-                                        "view"
-                                );
-
+                                nhomTinhNangSelect
+                                    .getRoot()
+                                    ?.smartSelect
+                                    ?.setDisabled?.(
+                                        mode ===
+                                            "view"
+                                    );
                             },
 
                             onAction(
@@ -1166,161 +809,16 @@ document.addEventListener(
 
         }
 
-        function getNhomTinhNangSelect() {
-
-            return document
-                .getElementById(
-                    "dsNhomTinhNangId"
-                );
-
-        }
-
-        function resizeNhomTinhNangSearch() {
-
-            const root =
-                getNhomTinhNangRoot();
-
-
-            const search =
-                root?.querySelector(
-                    "[data-smart-select-search]"
-                );
-
-
-            if (
-                !root ||
-                !search
-            ) {
-                return;
-            }
-
-
-            const hasValue =
-                root.classList.contains(
-                    "has-nhom-tinh-nang-value"
-                );
-
-
-            if (!hasValue) {
-
-                search.style.width =
-                    "";
-
-                return;
-
-            }
-
-
-            const value =
-                search.value ||
-                "";
-
-            const width =
-                Math.min(
-                    180,
-                    Math.max(
-                        24,
-                        (
-                            value.length +
-                            1
-                        ) *
-                        8
-                    )
-                );
-
-
-            search.style.width =
-                `${width}px`;
-
-        }
-
-        function getNhomTinhNangRoot() {
-
-            return getNhomTinhNangSelect()
-                ?.closest(
-                    "[data-smart-select]"
-                ) ||
-                null;
-
-        }
-
-        function setNhomTinhNangReadonly(
-            readonly
-        ) {
-
-            const root =
-                getNhomTinhNangRoot();
-
-
-            if (!root) {
-                return;
-            }
-
-
-            root.smartSelect
-                ?.setDisabled?.(
-                    readonly
-                );
-
-
-            const clearButton =
-                root.querySelector(
-                    "[data-nhom-tinh-nang-clear]"
-                );
-
-
-            if (
-                clearButton
-            ) {
-
-                clearButton.disabled =
-                    readonly;
-
-            }
-
-
-            requestAnimationFrame(
-                syncNhomTinhNangUI
-            );
-
-        }
-
-        function setCoSoReadonly(
-            readonly
-        ) {
-
-            const root =
-                coSoSelect
-                    .getRoot();
-
-
-            if (!root) {
-                return;
-            }
-
-
-            root.smartSelect
-                ?.setDisabled?.(
-                    readonly
-                );
-
-        }
-
         function syncCurrentNhomTinhNang() {
-
             if (!catalog) {
                 return;
             }
 
-
-            if (
+            const record =
                 catalog.state
                     .selectedId !==
-                null
-            ) {
-
-                const record =
-                    catalog.state
+                        null
+                    ? catalog.state
                         .allData
                         .find(
                             item =>
@@ -1331,42 +829,26 @@ document.addEventListener(
                                     catalog.state
                                         .selectedId
                                 )
-                        );
-
-
-                nhomTinhNangSelect.render(
-                    record
-                        ?.dsNhomTinhNangId ||
-                    []
-                );
-
-
-                return;
-
-            }
-
+                        )
+                    : null;
 
             nhomTinhNangSelect.render(
+                record
+                    ?.dsNhomTinhNangId ||
                 []
             );
-
         }
 
         function syncCurrentCoSo() {
-
             if (!catalog) {
                 return;
             }
 
-
-            if (
+            const record =
                 catalog.state
                     .selectedId !==
-                null
-            ) {
-
-                const record =
-                    catalog.state
+                        null
+                    ? catalog.state
                         .allData
                         .find(
                             item =>
@@ -1377,24 +859,13 @@ document.addEventListener(
                                     catalog.state
                                         .selectedId
                                 )
-                        );
-
-
-                coSoSelect.render(
-                    record?.dsCoSoId ||
-                    []
-                );
-
-
-                return;
-
-            }
-
+                        )
+                    : null;
 
             coSoSelect.render(
+                record?.dsCoSoId ||
                 []
             );
-
         }
 
         async function exportData() {

@@ -473,7 +473,6 @@ class MCSForm {
 
     }
 
-
     async submit() {
 
         if (
@@ -486,14 +485,76 @@ class MCSForm {
 
         this.clearErrors();
 
-        if (
-            !this.validateNative()
-        ) {
-            return;
-        }
+        const nativeValid =
+            this.validateNative();
 
         const data =
             this.getData();
+
+        let customValid =
+            true;
+
+        if (
+            typeof this.options
+                .validate ===
+                "function"
+        ) {
+
+            const result =
+                await this.options
+                    .validate(
+                        data,
+                        this
+                    );
+
+            if (
+                result ===
+                false
+            ) {
+
+                customValid =
+                    false;
+
+            } else if (
+                result &&
+                typeof result ===
+                    "object"
+            ) {
+
+                const errors =
+                    result.errors ||
+                    result;
+
+                if (
+                    Object.keys(
+                        errors
+                    ).length >
+                    0
+                ) {
+
+                    this.setErrors(
+                        errors
+                    );
+
+                    customValid =
+                        false;
+
+                }
+
+            }
+
+        }
+
+        if (
+            !nativeValid ||
+            !customValid
+        ) {
+
+            this.focusFirstError();
+
+            return;
+
+        }
 
         this.setSubmitting(
             true
@@ -527,6 +588,8 @@ class MCSForm {
                     error.data.errors
                 );
 
+                this.focusFirstError();
+
             }
 
             throw error;
@@ -540,7 +603,6 @@ class MCSForm {
         }
 
     }
-
 
     validateNative() {
 
@@ -704,7 +766,6 @@ class MCSForm {
 
     }
 
-
     clearErrors() {
 
         this.form
@@ -754,6 +815,28 @@ class MCSForm {
 
     }
 
+    focusFirstError() {
+
+        const field =
+            this.form
+                ?.querySelector(
+                    "[aria-invalid='true']"
+                );
+
+        if (!field) {
+            return;
+        }
+
+        if (
+            typeof field.focus ===
+            "function"
+        ) {
+
+            field.focus();
+
+        }
+
+    }
 
     setSubmitting(submitting) {
 

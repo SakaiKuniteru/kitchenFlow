@@ -151,10 +151,26 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     aria-hidden="true">
-
                     <path d="m6 9 6 6 6-6"></path>
-
                 </svg>
+            </button>
+
+            <button
+                type="button"
+                class="smart-select__clear"
+                data-smart-select-clear
+                aria-label="Xóa lựa chọn"
+                title="Xóa lựa chọn"
+                hidden
+
+                {{#if disabled}}
+                    disabled
+                {{/if}}>
+
+                <i
+                    class="fa-solid fa-xmark"
+                    aria-hidden="true">
+                </i>
 
             </button>
 
