@@ -604,6 +604,372 @@ window.MCS.api = {
 
     },
 
+    async requestFile(
+        url,
+        options = {}
+    ) {
+
+        let result =
+            await this.sendFile(
+                url,
+                options
+            );
+
+
+        if (
+            result.response.status ===
+                401 &&
+            options.allowRefresh !==
+                false
+        ) {
+
+            const refreshed =
+                await this
+                    .refreshAuthentication();
+
+
+            if (
+                refreshed
+            ) {
+
+                result =
+                    await this.sendFile(
+                        url,
+                        {
+                            ...options,
+
+                            allowRefresh:
+                                false
+                        }
+                    );
+
+            } else {
+
+                window.MCS.storage
+                    .clearAuthentication();
+
+
+                if (
+                    window.location.pathname !==
+                    window.MCS.config.loginPath
+                ) {
+
+                    window.location.replace(
+                        window.MCS.config.loginPath
+                    );
+
+                }
+
+
+                const error =
+                    new Error(
+                        "Phiên đăng nhập đã hết hạn."
+                    );
+
+
+                error.statusCode =
+                    401;
+
+
+                throw error;
+
+            }
+
+        }
+
+
+        if (
+            !result.response.ok
+        ) {
+
+            let message =
+                "Yêu cầu không thành công.";
+
+            if (
+                result.contentType.includes(
+                    "application/json"
+                )
+            ) {
+
+                try {
+
+                    const text =
+                        await result.blob
+                            .text();
+
+
+                    const data =
+                        JSON.parse(
+                            text
+                        );
+
+
+                    message =
+                        data?.message ||
+                        message;
+
+                } catch (
+                    error
+                ) {
+
+                    console.warn(
+                        "Không đọc được lỗi tải file:",
+                        error
+                    );
+
+                }
+
+            }
+
+
+            const error =
+                new Error(
+                    message
+                );
+
+
+            error.statusCode =
+                result.response.status;
+
+
+            throw error;
+
+        }
+
+
+        return {
+
+            blob:
+                result.blob,
+
+            fileName:
+                this.getDownloadFileName(
+                    result.response
+                ),
+
+            contentType:
+                result.contentType
+
+        };
+
+    },
+
+    async sendFile(
+        url,
+        options = {}
+    ) {
+
+        const accessToken =
+            window.MCS.storage
+                .getAccessToken();
+
+
+        const headers = {
+
+            Accept:
+                "*/*",
+
+            ...options.headers
+
+        };
+
+        if (
+            options.body &&
+            !(
+                options.body instanceof
+                FormData
+            )
+        ) {
+
+            headers[
+                "Content-Type"
+            ] =
+                "application/json";
+
+        }
+
+
+        if (
+            accessToken &&
+            options.withoutAccessToken !==
+                true
+        ) {
+
+            headers.Authorization =
+                `Bearer ${accessToken}`;
+
+        }
+
+
+        const fetchOptions = {
+
+            credentials:
+                "include",
+
+            ...options,
+
+            headers
+
+        };
+
+
+        delete fetchOptions
+            .allowRefresh;
+
+
+        delete fetchOptions
+            .withoutAccessToken;
+
+
+        const response =
+            await fetch(
+                url,
+                fetchOptions
+            );
+
+
+        const contentType =
+            response.headers.get(
+                "content-type"
+            ) ||
+            "";
+
+
+        const blob =
+            await response.blob();
+
+
+        return {
+
+            response,
+
+            blob,
+
+            contentType
+
+        };
+
+    },
+
+
+    getDownloadFileName(
+        response
+    ) {
+
+        const disposition =
+            response.headers.get(
+                "content-disposition"
+            ) ||
+            "";
+
+        const utf8Match =
+            disposition.match(
+                /filename\*=UTF-8''([^;]+)/i
+            );
+
+
+        if (
+            utf8Match?.[1]
+        ) {
+
+            try {
+
+                return decodeURIComponent(
+                    utf8Match[1]
+                );
+
+            } catch (
+                error
+            ) {
+
+                return utf8Match[1];
+
+            }
+
+        }
+
+
+        /*
+        * filename="ten-file.xlsx"
+        */
+        const normalMatch =
+            disposition.match(
+                /filename="?([^";]+)"?/i
+            );
+
+
+        return (
+            normalMatch?.[1] ||
+            null
+        );
+
+    },
+
+    downloadBlob(
+        blob,
+        fileName =
+            "download.xlsx"
+    ) {
+
+        if (
+            !(blob instanceof Blob)
+        ) {
+
+            throw new Error(
+                "Dữ liệu tải xuống không hợp lệ."
+            );
+
+        }
+
+
+        const objectUrl =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const anchor =
+            document.createElement(
+                "a"
+            );
+
+
+        anchor.href =
+            objectUrl;
+
+
+        anchor.download =
+            fileName;
+
+
+        anchor.style.display =
+            "none";
+
+
+        document.body
+            .appendChild(
+                anchor
+            );
+
+
+        anchor.click();
+
+
+        anchor.remove();
+
+
+        setTimeout(
+            () => {
+
+                URL.revokeObjectURL(
+                    objectUrl
+                );
+
+            },
+            1000
+        );
+
+    },
 
     async refreshAuthentication() {
 

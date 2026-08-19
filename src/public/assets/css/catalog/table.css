@@ -67,25 +67,46 @@
 }
 
 .catalog-table__cell {
-    padding: 12px 14px;
+    padding:
+        12px
+        14px;
 
-    min-width: 0;
+    min-width:
+        0;
 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow:
+        visible;
 
-    border-bottom: 1px solid
+    text-overflow:
+        clip;
+
+    white-space:
+        normal;
+
+    overflow-wrap:
+        anywhere;
+
+    word-break:
+        break-word;
+
+    border-bottom:
+        1px solid
         var(--color-border-light);
 
     color:
         var(--color-text-secondary);
 
-    text-align: left;
-    vertical-align: middle;
+    text-align:
+        left;
+
+    vertical-align:
+        middle;
 
     font-size:
         var(--font-size-sm);
+
+    line-height:
+        1.45;
 }
 
 .catalog-table__head
@@ -102,7 +123,11 @@
 
 .catalog-table__body
 .catalog-table__cell {
-    height: 50px;
+    height:
+        auto;
+
+    min-height:
+        50px;
 }
 
 .catalog-table__body tr {
@@ -158,9 +183,20 @@
 }
 
 .catalog-table__cell--ellipsis {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow:
+        visible;
+
+    text-overflow:
+        clip;
+
+    white-space:
+        normal;
+
+    overflow-wrap:
+        anywhere;
+
+    word-break:
+        break-word;
 }
 
 .catalog-table__sort-button {

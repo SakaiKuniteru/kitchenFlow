@@ -5,46 +5,275 @@ document.addEventListener(
     "DOMContentLoaded",
     () => {
 
-        const API_BASE =
-            "/api/mcs/v1/dm-thiet-lap";
+        const API_BASE = "/api/mcs/v1/dm-thiet-lap";
+        const API_NHOM_TINH_NANG = "/api/mcs/v1/dm-nhom-tinh-nang/tong-hop?active=true";
+        const API_CO_SO = "/api/mcs/v1/dm-co-so/tong-hop?active=true";
 
-
-        const API_NHOM_TINH_NANG =
-            "/api/mcs/v1/dm-nhom-tinh-nang/tong-hop?active=true";
-
-
-        let catalog =
-            null;
-
-
-        let dsNhomTinhNang =
-            [];
+        let catalog = null;
+        let dsNhomTinhNang = [];
+        let dsCoSo = [];
 
 
         initialize();
 
         async function initialize() {
             await initializeCatalog();
-            await loadNhomTinhNang();
+            await Promise.all([
+                loadCoSo(),
+                loadNhomTinhNang()
+            ]);
+            syncCurrentCoSo();
             syncCurrentNhomTinhNang();
+            initializeCoSoUI();
             initializeNhomTinhNangUI();
         }
 
-        function initializeNhomTinhNangUI() {
+        const coSoSelect =
+            createMultiSelectManager({
 
+                selectId:
+                    "dsCoSoId",
+
+                items:
+                    () =>
+                        dsCoSo,
+
+                getLabel:
+                    item =>
+                        `${
+                            item.maCoSo
+                        } - ${
+                            item.tenCoSo
+                        }`
+
+            });
+
+        const nhomTinhNangSelect =
+            createMultiSelectManager({
+
+                selectId:
+                    "dsNhomTinhNangId",
+
+                items:
+                    () =>
+                        dsNhomTinhNang,
+
+                getLabel:
+                    item =>
+                        `${
+                            item.maNhomTinhNang
+                        } - ${
+                            item.tenNhomTinhNang
+                        }`
+
+            });
+
+        function createMultiSelectManager(
+            config
+        ) {
+
+            const {
+
+                selectId,
+
+                items,
+
+                getLabel,
+
+                clearClass
+
+            } =
+                config;
+
+
+            function getSelect() {
+
+                return document
+                    .getElementById(
+                        selectId
+                    );
+
+            }
+
+
+            function getRoot() {
+
+                return getSelect()
+                    ?.closest(
+                        "[data-smart-select]"
+                    ) ||
+                    null;
+
+            }
+
+
+            function render(
+                selectedIds = []
+            ) {
+
+                const select =
+                    getSelect();
+
+
+                if (!select) {
+                    return;
+                }
+
+
+                const selected =
+                    new Set(
+                        selectedIds.map(
+                            String
+                        )
+                    );
+
+
+                select.innerHTML =
+                    "";
+
+
+                const allOption =
+                    document
+                        .createElement(
+                            "option"
+                        );
+
+
+                allOption.value =
+                    "__ALL__";
+
+
+                allOption.textContent =
+                    "Tất cả";
+
+
+                select.appendChild(
+                    allOption
+                );
+
+
+                items()
+                    .forEach(
+                        item => {
+
+                            const option =
+                                document
+                                    .createElement(
+                                        "option"
+                                    );
+
+
+                            option.value =
+                                String(
+                                    item.id
+                                );
+
+
+                            option.textContent =
+                                getLabel(
+                                    item
+                                );
+
+
+                            option.selected =
+                                selected.has(
+                                    String(
+                                        item.id
+                                    )
+                                );
+
+
+                            select.appendChild(
+                                option
+                            );
+
+                        }
+                    );
+
+
+                getRoot()
+                    ?.smartSelect
+                    ?.refresh?.();
+
+            }
+
+
+            function getValues() {
+
+                const select =
+                    getSelect();
+
+
+                if (!select) {
+                    return [];
+                }
+
+
+                const options =
+                    Array.from(
+                        select.selectedOptions ||
+                        []
+                    );
+
+
+                if (
+                    options.some(
+                        item =>
+                            item.value ===
+                            "__ALL__"
+                    )
+                ) {
+
+                    return items()
+                        .map(
+                            item =>
+                                Number(
+                                    item.id
+                                )
+                        );
+
+                }
+
+
+                return options
+                    .map(
+                        item =>
+                            Number(
+                                item.value
+                            )
+                    )
+                    .filter(
+                        Number.isInteger
+                    );
+
+            }
+
+
+            return {
+
+                render,
+
+                getValues,
+
+                getSelect,
+
+                getRoot
+
+            };
+
+        }
+
+        function initializeNhomTinhNangUI() {
             const select =
                 getNhomTinhNangSelect();
 
-
             const root =
                 getNhomTinhNangRoot();
-
 
             const control =
                 root?.querySelector(
                     "[data-smart-select-control]"
                 );
-
 
             if (
                 !select ||
@@ -228,6 +457,19 @@ document.addEventListener(
 
             syncNhomTinhNangUI();
 
+        }
+
+        function initializeCoSoUI() {
+            const root =
+                coSoSelect
+                    .getRoot();
+
+            if (!root) {
+                return;
+            }
+
+            root.smartSelect
+                ?.refresh?.();
         }
 
         function syncNhomTinhNangUI() {
@@ -520,47 +762,25 @@ document.addEventListener(
                                     sortable:
                                         true,
 
-                                    filterable:
-                                        true
+                                    filterable: true
+                                },
+
+                                {
+                                    key:  "moTa",
+                                    label:"Mô tả",
+                                    width:"250px",
+                                    filterable: true
                                 },
 
 
                                 {
-                                    key:
-                                        "moTa",
-
-                                    label:
-                                        "Mô tả",
-
-                                    width:
-                                        "250px",
-
-                                    filterable:
-                                        true
-                                },
-
-
-                                {
-                                    key:
-                                        "active",
-
-                                    label:
-                                        "Hiệu lực",
-
-                                    width:
-                                        "130px",
-
-                                    sortable:
-                                        true,
-
-                                    isBoolean:
-                                        true,
-
-                                    trueLabel:
-                                        "TRUE",
-
-                                    falseLabel:
-                                        "FALSE"
+                                    key: "active",
+                                    label: "Hiệu lực",
+                                    width: "130px",
+                                    sortable: true,
+                                    isBoolean: true,
+                                    trueLabel: "TRUE",
+                                    falseLabel: "FALSE"
                                 }
 
                             ],
@@ -578,6 +798,9 @@ document.addEventListener(
                                     "",
 
                                 dsNhomTinhNangId:
+                                    [],
+
+                                dsCoSoId:
                                     [],
 
                                 moTa:
@@ -637,7 +860,6 @@ document.addEventListener(
 
                             },
 
-
                             mapRecordToForm(
                                 record
                             ) {
@@ -660,6 +882,13 @@ document.addEventListener(
                                         record?.giaTri ??
                                         "",
 
+                                    dsCoSoId:
+                                        Array.isArray(
+                                            record?.dsCoSoId
+                                        )
+                                            ? record.dsCoSoId
+                                            : [],
+
                                     dsNhomTinhNangId:
                                         Array.isArray(
                                             record
@@ -681,7 +910,6 @@ document.addEventListener(
 
                             },
 
-
                             transformPayload(
                                 formData
                             ) {
@@ -690,8 +918,7 @@ document.addEventListener(
 
                                     maThietLap:
                                         String(
-                                            formData
-                                                .maThietLap ||
+                                            formData.maThietLap ||
                                             ""
                                         )
                                             .trim()
@@ -699,27 +926,27 @@ document.addEventListener(
 
                                     tenThietLap:
                                         String(
-                                            formData
-                                                .tenThietLap ||
+                                            formData.tenThietLap ||
                                             ""
-                                        )
-                                            .trim(),
+                                        ).trim(),
 
                                     giaTri:
                                         String(
-                                            formData
-                                                .giaTri ??
+                                            formData.giaTri ??
                                             ""
-                                        )
-                                            .trim(),
+                                        ).trim(),
+
+                                    dsCoSoId:
+                                        coSoSelect
+                                            .getValues(),
 
                                     dsNhomTinhNangId:
-                                        getSelectedNhomTinhNangIds(),
+                                        nhomTinhNangSelect
+                                            .getValues(),
 
                                     moTa:
                                         String(
-                                            formData
-                                                .moTa ||
+                                            formData.moTa ||
                                             ""
                                         )
                                             .trim() ||
@@ -727,30 +954,46 @@ document.addEventListener(
 
                                     active:
                                         formData.active ===
-                                        true
+                                            true
 
                                 };
 
                             },
-
 
                             onRecordLoaded(
                                 record,
                                 mode
                             ) {
 
-                                const selectedIds =
+                                const dsCoSoId =
                                     Array.isArray(
-                                        record
-                                            ?.dsNhomTinhNangId
+                                        record?.dsCoSoId
                                     )
-                                        ? record
-                                            .dsNhomTinhNangId
+                                        ? record.dsCoSoId
                                         : [];
 
 
-                                renderNhomTinhNangOptions(
-                                    selectedIds
+                                const dsNhomTinhNangId =
+                                    Array.isArray(
+                                        record?.dsNhomTinhNangId
+                                    )
+                                        ? record.dsNhomTinhNangId
+                                        : [];
+
+
+                                coSoSelect.render(
+                                    dsCoSoId
+                                );
+
+
+                                nhomTinhNangSelect.render(
+                                    dsNhomTinhNangId
+                                );
+
+
+                                setCoSoReadonly(
+                                    mode ===
+                                        "view"
                                 );
 
 
@@ -760,7 +1003,6 @@ document.addEventListener(
                                 );
 
                             },
-
 
                             onAction(
                                 action,
@@ -875,6 +1117,55 @@ document.addEventListener(
 
         }
 
+        async function loadCoSo() {
+
+            try {
+
+                const response =
+                    await window.MCS.api
+                        .request(
+                            API_CO_SO
+                        );
+
+                const data =
+                    response?.data;
+
+                if (
+                    Array.isArray(
+                        data
+                    )
+                ) {
+
+                    dsCoSo =
+                        data;
+
+                    return;
+
+                }
+
+                dsCoSo =
+                    data?.items ||
+                    data?.data ||
+                    [];
+
+            } catch (
+                error
+            ) {
+
+                dsCoSo =
+                    [];
+
+
+                window.MCS.toast
+                    ?.error(
+                        error?.message ||
+                        "Không thể tải danh sách cơ sở."
+                    );
+
+            }
+
+        }
+
         function getNhomTinhNangSelect() {
 
             return document
@@ -953,211 +1244,6 @@ document.addEventListener(
 
         }
 
-        function renderNhomTinhNangOptions(
-            selectedIds = []
-        ) {
-
-            const select =
-                getNhomTinhNangSelect();
-
-
-            if (!select) {
-                return;
-            }
-
-
-            const selectedSet =
-                new Set(
-                    (
-                        selectedIds ||
-                        []
-                    )
-                        .map(
-                            value =>
-                                String(
-                                    value
-                                )
-                        )
-                );
-
-
-            select.innerHTML =
-                "";
-
-            const allOption =
-                document.createElement(
-                    "option"
-                );
-
-
-            allOption.value =
-                "__ALL__";
-
-
-            allOption.textContent =
-                "Tất cả";
-
-
-            select.appendChild(
-                allOption
-            );
-
-            dsNhomTinhNang
-                .forEach(
-                    item => {
-
-                        const option =
-                            document
-                                .createElement(
-                                    "option"
-                                );
-
-
-                        option.value =
-                            String(
-                                item.id
-                            );
-
-
-                        option.textContent =
-                            getNhomTinhNangLabel(
-                                item
-                            );
-
-
-                        option.selected =
-                            selectedSet.has(
-                                String(
-                                    item.id
-                                )
-                            );
-
-
-                        select.appendChild(
-                            option
-                        );
-
-                    }
-                );
-
-
-            const root =
-                getNhomTinhNangRoot();
-
-
-            root
-                ?.smartSelect
-                ?.refresh?.();
-
-
-            requestAnimationFrame(
-                () => {
-
-                    syncNhomTinhNangUI();
-
-                }
-            );
-
-        }
-
-        function getNhomTinhNangLabel(
-            item
-        ) {
-
-            const ma =
-                item?.maNhomTinhNang ||
-                "";
-
-
-            const ten =
-                item?.tenNhomTinhNang ||
-                "";
-
-
-            if (
-                ma &&
-                ten
-            ) {
-
-                return `${ma} - ${ten}`;
-
-            }
-
-
-            return (
-                ten ||
-                ma ||
-                `Nhóm ${item?.id || ""}`
-            );
-
-        }
-
-        function getSelectedNhomTinhNangIds() {
-
-            const select =
-                getNhomTinhNangSelect();
-
-
-            if (!select) {
-                return [];
-            }
-
-
-            const selectedOptions =
-                Array.from(
-                    select.selectedOptions ||
-                    []
-                );
-
-
-            const selectedAll =
-                selectedOptions.some(
-                    option =>
-                        option.value ===
-                        "__ALL__"
-                );
-
-            if (
-                selectedAll
-            ) {
-
-                return dsNhomTinhNang
-                    .map(
-                        item =>
-                            Number(
-                                item.id
-                            )
-                    )
-                    .filter(
-                        value =>
-                            Number.isInteger(
-                                value
-                            ) &&
-                            value >
-                                0
-                    );
-
-            }
-
-
-            return selectedOptions
-                .map(
-                    option =>
-                        Number(
-                            option.value
-                        )
-                )
-                .filter(
-                    value =>
-                        Number.isInteger(
-                            value
-                        ) &&
-                        value >
-                            0
-                );
-
-        }
-
         function setNhomTinhNangReadonly(
             readonly
         ) {
@@ -1199,11 +1285,33 @@ document.addEventListener(
 
         }
 
+        function setCoSoReadonly(
+            readonly
+        ) {
+
+            const root =
+                coSoSelect
+                    .getRoot();
+
+
+            if (!root) {
+                return;
+            }
+
+
+            root.smartSelect
+                ?.setDisabled?.(
+                    readonly
+                );
+
+        }
+
         function syncCurrentNhomTinhNang() {
 
             if (!catalog) {
                 return;
             }
+
 
             if (
                 catalog.state
@@ -1226,7 +1334,7 @@ document.addEventListener(
                         );
 
 
-                renderNhomTinhNangOptions(
+                nhomTinhNangSelect.render(
                     record
                         ?.dsNhomTinhNangId ||
                     []
@@ -1238,16 +1346,106 @@ document.addEventListener(
             }
 
 
-            renderNhomTinhNangOptions(
+            nhomTinhNangSelect.render(
                 []
             );
 
         }
 
-        function exportData() {
+        function syncCurrentCoSo() {
 
-            window.location.href =
-                `${API_BASE}/xuat-du-lieu`;
+            if (!catalog) {
+                return;
+            }
+
+
+            if (
+                catalog.state
+                    .selectedId !==
+                null
+            ) {
+
+                const record =
+                    catalog.state
+                        .allData
+                        .find(
+                            item =>
+                                String(
+                                    item.id
+                                ) ===
+                                String(
+                                    catalog.state
+                                        .selectedId
+                                )
+                        );
+
+
+                coSoSelect.render(
+                    record?.dsCoSoId ||
+                    []
+                );
+
+
+                return;
+
+            }
+
+
+            coSoSelect.render(
+                []
+            );
+
+        }
+
+        async function exportData() {
+
+            try {
+
+                const result =
+                    await window.MCS
+                        .api
+                        .requestFile(
+                            `${API_BASE}/xuat-du-lieu`,
+                            {
+                                method:
+                                    "GET"
+                            }
+                        );
+
+
+                window.MCS
+                    .api
+                    .downloadBlob(
+                        result.blob,
+                        result.fileName ||
+                        "dm_thiet_lap.xlsx"
+                    );
+
+
+                window.MCS
+                    ?.toast
+                    ?.success(
+                        "Xuất dữ liệu thành công."
+                    );
+
+            } catch (
+                error
+            ) {
+
+                console.error(
+                    "Xuất dữ liệu thiết lập thất bại:",
+                    error
+                );
+
+
+                window.MCS
+                    ?.toast
+                    ?.error(
+                        error?.message ||
+                        "Xuất dữ liệu thất bại."
+                    );
+
+            }
 
         }
 
@@ -1256,10 +1454,9 @@ document.addEventListener(
         ) {
 
             const input =
-                document
-                    .createElement(
-                        "input"
-                    );
+                document.createElement(
+                    "input"
+                );
 
 
             input.type =
@@ -1267,7 +1464,7 @@ document.addEventListener(
 
 
             input.accept =
-                ".xlsx,.xls";
+                ".xlsx,.xls,.xlsm";
 
 
             input.hidden =
@@ -1297,22 +1494,21 @@ document.addEventListener(
                     }
 
 
-                    const body =
-                        new FormData();
-
-
-                    body.append(
-                        "file",
-                        file
-                    );
-
-
                     try {
 
-                        const response =
+                        const body =
+                            new FormData();
+
+
+                        body.append(
+                            "file",
+                            file
+                        );
+
+                        const result =
                             await window.MCS
                                 .api
-                                .request(
+                                .requestFile(
                                     `${API_BASE}/import-du-lieu`,
                                     {
 
@@ -1324,21 +1520,42 @@ document.addEventListener(
                                     }
                                 );
 
+                        window.MCS
+                            .api
+                            .downloadBlob(
+                                result.blob,
+                                result.fileName ||
+                                `dm_thiet_lap_import_${
+                                    Date.now()
+                                }.xlsx`
+                            );
+
+                        if (
+                            catalogInstance
+                                ?.load
+                        ) {
+
+                            await catalogInstance
+                                .load();
+
+                        }
+
 
                         window.MCS
                             ?.toast
                             ?.success(
-                                response?.message ||
-                                "Import dữ liệu thành công."
+                                "Đã xử lý import. Vui lòng kiểm tra file kết quả."
                             );
-
-
-                        await catalogInstance
-                            .load();
 
                     } catch (
                         error
                     ) {
+
+                        console.error(
+                            "Import dữ liệu thiết lập thất bại:",
+                            error
+                        );
+
 
                         window.MCS
                             ?.toast

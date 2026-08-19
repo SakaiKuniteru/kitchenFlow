@@ -18,9 +18,9 @@ console.log({
     user: process.env.DB_USER,
 });
 
-pool.on("connect", () => {
-    console.log("✅ PostgreSQL Connected");
-});
+// pool.on("connect", () => {
+//     console.log("✅ PostgreSQL Connected");
+// });
 
 pool.on("error", (err) => {
     console.error("PostgreSQL Error:", err);

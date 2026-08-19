@@ -28,7 +28,6 @@
 
 
         <div class="catalog-form-grid__full">
-
             {{> forms/input
                 id="giaTri"
                 name="giaTri"
@@ -37,12 +36,10 @@
                 maxlength=500
                 required=true
             }}
-
         </div>
 
 
         <div class="catalog-form-grid__full">
-
             {{> forms/select
                 id="dsNhomTinhNangId"
                 name="dsNhomTinhNangId"
@@ -54,12 +51,24 @@
                 description=""
                 required=true
             }}
-
         </div>
 
+        <div class="catalog-form-grid__full">
+            {{> forms/select
+                id="dsCoSoId"
+                name="dsCoSoId"
+                label="Cơ sở"
+                mode="multiple"
+                multiple=true
+                allowAll=true
+                allLabel="Tất cả"
+                placeholder="Chọn cơ sở..."
+                description=""
+                required=true
+            }}
+        </div>
 
         <div class="catalog-form-grid__full">
-
             {{> forms/textarea
                 id="moTa"
                 name="moTa"
@@ -70,7 +79,6 @@
                 showCounter=true
                 required=true
             }}
-
         </div>
 
     </div>

@@ -74,26 +74,42 @@ function dongLaTemplate(row, getValue, headerMap) {
 
 }
 
-
-function toArray(value) {
+function toArray(
+    value
+) {
 
     if (
         value === undefined ||
         value === null ||
         value === ""
     ) {
+
         return undefined;
+
     }
 
-    if (Array.isArray(value)) {
+
+    if (
+        Array.isArray(
+            value
+        )
+    ) {
+
         return value;
+
     }
 
-    const text =
-        String(value).trim();
+
+    let text =
+        String(
+            value
+        ).trim();
+
 
     if (!text) {
+
         return undefined;
+
     }
 
     if (
@@ -104,24 +120,104 @@ function toArray(value) {
         try {
 
             const result =
-                JSON.parse(text);
+                JSON.parse(
+                    text
+                );
 
-            if (Array.isArray(result)) {
+
+            if (
+                Array.isArray(
+                    result
+                )
+            ) {
+
                 return result;
+
             }
 
-        } catch (error) {
+        } catch (
+            error
+        ) {
+
+            text =
+                text
+                    .slice(
+                        1,
+                        -1
+                    )
+                    .trim();
+
         }
+
+    }
+
+
+    if (!text) {
+
+        return undefined;
 
     }
 
     return text
         .split(",")
-        .map(item => item.trim())
-        .filter(Boolean);
+        .map(
+            item =>
+                String(
+                    item
+                )
+                    .trim()
+                    .replace(
+                        /^["']|["']$/g,
+                        ""
+                    )
+        )
+        .filter(
+            Boolean
+        );
 
 }
 
+function getImportValue(
+    row,
+    getValue,
+    headerMap,
+    key
+) {
+
+    if (
+        headerMap.has(
+            key
+        )
+    ) {
+
+        return getValue(
+            row,
+            key
+        );
+
+    }
+
+    const arrayKey =
+        `${key}[]`;
+
+
+    if (
+        headerMap.has(
+            arrayKey
+        )
+    ) {
+
+        return getValue(
+            row,
+            arrayKey
+        );
+
+    }
+
+
+    return undefined;
+
+}
 
 function toIdArray(value) {
 
@@ -215,11 +311,24 @@ async function docDuLieuImport(file) {
                 )
                 : undefined;
 
-        const maThietLap =
+        const maThietLapRaw =
             getValue(
                 row,
                 fieldMa
             );
+
+        const maThietLap =
+            maThietLapRaw !==
+                undefined &&
+            maThietLapRaw !==
+                null
+                ? String(
+                    maThietLapRaw
+                )
+                    .trim()
+                    .toUpperCase()
+                : undefined;
+
 
         const item = {
             rowNumbers: [rowNumber],
@@ -232,11 +341,22 @@ async function docDuLieuImport(file) {
             code: maThietLap
         };
 
-        const tenThietLap =
+        const tenThietLapRaw =
             getValue(
                 row,
                 "tenThietLap"
             );
+
+
+        const tenThietLap =
+            tenThietLapRaw !==
+                undefined &&
+            tenThietLapRaw !==
+                null
+                ? String(
+                    tenThietLapRaw
+                ).trim()
+                : undefined;
 
         const giaTri =
             getValue(
@@ -244,33 +364,65 @@ async function docDuLieuImport(file) {
                 "giaTri"
             );
 
-        const moTa =
+        const moTaRaw =
             getValue(
                 row,
                 "moTa"
             );
 
+
+        const moTa =
+            moTaRaw !==
+                undefined &&
+            moTaRaw !==
+                null
+                ? String(
+                    moTaRaw
+                ).trim()
+                : undefined;
+
         const coSoIdRaw =
-            getValue(
+            getImportValue(
                 row,
+                getValue,
+                headerMap,
                 "coSoId"
             );
 
-        const maCoSo =
-            getValue(
+
+        const maCoSoRaw =
+            getImportValue(
                 row,
+                getValue,
+                headerMap,
                 "maCoSo"
             );
 
+        const maCoSo =
+            maCoSoRaw !==
+                undefined &&
+            maCoSoRaw !==
+                null
+                ? String(
+                    maCoSoRaw
+                )
+                    .trim()
+                    .toUpperCase()
+                : undefined;
+
         const dsNhomTinhNangIdRaw =
-            getValue(
+            getImportValue(
                 row,
+                getValue,
+                headerMap,
                 "dsNhomTinhNangId"
             );
 
         const dsMaNhomTinhNangRaw =
-            getValue(
+            getImportValue(
                 row,
+                getValue,
+                headerMap,
                 "dsMaNhomTinhNang"
             );
 
@@ -304,11 +456,24 @@ async function docDuLieuImport(file) {
                     dsNhomTinhNangIdRaw
                 );
 
-        if (dsMaNhomTinhNangRaw !== undefined)
+        if (
+            dsMaNhomTinhNangRaw !==
+            undefined
+        ) {
+
             item.dsMaNhomTinhNang =
                 toTextArray(
                     dsMaNhomTinhNangRaw
-                );
+                )
+                    ?.map(
+                        ma =>
+                            String(
+                                ma
+                            )
+                                .trim()
+                                .toUpperCase()
+                    );
+        }
 
         if (activeRaw !== undefined) {
 

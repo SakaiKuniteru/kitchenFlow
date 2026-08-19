@@ -18,10 +18,20 @@ class CauHinhRepository {
                 ma_thiet_lap,
                 ten_thiet_lap,
                 gia_tri,
-                co_so_id,
                 active
+
             FROM dm_thiet_lap
-            WHERE ma_thiet_lap = $1
+
+            WHERE UPPER(
+                TRIM(
+                    ma_thiet_lap
+                )
+            ) = UPPER(
+                TRIM(
+                    $1
+                )
+            )
+
             LIMIT 1
         `;
 
@@ -55,9 +65,21 @@ class CauHinhRepository {
                 ma_co_so,
                 ten_co_so,
                 logo
+
             FROM dm_co_so
-            WHERE ma_co_so = $1
-              AND active = TRUE
+
+            WHERE UPPER(
+                TRIM(
+                    ma_co_so
+                )
+            ) = UPPER(
+                TRIM(
+                    $1
+                )
+            )
+
+            AND active = TRUE
+
             LIMIT 1
         `;
 

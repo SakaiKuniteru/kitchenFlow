@@ -78,23 +78,51 @@ const createSchema = Joi.object({
 
         }),
 
-    coSoId: Joi.number()
-        .integer()
-        .positive()
-        .allow(null)
-        .optional()
-        .messages({
+    dsCoSoId:
+        Joi.array()
+            .items(
+                Joi.number()
+                    .integer()
+                    .positive()
+            )
+            .min(
+                1
+            )
+            .unique()
+            .optional()
+            .messages({
 
-            "number.base":
-                "ID cơ sở phải là số.",
+                "array.base":
+                    "Cơ sở phải là một danh sách.",
 
-            "number.integer":
-                "ID cơ sở phải là số nguyên.",
+                "array.unique":
+                    "Danh sách cơ sở không được trùng nhau."
 
-            "number.positive":
-                "ID cơ sở phải lớn hơn 0."
+            }),
 
-        }),
+    dsMaCoSo:
+        Joi.array()
+            .items(
+                Joi.string()
+                    .trim()
+                    .max(
+                        50
+                    )
+            )
+            .min(
+                1
+            )
+            .unique()
+            .optional()
+            .messages({
+
+                "array.base":
+                    "Mã cơ sở phải là một danh sách.",
+
+                "array.unique":
+                    "Danh sách mã cơ sở không được trùng nhau."
+
+            }),
 
     dsNhomTinhNangId: Joi.array()
         .items(
@@ -244,23 +272,51 @@ const updateSchema = Joi.object({
 
         }),
 
-    coSoId: Joi.number()
-        .integer()
-        .positive()
-        .allow(null)
-        .optional()
-        .messages({
+    dsCoSoId:
+        Joi.array()
+            .items(
+                Joi.number()
+                    .integer()
+                    .positive()
+            )
+            .min(
+                1
+            )
+            .unique()
+            .optional()
+            .messages({
 
-            "number.base":
-                "ID cơ sở phải là số.",
+                "array.base":
+                    "Cơ sở phải là một danh sách.",
 
-            "number.integer":
-                "ID cơ sở phải là số nguyên.",
+                "array.unique":
+                    "Danh sách cơ sở không được trùng nhau."
 
-            "number.positive":
-                "ID cơ sở phải lớn hơn 0."
+            }),
 
-        }),
+    dsMaCoSo:
+        Joi.array()
+            .items(
+                Joi.string()
+                    .trim()
+                    .max(
+                        50
+                    )
+            )
+            .min(
+                1
+            )
+            .unique()
+            .optional()
+            .messages({
+
+                "array.base":
+                    "Mã cơ sở phải là một danh sách.",
+
+                "array.unique":
+                    "Danh sách mã cơ sở không được trùng nhau."
+
+            }),
 
     dsNhomTinhNangId: Joi.array()
         .items(

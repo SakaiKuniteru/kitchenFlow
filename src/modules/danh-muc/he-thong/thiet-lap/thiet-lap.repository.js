@@ -8,6 +8,11 @@ class ThietLapRepository {
             return null;
         }
 
+        const dsCoSo =
+            Array.isArray(row.co_sos)
+                ? row.co_sos 
+                : [];
+
         const dsNhomTinhNang =
             Array.isArray(row.nhom_tinh_nangs)
                 ? row.nhom_tinh_nangs
@@ -30,17 +35,34 @@ class ThietLapRepository {
             moTa:
                 row.mo_ta,
 
-            coSoId:
-                row.co_so_id,
+            dsCoSoId:
+                dsCoSo.map(
+                    item =>
+                        Number(
+                            item.id
+                        )
+                ),
 
-            coSo: row.co_so_id
-                ? {
-                    id: row.co_so_id,
-                    ma: row.ma_co_so,
-                    ten: row.ten_co_so,
-                    diaChi: row.dia_chi
-                }
-                : null,
+
+            dsMaCoSo:
+                dsCoSo.map(
+                    item =>
+                        item.maCoSo
+                ),
+
+
+            dsCoSo,
+
+
+            coSo:
+                dsCoSo
+                    .map(
+                        item =>
+                            item.tenCoSo
+                    )
+                    .join(
+                        ", "
+                    ),
 
             dsNhomTinhNangId:
                 dsNhomTinhNang.map(
@@ -85,50 +107,111 @@ class ThietLapRepository {
                 tl.ten_thiet_lap,
                 tl.gia_tri,
                 tl.mo_ta,
-                tl.co_so_id,
                 tl.active,
                 tl.created_at,
                 tl.updated_at,
 
-                cs.ma_co_so,
-                cs.ten_co_so,
-                cs.dia_chi,
 
                 COALESCE(
-                    JSON_AGG(
-                        JSON_BUILD_OBJECT(
-                            'id',
-                                ntn.id,
 
-                            'maNhomTinhNang',
-                                ntn.ma_nhom_tinh_nang,
+                    (
 
-                            'tenNhomTinhNang',
-                                ntn.ten_nhom_tinh_nang,
+                        SELECT
+                            JSON_AGG(
 
-                            'active',
-                                tlntn.active
-                        )
-                        ORDER BY
-                            ntn.ma_nhom_tinh_nang ASC
-                    )
-                    FILTER (
-                        WHERE ntn.id IS NOT NULL
+                                JSON_BUILD_OBJECT(
+
+                                    'id',
+                                        cs.id,
+
+                                    'maCoSo',
+                                        cs.ma_co_so,
+
+                                    'tenCoSo',
+                                        cs.ten_co_so,
+
+                                    'diaChi',
+                                        cs.dia_chi,
+
+                                    'active',
+                                        lkcs.active
+
+                                )
+
+                                ORDER BY
+                                    cs.ma_co_so ASC
+
+                            )
+
+                        FROM dm_thiet_lap_co_so lkcs
+
+                        INNER JOIN dm_co_so cs
+                            ON cs.id =
+                                lkcs.co_so_id
+
+                        WHERE
+                            lkcs.thiet_lap_id =
+                                tl.id
+
+                            AND lkcs.active =
+                                TRUE
+
                     ),
+
                     '[]'::JSON
+
+                ) AS co_sos,
+
+
+                COALESCE(
+
+                    (
+
+                        SELECT
+                            JSON_AGG(
+
+                                JSON_BUILD_OBJECT(
+
+                                    'id',
+                                        ntn.id,
+
+                                    'maNhomTinhNang',
+                                        ntn.ma_nhom_tinh_nang,
+
+                                    'tenNhomTinhNang',
+                                        ntn.ten_nhom_tinh_nang,
+
+                                    'active',
+                                        lkntn.active
+
+                                )
+
+                                ORDER BY
+                                    ntn.ma_nhom_tinh_nang ASC
+
+                            )
+
+                        FROM dm_thiet_lap_nhom_tinh_nang lkntn
+
+                        INNER JOIN dm_nhom_tinh_nang ntn
+                            ON ntn.id =
+                                lkntn.nhom_tinh_nang_id
+
+                        WHERE
+                            lkntn.thiet_lap_id =
+                                tl.id
+
+                            AND lkntn.active =
+                                TRUE
+
+                    ),
+
+                    '[]'::JSON
+
                 ) AS nhom_tinh_nangs
 
+
             FROM dm_thiet_lap tl
-
-            LEFT JOIN dm_co_so cs
-                ON cs.id = tl.co_so_id
-
-            LEFT JOIN dm_thiet_lap_nhom_tinh_nang tlntn
-                ON tlntn.thiet_lap_id = tl.id
-                AND tlntn.active = TRUE
-
-            LEFT JOIN dm_nhom_tinh_nang ntn
-                ON ntn.id = tlntn.nhom_tinh_nang_id
 
         `;
 
@@ -167,47 +250,44 @@ class ThietLapRepository {
 
     }
 
-    async getGiaTriTheoId(maThietLap) {
+    async getGiaTriTheoId(
+        maThietLap
+    ) {
 
         const sql = `
             ${this.getBaseQuery()}
 
             WHERE
-                UPPER(tl.ma_thiet_lap)
-                    = UPPER($1)
+                UPPER(
+                    tl.ma_thiet_lap
+                ) = UPPER(
+                    $1
+                )
 
                 AND tl.active = TRUE
-
-            GROUP BY
-                tl.id,
-                tl.ma_thiet_lap,
-                tl.ten_thiet_lap,
-                tl.gia_tri,
-                tl.mo_ta,
-                tl.co_so_id,
-                tl.active,
-                tl.created_at,
-                tl.updated_at,
-
-                cs.id,
-                cs.ma_co_so,
-                cs.ten_co_so,
-                cs.dia_chi
 
             LIMIT 1
         `;
 
+
         const result =
             await pool.query(
                 sql,
-                [maThietLap]
+                [
+                    maThietLap
+                ]
             );
 
-        if (result.rows.length === 0) {
+
+        if (
+            result.rows.length ===
+            0
+        ) {
 
             return null;
 
         }
+
 
         return this.mapThietLap(
             result.rows[0]
@@ -227,8 +307,6 @@ class ThietLapRepository {
             ) = UPPER(
                 TRIM($1)
             )
-            
-            ${this.getGroupBy()}
 
             LIMIT 1
         `;
@@ -244,7 +322,8 @@ class ThietLapRepository {
 
 
         if (
-            result.rows.length === 0
+            result.rows.length ===
+            0
         ) {
 
             return null;
@@ -258,137 +337,180 @@ class ThietLapRepository {
 
     }
 
-    async getByGroup(nhom) {
-
-        const sql = `
-            ${this.getBaseQuery()}
-
-            WHERE
-                tl.active = TRUE
-
-                AND EXISTS (
-
-                    SELECT 1
-
-                    FROM dm_thiet_lap_nhom_tinh_nang lk
-
-                    INNER JOIN dm_nhom_tinh_nang nhom
-                        ON nhom.id =
-                            lk.nhom_tinh_nang_id
-
-                    WHERE
-                        lk.thiet_lap_id = tl.id
-
-                        AND lk.active = TRUE
-
-                        AND nhom.active = TRUE
-
-                        AND UPPER(
-                            nhom.ma_nhom_tinh_nang
-                        ) = UPPER($1)
-
-                )
-
-            GROUP BY
-                tl.id,
-                tl.ma_thiet_lap,
-                tl.ten_thiet_lap,
-                tl.gia_tri,
-                tl.mo_ta,
-                tl.co_so_id,
-                tl.active,
-                tl.created_at,
-                tl.updated_at,
-
-                cs.id,
-                cs.ma_co_so,
-                cs.ten_co_so,
-                cs.dia_chi
-
-            ORDER BY
-                tl.ten_thiet_lap ASC
-        `;
-
-        const result =
-            await pool.query(
-                sql,
-                [nhom]
-            );
-
-        return result.rows.map(
-            row => this.mapThietLap(row)
-        );
-
-    }
-
-    getGroupBy() {
-
-        return `
-            GROUP BY
-                tl.id,
-                tl.ma_thiet_lap,
-                tl.ten_thiet_lap,
-                tl.gia_tri,
-                tl.mo_ta,
-                tl.co_so_id,
-                tl.active,
-                tl.created_at,
-                tl.updated_at,
-
-                cs.id,
-                cs.ma_co_so,
-                cs.ten_co_so,
-                cs.dia_chi
-        `;
-
-    }
-
     async getTongHop() {
 
         const sql = `
             ${this.getBaseQuery()}
 
-            ${this.getGroupBy()}
-
             ORDER BY
                 tl.ma_thiet_lap ASC
         `;
 
+
         const result =
-            await pool.query(sql);
+            await pool.query(
+                sql
+            );
+
 
         return result.rows.map(
-            row => this.mapThietLap(row)
+            row =>
+                this.mapThietLap(
+                    row
+                )
         );
 
     }
 
-    async getChiTiet(id) {
+    async getChiTiet(
+        id
+    ) {
 
         const sql = `
             ${this.getBaseQuery()}
 
             WHERE tl.id = $1
 
-            ${this.getGroupBy()}
-
             LIMIT 1
         `;
+
 
         const result =
             await pool.query(
                 sql,
-                [id]
+                [
+                    id
+                ]
             );
 
-        if (result.rows.length === 0) {
+
+        if (
+            result.rows.length ===
+            0
+        ) {
 
             return null;
 
         }
 
+
         return this.mapThietLap(
             result.rows[0]
+        );
+
+    }
+
+    async getDsCoSoByIds(
+        ids
+    ) {
+
+        const sql = `
+            SELECT
+                id,
+                ma_co_so,
+                ten_co_so,
+                dia_chi,
+                active
+
+            FROM dm_co_so
+
+            WHERE id = ANY(
+                $1::BIGINT[]
+            )
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    ids
+                ]
+            );
+
+
+        return result.rows.map(
+            row => ({
+
+                id:
+                    row.id,
+
+                maCoSo:
+                    row.ma_co_so,
+
+                tenCoSo:
+                    row.ten_co_so,
+
+                diaChi:
+                    row.dia_chi,
+
+                active:
+                    row.active
+
+            })
+        );
+
+    }
+
+    async getDsCoSoByMas(
+        mas
+    ) {
+
+        const sql = `
+            SELECT
+                id,
+                ma_co_so,
+                ten_co_so,
+                dia_chi,
+                active
+
+            FROM dm_co_so
+
+            WHERE UPPER(
+                TRIM(ma_co_so)
+            ) IN (
+
+                SELECT
+                    UPPER(
+                        TRIM(
+                            UNNEST(
+                                $1::TEXT[]
+                            )
+                        )
+                    )
+
+            )
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    mas
+                ]
+            );
+
+
+        return result.rows.map(
+            row => ({
+
+                id:
+                    row.id,
+
+                maCoSo:
+                    row.ma_co_so,
+
+                tenCoSo:
+                    row.ten_co_so,
+
+                diaChi:
+                    row.dia_chi,
+
+                active:
+                    row.active
+
+            })
         );
 
     }
@@ -527,14 +649,14 @@ class ThietLapRepository {
 
     async existsTenThietLap(
         tenThietLap,
-        coSoId = null,
-        excludeId = null
+        excludeId =
+            null
     ) {
 
         const values = [
-            tenThietLap,
-            coSoId
+            tenThietLap
         ];
+
 
         let sql = `
             SELECT EXISTS (
@@ -543,25 +665,38 @@ class ThietLapRepository {
 
                 FROM dm_thiet_lap
 
-                WHERE LOWER(TRIM(ten_thiet_lap))
-                    = LOWER(TRIM($1))
-
-                AND co_so_id IS NOT DISTINCT FROM $2
+                WHERE LOWER(
+                    TRIM(
+                        ten_thiet_lap
+                    )
+                ) = LOWER(
+                    TRIM(
+                        $1
+                    )
+                )
         `;
 
-        if (excludeId) {
 
-            values.push(excludeId);
+        if (
+            excludeId
+        ) {
+
+            values.push(
+                excludeId
+            );
+
 
             sql += `
-                AND id <> $3
+                AND id <> $2
             `;
 
         }
 
+
         sql += `
             ) AS "exists"
         `;
+
 
         const result =
             await pool.query(
@@ -569,7 +704,9 @@ class ThietLapRepository {
                 values
             );
 
-        return result.rows[0].exists;
+
+        return result.rows[0]
+            .exists;
 
     }
 
@@ -622,6 +759,66 @@ class ThietLapRepository {
 
     }
 
+    async ganDsCoSo(
+        client,
+        thietLapId,
+        dsCoSoId
+    ) {
+
+        if (
+            !Array.isArray(
+                dsCoSoId
+            ) ||
+            dsCoSoId.length ===
+                0
+        ) {
+
+            return;
+
+        }
+
+
+        const sql = `
+            INSERT INTO dm_thiet_lap_co_so
+            (
+                thiet_lap_id,
+                co_so_id,
+                active,
+                created_at,
+                updated_at
+            )
+
+            SELECT
+                $1,
+                UNNEST(
+                    $2::BIGINT[]
+                ),
+                TRUE,
+                NOW(),
+                NOW()
+
+            ON CONFLICT
+            (
+                thiet_lap_id,
+                co_so_id
+            )
+
+            DO UPDATE SET
+                active = TRUE,
+                updated_at = NOW()
+        `;
+
+
+        await client.query(
+            sql,
+            [
+                thietLapId,
+                dsCoSoId
+            ]
+        );
+
+    }
+
     async khoaTatCaNhomTinhNang(
         client,
         thietLapId
@@ -644,6 +841,31 @@ class ThietLapRepository {
 
     }
 
+    async khoaTatCaCoSo(
+        client,
+        thietLapId
+    ) {
+
+        const sql = `
+            UPDATE dm_thiet_lap_co_so
+
+            SET
+                active = FALSE,
+                updated_at = NOW()
+
+            WHERE thiet_lap_id = $1
+        `;
+
+
+        await client.query(
+            sql,
+            [
+                thietLapId
+            ]
+        );
+
+    }
+
     async create(data) {
 
         const client =
@@ -654,23 +876,23 @@ class ThietLapRepository {
             await client.query("BEGIN");
 
             const sql = `
-                INSERT INTO dm_thiet_lap (
+                INSERT INTO dm_thiet_lap
+                (
                     ma_thiet_lap,
                     ten_thiet_lap,
                     gia_tri,
                     mo_ta,
-                    co_so_id,
                     active,
                     created_at,
                     updated_at
                 )
-                VALUES (
+                VALUES
+                (
                     $1,
                     $2,
                     $3,
                     $4,
                     $5,
-                    $6,
                     NOW(),
                     NOW()
                 )
@@ -683,17 +905,16 @@ class ThietLapRepository {
 
                 data.tenThietLap,
 
-                data.giaTri !== undefined
+                data.giaTri !==
+                    undefined
                     ? data.giaTri
                     : null,
 
-                data.moTa || null,
+                data.moTa ||
+                    null,
 
-                data.coSoId !== undefined
-                    ? data.coSoId
-                    : null,
-
-                data.active !== undefined
+                data.active !==
+                    undefined
                     ? data.active
                     : true
 
@@ -707,6 +928,12 @@ class ThietLapRepository {
 
             const thietLapId =
                 result.rows[0].id;
+
+            await this.ganDsCoSo(
+                client,
+                thietLapId,
+                data.dsCoSoId
+            );
 
             await this.ganDsNhomTinhNang(
                 client,
@@ -751,11 +978,10 @@ class ThietLapRepository {
                     ten_thiet_lap = $2,
                     gia_tri = $3,
                     mo_ta = $4,
-                    co_so_id = $5,
-                    active = $6,
+                    active = $5,
                     updated_at = NOW()
 
-                WHERE id = $7
+                WHERE id = $6
 
                 RETURNING id
             `;
@@ -766,15 +992,13 @@ class ThietLapRepository {
 
                 data.tenThietLap,
 
-                data.giaTri !== undefined
+                data.giaTri !==
+                    undefined
                     ? data.giaTri
                     : null,
 
-                data.moTa || null,
-
-                data.coSoId !== undefined
-                    ? data.coSoId
-                    : null,
+                data.moTa ||
+                    null,
 
                 data.active,
 
@@ -798,10 +1022,24 @@ class ThietLapRepository {
 
             }
 
+            await this.khoaTatCaCoSo(
+                client,
+                id
+            );
+
+
+            await this.ganDsCoSo(
+                client,
+                id,
+                data.dsCoSoId
+            );
+
+
             await this.khoaTatCaNhomTinhNang(
                 client,
                 id
             );
+
 
             await this.ganDsNhomTinhNang(
                 client,

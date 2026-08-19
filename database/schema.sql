@@ -380,7 +380,15 @@ CREATE TABLE dm_thiet_lap (
     ten_thiet_lap VARCHAR(255) NOT NULL,
     gia_tri TEXT,
     mo_ta VARCHAR(500),
-    co_so_id INTEGER,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL
+);
+
+CREATE TABLE dm_thiet_lap_co_so (
+    id BIGSERIAL NOT NULL,
+    thiet_lap_id INTEGER NOT NULL,
+    co_so_id INTEGER NOT NULL,
     active BOOLEAN DEFAULT true NOT NULL,
     created_at TIMESTAMP DEFAULT now() NOT NULL,
     updated_at TIMESTAMP DEFAULT now() NOT NULL
@@ -694,6 +702,8 @@ ALTER TABLE dm_tai_khoan_vai_tro
     ADD CONSTRAINT dm_tai_khoan_vai_tro_pkey PRIMARY KEY (tai_khoan_id, vai_tro_id);
 ALTER TABLE dm_thiet_lap
     ADD CONSTRAINT dm_thiet_lap_pkey PRIMARY KEY (id);
+ALTER TABLE dm_thiet_lap_co_so
+    ADD CONSTRAINT dm_thiet_lap_co_so_pkey PRIMARY KEY (id);
 ALTER TABLE dm_thiet_lap_nhom_tinh_nang
     ADD CONSTRAINT dm_thiet_lap_nhom_tinh_nang_pkey PRIMARY KEY (id);
 ALTER TABLE dm_thuc_pham
@@ -790,6 +800,8 @@ ALTER TABLE dm_tai_khoan
     ADD CONSTRAINT dm_tai_khoan_ten_dang_nhap_key UNIQUE (ten_dang_nhap);
 ALTER TABLE dm_thiet_lap
     ADD CONSTRAINT dm_thiet_lap_ma_thiet_lap_key UNIQUE (ma_thiet_lap);
+ALTER TABLE dm_thiet_lap_co_so
+    ADD CONSTRAINT uq_thiet_lap_co_so UNIQUE (thiet_lap_id, co_so_id);
 ALTER TABLE dm_thiet_lap_nhom_tinh_nang
     ADD CONSTRAINT uq_thiet_lap_nhom_tinh_nang UNIQUE (thiet_lap_id, nhom_tinh_nang_id);
 ALTER TABLE dm_thuc_pham
@@ -1044,18 +1056,30 @@ ALTER TABLE dm_tai_khoan_vai_tro
     ADD CONSTRAINT fk_tai_khoan_vai_tro_vai_tro
     FOREIGN KEY (vai_tro_id)
     REFERENCES dm_vai_tro (id);
-ALTER TABLE dm_thiet_lap
-    ADD CONSTRAINT fk_thiet_lap_co_so
+ALTER TABLE dm_thiet_lap_co_so
+    ADD CONSTRAINT fk_thiet_lap_co_so_thiet_lap
+    FOREIGN KEY (thiet_lap_id)
+    REFERENCES dm_thiet_lap (id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE;
+ALTER TABLE dm_thiet_lap_co_so
+    ADD CONSTRAINT fk_thiet_lap_co_so_co_so
     FOREIGN KEY (co_so_id)
-    REFERENCES dm_co_so (id);
+    REFERENCES dm_co_so (id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT;
 ALTER TABLE dm_thiet_lap_nhom_tinh_nang
     ADD CONSTRAINT fk_thiet_lap_nhom_tinh_nang_thiet_lap
     FOREIGN KEY (thiet_lap_id)
-    REFERENCES dm_thiet_lap (id);
+    REFERENCES dm_thiet_lap (id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE;
 ALTER TABLE dm_thiet_lap_nhom_tinh_nang
     ADD CONSTRAINT fk_thiet_lap_nhom_tinh_nang_nhom
     FOREIGN KEY (nhom_tinh_nang_id)
-    REFERENCES dm_nhom_tinh_nang (id);
+    REFERENCES dm_nhom_tinh_nang (id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT;
 ALTER TABLE dm_thuc_pham
     ADD CONSTRAINT fk_tp_dv_so_cap
     FOREIGN KEY (don_vi_so_cap_id)
@@ -1275,6 +1299,14 @@ CREATE INDEX idx_ct_thuc_don_mon_an_mon_an_id
     ON ct_thuc_don_mon_an (mon_an_id);
 CREATE INDEX idx_ct_thuc_don_mon_an_don_vi_tinh_id
     ON ct_thuc_don_mon_an (don_vi_tinh_id);
+CREATE INDEX idx_dm_thiet_lap_co_so_thiet_lap_id
+    ON dm_thiet_lap_co_so (thiet_lap_id);
+CREATE INDEX idx_dm_thiet_lap_co_so_co_so_id
+    ON dm_thiet_lap_co_so (co_so_id);
+CREATE INDEX idx_dm_thiet_lap_nhom_tinh_nang_thiet_lap_id
+    ON dm_thiet_lap_nhom_tinh_nang (thiet_lap_id);
+CREATE INDEX idx_dm_thiet_lap_nhom_tinh_nang_nhom_tinh_nang_id
+    ON dm_thiet_lap_nhom_tinh_nang (nhom_tinh_nang_id);
 
 -- Trigger tự động cập nhật updated_at
 
@@ -1315,6 +1347,17 @@ EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER trg_dm_thiet_lap_updated_at
 BEFORE UPDATE ON dm_thiet_lap
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_dm_thiet_lap_co_so_updated_at
+BEFORE UPDATE ON dm_thiet_lap_co_so
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+
+CREATE TRIGGER trg_dm_thiet_lap_nhom_tinh_nang_updated_at
+BEFORE UPDATE ON dm_thiet_lap_nhom_tinh_nang
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 

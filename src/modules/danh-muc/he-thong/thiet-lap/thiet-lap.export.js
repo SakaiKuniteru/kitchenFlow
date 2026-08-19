@@ -17,32 +17,202 @@ const TEMPLATE_ROW = 5;
 const DATA_START_ROW = 5;
 
 
-function taoDongExport(item) {
+function chuanHoaDanhSach(
+    value
+) {
 
-    return {
-        id: item.id,
-        maThietLap: item.maThietLap,
-        tenThietLap: item.tenThietLap,
+    if (
+        value ===
+        undefined ||
+        value ===
+        null ||
+        value ===
+        ""
+    ) {
 
-        giaTri: item.giaTri,
-        moTa: item.moTa,
+        return [];
 
-        coSoId: item.coSoId,
-        maCoSo: item.coSo?.ma,
+    }
 
-        dsNhomTinhNangId: Array.isArray(item.dsNhomTinhNangId)
-            ? JSON.stringify(item.dsNhomTinhNangId)
-            : "[]",
 
-        dsMaNhomTinhNang: Array.isArray(item.dsMaNhomTinhNang)
-            ? JSON.stringify(item.dsMaNhomTinhNang)
-            : "[]",
+    if (
+        Array.isArray(
+            value
+        )
+    ) {
 
-        active: item.active
-    };
+        return value;
+
+    }
+
+
+    if (
+        typeof value ===
+        "string"
+    ) {
+
+        const text =
+            value.trim();
+
+
+        if (!text) {
+
+            return [];
+
+        }
+
+
+        if (
+            text.startsWith("[") &&
+            text.endsWith("]")
+        ) {
+
+            try {
+
+                const parsed =
+                    JSON.parse(
+                        text
+                    );
+
+
+                return Array.isArray(
+                    parsed
+                )
+                    ? parsed
+                    : [];
+
+            } catch {
+
+                return [];
+
+            }
+
+        }
+
+
+        return text
+            .split(",")
+            .map(
+                item =>
+                    item.trim()
+            )
+            .filter(Boolean);
+
+    }
+
+
+    return [];
 
 }
 
+function noiDanhSach(
+    value
+) {
+
+    return chuanHoaDanhSach(
+        value
+    )
+        .filter(
+            item =>
+                item !==
+                    undefined &&
+                item !==
+                    null &&
+                String(
+                    item
+                ).trim() !==
+                    ""
+        )
+        .map(
+            item =>
+                String(
+                    item
+                ).trim()
+        )
+        .join(", ");
+
+}
+
+function taoDongExport(
+    item
+) {
+    
+    return {
+
+        id:
+            item.id,
+
+        maThietLap:
+            item.maThietLap,
+
+        tenThietLap:
+            item.tenThietLap,
+
+        giaTri:
+            item.giaTri,
+
+        moTa:
+            item.moTa,
+
+
+        dsCoSoId:
+            noiDanhSach(
+                item.dsCoSoId
+            ),
+
+
+        dsMaCoSo:
+            noiDanhSach(
+                item.dsMaCoSo
+            ),
+
+
+        dsTenCoSo:
+            Array.isArray(
+                item.dsCoSo
+            )
+                ? item.dsCoSo
+                    .map(
+                        item =>
+                            item?.tenCoSo
+                    )
+                    .filter(Boolean)
+                    .join(",")
+                : "",
+
+
+        dsNhomTinhNangId:
+            noiDanhSach(
+                item.dsNhomTinhNangId
+            ),
+
+
+        dsMaNhomTinhNang:
+            noiDanhSach(
+                item.dsMaNhomTinhNang
+            ),
+
+
+        dsTenNhomTinhNang:
+            Array.isArray(
+                item.dsNhomTinhNang
+            )
+                ? item.dsNhomTinhNang
+                    .map(
+                        item =>
+                            item?.tenNhomTinhNang
+                    )
+                    .filter(Boolean)
+                    .join(", ")
+                : "",
+
+
+        active:
+            item.active
+
+    };
+
+}
 
 async function xuLyExport(query = {}) {
 
