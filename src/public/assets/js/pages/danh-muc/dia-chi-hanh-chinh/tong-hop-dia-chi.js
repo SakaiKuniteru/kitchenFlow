@@ -1,302 +1,163 @@
 "use strict";
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    const API_BASE = "/api/mcs/v1/dm-dia-chi";
 
-        const API_BASE =
-            "/api/mcs/v1/dm-dia-chi";
+    const catalog = await window.MCS.pages.createCatalogPage({
+        moduleName: "tong-hop-dia-chi",
+        viewOnly: true,
+        detailTitle: "Thông tin địa chỉ hành chính",
 
-        const catalog =
-            await window.MCS.pages
-                .createCatalogPage({
-
-                    moduleName:
-                        "tong-hop-dia-chi",
-
-                    viewOnly:
-                        true,
-
-                    detailTitle:
-                        "Thông tin địa chỉ hành chính",
-
-                    columns: [
-                        {
-                            key:
-                                "maDiaChi",
-                            label:
-                                "Mã địa chỉ",
-                            width:
-                                "140px",
-                            sortable:
-                                true,
-                            filterable:
-                                true
-                        },
-                        {
-                            key:
-                                "tenDiaChi",
-                            label:
-                                "Tên địa chỉ",
-                            width:
-                                "240px",
-                            sortable:
-                                true,
-                            filterable:
-                                true
-                        },
-                        {
-                            key:
-                                "tenQuocGia",
-                            label:
-                                "Tên quốc gia",
-                            width:
-                                "180px",
-                            sortable:
-                                true,
-                            filterable:
-                                true
-                        },
-                        {
-                            key:
-                                "tenTiengAnh",
-                            label:
-                                "Tên tiếng Anh",
-                            width:
-                                "200px",
-                            sortable:
-                                true,
-                            filterable:
-                                true
-                        },
-                        {
-                            key:
-                                "quocGiaTenVietTat",
-                            label:
-                                "Tên viết tắt QG",
-                            width:
-                                "160px",
-                            sortable:
-                                true,
-                            filterable:
-                                true
-                        },
-                        {
-                            key:
-                                "maIso2",
-                            label:
-                                "ISO2",
-                            width:
-                                "90px",
-                            sortable:
-                                true,
-                            filterable:
-                                true
-                        },
-                        {
-                            key:
-                                "maIso3",
-                            label:
-                                "ISO3",
-                            width:
-                                "90px",
-                            sortable:
-                                true,
-                            filterable:
-                                true
-                        },
-                        {
-                            key:
-                                "tenTinhThanh",
-                            label:
-                                "Tên Tỉnh/TP",
-                            width:
-                                "190px",
-                            sortable:
-                                true,
-                            filterable:
-                                true
-                        },
-                        {
-                            key:
-                                "tinhThanhTenVietTat",
-                            label:
-                                "Tên viết tắt Tỉnh/TP",
-                            width:
-                                "190px",
-                            sortable:
-                                true,
-                            filterable:
-                                true
-                        },
-                        {
-                            key:
-                                "tenXaPhuong",
-                            label:
-                                "Tên Xã/Phường",
-                            width:
-                                "190px",
-                            sortable:
-                                true,
-                            filterable:
-                                true
-                        },
-                        {
-                            key:
-                                "xaPhuongTenVietTat",
-                            label:
-                                "Tên viết tắt Xã/Phường",
-                            width:
-                                "190px",
-                            sortable:
-                                true,
-                            filterable:
-                                true
-                        }
-                    ],
-
-                    mapListResponse(
-                        response
-                    ) {
-
-                        const records =
-                            Array.isArray(
-                                response?.data
-                            )
-                                ? response.data
-                                : [];
-
-                        return records.map(
-                            record =>
-                                mapAddressRecord(
-                                    record
-                                )
-                        );
-
-                    },
-
-                    mapRecordToForm(
-                        record
-                    ) {
-
-                        return mapAddressRecordToForm(
-                            record
-                        );
-
-                    },
-
-                    getRecordSubtitle(
-                        record
-                    ) {
-
-                        return (
-                            record?.maDiaChi ||
-                            ""
-                        );
-
-                    },
-
-                    onAction(
-                        action
-                    ) {
-
-                        if (
-                            action ===
-                            "export"
-                        ) {
-
-                            exportData();
-
-                        }
-
-                    }
-
-                });
-
-
-        async function exportData() {
-
-            try {
-
-                const result =
-                    await window.MCS.api
-                        .requestFile(
-                            `${API_BASE}/xuat-du-lieu`,
-                            {
-                                method:
-                                    "GET"
-                            }
-                        );
-
-                window.MCS.api
-                    .downloadBlob(
-                        result.blob,
-                        result.fileName ||
-                        "tong_hop_dia_chi_hanh_chinh.xlsx"
-                    );
-
-                window.MCS.toast
-                    ?.success(
-                        "Xuất dữ liệu thành công."
-                    );
-
-            } catch (
-                error
-            ) {
-
-                console.error(
-                    "Xuất dữ liệu địa chỉ hành chính thất bại:",
-                    error
-                );
-
-                window.MCS.toast
-                    ?.error(
-                        error?.message ||
-                        "Xuất dữ liệu thất bại."
-                    );
-
+        columns: [
+            {
+                key: "maDiaChi",
+                label: "Mã địa chỉ",
+                width: "140px",
+                sortable: true,
+                filterable: true
+            },
+            {
+                key: "tenDiaChi",
+                label: "Tên địa chỉ",
+                width: "240px",
+                sortable: true,
+                filterable: true
+            },
+            {
+                key: "tenQuocGia",
+                label: "Tên quốc gia",
+                width: "180px",
+                sortable: true,
+                filterable: true
+            },
+            {
+                key: "tenTiengAnh",
+                label: "Tên tiếng Anh",
+                width: "200px",
+                sortable: true,
+                filterable: true
+            },
+            {
+                key: "quocGiaTenVietTat",
+                label: "Tên viết tắt QG",
+                width: "160px",
+                sortable: true,
+                filterable: true
+            },
+            {
+                key: "maIso2",
+                label: "ISO2",
+                width: "90px",
+                sortable: true,
+                filterable: true
+            },
+            {
+                key: "maIso3",
+                label: "ISO3",
+                width: "90px",
+                sortable: true,
+                filterable: true
+            },
+            {
+                key: "tenTinhThanh",
+                label: "Tên Tỉnh/TP",
+                width: "190px",
+                sortable: true,
+                filterable: true
+            },
+            {
+                key: "tinhThanhTenVietTat",
+                label: "Tên viết tắt Tỉnh/TP",
+                width: "190px",
+                sortable: true,
+                filterable: true
+            },
+            {
+                key: "tenXaPhuong",
+                label: "Tên Xã/Phường",
+                width: "190px",
+                sortable: true,
+                filterable: true
+            },
+            {
+                key: "xaPhuongTenVietTat",
+                label: "Tên viết tắt Xã/Phường",
+                width: "190px",
+                sortable: true,
+                filterable: true
             }
+        ],
 
+        mapListResponse(response) {
+            const records = Array.isArray(response?.data)
+                ? response.data
+                : [];
+
+            return records.map(record => mapAddressRecord(record));
+        },
+
+        mapRecordToForm(record) {
+            return mapAddressRecordToForm(record);
+        },
+
+        getRecordSubtitle(record) {
+            return record?.maDiaChi || "";
+        },
+
+        onAction(action) {
+            if (action === "export") {
+                exportData();
+            }
         }
+    });
 
+    async function exportData() {
+        try {
+            const result = await window.MCS.api.requestFile(
+                `${API_BASE}/xuat-du-lieu`,
+                {
+                    method: "GET"
+                }
+            );
 
-        return catalog;
+            window.MCS.api.downloadBlob(
+                result.blob,
+                result.fileName ||
+                "tong_hop_dia_chi_hanh_chinh.xlsx"
+            );
 
+            window.MCS.toast?.success(
+                "Xuất dữ liệu thành công."
+            );
+        } catch (error) {
+            console.error(
+                "Xuất dữ liệu địa chỉ hành chính thất bại:",
+                error
+            );
+
+            window.MCS.toast?.error(
+                error?.message ||
+                "Xuất dữ liệu thất bại."
+            );
+        }
     }
-);
 
-function mapAddressRecord(
-    record
-) {
+    return catalog;
+});
 
+function mapAddressRecord(record) {
     if (
         !record ||
-        typeof record !==
-            "object"
+        typeof record !== "object"
     ) {
-
         return {};
-
     }
 
-
-    const quocGia =
-        record.quocGia ||
-        {};
-
-
-    const tinhThanh =
-        record.tinhThanh ||
-        {};
-
-
-    const xaPhuong =
-        record.xaPhuong ||
-        {};
-
+    const quocGia = record.quocGia || {};
+    const tinhThanh = record.tinhThanh || {};
+    const xaPhuong = record.xaPhuong || {};
 
     return {
-
         ...record,
 
         maDiaChi:
@@ -400,37 +261,23 @@ function mapAddressRecord(
             "",
 
         quocGiaActive:
-            quocGia.active !==
-            false,
+            quocGia.active !== false,
 
         tinhThanhActive:
-            tinhThanh.active !==
-            false,
+            tinhThanh.active !== false,
 
         xaPhuongActive:
-            xaPhuong.active !==
-            false,
+            xaPhuong.active !== false,
 
         active:
-            record.active !==
-            false
-
+            record.active !== false
     };
-
 }
 
-function mapAddressRecordToForm(
-    record
-) {
-
-    const data =
-        mapAddressRecord(
-            record
-        );
-
+function mapAddressRecordToForm(record) {
+    const data = mapAddressRecord(record);
 
     return {
-
         id:
             data.id ||
             null,
@@ -499,7 +346,5 @@ function mapAddressRecordToForm(
 
         xaPhuongActive:
             data.xaPhuongActive
-
     };
-
 }

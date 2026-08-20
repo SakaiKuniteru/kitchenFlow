@@ -1,415 +1,191 @@
 "use strict";
 
-window.MCS =
-    window.MCS || {};
-
+window.MCS = window.MCS || {};
 
 window.MCS.imagePicker = {
-
-    initialize(
-        root
-    ) {
-
+    initialize(root) {
         if (!root) {
-
             return null;
-
         }
 
-
-        if (
-            root.imagePicker
-        ) {
-
+        if (root.imagePicker) {
             return root.imagePicker;
-
         }
 
+        const input = root.querySelector("[data-image-picker-input]");
+        const image = root.querySelector("[data-image-picker-image]");
+        const placeholder = root.querySelector("[data-image-picker-placeholder]");
+        const removeButton = root.querySelector("[data-image-picker-remove]");
 
-        const input =
-            root.querySelector(
-                "[data-image-picker-input]"
-            );
-
-
-        const image =
-            root.querySelector(
-                "[data-image-picker-image]"
-            );
-
-
-        const placeholder =
-            root.querySelector(
-                "[data-image-picker-placeholder]"
-            );
-
-
-        const removeButton =
-            root.querySelector(
-                "[data-image-picker-remove]"
-            );
-
-
-        if (
-            !input ||
-            !image ||
-            !placeholder
-        ) {
-
+        if (!input || !image || !placeholder) {
             return null;
-
         }
-
 
         const state = {
-
-            objectUrl:
-                "",
-
-            existingUrl:
-                "",
-
-            selectedFile:
-                null
-
+            objectUrl: "",
+            existingUrl: "",
+            selectedFile: null
         };
 
+        input.addEventListener("change", () => {
+            const file = input.files?.[0] || null;
 
-        input.addEventListener(
-            "change",
-            () => {
-
-                const file =
-                    input.files?.[0] ||
-                    null;
-
-
-                if (!file) {
-
-                    return;
-
-                }
-
-
-                if (
-                    !file.type
-                        .startsWith(
-                            "image/"
-                        )
-                ) {
-
-                    clearInput();
-
-                    return;
-
-                }
-
-
-                state.selectedFile =
-                    file;
-
-
-                revokeObjectUrl();
-
-
-                state.objectUrl =
-                    URL.createObjectURL(
-                        file
-                    );
-
-
-                showImage(
-                    state.objectUrl
-                );
-
+            if (!file) {
+                return;
             }
-        );
 
+            if (!file.type.startsWith("image/")) {
+                clearInput();
+                return;
+            }
 
-        removeButton
-            ?.addEventListener(
-                "click",
-                event => {
+            state.selectedFile = file;
 
-                    event.preventDefault();
+            revokeObjectUrl();
 
-                    event.stopPropagation();
+            state.objectUrl = URL.createObjectURL(file);
 
+            showImage(state.objectUrl);
+        });
 
-                    clear();
+        removeButton?.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
 
-                }
-            );
+            clear();
+        });
 
-
-        function showImage(
-            url
-        ) {
-
-            const value =
-                String(
-                    url ||
-                    ""
-                ).trim();
-
+        function showImage(url) {
+            const value = String(url || "").trim();
 
             if (!value) {
+                image.removeAttribute("src");
 
-                image.removeAttribute(
-                    "src"
-                );
+                image.hidden = true;
 
+                placeholder.hidden = false;
 
-                image.hidden =
-                    true;
-
-
-                placeholder.hidden =
-                    false;
-
-
-                if (
-                    removeButton
-                ) {
-
-                    removeButton.hidden =
-                        true;
-
+                if (removeButton) {
+                    removeButton.hidden = true;
                 }
 
-
-                root.classList
-                    .remove(
-                        "has-image"
-                    );
-
+                root.classList.remove("has-image");
 
                 return;
-
             }
 
+            image.src = value;
 
-            image.src =
-                value;
+            image.hidden = false;
 
+            placeholder.hidden = true;
 
-            image.hidden =
-                false;
-
-
-            placeholder.hidden =
-                true;
-
-
-            if (
-                removeButton
-            ) {
-
-                removeButton.hidden =
-                    false;
-
+            if (removeButton) {
+                removeButton.hidden = false;
             }
 
-
-            root.classList
-                .add(
-                    "has-image"
-                );
-
+            root.classList.add("has-image");
         }
 
-
-        function setExistingImage(
-            url
-        ) {
-
+        function setExistingImage(url) {
             clearInput();
 
             revokeObjectUrl();
 
+            state.selectedFile = null;
 
-            state.selectedFile =
-                null;
+            state.existingUrl = String(url || "").trim();
 
-
-            state.existingUrl =
-                String(
-                    url ||
-                    ""
-                ).trim();
-
-
-            showImage(
-                state.existingUrl
-            );
-
+            showImage(state.existingUrl);
         }
-
 
         function clearInput() {
-
-            input.value =
-                "";
-
+            input.value = "";
         }
 
-
         function clear() {
-
             clearInput();
 
             revokeObjectUrl();
 
+            state.selectedFile = null;
 
-            state.selectedFile =
-                null;
+            state.existingUrl = "";
 
-
-            state.existingUrl =
-                "";
-
-
-            showImage(
-                ""
-            );
-
+            showImage("");
 
             input.dispatchEvent(
                 new Event(
                     "change",
                     {
-                        bubbles:
-                            true
+                        bubbles: true
                     }
                 )
             );
-
         }
-
 
         function revokeObjectUrl() {
+            if (state.objectUrl) {
+                URL.revokeObjectURL(state.objectUrl);
 
-            if (
-                state.objectUrl
-            ) {
-
-                URL.revokeObjectURL(
-                    state.objectUrl
-                );
-
-
-                state.objectUrl =
-                    "";
-
+                state.objectUrl = "";
             }
-
         }
 
+        function setDisabled(disabled = true) {
+            const value = Boolean(disabled);
 
-        function setDisabled(
-            disabled = true
-        ) {
+            input.disabled = value;
 
-            const value =
-                Boolean(
-                    disabled
-                );
-
-
-            input.disabled =
-                value;
-
-
-            root.classList
-                .toggle(
-                    "is-disabled",
-                    value
-                );
-
+            root.classList.toggle(
+                "is-disabled",
+                value
+            );
         }
-
 
         const api = {
-
             clear,
-
             setExistingImage,
-
             setDisabled,
 
             getFile() {
-
                 return (
                     state.selectedFile ||
                     input.files?.[0] ||
                     null
                 );
-
             },
 
             getExistingUrl() {
-
                 return state.existingUrl;
-
             },
 
             hasImage() {
-
                 return Boolean(
                     state.selectedFile ||
                     state.existingUrl
                 );
-
             },
 
             getInput() {
-
                 return input;
-
             }
-
         };
 
-
-        root.imagePicker =
-            api;
-
+        root.imagePicker = api;
 
         return api;
-
     },
 
-
-    initializeAll(
-        container = document
-    ) {
-
+    initializeAll(container = document) {
         container
-            .querySelectorAll(
-                "[data-image-picker]"
-            )
-            .forEach(
-                root => {
-
-                    this.initialize(
-                        root
-                    );
-
-                }
-            );
-
+            .querySelectorAll("[data-image-picker]")
+            .forEach(root => {
+                this.initialize(root);
+            });
     }
-
 };
 
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        window.MCS
-            .imagePicker
-            .initializeAll();
-
-    }
-);
+document.addEventListener("DOMContentLoaded", () => {
+    window.MCS.imagePicker.initializeAll();
+});

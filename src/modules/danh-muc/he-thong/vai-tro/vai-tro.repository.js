@@ -2,11 +2,86 @@ const pool = require("../../../../config/database");
 
 class VaiTroRepository {
 
-    mapVaiTro(row) {
+    mapVaiTro(
+        row
+    ) {
 
         if (!row) {
+
             return null;
+
         }
+
+
+        const dsQuyen =
+            Array.isArray(
+                row.quyens
+            )
+                ? row.quyens
+                : [];
+
+
+        const dsNhomTinhNang =
+            [];
+
+
+        const nhomTinhNangMap =
+            new Map();
+
+
+        dsQuyen.forEach(
+            quyen => {
+
+                const danhSachNhom =
+                    Array.isArray(
+                        quyen.dsNhomTinhNang
+                    )
+                        ? quyen.dsNhomTinhNang
+                        : [];
+
+
+                danhSachNhom.forEach(
+                    nhom => {
+
+                        const id =
+                            Number(
+                                nhom.id
+                            );
+
+
+                        if (
+                            !Number.isInteger(
+                                id
+                            ) ||
+                            nhomTinhNangMap
+                                .has(
+                                    id
+                                )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        nhomTinhNangMap
+                            .set(
+                                id,
+                                nhom
+                            );
+
+
+                        dsNhomTinhNang
+                            .push(
+                                nhom
+                            );
+
+                    }
+                );
+
+            }
+        );
+
 
         return {
 
@@ -23,23 +98,48 @@ class VaiTroRepository {
                 row.mo_ta,
 
             dsQuyenId:
-                Array.isArray(row.quyens)
-                    ? row.quyens.map(
-                        item => item.id
-                    )
-                    : [],
+                dsQuyen.map(
+                    item =>
+                        Number(
+                            item.id
+                        )
+                ),
 
             dsMaQuyen:
-                Array.isArray(row.quyens)
-                    ? row.quyens.map(
-                        item => item.maQuyen
-                    )
-                    : [],
+                dsQuyen.map(
+                    item =>
+                        item.maQuyen
+                ),
 
-            dsQuyen:
-                Array.isArray(row.quyens)
-                    ? row.quyens
-                    : [],
+            dsTenQuyen:
+                dsQuyen.map(
+                    item =>
+                        item.tenQuyen
+                ),
+
+            dsQuyen,
+
+            dsNhomTinhNang,
+
+            dsNhomTinhNangId:
+                dsNhomTinhNang.map(
+                    item =>
+                        Number(
+                            item.id
+                        )
+                ),
+
+            dsMaNhomTinhNang:
+                dsNhomTinhNang.map(
+                    item =>
+                        item.maNhomTinhNang
+                ),
+
+            dsTenNhomTinhNang:
+                dsNhomTinhNang.map(
+                    item =>
+                        item.tenNhomTinhNang
+                ),
 
             active:
                 row.active,
@@ -75,7 +175,45 @@ class VaiTroRepository {
                             'id', q.id,
                             'maQuyen', q.ma_quyen,
                             'tenQuyen', q.ten_quyen,
-                            'active', vtq.active
+                            'active', vtq.active,
+                            'dsNhomTinhNang',
+                                COALESCE(
+                                    (
+                                        SELECT
+                                            JSON_AGG(
+                                                JSON_BUILD_OBJECT(
+
+                                                    'id',
+                                                        ntn.id,
+
+                                                    'maNhomTinhNang',
+                                                        ntn.ma_nhom_tinh_nang,
+
+                                                    'tenNhomTinhNang',
+                                                        ntn.ten_nhom_tinh_nang
+
+                                                )
+
+                                                ORDER BY
+                                                    ntn.ma_nhom_tinh_nang ASC
+                                            )
+
+                                        FROM dm_quyen_nhom_tinh_nang qntn
+
+                                        INNER JOIN dm_nhom_tinh_nang ntn
+                                            ON ntn.id =
+                                                qntn.nhom_tinh_nang_id
+
+                                        WHERE
+                                            qntn.quyen_id =
+                                                q.id
+
+                                            AND qntn.active =
+                                                TRUE
+                                    ),
+
+                                    '[]'::JSON
+                                )
                         )
                         ORDER BY q.ma_quyen ASC
                     ) FILTER (

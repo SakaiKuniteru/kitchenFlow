@@ -71,55 +71,172 @@ function dongLaTemplate(
 
 }
 
-function parseArray(value, fieldName) {
+function toArray(
+    value
+) {
 
-    if (value === undefined) {
+    if (
+        value === undefined ||
+        value === null ||
+        value === ""
+    ) {
+
         return undefined;
+
     }
 
-    if (Array.isArray(value)) {
+
+    if (
+        Array.isArray(
+            value
+        )
+    ) {
+
         return value;
-    }
-
-    if (typeof value !== "string") {
-
-        throw new ApiError(
-            400,
-            `${fieldName} phải là mảng.`
-        );
 
     }
 
-    const text = value.trim();
+
+    let text =
+        String(
+            value
+        ).trim();
+
 
     if (!text) {
+
         return [];
+
     }
 
-    try {
 
-        const result =
-            JSON.parse(text);
+    if (
+        text.startsWith("[") &&
+        text.endsWith("]")
+    ) {
 
-        if (!Array.isArray(result)) {
+        try {
 
-            throw new Error();
+            const result =
+                JSON.parse(
+                    text
+                );
+
+
+            if (
+                Array.isArray(
+                    result
+                )
+            ) {
+
+                return result;
+
+            }
+
+        } catch (
+            error
+        ) {
+
+            text =
+                text
+                    .slice(
+                        1,
+                        -1
+                    )
+                    .trim();
 
         }
 
-        return result;
+    }
 
-    } catch (error) {
 
-        throw new ApiError(
-            400,
-            `${fieldName} không đúng định dạng mảng.`
-        );
+    if (!text) {
+
+        return [];
 
     }
 
+
+    return text
+        .split(",")
+        .map(
+            item =>
+                String(
+                    item
+                )
+                    .trim()
+                    .replace(
+                        /^["']|["']$/g,
+                        ""
+                    )
+        )
+        .filter(
+            Boolean
+        );
+
 }
 
+function toIdArray(
+    value
+) {
+
+    const values =
+        toArray(
+            value
+        );
+
+
+    if (
+        values === undefined
+    ) {
+
+        return undefined;
+
+    }
+
+
+    return values.map(
+        item =>
+            toNumber(
+                item
+            )
+    );
+
+}
+
+function toTextArray(
+    value
+) {
+
+    const values =
+        toArray(
+            value
+        );
+
+
+    if (
+        values === undefined
+    ) {
+
+        return undefined;
+
+    }
+
+
+    return values
+        .map(
+            item =>
+                String(
+                    item
+                )
+                    .trim()
+                    .toUpperCase()
+        )
+        .filter(
+            Boolean
+        );
+
+}
 
 async function docDuLieuImport(file) {
 
@@ -241,17 +358,29 @@ async function docDuLieuImport(file) {
         if (moTa !== undefined)
             item.moTa = moTa;
 
-        if (dsQuyenIdRaw !== undefined)
-            item.dsQuyenId = parseArray(
-                dsQuyenIdRaw,
-                "Danh sách ID quyền"
-            );
+        if (
+            dsQuyenIdRaw !==
+            undefined
+        ) {
 
-        if (dsMaQuyenRaw !== undefined)
-            item.dsMaQuyen = parseArray(
-                dsMaQuyenRaw,
-                "Danh sách mã quyền"
-            );
+            item.dsQuyenId =
+                toIdArray(
+                    dsQuyenIdRaw
+                );
+
+        }
+
+        if (
+            dsMaQuyenRaw !==
+            undefined
+        ) {
+
+            item.dsMaQuyen =
+                toTextArray(
+                    dsMaQuyenRaw
+                );
+
+        }
 
         if (activeRaw !== undefined) {
 

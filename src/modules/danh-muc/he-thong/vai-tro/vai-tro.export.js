@@ -17,46 +17,229 @@ const TEMPLATE_ROW = 5;
 const DATA_START_ROW = 5;
 
 
-function taoDongExport(item) {
+function chuanHoaDanhSach(
+    value
+) {
+
+    if (
+        value ===
+            undefined ||
+        value ===
+            null ||
+        value ===
+            ""
+    ) {
+
+        return [];
+
+    }
+
+
+    if (
+        Array.isArray(
+            value
+        )
+    ) {
+
+        return value;
+
+    }
+
+
+    if (
+        typeof value ===
+        "string"
+    ) {
+
+        const text =
+            value.trim();
+
+
+        if (!text) {
+
+            return [];
+
+        }
+
+
+        if (
+            text.startsWith(
+                "["
+            ) &&
+            text.endsWith(
+                "]"
+            )
+        ) {
+
+            try {
+
+                const parsed =
+                    JSON.parse(
+                        text
+                    );
+
+
+                return Array.isArray(
+                    parsed
+                )
+                    ? parsed
+                    : [];
+
+            } catch {
+
+                return [];
+
+            }
+
+        }
+
+
+        return text
+            .split(",")
+            .map(
+                item =>
+                    item.trim()
+            )
+            .filter(
+                Boolean
+            );
+
+    }
+
+
+    return [];
+
+}
+
+
+function noiDanhSach(
+    value
+) {
+
+    return chuanHoaDanhSach(
+        value
+    )
+        .filter(
+            item =>
+                item !==
+                    undefined &&
+                item !==
+                    null &&
+                String(
+                    item
+                ).trim() !==
+                    ""
+        )
+        .map(
+            item =>
+                String(
+                    item
+                ).trim()
+        )
+        .join(", ");
+
+}
+
+
+function taoDongExport(
+    item
+) {
 
     return {
-        id: item.id,
-        maVaiTro: item.maVaiTro,
-        tenVaiTro: item.tenVaiTro,
-        moTa: item.moTa,
 
-        dsQuyenId: Array.isArray(item.dsQuyenId)
-            ? JSON.stringify(item.dsQuyenId)
-            : "[]",
+        id:
+            item.id,
 
-        dsMaQuyen: Array.isArray(item.dsMaQuyen)
-            ? JSON.stringify(item.dsMaQuyen)
-            : "[]",
+        maVaiTro:
+            item.maVaiTro,
 
-        active: item.active
+        tenVaiTro:
+            item.tenVaiTro,
+
+        moTa:
+            item.moTa,
+
+
+        dsQuyenId:
+            noiDanhSach(
+                item.dsQuyenId
+            ),
+
+
+        dsMaQuyen:
+            noiDanhSach(
+                item.dsMaQuyen
+            ),
+
+
+        dsTenQuyen:
+            noiDanhSach(
+                item.dsTenQuyen
+            ),
+
+
+        dsNhomTinhNangId:
+            noiDanhSach(
+                item.dsNhomTinhNangId
+            ),
+
+
+        dsMaNhomTinhNang:
+            noiDanhSach(
+                item.dsMaNhomTinhNang
+            ),
+
+
+        dsTenNhomTinhNang:
+            noiDanhSach(
+                item.dsTenNhomTinhNang
+            ),
+
+
+        active:
+            item.active
+
     };
 
 }
 
 
-async function xuLyExport(query = {}) {
+async function xuLyExport(
+    query = {}
+) {
 
     const danhSach =
-        await vaiTroRepository.getTongHop(
-            query
-        );
+        await vaiTroRepository
+            .getTongHop(
+                query
+            );
+
 
     const data =
         danhSach.map(
-            item => taoDongExport(item)
+            item =>
+                taoDongExport(
+                    item
+                )
         );
 
+
     return await createExportFile({
-        maBaoCao: MA_BAO_CAO,
-        headerRowNumber: HEADER_ROW,
-        templateRowNumber: TEMPLATE_ROW,
-        dataStartRowNumber: DATA_START_ROW,
+
+        maBaoCao:
+            MA_BAO_CAO,
+
+        headerRowNumber:
+            HEADER_ROW,
+
+        templateRowNumber:
+            TEMPLATE_ROW,
+
+        dataStartRowNumber:
+            DATA_START_ROW,
+
         data
+
     });
 
 }
@@ -75,19 +258,21 @@ async function exportData(
                 req.query
             );
 
+
         return sendExcel(
             res,
             result
         );
 
-    } catch (error) {
+    } catch (
+        error
+    ) {
 
-        next(error);
-
+        next(
+            error
+        );
     }
-
 }
-
 
 module.exports = {
     exportData,
