@@ -439,6 +439,22 @@ class MCSForm {
                                     field.value
                                 );
 
+                    } else if (
+                        field.type ===
+                            "file"
+                    ) {
+
+                        value =
+                            field.multiple
+                                ? Array.from(
+                                    field.files ||
+                                    []
+                                )
+                                : (
+                                    field.files?.[0] ||
+                                    null
+                                );
+
                     } else {
 
                         value =
@@ -1015,6 +1031,15 @@ class MCSForm {
                 this.toDateTimeLocal(
                     value
                 );
+
+            return;
+
+        }
+
+        if (
+            field.type ===
+                "file"
+        ) {
 
             return;
 

@@ -200,17 +200,16 @@ window.MCS.smartSelect = {
             elements.control.addEventListener(
                 "click",
                 event => {
-                    if (
-                        event.target.closest(
-                            "[data-smart-select-remove]"
-                        )
-                    ) {
-                        return;
-                    }
 
                     if (
                         event.target.closest(
+                            "[data-smart-select-remove]"
+                        ) ||
+                        event.target.closest(
                             "[data-smart-select-toggle]"
+                        ) ||
+                        event.target.closest(
+                            "[data-smart-select-clear]"
                         )
                     ) {
                         return;
@@ -224,19 +223,9 @@ window.MCS.smartSelect = {
                     }
 
 
-                    open();
-
-
-                    state.searching =
-                        true;
-
-
-                    root.classList.add(
-                        "is-searching"
+                    open(
+                        true
                     );
-
-
-                    elements.search.focus();
 
                 }
             );
@@ -289,39 +278,49 @@ window.MCS.smartSelect = {
                         return;
                     }
 
+
                     state.searching =
                         true;
+
 
                     root.classList.add(
                         "is-searching"
                     );
 
-                    open();
+
+                    if (
+                        !state.opened
+                    ) {
+
+                        open(
+                            false
+                        );
+
+                    }
 
                 }
             );
-
-
             elements.search.addEventListener(
                 "input",
                 () => {
-
                     state.searching =
                         true;
-
                     root.classList.add(
                         "is-searching"
                     );
-
                     renderOptions(
                         elements.search.value
                     );
+                    if (
+                        !state.opened
+                    ) {
 
-                    open();
-
+                        open(
+                            false
+                        );
+                    }
                 }
             );
-
 
             elements.search.addEventListener(
                 "keydown",
@@ -387,7 +386,9 @@ window.MCS.smartSelect = {
 
         }
 
-        function open() {
+        function open(
+            focusSearch = true
+        ) {
 
             if (
                 elements.native.disabled
@@ -395,38 +396,55 @@ window.MCS.smartSelect = {
                 return;
             }
 
-
             closeOtherPopups();
-
 
             state.opened =
                 true;
 
+            state.searching =
+                true;
 
             elements.dropdown.hidden =
                 false;
 
-
             root.classList.add(
-                "is-open"
+                "is-open",
+                "is-searching"
             );
-
 
             elements.toggle?.setAttribute(
                 "aria-expanded",
                 "true"
             );
 
+            elements.search.hidden =
+                false;
 
             elements.search.placeholder =
-                placeholder;;
-
+                hasValue()
+                    ? ""
+                    : getPlaceholder();
 
             renderOptions(
                 elements.search.value
             );
 
             syncControlState();
+
+            if (
+                focusSearch
+            ) {
+
+                requestAnimationFrame(
+                    () => {
+
+                        elements.search
+                            .focus();
+
+                    }
+                );
+
+            }
 
         }
 
@@ -547,24 +565,10 @@ window.MCS.smartSelect = {
                 close();
 
                 return;
-
             }
-
-
-            open();
-
-
-            state.searching =
-                true;
-
-
-            root.classList.add(
-                "is-searching"
+            open(
+                true
             );
-
-
-            elements.search.focus();
-
         }
 
         function renderOptions(

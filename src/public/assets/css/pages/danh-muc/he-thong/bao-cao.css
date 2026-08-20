@@ -1,0 +1,62 @@
+#bao-caoPage {
+    min-width:
+        0;
+}
+
+#baoCaoDetailPanel
+.catalog-form-grid {
+    align-items:
+        start;
+}
+
+#baoCaoDetailPanel
+.form-field {
+    min-width:
+        0;
+}
+
+#baoCaoTable
+.catalog-table__body
+.catalog-table__cell {
+    height:
+        auto;
+
+    min-height:
+        50px;
+
+    white-space:
+        normal;
+
+    overflow:
+        visible;
+
+    text-overflow:
+        clip;
+
+    overflow-wrap:
+        anywhere;
+
+    word-break:
+        break-word;
+
+    line-height:
+        1.45;
+}
+
+#baoCaoTable
+.catalog-table__body
+.catalog-table__cell--nowrap {
+    white-space:
+        nowrap;
+}
+
+@media (
+    max-width:
+        820px
+) {
+    #baoCaoDetailPanel
+    .catalog-form-grid {
+        grid-template-columns:
+            1fr;
+    }
+}

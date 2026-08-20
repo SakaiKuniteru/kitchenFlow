@@ -1932,6 +1932,145 @@ class MCSCatalog {
 
     }
 
+    hasFile(
+        data
+    ) {
+
+        if (
+            !data ||
+            typeof data !==
+                "object"
+        ) {
+
+            return false;
+
+        }
+
+
+        return Object.values(
+            data
+        ).some(
+            value =>
+                value instanceof
+                    File ||
+                (
+                    Array.isArray(
+                        value
+                    ) &&
+                    value.some(
+                        item =>
+                            item instanceof
+                            File
+                    )
+                )
+        );
+
+    }
+
+    buildRequestBody(
+        data
+    ) {
+
+        if (
+            data instanceof
+            FormData
+        ) {
+
+            return data;
+
+        }
+
+
+        if (
+            !this.hasFile(
+                data
+            )
+        ) {
+
+            return JSON.stringify(
+                data
+            );
+
+        }
+
+
+        const body =
+            new FormData();
+
+
+        Object.entries(
+            data
+        ).forEach(
+            ([
+                key,
+                value
+            ]) => {
+
+                if (
+                    value ===
+                        undefined ||
+                    value ===
+                        null
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    value instanceof
+                    File
+                ) {
+
+                    body.append(
+                        key,
+                        value
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    Array.isArray(
+                        value
+                    )
+                ) {
+
+                    value.forEach(
+                        item => {
+
+                            body.append(
+                                key,
+                                String(
+                                    item
+                                )
+                            );
+
+                        }
+                    );
+
+                    return;
+
+                }
+
+
+                body.append(
+                    key,
+                    String(
+                        value
+                    )
+                );
+
+            }
+        );
+
+        return body;
+
+    }
+
     async submitForm(
         data,
         form
@@ -2017,12 +2156,9 @@ class MCSCatalog {
                             method,
 
                             body:
-                                data instanceof
-                                    FormData
-                                    ? data
-                                    : JSON.stringify(
-                                        data
-                                    )
+                                this.buildRequestBody(
+                                    data
+                                )
                         }
                     );
 

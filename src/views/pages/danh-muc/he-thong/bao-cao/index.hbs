@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/assets/css/pages/danh-muc/he-thong/bao-cao.css">
+
 {{> catalog/module-page
     moduleName="bao-cao"
     apiBase="/api/mcs/v1/dm-bao-cao"
@@ -16,11 +18,13 @@
     detailTitle="Thông tin báo cáo"
     showEditButton=true
     showActions=true
+    showImportButton=false
+    showExportButton=false
     mobilePanelId="baoCaoMobilePanel"
     columns=columns
-    formOptions=formOptions
 }}
 
 {{> scripts/catalog-page
     folder="he-thong"
-    page="bao-cao"}}
+    page="bao-cao"
+}}

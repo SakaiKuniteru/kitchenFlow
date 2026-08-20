@@ -1,11 +1,9 @@
 <div class="detail-panel__section">
-
     <h3 class="detail-panel__section-title">
         Thông tin báo cáo
     </h3>
 
     <div class="catalog-form-grid">
-
         {{> forms/input
             id="maBaoCao"
             name="maBaoCao"
@@ -28,6 +26,8 @@
             id="fileMau"
             name="fileMau"
             label="File mẫu"
+            placeholder="Chưa chọn file"
+            accept=".xlsx,.xls,.xlsm,.pdf,.doc,.docx"
             required=true
         }}
 
@@ -36,12 +36,12 @@
             name="loaiXuatFile"
             label="Loại xuất file"
             mode="single"
-            placeholder="Loại xuất file..."
-            options=formOptions.loaiXuatFile
+            multiple=false
+            allowAll=false
+            placeholder="Chọn loại xuất file..."
         }}
 
         <div class="catalog-form-grid__full">
-
             {{> forms/textarea
                 id="moTa"
                 name="moTa"
@@ -51,20 +51,15 @@
                 rows=4
                 showCounter=true
             }}
-
         </div>
-
     </div>
-
 </div>
 
 <div class="detail-panel__section">
-
     {{> forms/switch
         id="active"
         name="active"
         label="Đang hoạt động"
         checked=true
     }}
-
 </div>

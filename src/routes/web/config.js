@@ -2102,59 +2102,32 @@ const danhMucPages = [
         activeSubmenu:
             "bao-cao",
 
-       formOptions: {
-
-            loaiXuatFile: [
-                {
-                    value: "10",
-                    label: "Excel"
-                },
-                {
-                    value: "20",
-                    label: "PDF"
-                },
-                {
-                    value: "30",
-                    label: "Word"
-                }
-            ]
-
-        },
         columns: [
 
             textColumn(
-                "maThietLap",
-                "Mã thiết lập",
+                "maBaoCao",
+                "Mã báo cáo",
                 {
                     width:
-                        "230px"
+                        "200px"
                 }
             ),
 
             textColumn(
-                "tenThietLap",
-                "Tên thiết lập",
+                "tenBaoCao",
+                "Tên báo cáo",
                 {
                     width:
-                        "220px"
+                        "240px"
                 }
             ),
 
             textColumn(
-                "giaTri",
-                "Giá trị",
+                "loaiXuatFileText",
+                "Loại xuất file",
                 {
                     width:
                         "160px"
-                }
-            ),
-
-            textColumn(
-                "nhomTinhNang",
-                "Nhóm tính năng",
-                {
-                    width:
-                        "180px"
                 }
             ),
 
@@ -2163,7 +2136,7 @@ const danhMucPages = [
                 "Mô tả",
                 {
                     width:
-                        "250px"
+                        "280px"
                 }
             ),
 
