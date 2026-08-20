@@ -1,11 +1,9 @@
 <div class="detail-panel__section">
-
     <h3 class="detail-panel__section-title">
         Thông tin xã phường
     </h3>
 
     <div class="catalog-form-grid">
-
         {{> forms/input
             id="maXaPhuong"
             name="maXaPhuong"
@@ -36,21 +34,36 @@
             id="tinhThanhId"
             name="tinhThanhId"
             label="Tỉnh thành"
-            placeholder="Chọn tỉnh thành"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn tỉnh thành..."
             required=true
         }}
 
-    </div>
+        {{> forms/input
+            id="maQuocGia"
+            name="maQuocGia"
+            label="Mã quốc gia"
+            placeholder=""
+            readonly=true
+        }}
 
+        {{> forms/input
+            id="tenQuocGia"
+            name="tenQuocGia"
+            label="Tên quốc gia"
+            placeholder=""
+            readonly=true
+        }}
+    </div>
 </div>
 
 <div class="detail-panel__section">
-
     {{> forms/switch
         id="active"
         name="active"
         label="Đang hoạt động"
         checked=true
     }}
-
 </div>

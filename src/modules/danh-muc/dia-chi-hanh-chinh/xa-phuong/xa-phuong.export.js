@@ -17,26 +17,61 @@ const TEMPLATE_ROW = 5;
 const DATA_START_ROW = 5;
 
 
-function taoDongExport(item) {
+function taoDongExport(
+    item
+) {
 
     return {
-        id: item.id,
+        id:
+            item.id,
 
-        maXaPhuong: item.maXaPhuong,
-        tenXaPhuong: item.tenXaPhuong,
-        tenVietTat: item.tenVietTat,
+        maXaPhuong:
+            item.maXaPhuong,
 
-        tinhThanhId: item.tinhThanhId,
-        maTinhThanh: item.tinhThanh?.ma,
+        tenXaPhuong:
+            item.tenXaPhuong,
 
-        quocGiaId: item.tinhThanh?.quocGiaId,
-        maQuocGia: item.tinhThanh?.quocGia?.maQuocGia,
+        tenVietTat:
+            item.tenVietTat,
 
-        active: item.active
+        tinhThanhId:
+            item.tinhThanhId,
+
+        maTinhThanh:
+            item.maTinhThanh ||
+            item.tinhThanh?.maTinhThanh ||
+            item.tinhThanh?.ma ||
+            "",
+
+        tenTinhThanh:
+            item.tenTinhThanh ||
+            item.tinhThanh?.tenTinhThanh ||
+            item.tinhThanh?.ten ||
+            "",
+
+        quocGiaId:
+            item.quocGiaId ??
+            item.tinhThanh?.quocGiaId ??
+            item.tinhThanh?.quocGia?.id ??
+            null,
+
+        maQuocGia:
+            item.maQuocGia ||
+            item.tinhThanh?.quocGia?.maQuocGia ||
+            item.tinhThanh?.quocGia?.ma ||
+            "",
+
+        tenQuocGia:
+            item.tenQuocGia ||
+            item.tinhThanh?.quocGia?.tenQuocGia ||
+            item.tinhThanh?.quocGia?.ten ||
+            "",
+
+        active:
+            item.active
     };
 
 }
-
 
 async function xuLyExport(query = {}) {
 
