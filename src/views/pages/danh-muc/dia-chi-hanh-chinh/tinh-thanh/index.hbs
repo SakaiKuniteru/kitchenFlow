@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/assets/css/pages/danh-muc/dia-chi-hanh-chinh/tinh-thanh.css">
+
 {{> catalog/module-page
     moduleName="tinh-thanh"
     apiBase="/api/mcs/v1/dm-tinh-thanh"
@@ -16,10 +18,13 @@
     detailTitle="Thông tin tỉnh thành"
     showEditButton=true
     showActions=true
+    showImportButton=true
+    showExportButton=true
     mobilePanelId="tinhThanhMobilePanel"
     columns=columns
 }}
 
 {{> scripts/catalog-page
     folder="dia-chi-hanh-chinh"
-    page="tinh-thanh"}}
+    page="tinh-thanh"
+}}

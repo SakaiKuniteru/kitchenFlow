@@ -1,11 +1,9 @@
 <div class="detail-panel__section">
-
     <h3 class="detail-panel__section-title">
         Thông tin tỉnh thành
     </h3>
 
     <div class="catalog-form-grid">
-
         {{> forms/input
             id="maTinhThanh"
             name="maTinhThanh"
@@ -36,21 +34,20 @@
             id="quocGiaId"
             name="quocGiaId"
             label="Quốc gia"
-            placeholder="Chọn quốc gia"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn quốc gia..."
             required=true
         }}
-
     </div>
-
 </div>
 
 <div class="detail-panel__section">
-
     {{> forms/switch
         id="active"
         name="active"
         label="Đang hoạt động"
         checked=true
     }}
-
 </div>

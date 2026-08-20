@@ -26,7 +26,17 @@ function taoDongExport(item) {
         tenVietTat: item.tenVietTat,
 
         quocGiaId: item.quocGiaId,
-        maQuocGia: item.quocGia?.maQuocGia,
+        maQuocGia:
+            item.maQuocGia ||
+            item.quocGia?.maQuocGia ||
+            item.quocGia?.ma ||
+            "",
+
+        tenQuocGia:
+            item.tenQuocGia ||
+            item.quocGia?.tenQuocGia ||
+            item.quocGia?.ten ||
+            "",
 
         active: item.active
     };
