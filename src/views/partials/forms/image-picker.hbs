@@ -1,0 +1,125 @@
+<div
+    class="form-field {{#if fieldClass}}{{fieldClass}}{{/if}}"
+    data-form-field="{{name}}">
+
+    {{#if label}}
+
+        <label
+            class="form-field__label"
+            for="{{id}}">
+
+            <span>
+                {{label}}
+            </span>
+
+            {{#if required}}
+
+                <span
+                    class="form-field__required"
+                    aria-hidden="true">
+                    *
+                </span>
+
+            {{/if}}
+
+        </label>
+
+    {{/if}}
+
+    <div
+        class="image-picker"
+        data-image-picker
+        style="
+            --image-picker-width: {{#if width}}{{width}}{{else}}150px{{/if}};
+            --image-picker-height: {{#if height}}{{height}}{{else}}150px{{/if}};
+        ">
+
+        <input
+            id="{{id}}"
+            name="{{name}}"
+            type="file"
+            class="image-picker__input"
+            accept="{{#if accept}}{{accept}}{{else}}image/*{{/if}}"
+            data-image-picker-input
+
+            {{#if required}}
+                required
+                aria-required="true"
+            {{/if}}
+
+            {{#if disabled}}
+                disabled
+            {{/if}}
+        >
+
+        <label
+            for="{{id}}"
+            class="image-picker__preview"
+            data-image-picker-preview>
+
+            <img
+                class="image-picker__image"
+                data-image-picker-image
+                alt="Ảnh xem trước"
+                hidden>
+
+            <span
+                class="image-picker__placeholder"
+                data-image-picker-placeholder>
+
+                <span
+                    class="image-picker__plus"
+                    aria-hidden="true">
+
+                    <i class="fa-solid fa-plus"></i>
+
+                </span>
+
+                <span class="image-picker__upload-label">
+                    {{#if uploadLabel}}
+                        {{uploadLabel}}
+                    {{else}}
+                        Tải lên
+                    {{/if}}
+                </span>
+
+            </span>
+
+        </label>
+
+        <button
+            type="button"
+            class="image-picker__remove"
+            data-image-picker-remove
+            title="Xóa ảnh"
+            aria-label="Xóa ảnh"
+            hidden>
+
+            <i
+                class="fa-solid fa-xmark"
+                aria-hidden="true">
+            </i>
+
+        </button>
+
+    </div>
+
+    {{#if description}}
+
+        <small class="form-field__description">
+            {{description}}
+        </small>
+
+    {{/if}}
+
+    <small
+        id="{{id}}Error"
+        class="form-field__error"
+        data-field-error="{{name}}"
+        {{#unless error}}hidden{{/unless}}>
+
+        {{error}}
+
+    </small>
+
+</div>

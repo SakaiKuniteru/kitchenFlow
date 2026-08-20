@@ -1,0 +1,324 @@
+.image-picker {
+    position:
+        relative;
+
+    width:
+        var(
+            --image-picker-width,
+            150px
+        );
+
+    max-width:
+        100%;
+}
+
+
+.image-picker__input {
+    position:
+        absolute;
+
+    width:
+        1px;
+
+    height:
+        1px;
+
+    overflow:
+        hidden;
+
+    opacity:
+        0;
+
+    pointer-events:
+        none;
+}
+
+
+.image-picker__preview {
+    position:
+        relative;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    width:
+        var(
+            --image-picker-width,
+            150px
+        );
+
+    height:
+        var(
+            --image-picker-height,
+            150px
+        );
+
+    max-width:
+        100%;
+
+    overflow:
+        hidden;
+
+    border:
+        1px dashed
+        var(
+            --color-border,
+            #d7dee8
+        );
+
+    border-radius:
+        var(
+            --radius-md,
+            8px
+        );
+
+    background:
+        var(
+            --color-surface,
+            #ffffff
+        );
+
+    cursor:
+        pointer;
+
+    transition:
+        border-color 160ms ease,
+        background-color 160ms ease,
+        box-shadow 160ms ease;
+}
+
+
+.image-picker__preview:hover {
+    border-color:
+        var(
+            --color-primary,
+            #2563eb
+        );
+
+    background:
+        #f8fbff;
+}
+
+
+.image-picker__preview:focus-within {
+    border-color:
+        var(
+            --color-primary,
+            #2563eb
+        );
+
+    box-shadow:
+        0 0 0 3px
+        rgba(
+            37,
+            99,
+            235,
+            0.10
+        );
+}
+
+
+.image-picker__placeholder {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    flex-direction:
+        column;
+
+    gap:
+        12px;
+
+    padding:
+        16px;
+
+    color:
+        var(
+            --color-text-primary,
+            #172033
+        );
+
+    text-align:
+        center;
+}
+
+
+.image-picker__plus {
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    font-size:
+        22px;
+
+    line-height:
+        1;
+}
+
+
+.image-picker__upload-label {
+    font-size:
+        15px;
+
+    font-weight:
+        700;
+}
+
+
+.image-picker__image {
+    display:
+        block;
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    object-fit:
+        cover;
+}
+
+
+.image-picker__image[hidden] {
+    display:
+        none !important;
+}
+
+
+.image-picker__placeholder[hidden] {
+    display:
+        none !important;
+}
+
+
+.image-picker__remove {
+    position:
+        absolute;
+
+    top:
+        7px;
+
+    right:
+        7px;
+
+    z-index:
+        2;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    width:
+        30px;
+
+    height:
+        30px;
+
+    padding:
+        0;
+
+    border:
+        0;
+
+    border-radius:
+        8px;
+
+    color:
+        #ffffff;
+
+    background:
+        rgba(
+            15,
+            23,
+            42,
+            0.70
+        );
+
+    cursor:
+        pointer;
+
+    transition:
+        background-color 160ms ease,
+        transform 160ms ease;
+}
+
+
+.image-picker__remove:hover {
+    background:
+        #dc2626;
+
+    transform:
+        scale(
+            1.04
+        );
+}
+
+
+.image-picker__remove[hidden] {
+    display:
+        none !important;
+}
+
+
+.image-picker.is-disabled
+.image-picker__preview {
+    pointer-events:
+        none;
+
+    cursor:
+        not-allowed;
+
+    opacity:
+        0.75;
+}
+
+
+.image-picker.is-disabled
+.image-picker__remove {
+    display:
+        none;
+}
+
+
+.form-field.is-invalid
+.image-picker__preview,
+.image-picker__input[aria-invalid="true"]
+~
+.image-picker__preview {
+    border-color:
+        var(
+            --color-danger,
+            #ef4444
+        );
+
+    box-shadow:
+        0 0 0 3px
+        rgba(
+            239,
+            68,
+            68,
+            0.10
+        );
+}
