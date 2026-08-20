@@ -185,10 +185,17 @@ class QuyenService {
             )
         ) {
 
-            duLieu.dsNhomTinhNangId =
-                duLieu.dsNhomTinhNangId.map(
-                    id => Number(id)
-                );
+            duLieu.dsNhomTinhNangId = [
+                ...new Set(
+                    duLieu.dsNhomTinhNangId
+                        .map(
+                            id =>
+                                Number(
+                                    id
+                                )
+                        )
+                )
+            ];
 
         }
 

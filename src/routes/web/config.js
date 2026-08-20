@@ -1730,7 +1730,6 @@ const danhMucPages = [
 
     }),
 
-
     createPage({
 
         path:
@@ -1755,22 +1754,43 @@ const danhMucPages = [
             "quyen",
 
         columns: [
+
             textColumn(
                 "maQuyen",
-                "Mã quyền"
+                "Mã quyền",
+                {
+                    width:
+                        "200px"
+                }
             ),
+
             textColumn(
                 "tenQuyen",
-                "Tên quyền"
+                "Tên quyền",
+                {
+                    width:
+                        "240px"
+                }
             ),
+
             textColumn(
-                "tenNhomTinhNang",
-                "Nhóm tính năng"
+                "nhomTinhNang",
+                "Nhóm tính năng",
+                {
+                    width:
+                        "260px"
+                }
             ),
+
             textColumn(
                 "moTa",
-                "Mô tả"
+                "Mô tả",
+                {
+                    width:
+                        "300px"
+                }
             ),
+
             booleanColumn(
                 "active",
                 "Hiệu lực",
@@ -1779,10 +1799,10 @@ const danhMucPages = [
                         "130px"
                 }
             )
+
         ]
 
     }),
-
 
     createPage({
 

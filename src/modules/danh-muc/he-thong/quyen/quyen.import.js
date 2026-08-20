@@ -45,7 +45,6 @@ function validateHeaders(headerMap) {
 
 }
 
-
 function dongLaTemplate(row, getValue, headerMap) {
 
     const values = [];
@@ -74,130 +73,216 @@ function dongLaTemplate(row, getValue, headerMap) {
 
 }
 
+function toArray(
+    value
+) {
 
-function parseJsonArray(value, fieldName) {
+    if (
+        value ===
+        undefined ||
+        value ===
+        null ||
+        value ===
+        ""
+    ) {
 
-    if (value === undefined) {
         return undefined;
+
     }
 
-    if (Array.isArray(value)) {
+
+    if (
+        Array.isArray(
+            value
+        )
+    ) {
+
         return value;
+
     }
+
+
+    let text =
+        String(
+            value
+        ).trim();
+
+
+    if (!text) {
+
+        return undefined;
+
+    }
+
 
     if (
-        value === null ||
-        value === ""
+        text.startsWith("[") &&
+        text.endsWith("]")
     ) {
-        return [];
+
+        try {
+
+            const result =
+                JSON.parse(
+                    text
+                );
+
+
+            if (
+                Array.isArray(
+                    result
+                )
+            ) {
+
+                return result;
+
+            }
+
+        } catch (
+            error
+        ) {
+
+            text =
+                text
+                    .slice(
+                        1,
+                        -1
+                    )
+                    .trim();
+
+        }
+
     }
 
-    let result;
 
-    try {
+    if (!text) {
 
-        result = JSON.parse(
-            String(value).trim()
-        );
-
-    } catch (error) {
-
-        throw new ApiError(
-            400,
-            `${fieldName} phải có định dạng mảng [].`
-        );
+        return undefined;
 
     }
 
-    if (!Array.isArray(result)) {
 
-        throw new ApiError(
-            400,
-            `${fieldName} phải có định dạng mảng [].`
+    return text
+        .split(",")
+        .map(
+            item =>
+                String(
+                    item
+                )
+                    .trim()
+                    .replace(
+                        /^["']|["']$/g,
+                        ""
+                    )
+        )
+        .filter(
+            Boolean
         );
-
-    }
-
-    return result;
 
 }
 
-
-function parseIdArray(value, fieldName) {
-
-    const result =
-        parseJsonArray(
-            value,
-            fieldName
-        );
-
-    if (result === undefined) {
-        return undefined;
-    }
-
-    const ids =
-        result.map(
-            item => Number(item)
-        );
+function getImportValue(
+    row,
+    getValue,
+    headerMap,
+    key
+) {
 
     if (
-        ids.some(
-            id =>
-                !Number.isInteger(id) ||
-                id <= 0
+        headerMap.has(
+            key
         )
     ) {
 
-        throw new ApiError(
-            400,
-            `${fieldName} chỉ được chứa ID là số nguyên lớn hơn 0.`
+        return getValue(
+            row,
+            key
         );
 
     }
 
-    return [
-        ...new Set(ids)
-    ];
 
-}
+    const arrayKey =
+        `${key}[]`;
 
-
-function parseCodeArray(value, fieldName) {
-
-    const result =
-        parseJsonArray(
-            value,
-            fieldName
-        );
-
-    if (result === undefined) {
-        return undefined;
-    }
-
-    const codes =
-        result.map(
-            item => String(item).trim()
-        );
 
     if (
-        codes.some(
-            item => !item
+        headerMap.has(
+            arrayKey
         )
     ) {
 
-        throw new ApiError(
-            400,
-            `${fieldName} không được chứa mã rỗng.`
+        return getValue(
+            row,
+            arrayKey
         );
 
     }
 
-    return [
-        ...new Set(codes)
-    ];
+
+    return undefined;
 
 }
 
+function toIdArray(
+    value
+) {
+
+    const values =
+        toArray(
+            value
+        );
+
+
+    if (
+        values ===
+        undefined
+    ) {
+
+        return undefined;
+
+    }
+
+
+    return values
+        .map(
+            item =>
+                toNumber(
+                    item
+                )
+        );
+
+}
+
+function toTextArray(
+    value
+) {
+
+    const values =
+        toArray(
+            value
+        );
+
+
+    if (
+        values ===
+        undefined
+    ) {
+
+        return undefined;
+
+    }
+
+
+    return values
+        .map(
+            item =>
+                String(
+                    item
+                ).trim()
+        );
+
+}
 
 async function docDuLieuImport(file) {
 
@@ -289,14 +374,19 @@ async function docDuLieuImport(file) {
             );
 
         const dsNhomTinhNangIdRaw =
-            getValue(
+            getImportValue(
                 row,
+                getValue,
+                headerMap,
                 "dsNhomTinhNangId"
             );
 
+
         const dsMaNhomTinhNangRaw =
-            getValue(
+            getImportValue(
                 row,
+                getValue,
+                headerMap,
                 "dsMaNhomTinhNang"
             );
 
@@ -319,46 +409,37 @@ async function docDuLieuImport(file) {
             item.moTa = moTa;
         }
 
+        if (
+            dsNhomTinhNangIdRaw !==
+            undefined
+        ) {
 
-        if (dsNhomTinhNangIdRaw !== undefined) {
-
-            try {
-
-                item.dsNhomTinhNangId =
-                    parseIdArray(
-                        dsNhomTinhNangIdRaw,
-                        "Danh sách ID nhóm tính năng"
-                    );
-
-            } catch (error) {
-
-                item.dsNhomTinhNangId =
-                    dsNhomTinhNangIdRaw;
-
-            }
+            item.dsNhomTinhNangId =
+                toIdArray(
+                    dsNhomTinhNangIdRaw
+                );
 
         }
 
+        if (
+            dsMaNhomTinhNangRaw !==
+            undefined
+        ) {
 
-        if (dsMaNhomTinhNangRaw !== undefined) {
-
-            try {
-
-                item.dsMaNhomTinhNang =
-                    parseCodeArray(
-                        dsMaNhomTinhNangRaw,
-                        "Danh sách mã nhóm tính năng"
+            item.dsMaNhomTinhNang =
+                toTextArray(
+                    dsMaNhomTinhNangRaw
+                )
+                    ?.map(
+                        ma =>
+                            String(
+                                ma
+                            )
+                                .trim()
+                                .toUpperCase()
                     );
 
-            } catch (error) {
-
-                item.dsMaNhomTinhNang =
-                    dsMaNhomTinhNangRaw;
-
-            }
-
         }
-
 
         if (activeRaw !== undefined) {
 
@@ -378,31 +459,37 @@ async function docDuLieuImport(file) {
 
         }
 
-
         danhSach.push(
             item
         );
-
     }
-
 
     return {
         workbook,
         worksheet,
         danhSach
     };
-
 }
 
-
-function validateDongImport(item) {
+function validateDongImport(
+    item
+) {
 
     if (
-        item.idRaw !== undefined &&
+        item.idRaw !==
+            undefined &&
         (
-            item.id === null ||
-            !Number.isInteger(Number(item.id)) ||
-            Number(item.id) <= 0
+            item.id ===
+                null ||
+            !Number.isInteger(
+                Number(
+                    item.id
+                )
+            ) ||
+            Number(
+                item.id
+            ) <=
+                0
         )
     ) {
 
@@ -415,26 +502,10 @@ function validateDongImport(item) {
 
 
     if (
-        item.dsNhomTinhNangId !== undefined &&
+        item.dsNhomTinhNangId !==
+            undefined &&
         !Array.isArray(
             item.dsNhomTinhNangId
-        )
-    ) {
-
-        throw new ApiError(
-            400,
-            "Danh sách ID nhóm tính năng phải có định dạng [1,2,3]."
-        );
-
-    }
-
-
-    if (
-        item.dsNhomTinhNangId !== undefined &&
-        item.dsNhomTinhNangId.some(
-            id =>
-                !Number.isInteger(Number(id)) ||
-                Number(id) <= 0
         )
     ) {
 
@@ -447,7 +518,34 @@ function validateDongImport(item) {
 
 
     if (
-        item.dsMaNhomTinhNang !== undefined &&
+        item.dsNhomTinhNangId !==
+            undefined &&
+        item.dsNhomTinhNangId
+            .some(
+                id =>
+                    !Number.isInteger(
+                        Number(
+                            id
+                        )
+                    ) ||
+                    Number(
+                        id
+                    ) <=
+                        0
+            )
+    ) {
+
+        throw new ApiError(
+            400,
+            "Danh sách ID nhóm tính năng chỉ được chứa số nguyên lớn hơn 0."
+        );
+
+    }
+
+
+    if (
+        item.dsMaNhomTinhNang !==
+            undefined &&
         !Array.isArray(
             item.dsMaNhomTinhNang
         )
@@ -455,26 +553,40 @@ function validateDongImport(item) {
 
         throw new ApiError(
             400,
-            'Danh sách mã nhóm tính năng phải có định dạng ["MA1","MA2"].'
+            "Danh sách mã nhóm tính năng không hợp lệ."
         );
-
     }
 
+    if (
+        item.dsMaNhomTinhNang !==
+            undefined &&
+        item.dsMaNhomTinhNang
+            .some(
+                ma =>
+                    !String(
+                        ma ||
+                        ""
+                    ).trim()
+            )
+    ) {
+        throw new ApiError(
+            400,
+            "Danh sách mã nhóm tính năng không được chứa mã rỗng."
+        );
+    }
 
     if (
-        item.active !== undefined &&
-        typeof item.active !== "boolean"
+        item.active !==
+            undefined &&
+        typeof item.active !==
+            "boolean"
     ) {
-
         throw new ApiError(
             400,
             "Trạng thái không hợp lệ. Chỉ chấp nhận TRUE hoặc FALSE."
         );
-
     }
-
 }
-
 
 function validateThemMoi(item) {
 
@@ -497,7 +609,6 @@ function validateThemMoi(item) {
     }
 
 }
-
 
 async function resolveNhomTinhNang(item) {
 
@@ -648,7 +759,6 @@ async function resolveNhomTinhNang(item) {
 
 }
 
-
 async function taoDuLieuNghiepVu(item) {
 
     const data = {};
@@ -687,7 +797,6 @@ async function taoDuLieuNghiepVu(item) {
 
 }
 
-
 async function timQuyenImport(item) {
 
     return await resolveImportStrategy(
@@ -714,7 +823,6 @@ async function timQuyenImport(item) {
     );
 
 }
-
 
 async function xuLyImport(file) {
 
@@ -867,7 +975,6 @@ async function xuLyImport(file) {
 
 }
 
-
 async function importData(
     req,
     res,
@@ -895,7 +1002,6 @@ async function importData(
     }
 
 }
-
 
 module.exports = {
     importData,

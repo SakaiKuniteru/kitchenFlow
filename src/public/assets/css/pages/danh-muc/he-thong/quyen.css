@@ -1,0 +1,62 @@
+#quyenPage {
+    min-width:
+        0;
+}
+
+#quyenDetailPanel
+.catalog-form-grid {
+    align-items:
+        start;
+}
+
+#quyenDetailPanel
+.form-field {
+    min-width:
+        0;
+}
+
+#quyenTable
+.catalog-table__body
+.catalog-table__cell {
+    height:
+        auto;
+
+    min-height:
+        50px;
+
+    white-space:
+        normal;
+
+    overflow:
+        visible;
+
+    text-overflow:
+        clip;
+
+    overflow-wrap:
+        anywhere;
+
+    word-break:
+        break-word;
+
+    line-height:
+        1.45;
+}
+
+#quyenTable
+.catalog-table__body
+.catalog-table__cell--nowrap {
+    white-space:
+        nowrap;
+}
+
+@media (
+    max-width:
+        820px
+) {
+    #quyenDetailPanel
+    .catalog-form-grid {
+        grid-template-columns:
+            1fr;
+    }
+}

@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/assets/css/pages/danh-muc/he-thong/quyen.css">
+
 {{> catalog/module-page
     moduleName="quyen"
     apiBase="/api/mcs/v1/dm-quyen"
@@ -16,10 +18,13 @@
     detailTitle="Thông tin quyền"
     showEditButton=true
     showActions=true
+    showImportButton=true
+    showExportButton=true
     mobilePanelId="quyenMobilePanel"
     columns=columns
 }}
 
 {{> scripts/catalog-page
     folder="he-thong"
-    page="quyen"}}
+    page="quyen"
+}}

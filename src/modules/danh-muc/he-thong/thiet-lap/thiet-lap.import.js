@@ -25,12 +25,10 @@ const {
 
 const { isTemplateValue } = require("../../../../helpers/excel/excel-template");
 
-
 const MA_BAO_CAO = "dm_thiet_lap";
 
 const HEADER_ROW = 3;
 const DATA_START_ROW = 5;
-
 
 function validateHeaders(headerMap) {
 
