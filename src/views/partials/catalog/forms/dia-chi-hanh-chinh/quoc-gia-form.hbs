@@ -1,11 +1,9 @@
 <div class="detail-panel__section">
-
     <h3 class="detail-panel__section-title">
         Thông tin quốc gia
     </h3>
 
     <div class="catalog-form-grid">
-
         {{> forms/input
             id="maQuocGia"
             name="maQuocGia"
@@ -25,8 +23,8 @@
         }}
 
         {{> forms/input
-            id="tenQuocGiaEn"
-            name="tenQuocGiaEn"
+            id="tenTiengAnh"
+            name="tenTiengAnh"
             label="Tên quốc gia tiếng Anh"
             placeholder="Vietnam"
             maxlength=255
@@ -46,6 +44,7 @@
             label="Mã ISO2"
             placeholder="VN"
             maxlength=2
+            required=true
         }}
 
         {{> forms/input
@@ -54,10 +53,11 @@
             label="Mã ISO3"
             placeholder="VNM"
             maxlength=3
+            required=true
+        }}axlength=3
         }}
 
         <div class="catalog-form-grid__full">
-
             {{> forms/input
                 id="maDienThoai"
                 name="maDienThoai"
@@ -65,20 +65,15 @@
                 placeholder="+84"
                 maxlength=10
             }}
-
         </div>
-
     </div>
-
 </div>
 
 <div class="detail-panel__section">
-
     {{> forms/switch
         id="active"
         name="active"
         label="Đang hoạt động"
         checked=true
     }}
-
 </div>

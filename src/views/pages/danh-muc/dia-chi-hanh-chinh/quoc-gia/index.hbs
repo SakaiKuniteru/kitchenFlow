@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/assets/css/pages/danh-muc/dia-chi-hanh-chinh/quoc-gia.css">
+
 {{> catalog/module-page
     moduleName="quoc-gia"
     apiBase="/api/mcs/v1/dm-quoc-gia"
@@ -16,10 +18,13 @@
     detailTitle="Thông tin quốc gia"
     showEditButton=true
     showActions=true
+    showImportButton=true
+    showExportButton=true
     mobilePanelId="quocGiaMobilePanel"
     columns=columns
 }}
 
 {{> scripts/catalog-page
     folder="dia-chi-hanh-chinh"
-    page="quoc-gia"}}
+    page="quoc-gia"
+}}
