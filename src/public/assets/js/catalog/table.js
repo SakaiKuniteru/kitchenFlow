@@ -1,421 +1,236 @@
 "use strict";
 
+window.MCS = window.MCS || {};
 
-window.MCS =
-    window.MCS || {};
-
-
-window.MCS.catalog =
-    window.MCS.catalog || {};
-
+window.MCS.catalog = window.MCS.catalog || {};
 
 class MCSTable {
-
-    constructor(
-        root,
-        options = {}
-    ) {
-
-        this.root =
-            typeof root === "string"
-                ? document.querySelector(
-                    root
-                )
-                : root;
+    constructor(root, options = {}) {
+        this.root = typeof root === "string"
+            ? document.querySelector(root)
+            : root;
 
         this.options = {
-
-            columns:
-                [],
-
-            showIndex:
-                true,
-
-            showActions:
-                false,
-
-            selectable:
-                false,
-
-            rowKey:
-                "id",
-
-            statusKey:
-                "active",
-
-            emptyTitle:
-                "Không có dữ liệu",
-
-            emptyDescription:
-                "Chưa có bản ghi nào để hiển thị.",
-
-            emptyIcon:
-                "inbox",
+            columns: [],
+            showIndex: true,
+            showActions: false,
+            selectable: false,
+            rowKey: "id",
+            statusKey: "active",
+            emptyTitle: "Không có dữ liệu",
+            emptyDescription: "Chưa có bản ghi nào để hiển thị.",
+            emptyIcon: "inbox",
 
             statusLabels: {
-
-                true:
-                    "TRUE",
-
-                false:
-                    "FALSE"
-
+                true: "TRUE",
+                false: "FALSE"
             },
 
-            onRowClick:
-                null,
-
-            onAction:
-                null,
-
+            onRowClick: null,
+            onAction: null,
             ...options
-
         };
 
-        this.body =
-            this.root?.querySelector(
-                "[data-catalog-table-body]"
-            );
-
-        this.loading =
-            this.root?.querySelector(
-                "[data-table-loading]"
-            );
-
-        this.table =
-            this.root?.querySelector(
-                "[data-catalog-table]"
-            );
-
+        this.body = this.root?.querySelector("[data-catalog-table-body]");
+        this.loading = this.root?.querySelector("[data-table-loading]");
+        this.table = this.root?.querySelector("[data-catalog-table]");
 
         this.applyColumnWidths();
 
-        this.data =
-            [];
-
-        this.selectedId =
-            null;
+        this.data = [];
+        this.selectedId = null;
 
         this.sort = {
-            key:
-                null,
-
-            direction:
-                "none"
+            key: null,
+            direction: "none"
         };
 
         this.bindEvents();
-
     }
 
     applyColumnWidths() {
-
         if (!this.table) {
             return;
         }
 
+        const DEFAULT_WIDTH = 180;
 
-        const DEFAULT_WIDTH =
-            180;
+        let totalWidth = 0;
 
-
-        let totalWidth =
-            0;
-
-
-        if (
-            this.options.selectable
-        ) {
-
-            totalWidth +=
-                46;
-
+        if (this.options.selectable) {
+            totalWidth += 46;
         }
 
-
-        if (
-            this.options.showIndex
-        ) {
-
-            totalWidth +=
-                66;
-
+        if (this.options.showIndex) {
+            totalWidth += 66;
         }
 
+        this.options.columns.forEach(column => {
+            const rawWidth = String(
+                column.width ||
+                `${DEFAULT_WIDTH}px`
+            ).trim();
 
-        this.options.columns
-            .forEach(
-                column => {
-
-                    const rawWidth =
-                        String(
-                            column.width ||
-                            `${DEFAULT_WIDTH}px`
-                        )
-                            .trim();
-
-
-                    const match =
-                        rawWidth.match(
-                            /^(\d+(?:\.\d+)?)px$/
-                        );
-
-
-                    const width =
-                        match
-                            ? Number(
-                                match[1]
-                            )
-                            : DEFAULT_WIDTH;
-
-
-                    totalWidth +=
-                        width;
-
-                }
+            const match = rawWidth.match(
+                /^(\d+(?:\.\d+)?)px$/
             );
 
+            const width = match
+                ? Number(match[1])
+                : DEFAULT_WIDTH;
 
-        this.table.style.width =
-            `max(100%, ${totalWidth}px)`;
+            totalWidth += width;
+        });
 
-
-        this.table.style.minWidth =
-            `${totalWidth}px`;
-
+        this.table.style.width = `max(100%, ${totalWidth}px)`;
+        this.table.style.minWidth = `${totalWidth}px`;
     }
 
     bindEvents() {
-
         if (!this.root) {
             return;
         }
 
-        this.root.addEventListener(
-            "click",
-            event => {
+        this.root.addEventListener("click", event => {
+            const sortButton = event.target.closest("[data-sort-key]");
 
-                const sortButton =
-                    event.target.closest(
-                        "[data-sort-key]"
-                    );
-
-                if (sortButton) {
-
-                    this.toggleSort(
-                        sortButton.dataset
-                            .sortKey
-                    );
-
-                    return;
-
-                }
-
-                const row =
-                    event.target.closest(
-                        "tr[data-record-id]"
-                    );
-
-                if (!row) {
-                    return;
-                }
-
-                const recordId =
-                    row.dataset.recordId;
-
-                this.selectRow(
-                    recordId
+            if (sortButton) {
+                this.toggleSort(
+                    sortButton.dataset.sortKey
                 );
 
-                const record =
-                    this.getRecord(
-                        recordId
-                    );
-
-                this.options.onRowClick?.(
-                    record,
-                    row
-                );
-
+                return;
             }
-        );
-        
-        window.addEventListener(
-            "resize",
-            () => {
 
-                this.closeActionMenus();
+            const row = event.target.closest("tr[data-record-id]");
 
+            if (!row) {
+                return;
             }
-        );
 
+            const recordId = row.dataset.recordId;
+
+            this.selectRow(
+                recordId
+            );
+
+            const record = this.getRecord(
+                recordId
+            );
+
+            this.options.onRowClick?.(
+                record,
+                row
+            );
+        });
+
+        window.addEventListener("resize", () => {
+            this.closeActionMenus();
+        });
     }
 
-
     setData(data) {
+        this.data = Array.isArray(data)
+            ? data.filter(record => {
+                if (
+                    !record ||
+                    typeof record !== "object"
+                ) {
+                    return false;
+                }
 
-        this.data =
-            Array.isArray(data)
-                ? data.filter(
-                    record => {
+                const id = record[
+                    this.options.rowKey
+                ];
 
-                        if (
-                            !record ||
-                            typeof record !==
-                                "object"
-                        ) {
-                            return false;
-                        }
-
-                        const id =
-                            record[
-                                this.options
-                                    .rowKey
-                            ];
-
-                        return (
-                            id !== null &&
-                            id !== undefined &&
-                            id !== ""
-                        );
-
-                    }
-                )
-                : [];
+                return (
+                    id !== null &&
+                    id !== undefined &&
+                    id !== ""
+                );
+            })
+            : [];
 
         this.render();
-
     }
 
     getData() {
-
         return this.data;
-
     }
 
-
     getRecord(id) {
-
         return this.data.find(
             item =>
                 String(
-                    item[
-                        this.options.rowKey
-                    ]
+                    item[this.options.rowKey]
                 ) === String(id)
         ) || null;
-
     }
 
-
     render() {
-
         if (!this.body) {
             return;
         }
 
-        this.body.innerHTML =
-            "";
+        this.body.innerHTML = "";
 
-        if (
-            this.data.length === 0
-        ) {
-
+        if (this.data.length === 0) {
             this.showEmpty();
 
             return;
-
         }
 
-        const fragment =
-            document.createDocumentFragment();
+        const fragment = document.createDocumentFragment();
 
-        this.data.forEach(
-            (
-                record,
-                index
-            ) => {
-
-                fragment.appendChild(
-                    this.createRow(
-                        record,
-                        index
-                    )
-                );
-
-            }
-        );
+        this.data.forEach((record, index) => {
+            fragment.appendChild(
+                this.createRow(
+                    record,
+                    index
+                )
+            );
+        });
 
         this.body.appendChild(
             fragment
         );
-
     }
 
+    createRow(record, index) {
+        const row = document.createElement("tr");
 
-    createRow(
-        record,
-        index
-    ) {
+        const recordId = record[
+            this.options.rowKey
+        ];
 
-        const row =
-            document.createElement(
-                "tr"
-            );
-
-        const recordId =
-            record[
-                this.options.rowKey
-            ];
-
-        row.dataset.recordId =
-            recordId;
+        row.dataset.recordId = recordId;
 
         if (
             String(recordId) ===
             String(this.selectedId)
         ) {
-
             row.classList.add(
                 "is-selected"
             );
-
         }
 
-        if (
-            record.active === false
-        ) {
-
+        if (record.active === false) {
             row.classList.add(
                 "is-disabled"
             );
-
         }
 
-        if (
-            this.options.selectable
-        ) {
-
-            const cell =
-                document.createElement(
-                    "td"
-                );
+        if (this.options.selectable) {
+            const cell = document.createElement("td");
 
             cell.className =
                 "catalog-table__cell " +
                 "catalog-table__cell--checkbox";
 
-            const checkbox =
-                document.createElement(
-                    "input"
-                );
+            const checkbox = document.createElement("input");
 
-            checkbox.type =
-                "checkbox";
-
-            checkbox.dataset
-                .rowCheckbox =
-                recordId;
+            checkbox.type = "checkbox";
+            checkbox.dataset.rowCheckbox = recordId;
 
             checkbox.addEventListener(
                 "click",
@@ -430,197 +245,123 @@ class MCSTable {
             row.appendChild(
                 cell
             );
-
         }
 
-        if (
-            this.options.showIndex
-        ) {
-
-            const indexCell =
-                document.createElement(
-                    "td"
-                );
+        if (this.options.showIndex) {
+            const indexCell = document.createElement("td");
 
             indexCell.className =
                 "catalog-table__cell " +
                 "catalog-table__cell--index";
 
-            indexCell.textContent =
-                this.getDisplayIndex(
-                    index
-                );
+            indexCell.textContent = this.getDisplayIndex(
+                index
+            );
 
             row.appendChild(
                 indexCell
             );
-
         }
 
-        this.options.columns.forEach(
-            column => {
+        this.options.columns.forEach(column => {
+            const cell = document.createElement("td");
 
-                const cell =
-                    document.createElement(
-                        "td"
+            cell.className = [
+                "catalog-table__cell",
+                column.className || ""
+            ]
+                .filter(Boolean)
+                .join(" ");
+
+            cell.dataset.columnKey = column.key;
+
+            if (column.width) {
+                cell.style.width = column.width;
+                cell.style.maxWidth = column.width;
+            }
+
+            const value = this.resolveValue(
+                record,
+                column.key
+            );
+
+            if (column.isBoolean) {
+                const badge = document.createElement("span");
+
+                const isTrue =
+                    value === true ||
+                    value === 1 ||
+                    value === "1" ||
+                    String(value).toLowerCase() === "true";
+
+                badge.className = [
+                    "status-badge",
+                    isTrue
+                        ? "status-badge--success"
+                        : "status-badge--neutral"
+                ].join(" ");
+
+                const dot = document.createElement("span");
+
+                dot.className = "status-badge__dot";
+
+                const label = document.createElement("span");
+
+                label.className = "status-badge__label";
+
+                label.textContent = isTrue
+                    ? (
+                        column.trueLabel ||
+                        "TRUE"
+                    )
+                    : (
+                        column.falseLabel ||
+                        "FALSE"
                     );
 
-
-                cell.className =
-                    [
-                        "catalog-table__cell",
-                        column.className || ""
-                    ]
-                        .filter(Boolean)
-                        .join(" ");
-
-
-                cell.dataset.columnKey =
-                        column.key;
-
-
-                    if (
-                        column.width
-                    ) {
-
-                        cell.style.width =
-                            column.width;
-
-                        cell.style.maxWidth =
-                            column.width;
-
-                    }
-
-
-                    const value =
-                        this.resolveValue(
-                            record,
-                            column.key
-                        );
-
-                    if (
-                        column.isBoolean
-                    ) {
-
-                        const badge =
-                            document.createElement(
-                                "span"
-                            );
-
-
-                        const isTrue =
-                            value === true ||
-                            value === 1 ||
-                            value === "1" ||
-                            String(value)
-                                .toLowerCase() ===
-                                "true";
-
-
-                        badge.className =
-                            [
-                                "status-badge",
-                                isTrue
-                                    ? "status-badge--success"
-                                    : "status-badge--neutral"
-                            ].join(" ");
-
-
-                        const dot =
-                            document.createElement(
-                                "span"
-                            );
-
-                        dot.className =
-                            "status-badge__dot";
-
-
-                        const label =
-                            document.createElement(
-                                "span"
-                            );
-
-                        label.className =
-                            "status-badge__label";
-
-
-                        label.textContent =
-                            isTrue
-                                ? (
-                                    column.trueLabel ||
-                                    "TRUE"
-                                )
-                                : (
-                                    column.falseLabel ||
-                                    "FALSE"
-                                );
-
-
-                        badge.append(
-                            dot,
-                            label
-                        );
-
-
-                        cell.appendChild(
-                            badge
-                        );
-
-                    } else if (
-                        typeof column.render ===
-                        "function"
-                    ) {
-
-                        const rendered =
-                            column.render(
-                                value,
-                                record,
-                                index
-                            );
-
-
-                        this.appendRenderedValue(
-                            cell,
-                            rendered
-                        );
-
-                    } else {
-
-                        cell.textContent =
-                            this.formatValue(
-                                value,
-                                column
-                            );
-
-                    }
-
-                if (
-                    column.title !== false
-                ) {
-
-                    cell.title =
-                        this.getPlainText(
-                            cell
-                        );
-
-                }
-
-                row.appendChild(
-                    cell
+                badge.append(
+                    dot,
+                    label
                 );
 
+                cell.appendChild(
+                    badge
+                );
+            } else if (
+                typeof column.render === "function"
+            ) {
+                const rendered = column.render(
+                    value,
+                    record,
+                    index
+                );
+
+                this.appendRenderedValue(
+                    cell,
+                    rendered
+                );
+            } else {
+                cell.textContent = this.formatValue(
+                    value,
+                    column
+                );
             }
-        );
+
+            if (column.title !== false) {
+                cell.title = this.getPlainText(
+                    cell
+                );
+            }
+
+            row.appendChild(
+                cell
+            );
+        });
 
         return row;
-
     }
 
-    resolveValue(
-        object,
-        path
-    ) {
-
+    resolveValue(object, path) {
         if (!path) {
             return undefined;
         }
@@ -628,45 +369,27 @@ class MCSTable {
         return String(path)
             .split(".")
             .reduce(
-                (
-                    value,
-                    key
-                ) => {
-
-                    return value
-                        ?. [key];
-
+                (value, key) => {
+                    return value?. [key];
                 },
                 object
             );
-
     }
 
-
-    formatValue(
-        value,
-        column
-    ) {
-
+    formatValue(value, column) {
         if (
             value === null ||
             value === undefined ||
             value === ""
         ) {
-
             return (
                 column.emptyText ||
                 "—"
             );
-
         }
 
-        switch (
-            column.type
-        ) {
-
+        switch (column.type) {
             case "number":
-
                 return new Intl
                     .NumberFormat(
                         "vi-VN"
@@ -676,18 +399,14 @@ class MCSTable {
                     );
 
             case "currency":
-
                 return new Intl
                     .NumberFormat(
                         "vi-VN",
                         {
-                            style:
-                                "currency",
-
+                            style: "currency",
                             currency:
                                 column.currency ||
                                 "VND",
-
                             maximumFractionDigits:
                                 column.maximumFractionDigits ??
                                 0
@@ -698,21 +417,18 @@ class MCSTable {
                     );
 
             case "date":
-
                 return this.formatDate(
                     value,
                     false
                 );
 
             case "datetime":
-
                 return this.formatDate(
                     value,
                     true
                 );
 
             case "boolean":
-
                 return value
                     ? (
                         column.trueLabel ||
@@ -724,30 +440,19 @@ class MCSTable {
                     );
 
             default:
-
                 return String(value);
-
         }
-
     }
 
-
-    formatDate(
-        value,
-        includeTime
-    ) {
-
-        const date =
-            new Date(value);
+    formatDate(value, includeTime) {
+        const date = new Date(value);
 
         if (
             Number.isNaN(
                 date.getTime()
             )
         ) {
-
             return String(value);
-
         }
 
         return new Intl
@@ -755,53 +460,31 @@ class MCSTable {
                 "vi-VN",
                 includeTime
                     ? {
-                        day:
-                            "2-digit",
-
-                        month:
-                            "2-digit",
-
-                        year:
-                            "numeric",
-
-                        hour:
-                            "2-digit",
-
-                        minute:
-                            "2-digit"
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit"
                     }
                     : {
-                        day:
-                            "2-digit",
-
-                        month:
-                            "2-digit",
-
-                        year:
-                            "numeric"
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric"
                     }
             )
             .format(date);
-
     }
 
-
-    appendRenderedValue(
-        cell,
-        rendered
-    ) {
-
+    appendRenderedValue(cell, rendered) {
         if (
             rendered instanceof
             Node
         ) {
-
             cell.appendChild(
                 rendered
             );
 
             return;
-
         }
 
         if (
@@ -809,166 +492,101 @@ class MCSTable {
             typeof rendered === "object" &&
             rendered.html !== undefined
         ) {
-
-            cell.innerHTML =
-                rendered.html;
+            cell.innerHTML = rendered.html;
 
             return;
-
         }
 
         cell.textContent =
             rendered ?? "—";
-
     }
 
-
     getPlainText(cell) {
-
         return (
             cell.textContent ||
             ""
-        )
-            .trim();
-
+        ).trim();
     }
 
-
     getDisplayIndex(index) {
-
-        const offset =
-            Number(
-                this.options.offset ||
-                0
-            );
+        const offset = Number(
+            this.options.offset ||
+            0
+        );
 
         return (
             offset +
             index +
             1
         );
-
     }
-
 
     selectRow(id) {
-
-        this.selectedId =
-            id;
+        this.selectedId = id;
 
         this.body
-            ?.querySelectorAll(
-                "tr[data-record-id]"
-            )
-            .forEach(
-                row => {
-
-                    row.classList.toggle(
-                        "is-selected",
-                        String(
-                            row.dataset.recordId
-                        ) === String(id)
-                    );
-
-                }
-            );
-
+            ?.querySelectorAll("tr[data-record-id]")
+            .forEach(row => {
+                row.classList.toggle(
+                    "is-selected",
+                    String(
+                        row.dataset.recordId
+                    ) === String(id)
+                );
+            });
     }
 
-
     clearSelection() {
-
-        this.selectedId =
-            null;
+        this.selectedId = null;
 
         this.body
-            ?.querySelectorAll(
-                ".is-selected"
-            )
+            ?.querySelectorAll(".is-selected")
             .forEach(
                 row =>
                     row.classList.remove(
                         "is-selected"
                     )
             );
-
     }
 
-
     showLoading() {
-
         this.hideEmpty();
 
         if (this.loading) {
-
-            this.loading.hidden =
-                false;
-
+            this.loading.hidden = false;
         }
-
     }
 
     hideLoading() {
-
         if (this.loading) {
-
-            this.loading.hidden =
-                true;
-
+            this.loading.hidden = true;
         }
-
     }
 
-
     showEmpty() {
-
         if (!this.body) {
             return;
         }
 
-        this.body.innerHTML =
-            "";
+        this.body.innerHTML = "";
 
-        const row =
-            document.createElement(
-                "tr"
-            );
+        const row = document.createElement("tr");
 
-        row.className =
-            "catalog-table__empty-row";
+        row.className = "catalog-table__empty-row";
+        row.dataset.emptyRow = "";
 
-        row.dataset.emptyRow =
-            "";
+        const cell = document.createElement("td");
 
+        cell.className = "catalog-table__empty-cell";
+        cell.colSpan = this.getColumnCount();
 
-        const cell =
-            document.createElement(
-                "td"
-            );
+        const emptyState = document.createElement("div");
 
-        cell.className =
-            "catalog-table__empty-cell";
+        emptyState.className = "catalog-table-empty-state";
 
-        cell.colSpan =
-            this.getColumnCount();
+        const icon = document.createElement("div");
 
-
-        const emptyState =
-            document.createElement(
-                "div"
-            );
-
-        emptyState.className =
-            "catalog-table-empty-state";
-
-
-        const icon =
-            document.createElement(
-                "div"
-            );
-
-        icon.className =
-            "catalog-table-empty-state__icon";
+        icon.className = "catalog-table-empty-state__icon";
 
         icon.setAttribute(
             "aria-hidden",
@@ -1006,30 +624,15 @@ class MCSTable {
             </svg>
         `;
 
+        const title = document.createElement("strong");
 
-        const title =
-            document.createElement(
-                "strong"
-            );
+        title.className = "catalog-table-empty-state__title";
+        title.textContent = this.options.emptyTitle;
 
-        title.className =
-            "catalog-table-empty-state__title";
+        const description = document.createElement("p");
 
-        title.textContent =
-            this.options.emptyTitle;
-
-
-        const description =
-            document.createElement(
-                "p"
-            );
-
-        description.className =
-            "catalog-table-empty-state__description";
-
-        description.textContent =
-            this.options.emptyDescription;
-
+        description.className = "catalog-table-empty-state__description";
+        description.textContent = this.options.emptyDescription;
 
         emptyState.append(
             icon,
@@ -1048,133 +651,78 @@ class MCSTable {
         this.body.appendChild(
             row
         );
-
     }
 
     getColumnCount() {
+        let count = this.options.columns.length;
 
-        let count =
-            this.options.columns.length;
-
-        if (
-            this.options.selectable
-        ) {
-
-            count +=
-                1;
-
+        if (this.options.selectable) {
+            count += 1;
         }
 
-        if (
-            this.options.showIndex
-        ) {
-
-            count +=
-                1;
-
+        if (this.options.showIndex) {
+            count += 1;
         }
 
         return Math.max(
             count,
             1
         );
-
     }
 
     hideEmpty() {
-
         this.body
-            ?.querySelector(
-                "[data-empty-row]"
-            )
+            ?.querySelector("[data-empty-row]")
             ?.remove();
-
     }
 
     toggleSort(key) {
-
-        if (
-            this.sort.key !== key
-        ) {
-
+        if (this.sort.key !== key) {
             this.sort = {
                 key,
-                direction:
-                    "asc"
+                direction: "asc"
             };
-
         } else {
-
             const next = {
-                none:
-                    "asc",
-
-                asc:
-                    "desc",
-
-                desc:
-                    "none"
+                none: "asc",
+                asc: "desc",
+                desc: "none"
             };
 
             this.sort.direction =
-                next[
-                    this.sort.direction
-                ];
+                next[this.sort.direction];
 
             if (
                 this.sort.direction ===
                 "none"
             ) {
-
-                this.sort.key =
-                    null;
-
+                this.sort.key = null;
             }
-
         }
 
         this.updateSortIcons();
 
-        this.options.onSort?.(
-            {
-                ...this.sort
-            }
-        );
-
+        this.options.onSort?.({
+            ...this.sort
+        });
     }
-
 
     updateSortIcons() {
-
         this.root
-            ?.querySelectorAll(
-                "[data-sort-icon]"
-            )
-            .forEach(
-                icon => {
+            ?.querySelectorAll("[data-sort-icon]")
+            .forEach(icon => {
+                const button = icon.closest(
+                    "[data-sort-key]"
+                );
 
-                    const button =
-                        icon.closest(
-                            "[data-sort-key]"
-                        );
+                const key = button?.dataset.sortKey;
 
-                    const key =
-                        button?.dataset
-                            .sortKey;
-
-                    icon.dataset
-                        .sortDirection =
-                        key === this.sort.key
-                            ? this.sort.direction
-                            : "none";
-
-                }
-            );
-
+                icon.dataset.sortDirection =
+                    key === this.sort.key
+                        ? this.sort.direction
+                        : "none";
+            });
     }
-
 }
 
-
-window.MCS.catalog.Table =
-    MCSTable;
+window.MCS.catalog.Table = MCSTable;

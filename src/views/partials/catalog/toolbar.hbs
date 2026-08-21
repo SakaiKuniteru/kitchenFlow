@@ -1,65 +1,40 @@
 <header
     class="catalog-toolbar {{#if toolbarClass}}{{toolbarClass}}{{/if}}"
     data-catalog-toolbar>
-
+    
     <div class="catalog-toolbar__top">
-
         <div class="catalog-toolbar__heading">
-
             <div class="catalog-toolbar__title-group">
-
                 <h1 class="catalog-toolbar__title">
-
                     {{#if title}}
-
                         {{title}}
-
                     {{else}}
-
                         Danh mục
-
                     {{/if}}
-
                 </h1>
 
-
                 {{#if description}}
-
                     <p class="catalog-toolbar__description">
-
                         {{description}}
-
                     </p>
-
                 {{/if}}
-
             </div>
 
-
             {{#if totalLabel}}
-
                 <span
                     class="catalog-toolbar__total"
                     data-catalog-total>
-
                     {{totalLabel}}
-
                 </span>
-
             {{/if}}
-
         </div>
 
         <div class="catalog-toolbar__search">
-
             <span
                 class="catalog-toolbar__search-icon"
                 aria-hidden="true">
-
                 <i class="fa-solid fa-magnifying-glass"></i>
-
             </span>
-
 
             <input
                 id="{{searchInputId}}"
@@ -70,7 +45,6 @@
                 data-catalog-search
             >
 
-
             <button
                 type="button"
                 class="catalog-toolbar__search-clear"
@@ -78,49 +52,36 @@
                 aria-label="Xóa nội dung tìm kiếm"
                 title="Xóa tìm kiếm"
                 hidden>
-
                 <i
                     class="fa-solid fa-xmark"
                     aria-hidden="true">
                 </i>
-
             </button>
-
         </div>
-
     </div>
 
-
     <div class="catalog-toolbar__bottom">
-
         <div class="catalog-toolbar__actions">
-
             <div
                 class="catalog-toolbar__utility"
                 data-catalog-utility>
-
                 <button
                     type="button"
                     class="catalog-toolbar__button catalog-toolbar__button--secondary"
                     data-catalog-utility-toggle
                     aria-expanded="false">
-
                     <span aria-hidden="true">
                         ⚙
                     </span>
-
                     <span>
                         Tiện ích
                     </span>
-
                 </button>
-
 
                 <div
                     class="catalog-toolbar__utility-menu"
                     data-catalog-utility-menu
                     hidden>
-
                     <button
                         type="button"
                         class="catalog-toolbar__utility-item"
@@ -132,7 +93,6 @@
                         <span data-filter-toggle-label>
                             Tìm kiếm chi tiết
                         </span>
-
                     </button>
                     {{#if showExportButton}}
                         <button
@@ -158,9 +118,7 @@
                         </button>
                     {{/if}}
                 </div>
-
             </div>
-
 
             <button
                 type="button"
@@ -172,14 +130,11 @@
                 aria-pressed="false"
                 aria-label="Mở rộng danh sách"
                 title="Mở rộng danh sách">
-
                 <i
                     class="fa-solid fa-arrows-left-right"
                     aria-hidden="true">
                 </i>
-
             </button>
-
 
             <button
                 type="button"
@@ -191,37 +146,26 @@
                 aria-pressed="false"
                 aria-label="Mở rộng thông tin"
                 title="Mở rộng thông tin">
-
                 <i
                     class="fa-solid fa-table-columns"
                     aria-hidden="true">
                 </i>
-
             </button>
 
-
             {{#unless hideCreateButton}}
-
                 <button
                     type="button"
                     id="{{createButtonId}}"
                     class="catalog-toolbar__button catalog-toolbar__button--primary"
                     data-catalog-create>
-
                     <span aria-hidden="true">
                         +
                     </span>
-
                     <span>
                         Thêm mới
                     </span>
-
                 </button>
-
             {{/unless}}
-
         </div>
-
     </div>
-
 </header>

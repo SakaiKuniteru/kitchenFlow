@@ -3,7 +3,7 @@
     display: grid;
     grid-template-columns:
         minmax(0, 1fr)
-        minmax(340px, 400px);
+        minmax(520px, 620px);
     gap: 16px;
     width: 100%;
     min-width: 0;
@@ -18,7 +18,7 @@
 .catalog-page.is-info-expanded {
     grid-template-columns:
         minmax(0, 1fr)
-        minmax(520px, 45%);
+        minmax(680px, 55%);
 }
 
 .catalog-page__list,
@@ -246,9 +246,15 @@
     .catalog-page {
         grid-template-columns:
             minmax(0, 1fr)
-            minmax(320px, 350px);
+            minmax(480px, 560px);
 
         gap: 12px;
+    }
+
+    .catalog-page.is-info-expanded {
+        grid-template-columns:
+            minmax(0, 1fr)
+            minmax(620px, 58%);
     }
 
 }

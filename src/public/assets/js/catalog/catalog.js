@@ -1,954 +1,570 @@
 "use strict";
 
+window.MCS = window.MCS || {};
 
-window.MCS =
-    window.MCS || {};
-
-
-window.MCS.catalog =
-    window.MCS.catalog || {};
-
+window.MCS.catalog = window.MCS.catalog || {};
 
 class MCSCatalog {
-
-    constructor(
-        options = {}
-    ) {
-
+    constructor(options = {}) {
         this.options = {
-
-            root:
-                "[data-catalog-page]",
+            root: "[data-catalog-page]",
 
             endpoints: {
-
-                list:
-                    "",
-
-                detail:
-                    "",
-
-                create:
-                    "",
-
-                update:
-                    ""
-
+                list: "",
+                detail: "",
+                create: "",
+                update: ""
             },
 
-            columns:
-                [],
-
-            rowKey:
-                "id",
-
-            pageSize:
-                20,
-
-            clientPagination:
-                true,
-
-            debounce:
-                350,
+            columns: [],
+            rowKey: "id",
+            pageSize: 20,
+            clientPagination: true,
+            debounce: 350,
 
             defaultValues: {
-                active:
-                    true
+                active: true
             },
 
-            form:
-                {},
+            form: {},
+            table: {},
 
-            table:
-                {},
+            mapListResponse: result =>
+                result?.data || [],
 
-            mapListResponse:
-                result =>
-                    result?.data || [],
+            mapDetailResponse: result =>
+                result?.data || null,
 
-            mapDetailResponse:
-                result =>
-                    result?.data || null,
+            buildDetailUrl: (
+                endpoint,
+                id
+            ) =>
+                `${endpoint}/${id}`,
 
-            buildDetailUrl:
-                (
-                    endpoint,
-                    id
-                ) =>
-                    `${endpoint}/${id}`,
+            buildUpdateUrl: (
+                endpoint,
+                id
+            ) =>
+                `${endpoint}/${id}`,
 
-            buildUpdateUrl:
-                (
-                    endpoint,
-                    id
-                ) =>
-                    `${endpoint}/${id}`,
-
-            onBeforeLoad:
-                null,
-
-            onAfterLoad:
-                null,
-
-            onRecordLoaded:
-                null,
-
-            onAction:
-                null,
+            onBeforeLoad: null,
+            onAfterLoad: null,
+            onRecordLoaded: null,
+            onAction: null,
 
             ...options
-
         };
 
-
         this.root =
-            typeof this.options.root ===
-                "string"
-                ? document.querySelector(
-                    this.options.root
-                )
+            typeof this.options.root === "string"
+                ? document.querySelector(this.options.root)
                 : this.options.root;
 
-
         if (!this.root) {
-
             throw new Error(
                 "Không tìm thấy catalog root."
             );
-
         }
 
-
         this.state = {
-
-            allData:
-                [],
-
-            filteredData:
-                [],
-
-            visibleData:
-                [],
-
-            selectedId:
-                null,
-
-            keyword:
-                "",
-
-            filters:
-                {},
+            allData: [],
+            filteredData: [],
+            visibleData: [],
+            selectedId: null,
+            keyword: "",
+            filters: {},
 
             sort: {
-
-                key:
-                    null,
-
-                direction:
-                    "none"
-
+                key: null,
+                direction: "none"
             },
 
-            page:
-                1,
-
-            pageSize:
-                this.options
-                    .pageSize,
-
-            loading:
-                false
-
+            page: 1,
+            pageSize: this.options.pageSize,
+            loading: false
         };
-
 
         this.elements = {
-
-            search:
-                this.root.querySelector(
-                    "[data-catalog-search]"
-                ),
-
-            clearSearch:
-                this.root.querySelector(
-                    "[data-catalog-clear-search]"
-                ),
-
-            create:
-                this.root.querySelector(
-                    "[data-catalog-create]"
-                ),
-
-            refresh:
-                this.root.querySelector(
-                    "[data-catalog-refresh]"
-                ),
-
-            filterToggle:
-                this.root.querySelector(
-                    "[data-catalog-filter-toggle]"
-                ),
-
-            filterToggleLabel:
-                this.root.querySelector(
-                    "[data-filter-toggle-label]"
-                ),
-
-            utilityToggle:
-                this.root.querySelector(
-                    "[data-catalog-utility-toggle]"
-                ),
-
-            utilityMenu:
-                this.root.querySelector(
-                    "[data-catalog-utility-menu]"
-                ),
-
-            expandTable:
-                this.root.querySelector(
-                    "[data-catalog-expand-table]"
-                ),
-
-            expandInfo:
-                this.root.querySelector(
-                    "[data-catalog-expand-info]"
-                ),
-
-            exportButton:
-                this.root.querySelector(
-                    "[data-catalog-export]"
-                ),
-
-            importButton:
-                this.root.querySelector(
-                    "[data-catalog-import]"
-                ),
-
-            tableSection:
-                this.root.querySelector(
-                    "[data-catalog-table-section]"
-                ),
-
-            filterRow:
-                this.root.querySelector(
-                    "[data-table-filter-row]"
-                ),
-
-            clearFilters:
-                this.root.querySelector(
-                    "[data-clear-table-filters]"
-                ),
-
-            total:
-                this.root.querySelector(
-                    "[data-catalog-total]"
-                ),
-
-            detailRoot:
-                this.root.querySelector(
-                    "[data-catalog-detail-panel]"
-                ),
-
-            form:
-                this.root.querySelector(
-                    "[data-catalog-form]"
-                ),
-
-            overlay:
-                this.root.querySelector(
-                    "[data-catalog-overlay]"
-                )
-
+            search: this.root.querySelector("[data-catalog-search]"),
+            clearSearch: this.root.querySelector("[data-catalog-clear-search]"),
+            create: this.root.querySelector("[data-catalog-create]"),
+            refresh: this.root.querySelector("[data-catalog-refresh]"),
+            filterToggle: this.root.querySelector("[data-catalog-filter-toggle]"),
+            filterToggleLabel: this.root.querySelector("[data-filter-toggle-label]"),
+            utilityToggle: this.root.querySelector("[data-catalog-utility-toggle]"),
+            utilityMenu: this.root.querySelector("[data-catalog-utility-menu]"),
+            expandTable: this.root.querySelector("[data-catalog-expand-table]"),
+            expandInfo: this.root.querySelector("[data-catalog-expand-info]"),
+            exportButton: this.root.querySelector("[data-catalog-export]"),
+            importButton: this.root.querySelector("[data-catalog-import]"),
+            tableSection: this.root.querySelector("[data-catalog-table-section]"),
+            filterRow: this.root.querySelector("[data-table-filter-row]"),
+            clearFilters: this.root.querySelector("[data-clear-table-filters]"),
+            total: this.root.querySelector("[data-catalog-total]"),
+            detailRoot: this.root.querySelector("[data-catalog-detail-panel]"),
+            form: this.root.querySelector("[data-catalog-form]"),
+            overlay: this.root.querySelector("[data-catalog-overlay]")
         };
 
+        this.table = new window.MCS.catalog.Table(
+            this.root.querySelector("[data-catalog-table-wrapper]"),
+            {
+                columns: this.options.columns,
+                rowKey: this.options.rowKey,
+                showIndex: true,
+                showActions: false,
 
-        this.table =
-            new window.MCS.catalog.Table(
-                this.root.querySelector(
-                    "[data-catalog-table-wrapper]"
-                ),
-                {
+                onRowClick: async record => {
+                    if (!record) {
+                        return;
+                    }
 
-                    columns:
-                        this.options
-                            .columns,
+                    const id = record[
+                        this.options.rowKey
+                    ];
 
-                    rowKey:
-                        this.options
-                            .rowKey,
+                    if (
+                        id === null ||
+                        id === undefined
+                    ) {
+                        return;
+                    }
 
-                    showIndex:
-                        true,
+                    if (this.options.viewOnly) {
+                        await this.openDetail(id);
 
-                    showActions:
-                        false,
+                        return;
+                    }
 
-                    onRowClick:
-                        async record => {
+                    await this.openUpdate(id);
+                },
 
-                            if (!record) {
-                                return;
-                            }
+                onSort: sort => {
+                    this.state.sort = sort;
 
-
-                            const id =
-                                record[
-                                    this.options
-                                        .rowKey
-                                ];
-
-
-                            if (
-                                id === null ||
-                                id === undefined
-                            ) {
-                                return;
-                            }
-
-
-                            if (
-                                this.options
-                                    .viewOnly
-                            ) {
-
-                                await this.openDetail(
-                                    id
-                                );
-
-                                return;
-
-                            }
-
-
-                            await this.openUpdate(
-                                id
-                            );
-
-                        },
-
-                    onSort:
-                        sort => {
-
-                            this.state.sort =
-                                sort;
-
-
-                            this.applyState();
-
-                        }
-
+                    this.applyState();
                 }
-            );
+            }
+        );
 
+        this.pagination = new window.MCS.catalog.Pagination(
+            this.root.querySelector("[data-catalog-pagination]"),
+            {
+                page: this.state.page,
+                pageSize: this.state.pageSize,
+                total: 0,
 
-        this.pagination =
-            new window.MCS.catalog.Pagination(
-                this.root.querySelector(
-                    "[data-catalog-pagination]"
-                ),
-                {
+                onChange: pagination => {
+                    this.state.page = pagination.page;
+                    this.state.pageSize = pagination.pageSize;
 
-                    page:
-                        this.state.page,
-
-                    pageSize:
-                        this.state.pageSize,
-
-                    total:
-                        0,
-
-                    onChange:
-                        pagination => {
-
-                            this.state.page =
-                                pagination.page;
-
-
-                            this.state.pageSize =
-                                pagination.pageSize;
-
-
-                            this.applyPagination();
-
-                        }
-
+                    this.applyPagination();
                 }
-            );
+            }
+        );
 
+        this.detailPanel = new window.MCS.catalog.DetailPanel(
+            this.elements.detailRoot,
+            {
+                defaultTitle:
+                    this.options.detailTitle ||
+                    "Thông tin chi tiết",
 
-        this.detailPanel =
-            new window.MCS.catalog.DetailPanel(
-                this.elements
-                    .detailRoot,
-                {
+                onEdit: record => {
+                    if (!record) {
+                        return;
+                    }
 
-                    defaultTitle:
-                        this.options
-                            .detailTitle ||
-                        "Thông tin chi tiết",
+                    const id = record[
+                        this.options.rowKey
+                    ];
 
-                    onEdit:
-                        record => {
+                    if (
+                        id === null ||
+                        id === undefined
+                    ) {
+                        return;
+                    }
 
-                            if (!record) {
-                                return;
-                            }
+                    this.openUpdate(id);
+                },
 
+                onClose: () => {
+                    this.table.clearSelection();
 
-                            const id =
-                                record[
-                                    this.options
-                                        .rowKey
-                                ];
+                    this.state.selectedId = null;
 
-
-                            if (
-                                id === null ||
-                                id === undefined
-                            ) {
-                                return;
-                            }
-
-
-                            this.openUpdate(
-                                id
-                            );
-
-                        },
-
-                    onClose:
-                        () => {
-
-                            this.table
-                                .clearSelection();
-
-
-                            this.state
-                                .selectedId =
-                                null;
-
-
-                            this.initializeDefaultDetail();
-
-                        }
-
+                    this.initializeDefaultDetail();
                 }
-            );
+            }
+        );
 
+        this.form = new window.MCS.catalog.Form(
+            this.elements.form,
+            {
+                ...this.options.form,
 
-        this.form =
-            new window.MCS.catalog.Form(
-                this.elements.form,
-                {
+                onSubmit: (
+                    data,
+                    form
+                ) =>
+                    this.submitForm(
+                        data,
+                        form
+                    ),
 
-                    ...this.options.form,
+                onCancel: () =>
+                    this.cancelForm()
+            }
+        );
 
-                    onSubmit:
-                        (
-                            data,
-                            form
-                        ) =>
-                            this.submitForm(
-                                data,
-                                form
-                            ),
+        this.lastIsMobile = this.detailPanel.isMobile();
 
-                    onCancel:
-                        () =>
-                            this.cancelForm()
-
-                }
-            );
-
-
-        this.lastIsMobile =
-            this.detailPanel
-                .isMobile();
         this.bindEvents();
     }
 
-
     bindEvents() {
-
-        this.elements.search
-            ?.addEventListener(
-                "input",
-                this.debounce(
-                    event => {
-
-                        this.state.keyword =
-                            event.target
-                                .value
-                                .trim();
-
-
-                        this.state.page =
-                            1;
-
-
-                        if (
-                            this.elements
-                                .clearSearch
-                        ) {
-
-                            this.elements
-                                .clearSearch
-                                .hidden =
-                                !this.state
-                                    .keyword;
-
-                        }
-
-
-                        this.applyState();
-
-                    },
-                    this.options
-                        .debounce
-                )
-            );
-
-        this.elements.clearSearch
-            ?.addEventListener(
-                "click",
+        this.elements.search?.addEventListener(
+            "input",
+            this.debounce(
                 event => {
+                    this.state.keyword = event.target.value.trim();
+                    this.state.page = 1;
 
-                    event.preventDefault();
-
-                    event.stopPropagation();
-
-
-                    if (
-                        this.elements
-                            .search
-                    ) {
-
-                        this.elements
-                            .search
-                            .value =
-                            "";
-
+                    if (this.elements.clearSearch) {
+                        this.elements.clearSearch.hidden =
+                            !this.state.keyword;
                     }
-
-
-                    this.state.keyword =
-                        "";
-
-
-                    this.state.page =
-                        1;
-
-
-                    this.elements
-                        .clearSearch
-                        .hidden =
-                        true;
-
 
                     this.applyState();
+                },
+                this.options.debounce
+            )
+        );
 
+        this.elements.clearSearch?.addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
+                event.stopPropagation();
 
-                    this.elements
-                        .search
-                        ?.focus();
-
+                if (this.elements.search) {
+                    this.elements.search.value = "";
                 }
-            );
 
-        this.elements.create
-            ?.addEventListener(
-                "click",
-                event => {
+                this.state.keyword = "";
+                this.state.page = 1;
 
-                    event.preventDefault();
+                this.elements.clearSearch.hidden = true;
 
-                    event.stopPropagation();
+                this.applyState();
 
+                this.elements.search?.focus();
+            }
+        );
 
-                    this.openCreate();
+        this.elements.create?.addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
+                event.stopPropagation();
 
+                this.openCreate();
+            }
+        );
+
+        this.elements.utilityToggle?.addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                const menu = this.elements.utilityMenu;
+
+                if (!menu) {
+                    return;
                 }
-            );
 
-        this.elements.utilityToggle
-            ?.addEventListener(
-                "click",
-                event => {
+                const open = menu.hidden;
 
-                    event.preventDefault();
-                    event.stopPropagation();
+                menu.hidden = !open;
 
-                    const menu =
-                        this.elements.utilityMenu;
+                this.elements.utilityToggle.setAttribute(
+                    "aria-expanded",
+                    String(open)
+                );
+            }
+        );
 
-                    if (!menu) {
-                        return;
-                    }
+        document.addEventListener("click", event => {
 
-                    const open =
-                        menu.hidden;
-
-                    menu.hidden =
-                        !open;
-
+                const utility =
                     this.elements.utilityToggle
-                        .setAttribute(
-                            "aria-expanded",
-                            String(open)
+                        ?.closest(
+                            "[data-catalog-utility]"
                         );
 
+
+                if (
+                    !utility ||
+                    !this.elements.utilityMenu
+                ) {
+                    return;
                 }
-            );
-
-        this.elements.expandTable
-            ?.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-                    event.stopPropagation();
 
 
-                    const expanded =
-                        !this.root
-                            .classList
-                            .contains(
-                                "is-list-expanded"
-                            );
-
-
-                    this.root
-                        .classList
-                        .toggle(
-                            "is-list-expanded",
-                            expanded
-                        );
-
-
-                    this.elements
-                        .expandTable
-                        .setAttribute(
-                            "aria-pressed",
-                            String(
-                                expanded
-                            )
-                        );
-
-                    this.elements
-                        .expandTable
-                        .setAttribute(
-                            "aria-label",
-                            expanded
-                                ? "Thu nhỏ danh sách"
-                                : "Mở rộng danh sách"
-                        );
-
-
-                    this.elements
-                        .expandTable
-                        .setAttribute(
-                            "title",
-                            expanded
-                                ? "Thu nhỏ danh sách"
-                                : "Mở rộng danh sách"
-                        );
-
+                if (
+                    utility.contains(
+                        event.target
+                    )
+                ) {
+                    return;
                 }
-            );
-
-        this.elements.expandInfo
-            ?.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    if (
-                        this.root
-                            .classList
-                            .contains(
-                                "is-list-expanded"
-                            )
-                    ) {
-
-                        this.root
-                            .classList
-                            .remove(
-                                "is-list-expanded"
-                            );
 
 
-                        this.elements
-                            .expandTable
-                            ?.setAttribute(
-                                "aria-pressed",
-                                "false"
-                            );
-                        if (
-                            this.elements
-                                .expandTable
-                        ) {
-
-                            this.elements
-                                .expandTable
-                                .setAttribute(
-                                    "aria-label",
-                                    "Mở rộng danh sách"
-                                );
+                this.elements.utilityMenu.hidden =
+                    true;
 
 
-                            this.elements
-                                .expandTable
-                                .setAttribute(
-                                    "title",
-                                    "Mở rộng danh sách"
-                                );
-
-                        }
-
-                    }
-
-                    const expanded =
-                        !this.root
-                            .classList
-                            .contains(
-                                "is-info-expanded"
-                            );
-
-
-                    this.root
-                        .classList
-                        .toggle(
-                            "is-info-expanded",
-                            expanded
-                        );
-
-
-                    this.elements
-                        .expandInfo
-                        .setAttribute(
-                            "aria-pressed",
-                            String(
-                                expanded
-                            )
-                        );
-
-                    this.elements
-                        .expandInfo
-                        .setAttribute(
-                            "aria-label",
-                            expanded
-                                ? "Thu nhỏ thông tin"
-                                : "Mở rộng thông tin"
-                        );
-
-
-                    this.elements
-                        .expandInfo
-                        .setAttribute(
-                            "title",
-                            expanded
-                                ? "Thu nhỏ thông tin"
-                                : "Mở rộng thông tin"
-                        );
-
-                }
-            );
-
-        this.elements.exportButton
-            ?.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    this.elements.utilityMenu.hidden =
-                        true;
-
-                    this.options.onAction?.(
-                        "export",
-                        null,
-                        this
+                this.elements.utilityToggle
+                    ?.setAttribute(
+                        "aria-expanded",
+                        "false"
                     );
 
-                }
-            );
+            }
+        );
 
-        this.elements.importButton
-            ?.addEventListener(
-                "click",
-                event => {
+        this.elements.expandTable?.addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
+                event.stopPropagation();
 
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    this.elements.utilityMenu.hidden =
-                        true;
-
-                    this.options.onAction?.(
-                        "import",
-                        null,
-                        this
+                const expanded =
+                    !this.root.classList.contains(
+                        "is-list-expanded"
                     );
 
-                }
-            );
+                this.root.classList.toggle(
+                    "is-list-expanded",
+                    expanded
+                );
 
-        this.elements.refresh
-            ?.addEventListener(
-                "click",
-                async event => {
+                this.elements.expandTable.setAttribute(
+                    "aria-pressed",
+                    String(expanded)
+                );
 
-                    event.preventDefault();
+                this.elements.expandTable.setAttribute(
+                    "aria-label",
+                    expanded
+                        ? "Thu nhỏ danh sách"
+                        : "Mở rộng danh sách"
+                );
 
-                    event.stopPropagation();
+                this.elements.expandTable.setAttribute(
+                    "title",
+                    expanded
+                        ? "Thu nhỏ danh sách"
+                        : "Mở rộng danh sách"
+                );
+            }
+        );
 
+        this.elements.expandInfo?.addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
+                event.stopPropagation();
 
-                    if (
-                        this.state.loading
-                    ) {
-                        return;
+                if (
+                    this.root.classList.contains(
+                        "is-list-expanded"
+                    )
+                ) {
+                    this.root.classList.remove(
+                        "is-list-expanded"
+                    );
+
+                    this.elements.expandTable?.setAttribute(
+                        "aria-pressed",
+                        "false"
+                    );
+
+                    if (this.elements.expandTable) {
+                        this.elements.expandTable.setAttribute(
+                            "aria-label",
+                            "Mở rộng danh sách"
+                        );
+
+                        this.elements.expandTable.setAttribute(
+                            "title",
+                            "Mở rộng danh sách"
+                        );
                     }
-
-
-                    this.elements
-                        .refresh
-                        .disabled =
-                        true;
-
-
-                    try {
-
-                        await this.load();
-
-                    } finally {
-
-                        this.elements
-                            .refresh
-                            .disabled =
-                            false;
-
-                    }
-
                 }
-            );
 
-        this.elements.filterToggle
-            ?.addEventListener(
-                "click",
-                event => {
+                const expanded =
+                    !this.root.classList.contains(
+                        "is-info-expanded"
+                    );
 
-                    event.preventDefault();
+                this.root.classList.toggle(
+                    "is-info-expanded",
+                    expanded
+                );
 
-                    event.stopPropagation();
+                this.elements.expandInfo.setAttribute(
+                    "aria-pressed",
+                    String(expanded)
+                );
 
+                this.elements.expandInfo.setAttribute(
+                    "aria-label",
+                    expanded
+                        ? "Thu nhỏ thông tin"
+                        : "Mở rộng thông tin"
+                );
 
-                    this.toggleFilterRow();
+                this.elements.expandInfo.setAttribute(
+                    "title",
+                    expanded
+                        ? "Thu nhỏ thông tin"
+                        : "Mở rộng thông tin"
+                );
+            }
+        );
 
+        this.elements.exportButton?.addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                this.elements.utilityMenu.hidden = true;
+
+                this.options.onAction?.(
+                    "export",
+                    null,
+                    this
+                );
+            }
+        );
+
+        this.elements.importButton?.addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                this.elements.utilityMenu.hidden = true;
+
+                this.options.onAction?.(
+                    "import",
+                    null,
+                    this
+                );
+            }
+        );
+
+        this.elements.refresh?.addEventListener(
+            "click",
+            async event => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                if (this.state.loading) {
+                    return;
                 }
-            );
+
+                this.elements.refresh.disabled = true;
+
+                try {
+                    await this.load();
+                } finally {
+                    this.elements.refresh.disabled = false;
+                }
+            }
+        );
+
+        this.elements.filterToggle?.addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                this.toggleFilterRow();
+            }
+        );
 
         this.root.addEventListener(
             "input",
             event => {
-
-                const filter =
-                    event.target.closest(
-                        "[data-filter-key]"
-                    );
-
+                const filter = event.target.closest(
+                    "[data-filter-key]"
+                );
 
                 if (!filter) {
                     return;
                 }
 
-
                 this.state.filters[
-                    filter.dataset
-                        .filterKey
-                ] =
-                    filter.value;
+                    filter.dataset.filterKey
+                ] = filter.value;
 
-
-                this.state.page =
-                    1;
-
+                this.state.page = 1;
 
                 this.applyState();
-
             }
         );
 
         this.root.addEventListener(
             "change",
             event => {
-
-                const filter =
-                    event.target.closest(
-                        "[data-filter-key]"
-                    );
-
+                const filter = event.target.closest(
+                    "[data-filter-key]"
+                );
 
                 if (!filter) {
                     return;
                 }
 
-
                 this.state.filters[
-                    filter.dataset
-                        .filterKey
-                ] =
-                    filter.value;
+                    filter.dataset.filterKey
+                ] = filter.value;
 
-
-                this.state.page =
-                    1;
-
+                this.state.page = 1;
 
                 this.applyState();
-
             }
         );
 
-        this.elements.clearFilters
-            ?.addEventListener(
-                "click",
-                event => {
+        this.elements.clearFilters?.addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
+                event.stopPropagation();
 
-                    event.preventDefault();
+                this.clearFilters();
+            }
+        );
 
-                    event.stopPropagation();
+        this.elements.overlay?.addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
 
+                this.detailPanel.close();
+            }
+        );
 
-                    this.clearFilters();
-
-                }
-            );
-
-        this.elements.overlay
-            ?.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-
-                    this.detailPanel
-                        .close();
-                }
-            );
-
-        this.handleWindowResize =
-            this.debounce(
-                () => {
-
-                    this.syncResponsiveState();
-
-                },
-                120
-            );
+        this.handleWindowResize = this.debounce(
+            () => {
+                this.syncResponsiveState();
+            },
+            120
+        );
 
         window.addEventListener(
             "resize",
@@ -958,203 +574,110 @@ class MCSCatalog {
 
     async initialize() {
         await this.load();
-        if (
-            this.detailPanel
-                .isMobile()
-        ) {
-            this.detailPanel
-                .close();
-        } else if (
-            !this.options
-                .viewOnly
-        ) {
+
+        if (this.detailPanel.isMobile()) {
+            this.detailPanel.close();
+        } else if (!this.options.viewOnly) {
             this.openCreate();
         }
+
         return this;
     }
 
     initializeDefaultDetail() {
-        if (
-            this.detailPanel
-                .isMobile()
-        ) {
-            this.detailPanel
-                .close();
-            this.table
-                .clearSelection();
-            this.state
-                .selectedId =
-                null;
+        if (this.detailPanel.isMobile()) {
+            this.detailPanel.close();
+            this.table.clearSelection();
+            this.state.selectedId = null;
+
             return;
         }
-        if (
-            this.options
-                .viewOnly
-        ) {
-            this.table
-                .clearSelection();
-            this.state
-                .selectedId =
-                null;
-            this.form
-                .clear();
-            this.form
-                .setMode(
-                    "view"
-                );
+
+        if (this.options.viewOnly) {
+            this.table.clearSelection();
+            this.state.selectedId = null;
+            this.form.clear();
+            this.form.setMode("view");
+
             return;
         }
+
         this.openCreate();
     }
 
     syncResponsiveState() {
-
-        const isMobile =
-            this.detailPanel
-                .isMobile();
-
+        const isMobile = this.detailPanel.isMobile();
 
         if (
             isMobile ===
             this.lastIsMobile
         ) {
-
             return;
-
         }
 
-        this.lastIsMobile =
-            isMobile;
+        this.lastIsMobile = isMobile;
 
-        if (
-            isMobile
-        ) {
+        if (isMobile) {
+            this.root.classList.remove(
+                "is-list-expanded",
+                "is-info-expanded"
+            );
 
-            this.root
-                .classList
-                .remove(
-                    "is-list-expanded",
-                    "is-info-expanded"
+            this.elements.expandTable?.setAttribute(
+                "aria-pressed",
+                "false"
+            );
+
+            this.elements.expandInfo?.setAttribute(
+                "aria-pressed",
+                "false"
+            );
+
+            if (this.elements.detailRoot) {
+                this.elements.detailRoot.classList.remove(
+                    "is-open",
+                    "is-expanded"
                 );
 
+                this.elements.detailRoot.hidden = true;
 
-            this.elements
-                .expandTable
-                ?.setAttribute(
-                    "aria-pressed",
-                    "false"
-                );
-
-
-            this.elements
-                .expandInfo
-                ?.setAttribute(
-                    "aria-pressed",
-                    "false"
-                );
-
-
-            if (
-                this.elements
-                    .detailRoot
-            ) {
-
-                this.elements
-                    .detailRoot
-                    .classList
-                    .remove(
-                        "is-open",
-                        "is-expanded"
-                    );
-
-
-                this.elements
-                    .detailRoot
-                    .hidden =
-                    true;
-
-
-                this.elements
-                    .detailRoot
-                    .dataset
-                    .panelMode =
-                    "closed";
-
+                this.elements.detailRoot.dataset.panelMode = "closed";
             }
 
-
-            document.body
-                .classList
-                .remove(
-                    "catalog-panel-open"
-                );
-
-
-            return;
-
-        }
-
-        if (
-            this.elements
-                .detailRoot
-        ) {
-
-            this.elements
-                .detailRoot
-                .hidden =
-                false;
-
-
-            this.elements
-                .detailRoot
-                .classList
-                .add(
-                    "is-open"
-                );
-
-
-            this.elements
-                .detailRoot
-                .dataset
-                .panelMode =
-                this.detailPanel
-                    .mode;
-
-        }
-
-
-        document.body
-            .classList
-            .remove(
+            document.body.classList.remove(
                 "catalog-panel-open"
             );
 
+            return;
+        }
+
+        if (this.elements.detailRoot) {
+            this.elements.detailRoot.hidden = false;
+
+            this.elements.detailRoot.classList.add(
+                "is-open"
+            );
+
+            this.elements.detailRoot.dataset.panelMode =
+                this.detailPanel.mode;
+        }
+
+        document.body.classList.remove(
+            "catalog-panel-open"
+        );
+
         if (
-            !this.options
-                .viewOnly &&
-            this.detailPanel
-                .mode ===
-                "view" &&
-            this.state
-                .selectedId ===
-                null
+            !this.options.viewOnly &&
+            this.detailPanel.mode === "view" &&
+            this.state.selectedId === null
         ) {
             this.openCreate();
         }
-
     }
 
     toggleFilterRow() {
-
-        const filterRow =
-            this.elements
-                .filterRow;
-
-
-        const button =
-            this.elements
-                .filterToggle;
-
+        const filterRow = this.elements.filterRow;
+        const button = this.elements.filterToggle;
 
         if (
             !filterRow ||
@@ -1163,412 +686,238 @@ class MCSCatalog {
             return;
         }
 
+        const willOpen = filterRow.hidden;
 
-        const willOpen =
-            filterRow.hidden;
-
-
-        filterRow.hidden =
-            !willOpen;
-
+        filterRow.hidden = !willOpen;
 
         button.classList.toggle(
             "is-active",
             willOpen
         );
 
-
         button.setAttribute(
             "aria-expanded",
             String(willOpen)
         );
 
-
         if (this.elements.filterToggleLabel) {
-
             this.elements.filterToggleLabel.textContent =
                 willOpen
                     ? "Đóng tìm kiếm chi tiết"
                     : "Tìm kiếm chi tiết";
-
         }
 
-
         if (this.elements.utilityMenu) {
-
-            this.elements.utilityMenu.hidden =
-                true;
+            this.elements.utilityMenu.hidden = true;
 
             this.elements.utilityToggle?.setAttribute(
                 "aria-expanded",
                 "false"
             );
-
         }
 
-
         if (willOpen) {
-
             filterRow
                 .querySelector(
                     "input, select"
                 )
                 ?.focus();
-
         }
-
     }
 
-
     async load() {
-
-        if (
-            !this.options
-                .endpoints
-                .list
-        ) {
-
+        if (!this.options.endpoints.list) {
             throw new Error(
                 "Chưa cấu hình API danh sách."
             );
-
         }
 
-
-        this.setLoading(
-            true
-        );
-
+        this.setLoading(true);
 
         try {
+            this.options.onBeforeLoad?.(
+                this
+            );
 
-            this.options
-                .onBeforeLoad?.(
-                    this
+            const result = await window.MCS.api.request(
+                this.options.endpoints.list
+            );
+
+            const mapped = this.options.mapListResponse(
+                result
+            );
+
+            const list = Array.isArray(mapped)
+                ? mapped
+                : (
+                    mapped?.items ||
+                    mapped?.data ||
+                    []
                 );
 
+            this.state.allData = Array.isArray(list)
+                ? list.filter(record => {
+                    if (
+                        !record ||
+                        typeof record !== "object"
+                    ) {
+                        return false;
+                    }
 
-            const result =
-                await window.MCS.api
-                    .request(
-                        this.options
-                            .endpoints
-                            .list
+                    const id = record[
+                        this.options.rowKey
+                    ];
+
+                    return (
+                        id !== null &&
+                        id !== undefined &&
+                        id !== ""
                     );
-
-
-            const mapped =
-                this.options
-                    .mapListResponse(
-                        result
-                    );
-
-
-            const list =
-                Array.isArray(mapped)
-                    ? mapped
-                    : (
-                        mapped?.items ||
-                        mapped?.data ||
-                        []
-                    );
-
-
-            this.state.allData =
-                Array.isArray(list)
-                    ? list.filter(
-                        record => {
-
-                            if (
-                                !record ||
-                                typeof record !==
-                                    "object"
-                            ) {
-                                return false;
-                            }
-
-
-                            const id =
-                                record[
-                                    this.options
-                                        .rowKey
-                                ];
-
-
-                            return (
-                                id !== null &&
-                                id !== undefined &&
-                                id !== ""
-                            );
-
-                        }
-                    )
-                    : [];
-
+                })
+                : [];
 
             this.applyState();
 
-
-            this.options
-                .onAfterLoad?.(
-                    this.state
-                        .allData,
-                    this
-                );
-
+            this.options.onAfterLoad?.(
+                this.state.allData,
+                this
+            );
         } catch (error) {
+            window.MCS.toast?.error(
+                error.message ||
+                "Không thể tải dữ liệu."
+            );
 
-            window.MCS.toast
-                ?.error(
-                    error.message ||
-                    "Không thể tải dữ liệu."
-                );
-
-
-            this.state.allData =
-                [];
-
+            this.state.allData = [];
 
             this.applyState();
-
 
             throw error;
-
         } finally {
-
-            this.setLoading(
-                false
-            );
-
+            this.setLoading(false);
         }
-
     }
 
-
     applyState() {
-
         let data = [
-            ...this.state
-                .allData
+            ...this.state.allData
         ];
 
+        data = this.applySearch(data);
+        data = this.applyFilters(data);
+        data = this.applySort(data);
 
-        data =
-            this.applySearch(
-                data
-            );
+        this.state.filteredData = data;
 
+        const totalPages = Math.max(
+            1,
+            Math.ceil(
+                data.length /
+                this.state.pageSize
+            )
+        );
 
-        data =
-            this.applyFilters(
-                data
-            );
-
-
-        data =
-            this.applySort(
-                data
-            );
-
-
-        this.state.filteredData =
-            data;
-
-
-        const totalPages =
+        this.state.page = Math.min(
             Math.max(
                 1,
-                Math.ceil(
-                    data.length /
-                    this.state.pageSize
-                )
-            );
+                this.state.page
+            ),
+            totalPages
+        );
 
-
-        this.state.page =
-            Math.min(
-                Math.max(
-                    1,
-                    this.state.page
-                ),
-                totalPages
-            );
-
-
-        this.pagination
-            .setData({
-
-                page:
-                    this.state.page,
-
-                pageSize:
-                    this.state
-                        .pageSize,
-
-                total:
-                    data.length
-
-            });
-
+        this.pagination.setData({
+            page: this.state.page,
+            pageSize: this.state.pageSize,
+            total: data.length
+        });
 
         this.applyPagination();
 
-
         this.updateTotal();
-
     }
 
-
-    applySearch(
-        data
-    ) {
-
-        const keyword =
-            this.normalizeText(
-                this.state.keyword
-            );
-
+    applySearch(data) {
+        const keyword = this.normalizeText(
+            this.state.keyword
+        );
 
         if (!keyword) {
             return data;
         }
 
-
-        const searchableColumns =
-            this.options.columns
-                .filter(
-                    column =>
-                        column.searchable !==
-                        false
-                );
-
-
-        return data.filter(
-            record => {
-
-                return searchableColumns
-                    .some(
-                        column => {
-
-                            const value =
-                                this.resolveValue(
-                                    record,
-                                    column.key
-                                );
-
-
-                            return this
-                                .normalizeText(
-                                    value
-                                )
-                                .includes(
-                                    keyword
-                                );
-
-                        }
-                    );
-
-            }
+        const searchableColumns = this.options.columns.filter(
+            column =>
+                column.searchable !== false
         );
 
-    }
-
-
-    applyFilters(
-        data
-    ) {
-
-        const filters =
-            Object.entries(
-                this.state.filters
-            )
-                .filter(
-                    ([
-                        ,
-                        value
-                    ]) =>
-                        (
-                            value !== "" &&
-                            value !== null &&
-                            value !== undefined
-                        )
+        return data.filter(record => {
+            return searchableColumns.some(column => {
+                const value = this.resolveValue(
+                    record,
+                    column.key
                 );
 
+                return this
+                    .normalizeText(value)
+                    .includes(keyword);
+            });
+        });
+    }
 
-        if (
-            filters.length === 0
-        ) {
+    applyFilters(data) {
+        const filters = Object.entries(
+            this.state.filters
+        ).filter(([
+            ,
+            value
+        ]) =>
+            (
+                value !== "" &&
+                value !== null &&
+                value !== undefined
+            )
+        );
+
+        if (filters.length === 0) {
             return data;
         }
 
-
-        return data.filter(
-            record => {
-
-                return filters.every(
-                    ([
-                        key,
-                        expected
-                    ]) => {
-
-                        const actual =
-                            this.resolveValue(
-                                record,
-                                key
-                            );
-
-
-                        if (
-                            String(expected) ===
-                            "true"
-                        ) {
-
-                            return actual ===
-                                true;
-
-                        }
-
-
-                        if (
-                            String(expected) ===
-                            "false"
-                        ) {
-
-                            return actual ===
-                                false;
-
-                        }
-
-
-                        return this
-                            .normalizeText(
-                                actual
-                            )
-                            .includes(
-                                this.normalizeText(
-                                    expected
-                                )
-                            );
-
-                    }
+        return data.filter(record => {
+            return filters.every(([
+                key,
+                expected
+            ]) => {
+                const actual = this.resolveValue(
+                    record,
+                    key
                 );
 
-            }
-        );
+                if (
+                    String(expected) === "true"
+                ) {
+                    return actual === true;
+                }
 
+                if (
+                    String(expected) === "false"
+                ) {
+                    return actual === false;
+                }
+
+                return this
+                    .normalizeText(actual)
+                    .includes(
+                        this.normalizeText(expected)
+                    );
+            });
+        });
     }
 
-
-    applySort(
-        data
-    ) {
-
+    applySort(data) {
         const {
             key,
             direction
-        } =
-            this.state.sort;
-
+        } = this.state.sort;
 
         if (
             !key ||
@@ -1577,49 +926,34 @@ class MCSCatalog {
             return data;
         }
 
-
         return [
             ...data
-        ].sort(
-            (
+        ].sort((
+            first,
+            second
+        ) => {
+            const firstValue = this.resolveValue(
                 first,
-                second
-            ) => {
+                key
+            );
 
-                const firstValue =
-                    this.resolveValue(
-                        first,
-                        key
-                    );
+            const secondValue = this.resolveValue(
+                second,
+                key
+            );
 
+            const result = this.compareValues(
+                firstValue,
+                secondValue
+            );
 
-                const secondValue =
-                    this.resolveValue(
-                        second,
-                        key
-                    );
-
-
-                const result =
-                    this.compareValues(
-                        firstValue,
-                        secondValue
-                    );
-
-
-                return direction ===
-                    "asc"
-                    ? result
-                    : -result;
-
-            }
-        );
-
+            return direction === "asc"
+                ? result
+                : -result;
+        });
     }
 
-
     applyPagination() {
-
         const start =
             (
                 this.state.page -
@@ -1627,692 +961,412 @@ class MCSCatalog {
             ) *
             this.state.pageSize;
 
-
         const end =
             start +
             this.state.pageSize;
 
-
         this.state.visibleData =
-            this.state.filteredData
-                .slice(
-                    start,
-                    end
-                );
+            this.state.filteredData.slice(
+                start,
+                end
+            );
 
-
-        this.table.options.offset =
-            start;
-
+        this.table.options.offset = start;
 
         this.table.setData(
-            this.state
-                .visibleData
+            this.state.visibleData
         );
 
-
         if (
-            this.state
-                .selectedId !== null
+            this.state.selectedId !== null
         ) {
-
             this.table.selectRow(
-                this.state
-                    .selectedId
+                this.state.selectedId
             );
-
         }
-
     }
 
-
-    async openDetail(
-        id
-    ) {
-
-        const record =
-            await this.getDetail(
-                id
-            );
-
+    async openDetail(id) {
+        const record = await this.getDetail(id);
 
         if (!record) {
             return;
         }
 
+        this.state.selectedId = id;
 
-        this.state.selectedId =
-            id;
+        this.table.selectRow(id);
 
+        this.form.setMode("view");
 
-        this.table
-            .selectRow(
-                id
-            );
+        this.form.setData(
+            this.mapRecordToForm(record)
+        );
 
+        this.detailPanel.showForm({
+            mode: "view",
+            record,
 
-        this.form
-            .setMode(
-                "view"
-            );
+            title:
+                this.options.detailTitle ||
+                "Thông tin chi tiết",
 
+            subtitle:
+                this.getRecordSubtitle(record)
+        });
 
-        this.form
-            .setData(
-                this.mapRecordToForm(
-                    record
-                )
-            );
-
-
-        this.detailPanel
-            .showForm({
-
-                mode:
-                    "view",
-
-                record,
-
-                title:
-                    this.options
-                        .detailTitle ||
-                    "Thông tin chi tiết",
-
-                subtitle:
-                    this.getRecordSubtitle(
-                        record
-                    )
-
-            });
-
-
-        this.options
-            .onRecordLoaded?.(
-                record,
-                "view",
-                this
-            );
-
+        this.options.onRecordLoaded?.(
+            record,
+            "view",
+            this
+        );
     }
-
 
     openCreate() {
-        if (
-            this.options
-                .viewOnly
-        ) {
+        if (this.options.viewOnly) {
             return;
         }
+
         this.state.selectedId = null;
+
         this.table.clearSelection();
+
         this.form.clear();
+
         this.form.setMode("create");
+
         this.form.setData(
-                this.options
-                    .defaultValues ||
-                {
-                    active:
-                        true
-                }
-            );
-
-        this.detailPanel
-            .showForm({
-
-                mode:
-                    "create",
-
-                record:
-                    null,
-
-                title:
-                    this.options
-                        .createTitle ||
-                    "Thêm mới",
-
-                subtitle:
-                    ""
-
-            });
-
-
-        this.options
-            .onRecordLoaded?.(
-                null,
-                "create",
-                this
-            );
-
-    }
-
-
-    async openUpdate(
-        id
-    ) {
-        if (
-            this.options
-                .viewOnly
-        ) {
-            return;
-        }
-        const record =
-            await this.getDetail(
-                id
-            );
-
-        if (!record) {
-            return;
-        }
-
-        this.state.selectedId =
-            id;
-
-        this.table
-            .selectRow(
-                id
-            );
-
-        this.form
-            .setMode(
-                "update"
-            );
-
-        this.form
-            .setData(
-                this.mapRecordToForm(
-                    record
-                )
-            );
-
-        this.detailPanel
-            .showForm({
-
-                mode:
-                    "update",
-
-                record,
-
-                title:
-                    this.options
-                        .updateTitle ||
-                    "Cập nhật",
-
-                subtitle:
-                    this.getRecordSubtitle(
-                        record
-                    )
-            });
-
-        this.options
-            .onRecordLoaded?.(
-                record,
-                "update",
-                this
-            );
-
-    }
-
-
-    async getDetail(
-        id
-    ) {
-
-        const local =
-            this.state.allData
-                .find(
-                    item =>
-                        String(
-                            item[
-                                this.options
-                                    .rowKey
-                            ]
-                        ) ===
-                        String(id)
-                );
-
-
-        if (
-            !this.options
-                .endpoints
-                .detail
-        ) {
-
-            return local || null;
-
-        }
-
-
-        this.setLoading(
-            true
-        );
-
-
-        try {
-
-            const url =
-                this.options
-                    .buildDetailUrl(
-                        this.options
-                            .endpoints
-                            .detail,
-                        id
-                    );
-
-
-            const result =
-                await window.MCS.api
-                    .request(
-                        url
-                    );
-
-
-            return this.options
-                .mapDetailResponse(
-                    result
-                );
-
-        } catch (error) {
-
-            window.MCS.toast
-                ?.error(
-                    error.message ||
-                    "Không thể lấy chi tiết dữ liệu."
-                );
-
-
-            return null;
-
-        } finally {
-
-            this.setLoading(
-                false
-            );
-
-        }
-
-    }
-
-    hasFile(
-        data
-    ) {
-
-        if (
-            !data ||
-            typeof data !==
-                "object"
-        ) {
-
-            return false;
-
-        }
-
-
-        return Object.values(
-            data
-        ).some(
-            value =>
-                value instanceof
-                    File ||
-                (
-                    Array.isArray(
-                        value
-                    ) &&
-                    value.some(
-                        item =>
-                            item instanceof
-                            File
-                    )
-                )
-        );
-
-    }
-
-    buildRequestBody(
-        data
-    ) {
-
-        if (
-            data instanceof
-            FormData
-        ) {
-
-            return data;
-
-        }
-
-
-        if (
-            !this.hasFile(
-                data
-            )
-        ) {
-
-            return JSON.stringify(
-                data
-            );
-
-        }
-
-
-        const body =
-            new FormData();
-
-
-        Object.entries(
-            data
-        ).forEach(
-            ([
-                key,
-                value
-            ]) => {
-
-                if (
-                    value ===
-                        undefined ||
-                    value ===
-                        null
-                ) {
-
-                    return;
-
-                }
-
-
-                if (
-                    value instanceof
-                    File
-                ) {
-
-                    body.append(
-                        key,
-                        value
-                    );
-
-                    return;
-
-                }
-
-
-                if (
-                    Array.isArray(
-                        value
-                    )
-                ) {
-
-                    value.forEach(
-                        item => {
-
-                            body.append(
-                                key,
-                                String(
-                                    item
-                                )
-                            );
-
-                        }
-                    );
-
-                    return;
-
-                }
-
-
-                body.append(
-                    key,
-                    String(
-                        value
-                    )
-                );
-
+            this.options.defaultValues ||
+            {
+                active: true
             }
         );
 
-        return body;
+        this.detailPanel.showForm({
+            mode: "create",
+            record: null,
 
+            title:
+                this.options.createTitle ||
+                "Thêm mới",
+
+            subtitle: ""
+        });
+
+        this.options.onRecordLoaded?.(
+            null,
+            "create",
+            this
+        );
+    }
+
+    async openUpdate(id) {
+        if (this.options.viewOnly) {
+            return;
+        }
+
+        const record = await this.getDetail(id);
+
+        if (!record) {
+            return;
+        }
+
+        this.state.selectedId = id;
+
+        this.table.selectRow(id);
+
+        this.form.setMode("update");
+
+        this.form.setData(
+            this.mapRecordToForm(record)
+        );
+
+        this.detailPanel.showForm({
+            mode: "update",
+            record,
+
+            title:
+                this.options.updateTitle ||
+                "Cập nhật",
+
+            subtitle:
+                this.getRecordSubtitle(record)
+        });
+
+        this.options.onRecordLoaded?.(
+            record,
+            "update",
+            this
+        );
+    }
+
+    async getDetail(id) {
+        const local = this.state.allData.find(
+            item =>
+                String(
+                    item[
+                        this.options.rowKey
+                    ]
+                ) ===
+                String(id)
+        );
+
+        if (!this.options.endpoints.detail) {
+            return local || null;
+        }
+
+        this.setLoading(true);
+
+        try {
+            const url = this.options.buildDetailUrl(
+                this.options.endpoints.detail,
+                id
+            );
+
+            const result = await window.MCS.api.request(
+                url
+            );
+
+            return this.options.mapDetailResponse(
+                result
+            );
+        } catch (error) {
+            window.MCS.toast?.error(
+                error.message ||
+                "Không thể lấy chi tiết dữ liệu."
+            );
+
+            return null;
+        } finally {
+            this.setLoading(false);
+        }
+    }
+
+    hasFile(data) {
+        if (
+            !data ||
+            typeof data !== "object"
+        ) {
+            return false;
+        }
+
+        return Object.values(data).some(
+            value =>
+                value instanceof File ||
+                (
+                    Array.isArray(value) &&
+                    value.some(
+                        item =>
+                            item instanceof File
+                    )
+                )
+        );
+    }
+
+    buildRequestBody(data) {
+        if (
+            data instanceof FormData
+        ) {
+            return data;
+        }
+
+        if (!this.hasFile(data)) {
+            return JSON.stringify(data);
+        }
+
+        const body = new FormData();
+
+        Object.entries(data).forEach(([
+            key,
+            value
+        ]) => {
+            if (
+                value === undefined ||
+                value === null
+            ) {
+                return;
+            }
+
+            if (
+                value instanceof File
+            ) {
+                body.append(
+                    key,
+                    value
+                );
+
+                return;
+            }
+
+            if (
+                Array.isArray(value)
+            ) {
+                value.forEach(item => {
+                    body.append(
+                        key,
+                        String(item)
+                    );
+                });
+
+                return;
+            }
+
+            body.append(
+                key,
+                String(value)
+            );
+        });
+
+        return body;
     }
 
     async submitForm(
         data,
         form
     ) {
-
-        const mode =
-            form.options.mode;
-
+        const mode = form.options.mode;
 
         const isCreate =
-            mode ===
-            "create";
+            mode === "create";
 
-
-        const id =
-            this.state
-                .selectedId;
-
+        const id = this.state.selectedId;
 
         let url;
-
-
         let method;
 
-
         if (isCreate) {
+            url = this.options.endpoints.create;
 
-            url =
-                this.options
-                    .endpoints
-                    .create;
-
-
-            method =
-                "POST";
-
+            method = "POST";
         } else {
-
             if (
                 id === null ||
                 id === undefined
             ) {
-
                 throw new Error(
                     "Chưa chọn dữ liệu cần cập nhật."
                 );
-
             }
 
+            url = this.options.buildUpdateUrl(
+                this.options.endpoints.update,
+                id
+            );
 
-            url =
-                this.options
-                    .buildUpdateUrl(
-                        this.options
-                            .endpoints
-                            .update,
-                        id
-                    );
-
-
-            method =
-                "PATCH";
-
+            method = "PATCH";
         }
 
-
         if (!url) {
-
             throw new Error(
                 "Chưa cấu hình API lưu dữ liệu."
             );
-
         }
 
-
         try {
+            const result = await window.MCS.api.request(
+                url,
+                {
+                    method,
 
-            const result =
-                await window.MCS.api
-                    .request(
-                        url,
-                        {
-                            method,
-
-                            body:
-                                this.buildRequestBody(
-                                    data
-                                )
-                        }
-                    );
-
+                    body:
+                        this.buildRequestBody(data)
+                }
+            );
 
             const saved =
                 result?.data ||
                 null;
 
-
-            window.MCS.toast
-                ?.success(
-                    result?.message ||
-                    (
-                        isCreate
-                            ? "Thêm dữ liệu thành công."
-                            : "Cập nhật dữ liệu thành công."
-                    )
-                );
-
+            window.MCS.toast?.success(
+                result?.message ||
+                (
+                    isCreate
+                        ? "Thêm dữ liệu thành công."
+                        : "Cập nhật dữ liệu thành công."
+                )
+            );
 
             await this.load();
 
-
             this.initializeDefaultDetail();
 
-
             return saved;
-
         } catch (error) {
-
-            let handled =
-                false;
-
+            let handled = false;
 
             if (
-                typeof this.options
-                    .onSubmitError ===
-                    "function"
+                typeof this.options.onSubmitError ===
+                "function"
             ) {
-
                 handled =
-                    this.options
-                        .onSubmitError(
-                            error,
-                            {
-                                mode,
-                                id,
-                                form,
-                                catalog:
-                                    this
-                            }
-                        ) ===
-                        true;
-
+                    this.options.onSubmitError(
+                        error,
+                        {
+                            mode,
+                            id,
+                            form,
+                            catalog: this
+                        }
+                    ) === true;
             }
 
-
-            if (
-                !handled
-            ) {
-
-                window.MCS.toast
-                    ?.error(
-                        error?.message ||
-                        "Không thể lưu dữ liệu."
-                    );
-
+            if (!handled) {
+                window.MCS.toast?.error(
+                    error?.message ||
+                    "Không thể lưu dữ liệu."
+                );
             }
-
 
             throw error;
-
         }
-
     }
-    
+
     cancelForm() {
+        if (this.form.isDirty) {
+            window.MCS.confirm?.show({
+                title: "Hủy thay đổi",
 
-        if (
-            this.form.isDirty
-        ) {
+                message:
+                    "Dữ liệu chưa được lưu. Bạn có chắc chắn muốn hủy thay đổi không?",
 
-            window.MCS.confirm
-                ?.show({
+                confirmLabel:
+                    "Hủy thay đổi",
 
-                    title:
-                        "Hủy thay đổi",
+                type:
+                    "danger",
 
-                    message:
-                        "Dữ liệu chưa được lưu. Bạn có chắc chắn muốn hủy thay đổi không?",
-
-                    confirmLabel:
-                        "Hủy thay đổi",
-
-                    type:
-                        "danger",
-
-                    onConfirm:
-                        () =>
-                            this.finishCancel()
-
-                });
-
+                onConfirm: () =>
+                    this.finishCancel()
+            });
 
             return;
-
         }
 
-
         this.finishCancel();
-
     }
 
-
     finishCancel() {
-
         this.initializeDefaultDetail();
-
     }
 
     async handleAction(
         action,
         id
     ) {
-
-        switch (
-            action
-        ) {
+        switch (action) {
             case "view":
-
-                await this.openDetail(
-                    id
-                );
+                await this.openDetail(id);
 
                 break;
 
-
             case "edit":
-
-                if (
-                    !this.options
-                        .viewOnly
-                ) {
-
-                    await this.openUpdate(
-                        id
-                    );
-
+                if (!this.options.viewOnly) {
+                    await this.openUpdate(id);
                 }
 
                 break;
-                
-            case "lock":
 
+            case "lock":
                 await this.confirmActiveChange(
                     id,
                     false
@@ -2321,7 +1375,6 @@ class MCSCatalog {
                 break;
 
             case "unlock":
-
                 await this.confirmActiveChange(
                     id,
                     true
@@ -2329,140 +1382,90 @@ class MCSCatalog {
 
                 break;
 
-
             default:
-
-                this.options
-                    .onAction?.(
-                        action,
-                        id,
-                        this
-                    );
-
+                this.options.onAction?.(
+                    action,
+                    id,
+                    this
+                );
         }
-
     }
 
     async confirmActiveChange(
         id,
         active
     ) {
+        window.MCS.confirm?.show({
+            title:
+                active
+                    ? "Mở khóa dữ liệu"
+                    : "Khóa dữ liệu",
 
-        window.MCS.confirm
-            ?.show({
+            message:
+                active
+                    ? "Bạn có chắc chắn muốn mở khóa dữ liệu này không?"
+                    : "Bạn có chắc chắn muốn khóa dữ liệu này không?",
 
-                title:
-                    active
-                        ? "Mở khóa dữ liệu"
-                        : "Khóa dữ liệu",
+            confirmLabel:
+                active
+                    ? "Mở khóa"
+                    : "Khóa",
 
-                message:
-                    active
-                        ? "Bạn có chắc chắn muốn mở khóa dữ liệu này không?"
-                        : "Bạn có chắc chắn muốn khóa dữ liệu này không?",
+            type:
+                active
+                    ? "primary"
+                    : "danger",
 
-                confirmLabel:
-                    active
-                        ? "Mở khóa"
-                        : "Khóa",
+            onConfirm: async () => {
+                const url = this.options.buildUpdateUrl(
+                    this.options.endpoints.update,
+                    id
+                );
 
-                type:
-                    active
-                        ? "primary"
-                        : "danger",
+                const result = await window.MCS.api.request(
+                    url,
+                    {
+                        method: "PATCH",
 
-                onConfirm:
-                    async () => {
-
-                        const url =
-                            this.options
-                                .buildUpdateUrl(
-                                    this.options
-                                        .endpoints
-                                        .update,
-                                    id
-                                );
-
-
-                        const result =
-                            await window.MCS.api
-                                .request(
-                                    url,
-                                    {
-
-                                        method:
-                                            "PATCH",
-
-                                        body:
-                                            JSON.stringify({
-                                                active
-                                            })
-
-                                    }
-                                );
-
-
-                        window.MCS.toast
-                            ?.success(
-                                result?.message ||
-                                (
-                                    active
-                                        ? "Mở khóa thành công."
-                                        : "Khóa thành công."
-                                )
-                            );
-
-
-                        await this.load();
-
-
-                        await this.openDetail(
-                            id
-                        );
-
+                        body:
+                            JSON.stringify({
+                                active
+                            })
                     }
+                );
 
-            });
+                window.MCS.toast?.success(
+                    result?.message ||
+                    (
+                        active
+                            ? "Mở khóa thành công."
+                            : "Khóa thành công."
+                    )
+                );
 
+                await this.load();
+
+                await this.openDetail(id);
+            }
+        });
     }
-
 
     clearFilters() {
-
-        this.state.filters =
-            {};
-
+        this.state.filters = {};
 
         this.root
-            .querySelectorAll(
-                "[data-filter-key]"
-            )
-            .forEach(
-                field => {
+            .querySelectorAll("[data-filter-key]")
+            .forEach(field => {
+                field.value = "";
+            });
 
-                    field.value =
-                        "";
-
-                }
-            );
-
-
-        this.state.page =
-            1;
-
+        this.state.page = 1;
 
         this.applyState();
-
     }
 
-
-    setLoading(
-        loading
-    ) {
-
-        this.state.loading =
-            loading;
-
+    setLoading(loading) {
+        this.state.loading = loading;
 
         this.table[
             loading
@@ -2470,24 +1473,16 @@ class MCSCatalog {
                 : "hideLoading"
         ]();
 
-
         this.root.classList.toggle(
             "is-loading",
             loading
         );
-
     }
 
-
     updateTotal() {
-
-        if (
-            !this.elements
-                .total
-        ) {
+        if (!this.elements.total) {
             return;
         }
-
 
         this.elements.total.textContent =
             `${
@@ -2496,56 +1491,34 @@ class MCSCatalog {
                         "vi-VN"
                     )
                     .format(
-                        this.state
-                            .filteredData
-                            .length
+                        this.state.filteredData.length
                     )
             } bản ghi`;
-
     }
 
-
-    mapRecordToForm(
-        record
-    ) {
-
+    mapRecordToForm(record) {
         if (
-            typeof this.options
-                .mapRecordToForm ===
-                "function"
+            typeof this.options.mapRecordToForm ===
+            "function"
         ) {
-
-            return this.options
-                .mapRecordToForm(
-                    record,
-                    this
-                );
-
+            return this.options.mapRecordToForm(
+                record,
+                this
+            );
         }
-
 
         return record;
-
     }
 
-
-    getRecordSubtitle(
-        record
-    ) {
-
+    getRecordSubtitle(record) {
         if (
-            typeof this.options
-                .getRecordSubtitle ===
-                "function"
+            typeof this.options.getRecordSubtitle ===
+            "function"
         ) {
-
-            return this.options
-                .getRecordSubtitle(
-                    record
-                );
-
+            return this.options.getRecordSubtitle(
+                record
+            );
         }
-
 
         return (
             record?.ma ||
@@ -2554,19 +1527,15 @@ class MCSCatalog {
             record?.maChucVu ||
             ""
         );
-
     }
-
 
     resolveValue(
         object,
         path
     ) {
-
         if (!path) {
             return undefined;
         }
-
 
         return String(path)
             .split(".")
@@ -2578,41 +1547,30 @@ class MCSCatalog {
                     value?.[key],
                 object
             );
-
     }
 
-
-    normalizeText(
-        value
-    ) {
-
+    normalizeText(value) {
         return String(
             value ?? ""
         )
-            .normalize(
-                "NFD"
-            )
+            .normalize("NFD")
             .replace(
                 /[\u0300-\u036f]/g,
                 ""
             )
             .toLowerCase()
             .trim();
-
     }
-
 
     compareValues(
         first,
         second
     ) {
-
         if (
             first === second
         ) {
             return 0;
         }
-
 
         if (
             first === null ||
@@ -2621,7 +1579,6 @@ class MCSCatalog {
             return 1;
         }
 
-
         if (
             second === null ||
             second === undefined
@@ -2629,87 +1586,59 @@ class MCSCatalog {
             return -1;
         }
 
-
         if (
-            typeof first ===
-                "number" &&
-            typeof second ===
-                "number"
+            typeof first === "number" &&
+            typeof second === "number"
         ) {
-
             return (
                 first -
                 second
             );
-
         }
 
-
         if (
-            typeof first ===
-                "boolean" &&
-            typeof second ===
-                "boolean"
+            typeof first === "boolean" &&
+            typeof second === "boolean"
         ) {
-
             return (
                 Number(first) -
                 Number(second)
             );
-
         }
-
 
         return String(first)
             .localeCompare(
                 String(second),
                 "vi",
                 {
-
-                    sensitivity:
-                        "base",
-
-                    numeric:
-                        true
-
+                    sensitivity: "base",
+                    numeric: true
                 }
             );
-
     }
-
 
     debounce(
         callback,
         delay
     ) {
-
         let timeout;
-
 
         return (
             ...args
         ) => {
-
             window.clearTimeout(
                 timeout
             );
 
-
-            timeout =
-                window.setTimeout(
-                    () =>
-                        callback(
-                            ...args
-                        ),
-                    delay
-                );
-
+            timeout = window.setTimeout(
+                () =>
+                    callback(
+                        ...args
+                    ),
+                delay
+            );
         };
-
     }
-
 }
 
-
-window.MCS.catalog.Catalog =
-    MCSCatalog;
+window.MCS.catalog.Catalog = MCSCatalog;
