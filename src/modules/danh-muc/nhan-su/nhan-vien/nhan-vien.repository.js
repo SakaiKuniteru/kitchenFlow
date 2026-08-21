@@ -1,7 +1,6 @@
 const pool = require("../../../../config/database");
 
 class NhanVienRepository {
-
     mapNhanVien(row) {
         return {
             id: row.id,
@@ -80,9 +79,7 @@ class NhanVienRepository {
             active: row.active,
             createdAt: row.created_at,
             updatedAt: row.updated_at
-
         };
-
     }
 
     getBaseQuery() {
@@ -164,24 +161,20 @@ class NhanVienRepository {
                 ON cv.id = nv.chuc_vu_id
 
         `;
-            
     }
-    async getTongHop() {
 
+    async getTongHop() {
         const sql = `
             ${this.getBaseQuery()}
             ORDER BY nv.ma_nhan_vien ASC
         `;
-            
 
         const result = await pool.query(sql);
 
         return result.rows.map(row => this.mapNhanVien(row));
-
     }
 
     async getChiTiet(id) {
-
         const sql = `
             ${this.getBaseQuery()}
             WHERE nv.id = $1
@@ -194,13 +187,9 @@ class NhanVienRepository {
         }
 
         return this.mapNhanVien(result.rows[0]);
-
     }
 
-    async getChiTietByMa(
-        maNhanVien
-    ) {
-
+    async getChiTietByMa(maNhanVien) {
         const sql = `
             ${this.getBaseQuery()}
 
@@ -213,33 +202,23 @@ class NhanVienRepository {
             LIMIT 1
         `;
 
+        const result = await pool.query(
+            sql,
+            [
+                maNhanVien
+            ]
+        );
 
-        const result =
-            await pool.query(
-                sql,
-                [
-                    maNhanVien
-                ]
-            );
-
-
-        if (
-            result.rows.length === 0
-        ) {
-
+        if (result.rows.length === 0) {
             return null;
-
         }
-
 
         return this.mapNhanVien(
             result.rows[0]
         );
-
     }
 
     async getQuocGiaByMa(maQuocGia) {
-
         const sql = `
             SELECT
                 id,
@@ -256,14 +235,12 @@ class NhanVienRepository {
         );
 
         return result.rows[0] || null;
-
     }
 
     async getTinhThanhByMa(
         maTinhThanh,
         quocGiaId = null
     ) {
-
         let sql = `
             SELECT
                 id,
@@ -277,13 +254,11 @@ class NhanVienRepository {
         const params = [maTinhThanh];
 
         if (quocGiaId) {
-
             sql += `
                 AND quoc_gia_id = $2
             `;
 
             params.push(quocGiaId);
-
         }
 
         sql += ` LIMIT 1`;
@@ -294,14 +269,12 @@ class NhanVienRepository {
         );
 
         return result.rows[0] || null;
-
     }
 
     async getXaPhuongByMa(
         maXaPhuong,
         tinhThanhId = null
     ) {
-
         let sql = `
             SELECT
                 id,
@@ -315,13 +288,11 @@ class NhanVienRepository {
         const params = [maXaPhuong];
 
         if (tinhThanhId) {
-
             sql += `
                 AND tinh_thanh_id = $2
             `;
 
             params.push(tinhThanhId);
-
         }
 
         sql += ` LIMIT 1`;
@@ -332,11 +303,9 @@ class NhanVienRepository {
         );
 
         return result.rows[0] || null;
-
     }
 
     async getCoSoByMa(maCoSo) {
-
         const sql = `
             SELECT
                 id,
@@ -353,14 +322,12 @@ class NhanVienRepository {
         );
 
         return result.rows[0] || null;
-
     }
 
     async getPhongBanByMa(
         maPhongBan,
         coSoId = null
     ) {
-
         let sql = `
             SELECT
                 id,
@@ -374,13 +341,11 @@ class NhanVienRepository {
         const params = [maPhongBan];
 
         if (coSoId) {
-
             sql += `
                 AND co_so_id = $2
             `;
 
             params.push(coSoId);
-
         }
 
         sql += ` LIMIT 1`;
@@ -391,11 +356,9 @@ class NhanVienRepository {
         );
 
         return result.rows[0] || null;
-
     }
 
     async getChucVuByMa(maChucVu) {
-
         const sql = `
             SELECT
                 id,
@@ -412,11 +375,9 @@ class NhanVienRepository {
         );
 
         return result.rows[0] || null;
-
     }
 
     async existsQuocGia(id) {
-
         const sql = `
             SELECT id
             FROM dm_quoc_gia
@@ -430,14 +391,12 @@ class NhanVienRepository {
         );
 
         return result.rowCount > 0;
-
     }
 
     async existsTinhThanh(
         tinhThanhId,
         quocGiaId = null
     ) {
-
         let sql = `
             SELECT id
             FROM dm_tinh_thanh
@@ -448,13 +407,11 @@ class NhanVienRepository {
         const params = [tinhThanhId];
 
         if (quocGiaId) {
-
             sql += `
                 AND quoc_gia_id = $2
             `;
 
             params.push(quocGiaId);
-
         }
 
         const result = await pool.query(
@@ -463,14 +420,12 @@ class NhanVienRepository {
         );
 
         return result.rowCount > 0;
-
     }
 
     async existsXaPhuong(
         xaPhuongId,
         tinhThanhId = null
     ) {
-
         let sql = `
             SELECT id
             FROM dm_xa_phuong
@@ -481,13 +436,11 @@ class NhanVienRepository {
         const params = [xaPhuongId];
 
         if (tinhThanhId) {
-
             sql += `
                 AND tinh_thanh_id = $2
             `;
 
             params.push(tinhThanhId);
-
         }
 
         const result = await pool.query(
@@ -496,11 +449,9 @@ class NhanVienRepository {
         );
 
         return result.rowCount > 0;
-
     }
 
     async existsCoSo(id) {
-
         const sql = `
             SELECT id
             FROM dm_co_so
@@ -514,11 +465,9 @@ class NhanVienRepository {
         );
 
         return result.rowCount > 0;
-
     }
 
     async existsPhongBan(phongBanId) {
-
         const sql = `
             SELECT id
             FROM dm_phong_ban
@@ -532,11 +481,9 @@ class NhanVienRepository {
         );
 
         return result.rowCount > 0;
-
     }
 
     async existsChucVu(id) {
-
         const sql = `
             SELECT id
             FROM dm_chuc_vu
@@ -550,11 +497,9 @@ class NhanVienRepository {
         );
 
         return result.rowCount > 0;
-
     }
 
     async create(data) {
-
         const sql = `
             INSERT INTO dm_nhan_vien (
 
@@ -624,51 +569,30 @@ class NhanVienRepository {
         `;
 
         const result = await pool.query(sql, [
-
             data.maNhanVien,
-
             data.hoTen,
-
             data.ngaySinh,
-
             data.gioiTinh,
-
             data.soDienThoai,
-
             data.email,
-
             data.anhDaiDien,
-
             data.diaChi,
-
             data.ghiChu,
-
             data.maThe,
-
             data.maQr,
-
             data.maBarcode,
-
             data.quocGiaId,
-
             data.tinhThanhId,
-
             data.xaPhuongId,
-
             data.phongBanId,
-
             data.chucVuId,
-
             data.coSoId
-
         ]);
 
         return result.rows[0];
-
     }
 
     async update(id, data) {
-
         const sql = `
             UPDATE dm_nhan_vien
             SET
@@ -697,69 +621,43 @@ class NhanVienRepository {
         `;
 
         const values = [
-
             data.maNhanVien,
-
             data.hoTen,
-
             data.ngaySinh,
-
             data.gioiTinh,
-
             data.soDienThoai,
-
             data.email,
-
             data.anhDaiDien,
-
             data.diaChi,
-
             data.ghiChu,
-
             data.maThe,
-
             data.maQr,
-
             data.maBarcode,
-
             data.quocGiaId,
-
             data.tinhThanhId,
-
             data.xaPhuongId,
-
             data.phongBanId,
-
             data.chucVuId,
-
             data.coSoId,
-
             data.active,
-
             id
-
         ];
 
-        const result =
-            await pool.query(
-                sql,
-                values
-            );
+        const result = await pool.query(
+            sql,
+            values
+        );
 
         if (result.rows.length === 0) {
-
             return null;
-
         }
 
         return await this.getChiTiet(
             result.rows[0].id
         );
-
     }
 
     async existsMaNhanVien(maNhanVien, id = 0) {
-
         const sql = `
             SELECT id
             FROM dm_nhan_vien
@@ -773,11 +671,9 @@ class NhanVienRepository {
         ]);
 
         return result.rowCount > 0;
-
     }
 
     async existsPhone(phone, id) {
-
         const sql = `
             SELECT id
 
@@ -796,11 +692,9 @@ class NhanVienRepository {
         );
 
         return result.rowCount > 0;
-
     }
 
     async existsEmail(email, id) {
-
         const sql = `
             SELECT id
 
@@ -819,9 +713,7 @@ class NhanVienRepository {
         );
 
         return result.rowCount > 0;
-
     }
-    
 }
 
 module.exports = new NhanVienRepository();

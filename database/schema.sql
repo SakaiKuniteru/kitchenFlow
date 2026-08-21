@@ -356,6 +356,7 @@ CREATE TABLE dm_tai_khoan (
     nhan_vien_id INTEGER NOT NULL,
     ten_dang_nhap VARCHAR(100) NOT NULL,
     mat_khau_hash TEXT NOT NULL,
+    so_lan_dang_nhap INTEGER DEFAULT 0 NOT NULL,
     so_lan_dang_nhap_sai SMALLINT DEFAULT 0 NOT NULL,
     khoa_den TIMESTAMP,
     lan_dang_nhap_cuoi TIMESTAMPTZ,

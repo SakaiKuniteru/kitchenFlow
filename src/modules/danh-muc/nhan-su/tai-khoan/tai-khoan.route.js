@@ -1,24 +1,47 @@
 const express = require("express");
-
 const router = express.Router();
-
 const {
     createSchema,
     updateSchema,
     doiMatKhauSchema,
     datLaiMatKhauSchema
 } = require("./tai-khoan.validation");
-
 const validate = require("../../../../middlewares/validate.middleware");
-
 const authenticate = require("../../../../middlewares/authenticate.middleware");
-
 const controller = require("./tai-khoan.controller");
+const uploadNhanVien = require("../nhan-vien/upload-nhan-vien.middleware");
+const uploadImportExcel = require("../../../../middlewares/upload-import-excel.middleware");
+const chucVuExcel = require("./tai-khoan.excel");
+const validateUpdateTaiKhoan = validate(updateSchema);
 
-const uploadImportExcel = require( "../../../../middlewares/upload-import-excel.middleware" );
+function validateTaiKhoanUpdate(
+    req,
+    res,
+    next
+) {
 
-const chucVuExcel = require( "./tai-khoan.excel" );
+    const hasBody =
+        Object.keys(
+            req.body || {}
+        ).length > 0;
 
+    const hasFile =
+        Boolean(
+            req.file
+        );
+
+    if (
+        !hasBody &&
+        hasFile
+    ) {
+        return next();
+    }
+    return validateUpdateTaiKhoan(
+        req,
+        res,
+        next
+    );
+}
 
 router.get(
     "/tong-hop",
@@ -50,6 +73,9 @@ router.get(
 router.post(
     "/them-moi",
     authenticate,
+    uploadNhanVien.single(
+        "anhDaiDien"
+    ),
     validate(createSchema),
     controller.create
 );
@@ -57,7 +83,10 @@ router.post(
 router.patch(
     "/cap-nhat/:id",
     authenticate,
-    validate(updateSchema),
+    uploadNhanVien.single(
+        "anhDaiDien"
+    ),
+    validateTaiKhoanUpdate,
     controller.update
 );
 

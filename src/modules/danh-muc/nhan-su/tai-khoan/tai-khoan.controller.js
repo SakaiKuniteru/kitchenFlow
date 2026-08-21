@@ -59,23 +59,22 @@ class TaiKhoanController {
         res,
         next
     ) {
-
         try {
-
             const data =
                 await taiKhoanService
                     .create(
-                        req.body
+                        req.body,
+                        req.file
                     );
-
-            return successResponse( res, "Tạo tài khoản thành công.", data, 201 );
-
+            return successResponse(
+                res,
+                "Tạo tài khoản thành công.",
+                data,
+                201
+            );
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
     async update(
@@ -83,24 +82,23 @@ class TaiKhoanController {
         res,
         next
     ) {
-
         try {
-
             const data =
                 await taiKhoanService
                     .update(
                         req.params.id,
-                        req.body
+                        req.body,
+                        req.file
                     );
-
-            return successResponse( res, "Cập nhật tài khoản thành công.", data, 200 );
-
+            return successResponse(
+                res,
+                "Cập nhật tài khoản thành công.",
+                data,
+                200
+            );
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
     async doiMatKhau(

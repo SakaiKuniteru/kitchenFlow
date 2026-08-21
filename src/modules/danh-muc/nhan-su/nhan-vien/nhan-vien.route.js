@@ -1,22 +1,13 @@
 const express = require("express");
-
 const router = express.Router();
-
 const controller = require("./nhan-vien.controller");
-
 const authenticate = require("../../../../middlewares/authenticate.middleware");
 const authorize = require("../../../../middlewares/authorize.middleware");
-
 const validate = require("../../../../middlewares/validate.middleware");
-
 const uploadNhanVien = require( "./upload-nhan-vien.middleware" );
-
 const { createSchema, updateSchema } = require("./nhan-vien.validation");
-
 const uploadImportExcel = require( "../../../../middlewares/upload-import-excel.middleware" );
-
 const chucVuExcel = require( "./nhan-vien.excel" );
-
 const validateUpdateNhanVien = validate( updateSchema );
 
 function validateNhanVienUpdate(

@@ -121,6 +121,7 @@ const tenDangNhapSchema = Joi.string()
 
     });
 
+
 const dsVaiTroIdSchema = Joi.array()
     .items(
         Joi.number()
@@ -242,6 +243,45 @@ const createSchema = Joi.object({
     tenDangNhap:
         tenDangNhapSchema.required(),
 
+    biKhoa:
+        Joi.boolean()
+            .optional()
+            .messages({
+
+                "boolean.base":
+                    "Trạng thái khóa phải là true hoặc false."
+
+            }),
+
+    khoaVinhVien:
+        Joi.boolean()
+            .optional()
+            .messages({
+
+                "boolean.base":
+                    "Trạng thái khóa vĩnh viễn phải là true hoặc false."
+
+            }),
+
+    anhDaiDien:
+        Joi.string()
+            .trim()
+            .max(500)
+            .allow(
+                "",
+                null
+            )
+            .optional()
+            .messages({
+
+                "string.base":
+                    "Ảnh đại diện không hợp lệ.",
+
+                "string.max":
+                    "Đường dẫn ảnh đại diện không được vượt quá 500 ký tự."
+
+            }),
+
     dsVaiTroId:
         dsVaiTroIdSchema.optional(),
 
@@ -337,6 +377,45 @@ const updateSchema = Joi.object({
 
     tenDangNhap:
         tenDangNhapSchema.optional(),
+
+    biKhoa:
+        Joi.boolean()
+            .optional()
+            .messages({
+
+                "boolean.base":
+                    "Trạng thái khóa phải là true hoặc false."
+
+            }),
+
+    khoaVinhVien:
+        Joi.boolean()
+            .optional()
+            .messages({
+
+                "boolean.base":
+                    "Trạng thái khóa vĩnh viễn phải là true hoặc false."
+
+            }),
+
+    anhDaiDien:
+        Joi.string()
+            .trim()
+            .max(500)
+            .allow(
+                "",
+                null
+            )
+            .optional()
+            .messages({
+
+                "string.base":
+                    "Ảnh đại diện không hợp lệ.",
+
+                "string.max":
+                    "Đường dẫn ảnh đại diện không được vượt quá 500 ký tự."
+
+            }),
 
     dsVaiTroId:
         dsVaiTroIdSchema.optional(),

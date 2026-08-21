@@ -1637,7 +1637,20 @@ const danhMucPages = [
 
             textColumn(
                 "hoTenNhanVien",
-                "Tên nhân viên"
+                "Tên nhân viên",
+                {
+                    width:
+                        "220px"
+                }
+            ),
+
+            numberColumn(
+                "soLanDangNhap",
+                "Số lần đăng nhập",
+                {
+                    width:
+                        "160px"
+                }
             ),
 
             numberColumn(
@@ -1663,7 +1676,7 @@ const danhMucPages = [
                 "Khóa đến",
                 {
                     width:
-                        "170px"
+                        "180px"
                 }
             ),
 
@@ -1674,12 +1687,20 @@ const danhMucPages = [
                     width:
                         "130px"
                 }
+            ),
+
+            textColumn(
+                "__resetPassword",
+                "Thao tác",
+                {
+                    width:
+                        "90px"
+                }
             )
 
         ]
 
     }),
-
 
     createPage({
 

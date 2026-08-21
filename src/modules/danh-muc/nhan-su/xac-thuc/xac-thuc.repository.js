@@ -566,21 +566,37 @@ class XacThucRepository {
 
     }
 
-    async updateLastLogin(taiKhoanId) {
+    async updateLastLogin(
+        taiKhoanId
+    ) {
 
         const sql = `
             UPDATE dm_tai_khoan
-
             SET
+                so_lan_dang_nhap =
+                    COALESCE(
+                        so_lan_dang_nhap,
+                        0
+                    ) + 1,
                 lan_dang_nhap_cuoi = NOW(),
                 updated_at = NOW()
-
             WHERE id = $1
+            RETURNING
+                so_lan_dang_nhap,
+                lan_dang_nhap_cuoi
         `;
 
-        await pool.query(
-            sql,
-            [taiKhoanId]
+        const result =
+            await pool.query(
+                sql,
+                [
+                    taiKhoanId
+                ]
+            );
+
+        return (
+            result.rows[0] ||
+            null
         );
 
     }
@@ -668,12 +684,11 @@ class XacThucRepository {
 
         const sql = `
             UPDATE dm_tai_khoan
-
             SET
                 mat_khau_hash = $1,
                 doi_mat_khau_lan_dau = FALSE,
+                doi_mat_khau_lan_cuoi = NOW(),
                 updated_at = NOW()
-
             WHERE id = $2
         `;
 

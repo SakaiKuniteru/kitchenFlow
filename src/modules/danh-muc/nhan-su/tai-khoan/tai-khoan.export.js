@@ -19,59 +19,124 @@ const TEMPLATE_ROW = 5;
 
 const DATA_START_ROW = 5;
 
-
 function taoDongExport(item) {
 
     return {
 
-        id: item.id,
+        id:
+            item.id,
 
-        tenDangNhap: item.tenDangNhap,
+        tenDangNhap:
+            item.tenDangNhap,
 
-        nhanVienId: item.nhanVienId,
+        nhanVienId:
+            item.nhanVienId,
 
-        maNhanVien: item.nhanVien?.maNhanVien,
+        maNhanVien:
+            item.nhanVien?.maNhanVien,
 
-        hoTen: item.nhanVien?.hoTen,
+        hoTen:
+            item.nhanVien?.hoTen,
 
-        maCoSo: item.nhanVien?.coSo?.maCoSo,
+        maCoSo:
+            item.nhanVien?.coSo?.maCoSo,
 
-        maPhongBan: item.nhanVien?.phongBan?.maPhongBan,
+        tenCoSo:
+            item.nhanVien?.coSo?.tenCoSo,
 
-        maChucVu: item.nhanVien?.chucVu?.maChucVu,
+        maPhongBan:
+            item.nhanVien?.phongBan?.maPhongBan,
 
-        dsVaiTroId: Array.isArray(item.dsVaiTroId)
-            ? JSON.stringify(item.dsVaiTroId)
-            : "[]",
-        
-        dsMaVaiTro: Array.isArray(item.dsMaVaiTro)
-            ? JSON.stringify(item.dsMaVaiTro)
-            : "[]",
+        tenPhongBan:
+            item.nhanVien?.phongBan?.tenPhongBan,
 
-        dsQuyenId: Array.isArray(item.dsQuyenId)
-            ? JSON.stringify(item.dsQuyenId)
-            : "[]",
-        
-        dsMaQuyen: Array.isArray(item.dsMaQuyen)
-            ? JSON.stringify(item.dsMaQuyen)
-            : "[]",
+        maChucVu:
+            item.nhanVien?.chucVu?.maChucVu,
 
-        soLanDangNhapSai: item.soLanDangNhapSai,
+        tenChucVu:
+            item.nhanVien?.chucVu?.tenChucVu,
 
-        khoaDen: item.khoaDen,
+        dsVaiTroId:
+            Array.isArray(
+                item.dsVaiTroId
+            )
+                ? item.dsVaiTroId.join(",")
+                : "",
 
-        lanDangNhapCuoi: item.lanDangNhapCuoi,
+        dsMaVaiTro:
+            Array.isArray(
+                item.dsMaVaiTro
+            )
+                ? item.dsMaVaiTro.join(",")
+                : "",
 
-        doiMatKhauLanCuoi: item.doiMatKhauLanCuoi,
+        dsTenVaiTro:
+            Array.isArray(
+                item.dsVaiTro
+            )
+                ? item.dsVaiTro
+                    .map(
+                        vaiTro =>
+                            vaiTro.tenVaiTro
+                    )
+                    .filter(Boolean)
+                    .join(",")
+                : "",
 
-        doiMatKhauLanDau: item.doiMatKhauLanDau,
+        dsQuyenId:
+            Array.isArray(
+                item.dsQuyenId
+            )
+                ? item.dsQuyenId.join(",")
+                : "",
 
-        active: item.active
+        dsMaQuyen:
+            Array.isArray(
+                item.dsMaQuyen
+            )
+                ? item.dsMaQuyen.join(",")
+                : "",
+
+        dsTenQuyen:
+            Array.isArray(
+                item.dsQuyen
+            )
+                ? item.dsQuyen
+                    .map(
+                        quyen =>
+                            quyen.tenQuyen
+                    )
+                    .filter(Boolean)
+                    .join(",")
+                : "",
+
+        soLanDangNhap:
+            item.soLanDangNhap,
+
+        soLanDangNhapSai:
+            item.soLanDangNhapSai,
+
+        biKhoa:
+            item.biKhoa,
+
+        khoaDen:
+            item.khoaDen,
+
+        lanDangNhapCuoi:
+            item.lanDangNhapCuoi,
+
+        doiMatKhauLanCuoi:
+            item.doiMatKhauLanCuoi,
+
+        doiMatKhauLanDau:
+            item.doiMatKhauLanDau,
+
+        active:
+            item.active
 
     };
 
 }
-
 
 async function xuLyExport(query = {}) {
 

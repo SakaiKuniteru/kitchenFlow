@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/assets/css/pages/danh-muc/nhan-su/tai-khoan.css">
+
 {{> catalog/module-page
     moduleName="tai-khoan"
     apiBase="/api/mcs/v1/dm-tai-khoan"
@@ -16,10 +18,13 @@
     detailTitle="Thông tin tài khoản"
     showEditButton=true
     showActions=true
+    showImportButton=true
+    showExportButton=true
     mobilePanelId="taiKhoanMobilePanel"
     columns=columns
 }}
 
 {{> scripts/catalog-page
     folder="nhan-su"
-    page="tai-khoan"}}
+    page="tai-khoan"
+}}

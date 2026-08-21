@@ -1,5 +1,4 @@
 <div class="detail-panel__section">
-
     <h3 class="detail-panel__section-title">
         Thông tin tài khoản
     </h3>
@@ -19,60 +18,320 @@
         {{> forms/select
             id="nhanVienId"
             name="nhanVienId"
-            label="Nhân viên"
-            placeholder="Chọn nhân viên"
+            label="Mã nhân viên"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn nhân viên..."
             required=true
+        }}
+
+        {{> forms/input
+            id="soLanDangNhap"
+            name="soLanDangNhap"
+            label="Số lần đăng nhập"
+            placeholder=""
+            disabled=true
+        }}
+
+        {{> forms/input
+            id="soLanDangNhapSai"
+            name="soLanDangNhapSai"
+            label="Số lần đăng nhập sai"
+            placeholder=""
+            disabled=true
+        }}
+
+        {{> forms/input
+            id="lanDangNhapCuoi"
+            name="lanDangNhapCuoi"
+            label="Đăng nhập lần cuối"
+            placeholder=""
+            disabled=true
+        }}
+
+        {{> forms/input
+            id="doiMatKhauLanCuoi"
+            name="doiMatKhauLanCuoi"
+            label="Đổi mật khẩu lần cuối"
+            placeholder=""
+            disabled=true
+        }}
+
+        {{> forms/input
+            id="createdAt"
+            name="createdAt"
+            label="Thời gian tạo"
+            placeholder=""
+            disabled=true
+        }}
+
+        {{> forms/input
+            id="updatedAt"
+            name="updatedAt"
+            label="Cập nhật lần cuối"
+            placeholder=""
+            disabled=true
         }}
 
         <div class="catalog-form-grid__full">
 
             {{> forms/input
-                id="matKhau"
-                name="matKhau"
-                label="Mật khẩu"
-                placeholder="Nhập mật khẩu"
-                type="password"
-                autocomplete="new-password"
-                description="Khi cập nhật có thể bỏ trống nếu không thay đổi mật khẩu."
+                id="khoaDen"
+                name="khoaDen"
+                label="Khóa đến"
+                placeholder=""
+                disabled=true
             }}
 
         </div>
+
+
+        <div class="tai-khoan-account-status">
+
+            <div class="tai-khoan-account-status__image">
+
+                {{> forms/image
+                    id="anhDaiDien"
+                    name="anhDaiDien"
+                    label="Ảnh đại diện"
+                    accept="image/jpeg,image/png,image/webp"
+                    width=100
+                    height=100
+                    minWidth=100
+                    minHeight=100
+                    placeholder="Tải ảnh lên"
+                }}
+
+            </div>
+
+
+            <div class="tai-khoan-account-status__controls">
+
+                {{> forms/checkbox
+                    id="biKhoa"
+                    name="biKhoa"
+                    label="Đã khóa"
+                }}
+
+                {{> forms/checkbox
+                    id="doiMatKhauLanDau"
+                    name="doiMatKhauLanDau"
+                    label="Đăng nhập lần đầu"
+                    disabled=true
+                }}
+
+                {{> forms/switch
+                    id="active"
+                    name="active"
+                    label="Đang hoạt động"
+                    checked=true
+                }}
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+<div class="detail-panel__section tai-khoan-vai-tro">
+
+    <div class="tai-khoan-vai-tro__heading">
+
+        <h3 class="detail-panel__section-title">
+            Danh sách vai trò
+        </h3>
+
+        <button
+            type="button"
+            class="tai-khoan-vai-tro__choose-button"
+            data-tai-khoan-open-role
+            hidden>
+
+            <i class="fa-solid fa-check-double"></i>
+
+            <span>
+                Chọn vai trò
+            </span>
+
+        </button>
+
+    </div>
+
+
+    <div class="tai-khoan-vai-tro__detail-toolbar">
+
+        <div class="tai-khoan-vai-tro__detail-filter">
+
+            {{> forms/select
+                id="taiKhoanDanhSachTrangThai"
+                name="taiKhoanDanhSachTrangThai"
+                label=""
+                mode="single"
+                multiple=false
+                allowAll=false
+                placeholder="Đã có vai trò"
+            }}
+
+        </div>
+
+
+        <div
+            class="tai-khoan-vai-tro__detail-count"
+            data-tai-khoan-role-count>
+            0 vai trò
+        </div>
+
+    </div>
+
+
+    <div
+        class="tai-khoan-vai-tro__detail-list"
+        data-tai-khoan-role-list>
+    </div>
+
+</div>
+
+
+<div
+    class="tai-khoan-role-modal"
+    data-tai-khoan-role-modal
+    hidden>
+
+    <div class="tai-khoan-role-modal__backdrop">
+    </div>
+
+
+    <div
+        class="tai-khoan-role-modal__dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="taiKhoanRoleModalTitle">
+
+        <header class="tai-khoan-role-modal__header">
+
+            <div>
+
+                <h2
+                    id="taiKhoanRoleModalTitle"
+                    class="tai-khoan-role-modal__title">
+                    Chọn vai trò
+                </h2>
+
+                <p
+                    class="tai-khoan-role-modal__subtitle"
+                    data-tai-khoan-popup-summary>
+                    Đã chọn 0 vai trò
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="tai-khoan-role-modal__close"
+                data-tai-khoan-role-close
+                aria-label="Đóng">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </header>
+
+
+        <div class="tai-khoan-role-modal__body">
+
+            <div class="tai-khoan-role-modal__toolbar">
+
+                <div class="tai-khoan-role-modal__select-all">
+
+                    {{> forms/checkbox
+                        id="taiKhoanPopupChonTatCa"
+                        name="taiKhoanPopupChonTatCa"
+                        label="Chọn tất cả"
+                    }}
+
+                </div>
+
+
+                <div class="tai-khoan-role-modal__filter">
+
+                    {{> forms/select
+                        id="taiKhoanPopupTrangThai"
+                        name="taiKhoanPopupTrangThai"
+                        label="Trạng thái vai trò"
+                        mode="multiple"
+                        multiple=true
+                        allowAll=true
+                        allLabel="Tất cả"
+                        placeholder="Đã có / Chưa có"
+                        compactMultiple=true
+                        checkboxOptions=true
+                    }}
+
+                </div>
+
+
+                <div class="tai-khoan-role-modal__search">
+
+                    {{> forms/input
+                        id="taiKhoanPopupTimVaiTro"
+                        name="taiKhoanPopupTimVaiTro"
+                        label="Tìm kiếm"
+                        placeholder="Tìm theo mã hoặc tên vai trò"
+                    }}
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="tai-khoan-role-modal__list"
+                data-tai-khoan-popup-list>
+            </div>
+
+        </div>
+
+
+        <footer class="tai-khoan-role-modal__footer">
+
+            <button
+                type="button"
+                class="tai-khoan-role-modal__button tai-khoan-role-modal__button--cancel"
+                data-tai-khoan-role-cancel>
+                Hủy bỏ
+            </button>
+
+            <button
+                type="button"
+                class="tai-khoan-role-modal__button tai-khoan-role-modal__button--save"
+                data-tai-khoan-role-save>
+                Lưu
+            </button>
+
+        </footer>
 
     </div>
 
 </div>
 
-<div class="detail-panel__section">
 
-    <h3 class="detail-panel__section-title">
-        Vai trò
-    </h3>
+<template id="taiKhoanVaiTroCheckboxTemplate">
 
-    {{> forms/select
-        id="dsVaiTroId"
-        name="dsVaiTroId"
-        label="Danh sách vai trò"
-        description="Có thể chọn nhiều vai trò."
-        multiple=true
-    }}
+    <div
+        class="tai-khoan-vai-tro__item"
+        data-tai-khoan-role-item>
 
-</div>
+        {{> forms/checkbox
+            id="taiKhoanVaiTroTemplate"
+            name="taiKhoanVaiTroTemplate"
+            label="Vai trò"
+        }}
 
-<div class="detail-panel__section">
+    </div>
 
-    {{> forms/switch
-        id="doiMatKhauLanDau"
-        name="doiMatKhauLanDau"
-        label="Yêu cầu đổi mật khẩu lần đầu"
-        description="Người dùng phải đổi mật khẩu sau khi đăng nhập."
-        checked=true
-    }}
-
-    {{> forms/switch
-        id="active"
-        name="active"
-        label="Tài khoản đang hoạt động"
-        checked=true
-    }}
-
-</div>
+</template>
