@@ -1,191 +1,524 @@
 "use strict";
 
-window.MCS = window.MCS || {};
+window.MCS =
+    window.MCS ||
+    {};
 
 window.MCS.imagePicker = {
-    initialize(root) {
-        if (!root) {
+
+    initialize(
+        root
+    ) {
+
+        if (
+            !root
+        ) {
+
             return null;
+
         }
 
-        if (root.imagePicker) {
+        if (
+            root.imagePicker
+        ) {
+
             return root.imagePicker;
+
         }
 
-        const input = root.querySelector("[data-image-picker-input]");
-        const image = root.querySelector("[data-image-picker-image]");
-        const placeholder = root.querySelector("[data-image-picker-placeholder]");
-        const removeButton = root.querySelector("[data-image-picker-remove]");
+        const input =
+            root.querySelector(
+                "[data-image-picker-input]"
+            );
 
-        if (!input || !image || !placeholder) {
+        const image =
+            root.querySelector(
+                "[data-image-picker-image]"
+            );
+
+        const placeholder =
+            root.querySelector(
+                "[data-image-picker-placeholder]"
+            );
+
+        const removeButton =
+            root.querySelector(
+                "[data-image-picker-remove]"
+            );
+
+        const valueInput =
+            root.querySelector(
+                "[data-image-picker-value]"
+            );
+
+        if (
+            !input ||
+            !image ||
+            !placeholder
+        ) {
+
             return null;
+
         }
 
         const state = {
-            objectUrl: "",
-            existingUrl: "",
-            selectedFile: null
+
+            objectUrl:
+                "",
+
+            existingUrl:
+                valueInput?.value ||
+                "",
+
+            selectedFile:
+                null,
+
+            removed:
+                false
+
         };
 
-        input.addEventListener("change", () => {
-            const file = input.files?.[0] || null;
+        function normalizeUrl(
+            value
+        ) {
 
-            if (!file) {
-                return;
+            const text =
+                String(
+                    value ||
+                    ""
+                ).trim();
+
+            if (
+                !text
+            ) {
+
+                return "";
+
             }
 
-            if (!file.type.startsWith("image/")) {
-                clearInput();
-                return;
-            }
-
-            state.selectedFile = file;
-
-            revokeObjectUrl();
-
-            state.objectUrl = URL.createObjectURL(file);
-
-            showImage(state.objectUrl);
-        });
-
-        removeButton?.addEventListener("click", event => {
-            event.preventDefault();
-            event.stopPropagation();
-
-            clear();
-        });
-
-        function showImage(url) {
-            const value = String(url || "").trim();
-
-            if (!value) {
-                image.removeAttribute("src");
-
-                image.hidden = true;
-
-                placeholder.hidden = false;
-
-                if (removeButton) {
-                    removeButton.hidden = true;
-                }
-
-                root.classList.remove("has-image");
-
-                return;
-            }
-
-            image.src = value;
-
-            image.hidden = false;
-
-            placeholder.hidden = true;
-
-            if (removeButton) {
-                removeButton.hidden = false;
-            }
-
-            root.classList.add("has-image");
-        }
-
-        function setExistingImage(url) {
-            clearInput();
-
-            revokeObjectUrl();
-
-            state.selectedFile = null;
-
-            state.existingUrl = String(url || "").trim();
-
-            showImage(state.existingUrl);
-        }
-
-        function clearInput() {
-            input.value = "";
-        }
-
-        function clear() {
-            clearInput();
-
-            revokeObjectUrl();
-
-            state.selectedFile = null;
-
-            state.existingUrl = "";
-
-            showImage("");
-
-            input.dispatchEvent(
-                new Event(
-                    "change",
-                    {
-                        bubbles: true
-                    }
+            if (
+                text.startsWith(
+                    "http://"
+                ) ||
+                text.startsWith(
+                    "https://"
+                ) ||
+                text.startsWith(
+                    "blob:"
+                ) ||
+                text.startsWith(
+                    "/"
                 )
-            );
+            ) {
+
+                return text;
+
+            }
+
+            return `/${text}`;
+
         }
 
         function revokeObjectUrl() {
-            if (state.objectUrl) {
-                URL.revokeObjectURL(state.objectUrl);
 
-                state.objectUrl = "";
+            if (
+                !state.objectUrl
+            ) {
+
+                return;
+
             }
+
+            URL.revokeObjectURL(
+                state.objectUrl
+            );
+
+            state.objectUrl =
+                "";
+
         }
 
-        function setDisabled(disabled = true) {
-            const value = Boolean(disabled);
+        function showImage(
+            url
+        ) {
 
-            input.disabled = value;
+            const value =
+                normalizeUrl(
+                    url
+                );
+
+            const hasImage =
+                Boolean(
+                    value
+                );
+
+            if (
+                hasImage
+            ) {
+
+                image.src =
+                    value;
+
+                image.hidden =
+                    false;
+
+                placeholder.hidden =
+                    true;
+
+                if (
+                    removeButton
+                ) {
+
+                    removeButton.hidden =
+                        false;
+
+                }
+
+                root.classList.add(
+                    "has-image"
+                );
+
+                return;
+
+            }
+
+            image.removeAttribute(
+                "src"
+            );
+
+            image.hidden =
+                true;
+
+            placeholder.hidden =
+                false;
+
+            if (
+                removeButton
+            ) {
+
+                removeButton.hidden =
+                    true;
+
+            }
+
+            root.classList.remove(
+                "has-image"
+            );
+
+        }
+
+        function clearInput() {
+
+            input.value =
+                "";
+
+        }
+
+        function setValue(
+            value
+        ) {
+
+            revokeObjectUrl();
+
+            clearInput();
+
+            state.selectedFile =
+                null;
+
+            state.removed =
+                false;
+
+            state.existingUrl =
+                String(
+                    value ||
+                    ""
+                ).trim();
+
+            if (
+                valueInput
+            ) {
+
+                valueInput.value =
+                    state.existingUrl;
+
+            }
+
+            showImage(
+                state.existingUrl
+            );
+
+        }
+
+        function setExistingImage(
+            value
+        ) {
+
+            setValue(
+                value
+            );
+
+        }
+
+        function setFile(
+            file
+        ) {
+
+            if (
+                !file
+            ) {
+
+                return;
+
+            }
+
+            if (
+                !file.type.startsWith(
+                    "image/"
+                )
+            ) {
+
+                clearInput();
+
+                return;
+
+            }
+
+            revokeObjectUrl();
+
+            state.selectedFile =
+                file;
+
+            state.removed =
+                false;
+
+            state.objectUrl =
+                URL.createObjectURL(
+                    file
+                );
+
+            showImage(
+                state.objectUrl
+            );
+
+        }
+
+        function clear() {
+
+            revokeObjectUrl();
+
+            clearInput();
+
+            state.selectedFile =
+                null;
+
+            state.existingUrl =
+                "";
+
+            state.removed =
+                true;
+
+            if (
+                valueInput
+            ) {
+
+                valueInput.value =
+                    "";
+
+            }
+
+            showImage(
+                ""
+            );
+
+            root.dispatchEvent(
+                new CustomEvent(
+                    "imagepicker:clear",
+                    {
+                        bubbles:
+                            true
+                    }
+                )
+            );
+
+        }
+
+        function setDisabled(
+            disabled =
+                true
+        ) {
+
+            const value =
+                Boolean(
+                    disabled
+                );
+
+            input.disabled =
+                value;
+
+            if (
+                removeButton
+            ) {
+
+                removeButton.disabled =
+                    value;
+
+            }
 
             root.classList.toggle(
                 "is-disabled",
                 value
             );
+
         }
 
+        input.addEventListener(
+            "change",
+            () => {
+
+                const file =
+                    input.files?.[0] ||
+                    null;
+
+                if (
+                    !file
+                ) {
+
+                    return;
+
+                }
+
+                setFile(
+                    file
+                );
+
+            }
+        );
+
+        removeButton
+            ?.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
+
+                    if (
+                        input.disabled
+                    ) {
+
+                        return;
+
+                    }
+
+                    clear();
+
+                }
+            );
+
         const api = {
+
             clear,
+
+            setValue,
+
             setExistingImage,
+
             setDisabled,
 
             getFile() {
+
                 return (
                     state.selectedFile ||
-                    input.files?.[0] ||
                     null
                 );
+
             },
 
             getExistingUrl() {
-                return state.existingUrl;
+
+                return (
+                    state.existingUrl ||
+                    ""
+                );
+
+            },
+
+            getValue() {
+
+                return (
+                    state.existingUrl ||
+                    ""
+                );
+
+            },
+
+            isRemoved() {
+
+                return (
+                    state.removed ===
+                    true
+                );
+
             },
 
             hasImage() {
+
                 return Boolean(
                     state.selectedFile ||
                     state.existingUrl
                 );
+
             },
 
             getInput() {
+
                 return input;
+
             }
+
         };
 
-        root.imagePicker = api;
+        root.imagePicker =
+            api;
+
+        showImage(
+            state.existingUrl
+        );
 
         return api;
+
     },
 
-    initializeAll(container = document) {
+    initializeAll(
+        container =
+            document
+    ) {
+
         container
-            .querySelectorAll("[data-image-picker]")
-            .forEach(root => {
-                this.initialize(root);
-            });
+            .querySelectorAll(
+                "[data-image-picker]"
+            )
+            .forEach(
+                root => {
+
+                    this.initialize(
+                        root
+                    );
+
+                }
+            );
+
     }
+
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-    window.MCS.imagePicker.initializeAll();
-});
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        window.MCS.imagePicker
+            .initializeAll();
+
+    }
+);

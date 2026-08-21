@@ -3,11 +3,10 @@ const pool = require("../../../../config/database");
 class NhanVienRepository {
 
     mapNhanVien(row) {
-
         return {
-
             id: row.id,
             maNhanVien: row.ma_nhan_vien,
+            tenDangNhap: row.ten_dang_nhap,
             hoTen: row.ho_ten,
             ngaySinh: row.ngay_sinh,
             gioiTinh: row.gioi_tinh,
@@ -92,6 +91,7 @@ class NhanVienRepository {
 
                 nv.id,
                 nv.ma_nhan_vien,
+                tk.ten_dang_nhap,
                 nv.ho_ten,
                 nv.ngay_sinh,
                 nv.gioi_tinh,
@@ -141,6 +141,9 @@ class NhanVienRepository {
                 cv.ten_chuc_vu
 
             FROM dm_nhan_vien nv
+
+            LEFT JOIN dm_tai_khoan tk
+                ON tk.nhan_vien_id = nv.id
 
             LEFT JOIN dm_quoc_gia qg
                 ON qg.id = nv.quoc_gia_id

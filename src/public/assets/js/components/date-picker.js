@@ -111,9 +111,70 @@ function initializeDatePicker(root) {
                 : formatTypingDigits(digits);
         });
 
-        elements.input?.addEventListener("blur", () => {
-            normalizeTypedValue();
-        });
+        elements.value?.addEventListener(
+            "change",
+            () => {
+
+                const value =
+                    elements.value?.value ||
+                    "";
+
+                const parsed =
+                    value
+                        ? parseIsoDateTime(
+                            value
+                        )
+                        : null;
+
+                state.selectedDate =
+                    parsed
+                        ? new Date(
+                            parsed
+                        )
+                        : null;
+
+                if (
+                    state.selectedDate
+                ) {
+
+                    state.viewDate =
+                        new Date(
+                            state.selectedDate
+                        );
+
+                }
+
+                renderInput();
+
+                renderTimeInputs();
+
+                render();
+
+            }
+        );
+
+        elements.input?.addEventListener("blur",() => {
+                window.setTimeout(
+                    () => {
+
+                        if (
+                            root.contains(
+                                document.activeElement
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+                        normalizeTypedValue();
+
+                    },
+                    0
+                );
+
+            }
+        );
 
         elements.input?.addEventListener("keydown", event => {
             if (event.key === "Enter") {

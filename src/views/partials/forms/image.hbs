@@ -35,6 +35,11 @@
         ">
 
         <input
+            type="hidden"
+            value="{{value}}"
+            data-image-picker-value>
+
+        <input
             id="{{id}}"
             name="{{name}}"
             type="file"
@@ -76,11 +81,13 @@
                 </span>
 
                 <span class="image-picker__upload-label">
+
                     {{#if uploadLabel}}
                         {{uploadLabel}}
                     {{else}}
                         Tải lên
                     {{/if}}
+
                 </span>
 
             </span>

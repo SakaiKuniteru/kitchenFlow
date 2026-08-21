@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/assets/css/pages/danh-muc/nhan-su/nhan-vien.css">
+
 {{> catalog/module-page
     moduleName="nhan-vien"
     apiBase="/api/mcs/v1/dm-nhan-vien"
@@ -16,10 +18,13 @@
     detailTitle="Thông tin nhân viên"
     showEditButton=true
     showActions=true
+    showImportButton=true
+    showExportButton=true
     mobilePanelId="nhanVienMobilePanel"
     columns=columns
 }}
 
 {{> scripts/catalog-page
     folder="nhan-su"
-    page="nhan-vien"}}
+    page="nhan-vien"
+}}

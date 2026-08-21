@@ -223,6 +223,24 @@ class MCSCatalog {
         this.bindEvents();
     }
 
+    closeUtilityMenu() {
+
+        if (
+            !this.elements.utilityMenu
+        ) {
+            return;
+        }
+
+        this.elements.utilityMenu.hidden =
+            true;
+
+        this.elements.utilityToggle
+            ?.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+    }
+
     bindEvents() {
         this.elements.search?.addEventListener(
             "input",
@@ -268,7 +286,7 @@ class MCSCatalog {
             event => {
                 event.preventDefault();
                 event.stopPropagation();
-
+                this.closeUtilityMenu();
                 this.openCreate();
             }
         );
@@ -340,6 +358,7 @@ class MCSCatalog {
             event => {
                 event.preventDefault();
                 event.stopPropagation();
+                this.closeUtilityMenu();
 
                 const expanded =
                     !this.root.classList.contains(
@@ -377,6 +396,7 @@ class MCSCatalog {
             event => {
                 event.preventDefault();
                 event.stopPropagation();
+                this.closeUtilityMenu();
 
                 if (
                     this.root.classList.contains(
@@ -441,9 +461,7 @@ class MCSCatalog {
             event => {
                 event.preventDefault();
                 event.stopPropagation();
-
-                this.elements.utilityMenu.hidden = true;
-
+                this.closeUtilityMenu();
                 this.options.onAction?.(
                     "export",
                     null,
@@ -457,9 +475,7 @@ class MCSCatalog {
             event => {
                 event.preventDefault();
                 event.stopPropagation();
-
-                this.elements.utilityMenu.hidden = true;
-
+                this.closeUtilityMenu();
                 this.options.onAction?.(
                     "import",
                     null,
@@ -708,8 +724,7 @@ class MCSCatalog {
         }
 
         if (this.elements.utilityMenu) {
-            this.elements.utilityMenu.hidden = true;
-
+            this.closeUtilityMenu();
             this.elements.utilityToggle?.setAttribute(
                 "aria-expanded",
                 "false"
