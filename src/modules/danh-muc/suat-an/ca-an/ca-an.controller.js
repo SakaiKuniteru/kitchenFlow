@@ -1,19 +1,10 @@
-const caAnService =
-    require("./ca-an.service");
-
-const { successResponse } = require( "../../../../utils/response.util" );
+const caAnService = require("./ca-an.service");
+const { successResponse } = require("../../../../utils/response.util");
 
 class CaAnController {
-
     async getTongHop(req, res, next) {
-
         try {
-
-            const data =
-                await caAnService
-                    .getTongHop(
-                        req.query
-                    );
+            const data = await caAnService.getTongHop(req.query);
 
             return successResponse(
                 res,
@@ -21,25 +12,16 @@ class CaAnController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
     async getChiTiet(req, res, next) {
-
         try {
+            const { id } = req.params;
 
-            const { id } =
-                req.params;
-
-            const data =
-                await caAnService
-                    .getChiTiet(id);
+            const data = await caAnService.getChiTiet(id);
 
             return successResponse(
                 res,
@@ -47,24 +29,14 @@ class CaAnController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
     async create(req, res, next) {
-
         try {
-
-            const data =
-                await caAnService
-                    .create(
-                        req.body
-                    );
+            const data = await caAnService.create(req.body);
 
             return successResponse(
                 res,
@@ -72,28 +44,19 @@ class CaAnController {
                 data,
                 201
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
     async update(req, res, next) {
-
         try {
+            const { id } = req.params;
 
-            const { id } =
-                req.params;
-
-            const data =
-                await caAnService
-                    .update(
-                        id,
-                        req.body
-                    );
+            const data = await caAnService.update(
+                id,
+                req.body
+            );
 
             return successResponse(
                 res,
@@ -101,16 +64,10 @@ class CaAnController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
-
 }
 
-module.exports =
-    new CaAnController();
+module.exports = new CaAnController();

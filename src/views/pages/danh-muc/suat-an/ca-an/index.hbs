@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/assets/css/pages/danh-muc/suat-an/ca-an.css">
+
 {{> catalog/module-page
     moduleName="ca-an"
     apiBase="/api/mcs/v1/dm-ca-an"
@@ -16,10 +18,13 @@
     detailTitle="Thông tin ca ăn"
     showEditButton=true
     showActions=true
+    showImportButton=true
+    showExportButton=true
     mobilePanelId="caAnMobilePanel"
     columns=columns
 }}
 
 {{> scripts/catalog-page
-    folder="ca-an"
-    page="ca-an"}}
+    folder="suat-an"
+    page="ca-an"
+}}

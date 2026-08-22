@@ -53,15 +53,9 @@ function taoDongExport(item) {
 
 async function xuLyExport(query = {}) {
 
-    const danhSach =
-        await diaChiRepository.getTongHop(
-            query
-        );
+    const danhSach = await diaChiRepository.getTongHop(query);
 
-    const data =
-        danhSach.map(
-            item => taoDongExport(item)
-        );
+    const data = danhSach.map(item => taoDongExport(item));
 
     return await createExportFile({
         maBaoCao: MA_BAO_CAO,
@@ -72,7 +66,6 @@ async function xuLyExport(query = {}) {
     });
 
 }
-
 
 async function exportData(
     req,
@@ -99,7 +92,6 @@ async function exportData(
     }
 
 }
-
 
 module.exports = {
     exportData,

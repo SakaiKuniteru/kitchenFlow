@@ -20,39 +20,27 @@
             name="tenCaAn"
             label="Tên ca ăn"
             placeholder="Nhập tên ca ăn"
-            maxlength=255
+            maxlength=100
             required=true
         }}
 
-        {{> forms/date
+        {{> forms/time
             id="thoiGianBatDau"
             name="thoiGianBatDau"
             label="Thời gian bắt đầu"
-            type="time"
+            placeholder="HH:mm:ss"
+            showSeconds=true
             required=true
         }}
 
-        {{> forms/date
+        {{> forms/time
             id="thoiGianKetThuc"
             name="thoiGianKetThuc"
             label="Thời gian kết thúc"
-            type="time"
+            placeholder="HH:mm:ss"
+            showSeconds=true
             required=true
         }}
-
-        <div class="catalog-form-grid__full">
-
-            {{> forms/textarea
-                id="moTa"
-                name="moTa"
-                label="Mô tả"
-                placeholder="Nhập mô tả ca ăn"
-                maxlength=500
-                rows=4
-                showCounter=true
-            }}
-
-        </div>
 
     </div>
 
