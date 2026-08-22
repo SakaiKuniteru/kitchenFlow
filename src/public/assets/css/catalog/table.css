@@ -588,3 +588,27 @@
     }
 
 }
+
+.catalog-table__head
+.catalog-table__cell--center {
+    text-align: center !important;
+}
+
+.catalog-table__head
+.catalog-table__cell--center
+.catalog-table__sort-button {
+    justify-content: center;
+    width: 100%;
+}
+
+.catalog-table__body
+.catalog-table__cell--center {
+    text-align: center !important;
+}
+
+.catalog-table__body
+.catalog-table__cell--center
+.status-badge {
+    margin-left: auto;
+    margin-right: auto;
+}

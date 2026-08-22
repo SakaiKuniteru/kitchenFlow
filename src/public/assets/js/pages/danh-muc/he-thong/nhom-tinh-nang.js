@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         label: "Trạng thái",
                         width: "130px",
                         sortable: true,
+                        className: "catalog-table__cell--center",
                         isBoolean: true,
                         trueLabel: "TRUE",
                         falseLabel: "FALSE"

@@ -101,6 +101,7 @@ window.MCS.pages
 
                 sortable:
                     true,
+                        className: "catalog-table__cell--center",
 
                 render:
                     window.createStatusBadge

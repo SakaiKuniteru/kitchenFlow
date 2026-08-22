@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         label: "Hiệu lực",
                         width: "130px",
                         sortable: true,
+                        className: "catalog-table__cell--center",
                         isBoolean: true,
                         trueLabel: "TRUE",
                         falseLabel: "FALSE"
