@@ -389,14 +389,25 @@ class MCSTable {
         }
 
         switch (column.type) {
-            case "number":
+            case "number": {
+                const number =
+                    Number(value);
+
+                if (
+                    !Number.isFinite(number)
+                ) {
+                    return String(value);
+                }
+
                 return new Intl
-                    .NumberFormat(
-                        "vi-VN"
+                    .NumberFormat("vi-VN",
+                        {
+                            minimumFractionDigits: column.minimumFractionDigits ?? 0,
+                            maximumFractionDigits: column.maximumFractionDigits ?? 20
+                        }
                     )
-                    .format(
-                        Number(value)
-                    );
+                    .format(number);
+            }
 
             case "currency":
                 return new Intl

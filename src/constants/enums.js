@@ -17,34 +17,6 @@ const GIOI_TINH = [
 
 ];
 
-const TRANG_THAI = [
-
-    {
-        value: true,
-        name: "Hoạt động"
-    },
-
-    {
-        value: false,
-        name: "Khóa"
-    }
-
-];
-
-const ACTIVE = [
-
-    {
-        value: true,
-        name: "Có"
-    },
-
-    {
-        value: false,
-        name: "Không"
-    }
-
-];
-
 const LOAI_MIEN_GIAM = [
 
     {
@@ -95,6 +67,25 @@ const LOAI_DON_VI = [
         name: "Đếm"
     }
 
+];
+
+const LOAI_BAO_QUAN = [
+    {
+        value: 10,
+        name: "Nhiệt độ thường"
+    },
+    {
+        value: 20,
+        name: "Bảo quản mát"
+    },
+    {
+        value: 30,
+        name: "Bảo quản lạnh"
+    },
+    {
+        value: 40,
+        name: "Đông lạnh"
+    }
 ];
 
 const LOAI_KHO = [
@@ -260,33 +251,17 @@ const LOAI_BINH_CHON = [
 ]
 
 module.exports = {
-
     "gioiTinh": GIOI_TINH,
-
-    "trangThai": TRANG_THAI,
-
-    "active": ACTIVE,
-
     "loaiMienGiam": LOAI_MIEN_GIAM,
-
     "loaiChinhSach": LOAI_CHINH_SACH,
-
     "loaiDonVi": LOAI_DON_VI,
-
+    "loaiBaoQuan": LOAI_BAO_QUAN,
     "loaiKho": LOAI_KHO,
-
     "loaiXuatFile": LOAI_XUAT_FILE,
-
     "trangThaiThucDon": TRANG_THAI_THUC_DON,
-
     "loaiThucDon": LOAI_THUC_DON,
-
     "trangThaiPhieuThu": TRANG_THAI_PHIEU_THU,
-
     "trangThaiPhieuNhapXuat": TRANG_THAI_PHIEU_NHAP_XUAT,
-
     "trangThaiBinhChon": TRANG_THAI_BINH_CHON,
-
     "loaiBinhChon": LOAI_BINH_CHON
-
 };

@@ -1,28 +1,11 @@
-const thucPhamService =
-    require("./thuc-pham.service");
-
-const {
-    successResponse
-} = require(
-    "../../../../utils/response.util"
-);
-
+const thucPhamService = require("./thuc-pham.service");
+const { successResponse } = require("../../../../utils/response.util");
 
 class ThucPhamController {
 
-    async getTongHop(
-        req,
-        res,
-        next
-    ) {
-
+    async getTongHop(req, res, next) {
         try {
-
-            const data =
-                await thucPhamService
-                    .getTongHop(
-                        req.query
-                    );
+            const data = await thucPhamService.getTongHop(req.query);
 
             return successResponse(
                 res,
@@ -30,33 +13,16 @@ class ThucPhamController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
-
-    async getChiTiet(
-        req,
-        res,
-        next
-    ) {
-
+    async getChiTiet(req, res, next) {
         try {
+            const { id } = req.params;
 
-            const {
-                id
-            } = req.params;
-
-            const data =
-                await thucPhamService
-                    .getChiTiet(
-                        id
-                    );
+            const data = await thucPhamService.getChiTiet(id);
 
             return successResponse(
                 res,
@@ -64,29 +30,17 @@ class ThucPhamController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
-
-    async create(
-        req,
-        res,
-        next
-    ) {
-
+    async create(req, res, next) {
         try {
-
-            const data =
-                await thucPhamService
-                    .create(
-                        req.body
-                    );
+            const data = await thucPhamService.create(
+                req.body,
+                req.file
+            );
 
             return successResponse(
                 res,
@@ -94,34 +48,20 @@ class ThucPhamController {
                 data,
                 201
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
-
-    async update(
-        req,
-        res,
-        next
-    ) {
-
+    async update(req, res, next) {
         try {
+            const { id } = req.params;
 
-            const {
-                id
-            } = req.params;
-
-            const data =
-                await thucPhamService
-                    .update(
-                        id,
-                        req.body
-                    );
+            const data = await thucPhamService.update(
+                id,
+                req.body,
+                req.file
+            );
 
             return successResponse(
                 res,
@@ -129,17 +69,11 @@ class ThucPhamController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
 }
 
-
-module.exports =
-    new ThucPhamController();
+module.exports = new ThucPhamController();

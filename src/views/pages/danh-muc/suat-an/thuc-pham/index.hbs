@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/assets/css/pages/danh-muc/suat-an/thuc-pham.css">
+
 {{> catalog/module-page
     moduleName="thuc-pham"
     apiBase="/api/mcs/v1/dm-thuc-pham"
@@ -16,10 +18,13 @@
     detailTitle="Thông tin thực phẩm"
     showEditButton=true
     showActions=true
+    showImportButton=true
+    showExportButton=true
     mobilePanelId="thucPhamMobilePanel"
     columns=columns
 }}
 
 {{> scripts/catalog-page
-    folder="ca-an"
-    page="thuc-pham"}}
+    folder="suat-an"
+    page="thuc-pham"
+}}

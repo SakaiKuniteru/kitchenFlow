@@ -37,28 +37,20 @@
         {{/if}}
 
         <input
-            type="number"
+            type="text"
             id="{{id}}"
             name="{{name}}"
             class="form-input form-input--number {{#if inputClass}}{{inputClass}}{{/if}}"
             value="{{value}}"
 
+            data-number-input
+            data-number-min="{{min}}"
+            data-number-max="{{max}}"
+            data-number-step="{{#if step}}{{step}}{{else}}any{{/if}}"
+            data-number-integer="{{#if integer}}true{{else}}false{{/if}}"
+
             {{#if placeholder}}
                 placeholder="{{placeholder}}"
-            {{/if}}
-
-            {{#if min}}
-                min="{{min}}"
-            {{/if}}
-
-            {{#if max}}
-                max="{{max}}"
-            {{/if}}
-
-            {{#if step}}
-                step="{{step}}"
-            {{else}}
-                step="any"
             {{/if}}
 
             inputmode="{{#if integer}}numeric{{else}}decimal{{/if}}"

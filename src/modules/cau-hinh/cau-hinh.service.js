@@ -15,7 +15,8 @@ const MA_THIET_LAP = {
     NGAY_BAT_DAU_TUAN_THUC_DON: "NGAY_BAT_DAU_TUAN_THUC_DON",
     THUC_DON_BAT_BUOC_DU_SO_NGAY: "THUC_DON_BAT_BUOC_DU_SO_NGAY",
     SO_TUAN_HIEN_THI_THUC_DON: "SO_TUAN_HIEN_THI_THUC_DON",
-    SO_NAM_HIEN_THI_THUC_DON_THANG: "SO_NAM_HIEN_THI_THUC_DON_THANG"
+    SO_NAM_HIEN_THI_THUC_DON_THANG: "SO_NAM_HIEN_THI_THUC_DON_THANG",
+    QUY_TAC_CHON_DON_VI_QUY_DOI: "QUY_TAC_CHON_DON_VI_QUY_DOI"
 };
 
 class CauHinhService {
@@ -102,6 +103,12 @@ class CauHinhService {
                 return {
                     ma: maThietLap,
                     giaTri: await this.getSoNamHienThiThucDonThang()
+                };
+            
+            case MA_THIET_LAP.QUY_TAC_CHON_DON_VI_QUY_DOI:
+                return {
+                    ma: maThietLap,
+                    giaTri: await this.getQuyTacChonDonViQuyDoi()
                 };
 
             default:
@@ -454,6 +461,37 @@ class CauHinhService {
         }
 
         return soNam;
+    }
+
+    async getQuyTacChonDonViQuyDoi() {
+
+        const MAC_DINH = 4;
+
+        const thietLap = await cauHinhRepository.getThietLapByMa(
+            MA_THIET_LAP.QUY_TAC_CHON_DON_VI_QUY_DOI
+        );
+
+        if (
+            !thietLap ||
+            thietLap.active !== true
+        ) {
+            return MAC_DINH;
+        }
+
+        const giaTri = Number(
+            String(
+                thietLap.gia_tri ??
+                ""
+            ).trim()
+        );
+
+        if (!Number.isInteger(giaTri) || ![1, 2, 3, 4].includes( giaTri)
+        ) {
+            return MAC_DINH;
+        }
+
+        return giaTri;
+
     }
 }
 

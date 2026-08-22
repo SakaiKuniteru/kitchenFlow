@@ -419,14 +419,18 @@ CREATE TABLE dm_thuc_pham (
     ty_le_hao_hut_du_kien NUMERIC(5, 2) DEFAULT 0 NOT NULL,
     mo_ta VARCHAR(500),
     hinh_anh VARCHAR(500),
-    dieu_kien_bao_quan VARCHAR(500),
-    xuat_xu VARCHAR(255),
+    xuat_xu_id INTEGER,
+    dieu_kien_bao_quan SMALLINT,
     quy_cach VARCHAR(255),
     CONSTRAINT chk_thuc_pham_cung_don_vi_he_so_1 CHECK (
         don_vi_so_cap_id IS NULL
         OR don_vi_su_dung_id IS NULL
         OR don_vi_so_cap_id <> don_vi_su_dung_id
         OR he_so_quy_doi = 1
+    ),
+    CONSTRAINT chk_thuc_pham_ty_le_hao_hut CHECK (
+        ty_le_hao_hut_du_kien >= 0
+        AND ty_le_hao_hut_du_kien <= 100
     )
 );
 
@@ -1089,6 +1093,10 @@ ALTER TABLE dm_thuc_pham
     ADD CONSTRAINT fk_tp_dv_su_dung
     FOREIGN KEY (don_vi_su_dung_id)
     REFERENCES dm_don_vi_tinh (id);
+ALTER TABLE dm_thuc_pham
+    ADD CONSTRAINT fk_tp_xuat_xu
+    FOREIGN KEY (xuat_xu_id)
+    REFERENCES dm_quoc_gia (id);
 ALTER TABLE dm_tinh_thanh
     ADD CONSTRAINT fk_tinh_thanh_quoc_gia
     FOREIGN KEY (quoc_gia_id)

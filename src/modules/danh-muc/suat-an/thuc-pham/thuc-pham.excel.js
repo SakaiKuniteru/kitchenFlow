@@ -1,89 +1,37 @@
 "use strict";
 
-const {
-    sendExcel
-} = require(
-    "../../../../helpers/excel/excel-result"
-);
-
-const {
-    exportThucPham
-} = require(
-    "./thuc-pham.export"
-);
-
-const {
-    importThucPham
-} = require(
-    "./thuc-pham.import"
-);
-
+const { sendExcel } = require("../../../../helpers/excel/excel-result");
+const { exportThucPham } = require("./thuc-pham.export");
+const { importThucPham } = require("./thuc-pham.import");
 
 class ThucPhamExcel {
 
-    exportData =
-        async (
-            req,
-            res,
-            next
-        ) => {
+    exportData = async (req, res, next) => {
+        try {
+            const result = await exportThucPham(req.query);
 
-            try {
+            return sendExcel(
+                res,
+                result
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
 
-                const result =
-                    await exportThucPham(
-                        req.query
-                    );
+    importData = async (req, res, next) => {
+        try {
+            const result = await importThucPham(req.file);
 
-
-                return sendExcel(
-                    res,
-                    result
-                );
-
-            } catch (error) {
-
-                next(
-                    error
-                );
-
-            }
-
-        };
-
-
-    importData =
-        async (
-            req,
-            res,
-            next
-        ) => {
-
-            try {
-
-                const result =
-                    await importThucPham(
-                        req.file
-                    );
-
-
-                return sendExcel(
-                    res,
-                    result
-                );
-
-            } catch (error) {
-
-                next(
-                    error
-                );
-
-            }
-
-        };
+            return sendExcel(
+                res,
+                result
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
 
 }
 
-
-module.exports =
-    new ThucPhamExcel();
+module.exports = new ThucPhamExcel();

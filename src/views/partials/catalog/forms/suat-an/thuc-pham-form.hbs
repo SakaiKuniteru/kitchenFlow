@@ -35,9 +35,9 @@
         }}
 
         {{> forms/number
-            id="haoHutDuKien"
-            name="haoHutDuKien"
-            label="Hao hụt dự kiến"
+            id="tyLeHaoHutDuKien"
+            name="tyLeHaoHutDuKien"
+            label="Tỷ lệ hao hụt dự kiến"
             placeholder="Nhập tỷ lệ hao hụt"
             min=0
             max=100
@@ -45,23 +45,14 @@
             suffix="%"
         }}
 
-    </div>
-
-</div>
-
-<div class="detail-panel__section">
-
-    <h3 class="detail-panel__section-title">
-        Đơn vị và quy đổi
-    </h3>
-
-    <div class="catalog-form-grid">
-
         {{> forms/select
             id="donViSoCapId"
             name="donViSoCapId"
             label="Đơn vị sơ cấp"
-            placeholder="Chọn đơn vị sơ cấp"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn đơn vị sơ cấp..."
             required=true
         }}
 
@@ -69,7 +60,10 @@
             id="donViSuDungId"
             name="donViSuDungId"
             label="Đơn vị sử dụng"
-            placeholder="Chọn đơn vị sử dụng"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn đơn vị sử dụng..."
             required=true
         }}
 
@@ -92,31 +86,67 @@
             description="Nếu bỏ trống, hệ thống tự tạo theo đơn vị và hệ số quy đổi."
         }}
 
-        <div class="catalog-form-grid__full">
+        {{> forms/select
+            id="xuatXuId"
+            name="xuatXuId"
+            label="Xuất xứ"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn quốc gia..."
+        }}
 
-            {{> forms/textarea
-                id="ghiChu"
-                name="ghiChu"
-                label="Ghi chú"
-                placeholder="Nhập ghi chú"
-                maxlength=500
-                rows=4
-                showCounter=true
-            }}
+        {{> forms/select
+            id="dieuKienBaoQuan"
+            name="dieuKienBaoQuan"
+            label="Điều kiện bảo quản"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn điều kiện bảo quản..."
+        }}
 
-        </div>
+        {{> forms/textarea
+            id="moTa"
+            name="moTa"
+            label="Mô tả"
+            placeholder="Nhập mô tả thực phẩm"
+            maxlength=500
+            rows=3
+            showCounter=true
+        }}
+
+        {{> forms/textarea
+            id="ghiChu"
+            name="ghiChu"
+            label="Ghi chú"
+            placeholder="Nhập ghi chú"
+            maxlength=500
+            rows=3
+            showCounter=true
+        }}
+
+        {{> forms/image
+            id="hinhAnh"
+            name="hinhAnh"
+            label="Hình ảnh"
+            accept="image/jpeg,image/png,image/webp"
+            width=100
+            height=100
+            minWidth=100
+            minHeight=100
+            placeholder="Tải ảnh lên"
+        }}
 
     </div>
 
 </div>
 
-<div class="detail-panel__section">
-
+<div class="thuc-pham-active-field">
     {{> forms/switch
         id="active"
         name="active"
         label="Đang hoạt động"
         checked=true
     }}
-
 </div>
