@@ -1,142 +1,54 @@
 const pool = require("../../../../config/database");
 
 class XacThucRepository {
-
-        mapTaiKhoanDangNhap(row) {
-
+    mapTaiKhoanDangNhap(row) {
         if (!row) {
             return null;
         }
 
         return {
-
-            id:
-                row.id,
-
-            nhanVienId:
-                row.nhan_vien_id,
-
-            taiKhoan:
-                row.ten_dang_nhap,
-
-            matKhauHash:
-                row.mat_khau_hash,
-
-            active:
-                row.active,
-
-            doiMatKhauLanDau:
-                row.doi_mat_khau_lan_dau,
-
-            soLanDangNhapSai:
-                row.so_lan_dang_nhap_sai,
-
-            biKhoa:
-                row.bi_khoa,
-
-            khoaDen:
-                row.khoa_den,
-
-            lanDangNhapCuoi:
-                row.lan_dang_nhap_cuoi,
-
-            maNhanVien:
-                row.ma_nhan_vien,
-
-            hoTen:
-                row.ho_ten,
-
-            email:
-                row.email,
-
-            soDienThoai:
-                row.so_dien_thoai,
-
-            anhDaiDien:
-                row.anh_dai_dien,
-
-            ngaySinh:
-                row.ngay_sinh,
-
-            gioiTinh:
-                row.gioi_tinh,
-
-            diaChi:
-                row.dia_chi,
-
-            ghiChu:
-                row.ghi_chu,
-
-            maThe:
-                row.ma_the,
-
-            maQr:
-                row.ma_qr,
-
-            maBarcode:
-                row.ma_barcode,
-
-            quocGiaId:
-                row.quoc_gia_id,
-
-            tinhThanhId:
-                row.tinh_thanh_id,
-
-            xaPhuongId:
-                row.xa_phuong_id,
-
-            coSoId:
-                row.co_so_id,
-
-            coSo:
-                row.co_so,
-
-            phongBanId:
-                row.phong_ban_id,
-
-            phongBan:
-                row.phong_ban,
-
-            chucVuId:
-                row.chuc_vu_id,
-
-            chucVu:
-                row.chuc_vu,
-
-            dsVaiTroId:
-                row.ds_vai_tro_id
-                || [],
-
-            dsVaiTro:
-                row.ds_vai_tro
-                || [],
-
-            roles:
-                row.vai_tros
-                || [],
-
-            dsQuyenId:
-                row.ds_quyen_id
-                || [],
-
-            dsQuyen:
-                row.ds_quyen
-                || [],
-
-            createdAt:
-                row.nhan_vien_created_at,
-
-            updatedAt:
-                row.nhan_vien_updated_at
-
+            id: row.id,
+            nhanVienId: row.nhan_vien_id,
+            taiKhoan: row.ten_dang_nhap,
+            matKhauHash: row.mat_khau_hash,
+            active: row.active,
+            doiMatKhauLanDau: row.doi_mat_khau_lan_dau,
+            soLanDangNhapSai: row.so_lan_dang_nhap_sai,
+            biKhoa: row.bi_khoa,
+            khoaDen: row.khoa_den,
+            lanDangNhapCuoi: row.lan_dang_nhap_cuoi,
+            maNhanVien: row.ma_nhan_vien,
+            hoTen: row.ho_ten,
+            email: row.email,
+            soDienThoai: row.so_dien_thoai,
+            anhDaiDien: row.anh_dai_dien,
+            ngaySinh: row.ngay_sinh,
+            gioiTinh: row.gioi_tinh,
+            diaChi: row.dia_chi,
+            ghiChu: row.ghi_chu,
+            maThe: row.ma_the,
+            maQr: row.ma_qr,
+            maBarcode: row.ma_barcode,
+            quocGiaId: row.quoc_gia_id,
+            tinhThanhId: row.tinh_thanh_id,
+            xaPhuongId: row.xa_phuong_id,
+            coSoId: row.co_so_id,
+            coSo: row.co_so,
+            phongBanId: row.phong_ban_id,
+            phongBan: row.phong_ban,
+            chucVuId: row.chuc_vu_id,
+            chucVu: row.chuc_vu,
+            dsVaiTroId: row.ds_vai_tro_id || [],
+            dsVaiTro: row.ds_vai_tro || [],
+            roles: row.vai_tros || [],
+            dsQuyenId: row.ds_quyen_id || [],
+            dsQuyen: row.ds_quyen || [],
+            createdAt: row.nhan_vien_created_at,
+            updatedAt: row.nhan_vien_updated_at
         };
-
     }
 
-    async findByTaiKhoan(
-        taiKhoan
-    ) {
-
+    async findByTaiKhoan(taiKhoan) {
         const sql = `
             SELECT
                 tk.id,
@@ -146,7 +58,6 @@ class XacThucRepository {
                 tk.active,
                 tk.doi_mat_khau_lan_dau,
                 tk.so_lan_dang_nhap_sai,
-                tk.khoa_den,
                 tk.khoa_den,
                 tk.lan_dang_nhap_cuoi,
 
@@ -170,70 +81,38 @@ class XacThucRepository {
                 nv.tinh_thanh_id,
                 nv.xa_phuong_id,
 
-                nv.active
-                    AS nhan_vien_active,
-
-                nv.created_at
-                    AS nhan_vien_created_at,
-
-                nv.updated_at
-                    AS nhan_vien_updated_at,
+                nv.active AS nhan_vien_active,
+                nv.created_at AS nhan_vien_created_at,
+                nv.updated_at AS nhan_vien_updated_at,
 
                 CASE
-                    WHEN cs.id IS NULL
-                        THEN NULL
-                    ELSE
-                        JSONB_BUILD_OBJECT(
-                            'id',
-                                cs.id,
-
-                            'maCoSo',
-                                cs.ma_co_so,
-
-                            'tenCoSo',
-                                cs.ten_co_so,
-
-                            'active',
-                                cs.active
-                        )
+                    WHEN cs.id IS NULL THEN NULL
+                    ELSE JSONB_BUILD_OBJECT(
+                        'id', cs.id,
+                        'maCoSo', cs.ma_co_so,
+                        'tenCoSo', cs.ten_co_so,
+                        'active', cs.active
+                    )
                 END AS co_so,
 
                 CASE
-                    WHEN pb.id IS NULL
-                        THEN NULL
-                    ELSE
-                        JSONB_BUILD_OBJECT(
-                            'id',
-                                pb.id,
-
-                            'maPhongBan',
-                                pb.ma_phong_ban,
-
-                            'tenPhongBan',
-                                pb.ten_phong_ban,
-
-                            'active',
-                                pb.active
-                        )
+                    WHEN pb.id IS NULL THEN NULL
+                    ELSE JSONB_BUILD_OBJECT(
+                        'id', pb.id,
+                        'maPhongBan', pb.ma_phong_ban,
+                        'tenPhongBan', pb.ten_phong_ban,
+                        'active', pb.active
+                    )
                 END AS phong_ban,
 
                 CASE
-                    WHEN cv.id IS NULL
-                        THEN NULL
-                    ELSE
-                        JSONB_BUILD_OBJECT(
-                            'id',
-                            cv.id,
-
-                            'maChucVu',
-                            cv.ma_chuc_vu,
-
-                            'tenChucVu',
-                            cv.ten_chuc_vu,
-
-                            'active',
-                            cv.active
-                        )
+                    WHEN cv.id IS NULL THEN NULL
+                    ELSE JSONB_BUILD_OBJECT(
+                        'id', cv.id,
+                        'maChucVu', cv.ma_chuc_vu,
+                        'tenChucVu', cv.ten_chuc_vu,
+                        'active', cv.active
+                    )
                 END AS chuc_vu,
 
                 COALESCE(
@@ -275,8 +154,7 @@ class XacThucRepository {
             LEFT JOIN dm_chuc_vu cv
                 ON cv.id = nv.chuc_vu_id
 
-            LEFT JOIN LATERAL
-            (
+            LEFT JOIN LATERAL (
                 SELECT
                     ARRAY_AGG(
                         danh_sach.id
@@ -290,26 +168,16 @@ class XacThucRepository {
 
                     JSONB_AGG(
                         JSONB_BUILD_OBJECT(
-                            'id',
-                            danh_sach.id,
-
-                            'maVaiTro',
-                            danh_sach.ma_vai_tro,
-
-                            'tenVaiTro',
-                            danh_sach.ten_vai_tro,
-
-                            'moTa',
-                            danh_sach.mo_ta,
-
-                            'active',
-                            danh_sach.active
+                            'id', danh_sach.id,
+                            'maVaiTro', danh_sach.ma_vai_tro,
+                            'tenVaiTro', danh_sach.ten_vai_tro,
+                            'moTa', danh_sach.mo_ta,
+                            'active', danh_sach.active
                         )
                         ORDER BY danh_sach.id
                     ) AS ds_vai_tro
 
-                FROM
-                (
+                FROM (
                     SELECT DISTINCT
                         vt.id,
                         vt.ma_vai_tro,
@@ -330,8 +198,7 @@ class XacThucRepository {
             ) vai_tro
                 ON TRUE
 
-            LEFT JOIN LATERAL
-            (
+            LEFT JOIN LATERAL (
                 SELECT
                     ARRAY_AGG(
                         danh_sach.id
@@ -340,23 +207,15 @@ class XacThucRepository {
 
                     JSONB_AGG(
                         JSONB_BUILD_OBJECT(
-                            'id',
-                            danh_sach.id,
-
-                            'maQuyen',
-                            danh_sach.ma_quyen,
-
-                            'tenQuyen',
-                            danh_sach.ten_quyen,
-
-                            'active',
-                            danh_sach.active
+                            'id', danh_sach.id,
+                            'maQuyen', danh_sach.ma_quyen,
+                            'tenQuyen', danh_sach.ten_quyen,
+                            'active', danh_sach.active
                         )
                         ORDER BY danh_sach.id
                     ) AS ds_quyen
 
-                FROM
-                (
+                FROM (
                     SELECT DISTINCT
                         q.id,
                         q.ma_quyen,
@@ -385,43 +244,27 @@ class XacThucRepository {
                 ON TRUE
 
             WHERE
-                LOWER(
-                    TRIM(
-                        tk.ten_dang_nhap
-                    )
-                )
-                =
-                LOWER(
-                    TRIM($1)
-                )
+                LOWER(TRIM(tk.ten_dang_nhap)) =
+                LOWER(TRIM($1))
 
             LIMIT 1
         `;
 
-        const result =
-            await pool.query(
-                sql,
-                [taiKhoan]
-            );
+        const result = await pool.query(
+            sql,
+            [taiKhoan]
+        );
 
-        if (
-            result.rows.length === 0
-        ) {
-
+        if (result.rows.length === 0) {
             return null;
-
         }
 
         return this.mapTaiKhoanDangNhap(
             result.rows[0]
         );
-
     }
 
-    async increaseFailedLogin(
-        taiKhoanId
-    ) {
-
+    async increaseFailedLogin(taiKhoanId) {
         const sql = `
             UPDATE dm_tai_khoan
             SET
@@ -430,51 +273,31 @@ class XacThucRepository {
                         so_lan_dang_nhap_sai,
                         0
                     ) + 1,
-
-                updated_at =
-                    NOW()
-
+                updated_at = NOW()
             WHERE id = $1
-
             RETURNING
                 so_lan_dang_nhap_sai
         `;
 
-
-        const result =
-            await pool.query(
-                sql,
-                [
-                    taiKhoanId
-                ]
-            );
-
-
-        if (
-            result.rows.length ===
-            0
-        ) {
-
-            return 0;
-
-        }
-
-
-        return Number(
-            result.rows[0]
-                .so_lan_dang_nhap_sai
+        const result = await pool.query(
+            sql,
+            [taiKhoanId]
         );
 
+        if (result.rows.length === 0) {
+            return 0;
+        }
+
+        return Number(
+            result.rows[0].so_lan_dang_nhap_sai
+        );
     }
 
     async getFailedLoginCount(taiKhoanId) {
-
         const sql = `
             SELECT
                 so_lan_dang_nhap_sai
-
             FROM dm_tai_khoan
-
             WHERE id = $1
         `;
 
@@ -484,19 +307,13 @@ class XacThucRepository {
         );
 
         if (result.rows.length === 0) {
-
             return 0;
-
         }
 
         return result.rows[0].so_lan_dang_nhap_sai;
-
     }
 
-    async resetFailedLogin(
-        taiKhoanId
-    ) {
-
+    async resetFailedLogin(taiKhoanId) {
         const sql = `
             UPDATE dm_tai_khoan
             SET
@@ -507,21 +324,16 @@ class XacThucRepository {
             WHERE id = $1
         `;
 
-
         await pool.query(
             sql,
-            [
-                taiKhoanId
-            ]
+            [taiKhoanId]
         );
-
     }
 
     async lockAccount(
         taiKhoanId,
         lockUntil = null
     ) {
-
         const sql = `
             UPDATE dm_tai_khoan
             SET
@@ -531,7 +343,6 @@ class XacThucRepository {
             WHERE id = $2
         `;
 
-
         await pool.query(
             sql,
             [
@@ -539,13 +350,9 @@ class XacThucRepository {
                 taiKhoanId
             ]
         );
-
     }
 
-    async unlockAccount(
-        taiKhoanId
-    ) {
-
+    async unlockAccount(taiKhoanId) {
         const sql = `
             UPDATE dm_tai_khoan
             SET
@@ -556,20 +363,13 @@ class XacThucRepository {
             WHERE id = $1
         `;
 
-
         await pool.query(
             sql,
-            [
-                taiKhoanId
-            ]
+            [taiKhoanId]
         );
-
     }
 
-    async updateLastLogin(
-        taiKhoanId
-    ) {
-
+    async updateLastLogin(taiKhoanId) {
         const sql = `
             UPDATE dm_tai_khoan
             SET
@@ -586,19 +386,12 @@ class XacThucRepository {
                 lan_dang_nhap_cuoi
         `;
 
-        const result =
-            await pool.query(
-                sql,
-                [
-                    taiKhoanId
-                ]
-            );
-
-        return (
-            result.rows[0] ||
-            null
+        const result = await pool.query(
+            sql,
+            [taiKhoanId]
         );
 
+        return result.rows[0] || null;
     }
 
     async saveRefreshToken(
@@ -606,7 +399,6 @@ class XacThucRepository {
         refreshToken,
         expiresAt
     ) {
-
         const sql = `
             INSERT INTO nv_refresh_token
             (
@@ -615,9 +407,7 @@ class XacThucRepository {
                 expires_at,
                 revoked
             )
-
             VALUES
-
             (
                 $1,
                 $2,
@@ -634,16 +424,12 @@ class XacThucRepository {
                 expiresAt
             ]
         );
-
     }
 
     async findRefreshToken(refreshToken) {
-
         const sql = `
             SELECT *
-
             FROM nv_refresh_token
-
             WHERE
                 token = $1
                 AND revoked = FALSE
@@ -655,18 +441,14 @@ class XacThucRepository {
         );
 
         return result.rows[0];
-
     }
 
     async deleteRefreshToken(refreshToken) {
-
         const sql = `
             UPDATE nv_refresh_token
-
             SET
                 revoked = TRUE,
                 updated_at = NOW()
-
             WHERE token = $1
         `;
 
@@ -674,14 +456,12 @@ class XacThucRepository {
             sql,
             [refreshToken]
         );
-
     }
 
     async changeMatKhau(
         taiKhoanId,
         matKhauHash
     ) {
-
         const sql = `
             UPDATE dm_tai_khoan
             SET
@@ -699,18 +479,14 @@ class XacThucRepository {
                 taiKhoanId
             ]
         );
-
     }
 
     async updateMatKhauChangedAt(taiKhoanId) {
-
         const sql = `
             UPDATE dm_tai_khoan
-
             SET
                 doi_mat_khau_lan_cuoi = NOW(),
                 updated_at = NOW()
-
             WHERE id = $1
         `;
 
@@ -718,18 +494,14 @@ class XacThucRepository {
             sql,
             [taiKhoanId]
         );
-
     }
 
     async revokeRefreshToken(token) {
-
         const sql = `
             UPDATE nv_refresh_token
-
             SET
                 revoked = TRUE,
                 updated_at = NOW()
-
             WHERE token = $1
         `;
 
@@ -737,18 +509,14 @@ class XacThucRepository {
             sql,
             [token]
         );
-
     }
 
     async revokeAllRefreshToken(taiKhoanId) {
-
         const sql = `
             UPDATE nv_refresh_token
-
             SET
                 revoked = TRUE,
                 updated_at = NOW()
-
             WHERE
                 tai_khoan_id = $1
                 AND revoked = FALSE
@@ -758,13 +526,9 @@ class XacThucRepository {
             sql,
             [taiKhoanId]
         );
-
     }
 
-    async findById(
-        taiKhoanId
-    ) {
-
+    async findById(taiKhoanId) {
         const sql = `
             SELECT
                 tk.id,
@@ -797,70 +561,38 @@ class XacThucRepository {
                 nv.tinh_thanh_id,
                 nv.xa_phuong_id,
 
-                nv.active
-                    AS nhan_vien_active,
-
-                nv.created_at
-                    AS nhan_vien_created_at,
-
-                nv.updated_at
-                    AS nhan_vien_updated_at,
+                nv.active AS nhan_vien_active,
+                nv.created_at AS nhan_vien_created_at,
+                nv.updated_at AS nhan_vien_updated_at,
 
                 CASE
-                    WHEN cs.id IS NULL
-                        THEN NULL
-                    ELSE
-                        JSONB_BUILD_OBJECT(
-                            'id',
-                            cs.id,
-
-                            'maCoSo',
-                            cs.ma_co_so,
-
-                            'tenCoSo',
-                            cs.ten_co_so,
-
-                            'active',
-                            cs.active
-                        )
+                    WHEN cs.id IS NULL THEN NULL
+                    ELSE JSONB_BUILD_OBJECT(
+                        'id', cs.id,
+                        'maCoSo', cs.ma_co_so,
+                        'tenCoSo', cs.ten_co_so,
+                        'active', cs.active
+                    )
                 END AS co_so,
 
                 CASE
-                    WHEN pb.id IS NULL
-                        THEN NULL
-                    ELSE
-                        JSONB_BUILD_OBJECT(
-                            'id',
-                            pb.id,
-
-                            'maPhongBan',
-                            pb.ma_phong_ban,
-
-                            'tenPhongBan',
-                            pb.ten_phong_ban,
-
-                            'active',
-                            pb.active
-                        )
+                    WHEN pb.id IS NULL THEN NULL
+                    ELSE JSONB_BUILD_OBJECT(
+                        'id', pb.id,
+                        'maPhongBan', pb.ma_phong_ban,
+                        'tenPhongBan', pb.ten_phong_ban,
+                        'active', pb.active
+                    )
                 END AS phong_ban,
 
                 CASE
-                    WHEN cv.id IS NULL
-                        THEN NULL
-                    ELSE
-                        JSONB_BUILD_OBJECT(
-                            'id',
-                            cv.id,
-
-                            'maChucVu',
-                            cv.ma_chuc_vu,
-
-                            'tenChucVu',
-                            cv.ten_chuc_vu,
-
-                            'active',
-                            cv.active
-                        )
+                    WHEN cv.id IS NULL THEN NULL
+                    ELSE JSONB_BUILD_OBJECT(
+                        'id', cv.id,
+                        'maChucVu', cv.ma_chuc_vu,
+                        'tenChucVu', cv.ten_chuc_vu,
+                        'active', cv.active
+                    )
                 END AS chuc_vu,
 
                 COALESCE(
@@ -902,8 +634,7 @@ class XacThucRepository {
             LEFT JOIN dm_chuc_vu cv
                 ON cv.id = nv.chuc_vu_id
 
-            LEFT JOIN LATERAL
-            (
+            LEFT JOIN LATERAL (
                 SELECT
                     ARRAY_AGG(
                         danh_sach.id
@@ -917,26 +648,16 @@ class XacThucRepository {
 
                     JSONB_AGG(
                         JSONB_BUILD_OBJECT(
-                            'id',
-                            danh_sach.id,
-
-                            'maVaiTro',
-                            danh_sach.ma_vai_tro,
-
-                            'tenVaiTro',
-                            danh_sach.ten_vai_tro,
-
-                            'moTa',
-                            danh_sach.mo_ta,
-
-                            'active',
-                            danh_sach.active
+                            'id', danh_sach.id,
+                            'maVaiTro', danh_sach.ma_vai_tro,
+                            'tenVaiTro', danh_sach.ten_vai_tro,
+                            'moTa', danh_sach.mo_ta,
+                            'active', danh_sach.active
                         )
                         ORDER BY danh_sach.id
                     ) AS ds_vai_tro
 
-                FROM
-                (
+                FROM (
                     SELECT DISTINCT
                         vt.id,
                         vt.ma_vai_tro,
@@ -957,8 +678,7 @@ class XacThucRepository {
             ) vai_tro
                 ON TRUE
 
-            LEFT JOIN LATERAL
-            (
+            LEFT JOIN LATERAL (
                 SELECT
                     ARRAY_AGG(
                         danh_sach.id
@@ -967,23 +687,15 @@ class XacThucRepository {
 
                     JSONB_AGG(
                         JSONB_BUILD_OBJECT(
-                            'id',
-                            danh_sach.id,
-
-                            'maQuyen',
-                            danh_sach.ma_quyen,
-
-                            'tenQuyen',
-                            danh_sach.ten_quyen,
-
-                            'active',
-                            danh_sach.active
+                            'id', danh_sach.id,
+                            'maQuyen', danh_sach.ma_quyen,
+                            'tenQuyen', danh_sach.ten_quyen,
+                            'active', danh_sach.active
                         )
                         ORDER BY danh_sach.id
                     ) AS ds_quyen
 
-                FROM
-                (
+                FROM (
                     SELECT DISTINCT
                         q.id,
                         q.ma_quyen,
@@ -1017,34 +729,25 @@ class XacThucRepository {
             LIMIT 1
         `;
 
-        const result =
-            await pool.query(
-                sql,
-                [taiKhoanId]
-            );
+        const result = await pool.query(
+            sql,
+            [taiKhoanId]
+        );
 
-        if (
-            result.rows.length === 0
-        ) {
-
+        if (result.rows.length === 0) {
             return null;
-
         }
 
         return this.mapTaiKhoanDangNhap(
             result.rows[0]
         );
-
     }
 
     async getMatKhauHash(taiKhoanId) {
-
         const sql = `
             SELECT
                 mat_khau_hash
-
             FROM dm_tai_khoan
-
             WHERE id = $1
         `;
 
@@ -1054,16 +757,11 @@ class XacThucRepository {
         );
 
         return result.rows[0];
-
     }
 
-    async getThongTinNhanVien(
-        nhanVienId
-    ) {
-
+    async getThongTinNhanVien(nhanVienId) {
         const sql = `
             SELECT
-
                 nv.id AS nhan_vien_id,
 
                 tk.id AS tai_khoan_id,
@@ -1101,69 +799,36 @@ class XacThucRepository {
                 nv.updated_at AS nhan_vien_updated_at,
 
                 CASE
-                    WHEN cs.id IS NULL
-                        THEN NULL
-                    ELSE
-                        JSONB_BUILD_OBJECT(
-                            'id',
-                                cs.id,
-
-                            'maCoSo',
-                                cs.ma_co_so,
-
-                            'tenCoSo',
-                                cs.ten_co_so,
-
-                            'diaChi',
-                                cs.dia_chi,
-
-                            'logo',
-                                cs.logo,
-
-                            'favicon',
-                                cs.favicon,
-
-                            'active',
-                                cs.active
-                        )
+                    WHEN cs.id IS NULL THEN NULL
+                    ELSE JSONB_BUILD_OBJECT(
+                        'id', cs.id,
+                        'maCoSo', cs.ma_co_so,
+                        'tenCoSo', cs.ten_co_so,
+                        'diaChi', cs.dia_chi,
+                        'logo', cs.logo,
+                        'favicon', cs.favicon,
+                        'active', cs.active
+                    )
                 END AS co_so,
 
                 CASE
-                    WHEN pb.id IS NULL
-                        THEN NULL
-                    ELSE
-                        JSONB_BUILD_OBJECT(
-                            'id',
-                                pb.id,
-
-                            'maPhongBan',
-                                pb.ma_phong_ban,
-
-                            'tenPhongBan',
-                                pb.ten_phong_ban,
-
-                            'active',
-                                pb.active
-                        )
+                    WHEN pb.id IS NULL THEN NULL
+                    ELSE JSONB_BUILD_OBJECT(
+                        'id', pb.id,
+                        'maPhongBan', pb.ma_phong_ban,
+                        'tenPhongBan', pb.ten_phong_ban,
+                        'active', pb.active
+                    )
                 END AS phong_ban,
 
                 CASE
-                    WHEN cv.id IS NULL
-                        THEN NULL
-                    ELSE
-                        JSONB_BUILD_OBJECT(
-                            'id',
-                                cv.id,
-
-                            'maChucVu',
-                                cv.ma_chuc_vu,
-
-                            'tenChucVu',
-                                cv.ten_chuc_vu,
-
-                            'active',
-                                cv.active
-                        )
+                    WHEN cv.id IS NULL THEN NULL
+                    ELSE JSONB_BUILD_OBJECT(
+                        'id', cv.id,
+                        'maChucVu', cv.ma_chuc_vu,
+                        'tenChucVu', cv.ten_chuc_vu,
+                        'active', cv.active
+                    )
                 END AS chuc_vu,
 
                 COALESCE(
@@ -1205,10 +870,8 @@ class XacThucRepository {
             LEFT JOIN dm_chuc_vu cv
                 ON cv.id = nv.chuc_vu_id
 
-            LEFT JOIN LATERAL
-            (
+            LEFT JOIN LATERAL (
                 SELECT
-
                     ARRAY_AGG(
                         danh_sach.id
                         ORDER BY danh_sach.id
@@ -1221,28 +884,17 @@ class XacThucRepository {
 
                     JSONB_AGG(
                         JSONB_BUILD_OBJECT(
-                            'id',
-                                danh_sach.id,
-
-                            'maVaiTro',
-                                danh_sach.ma_vai_tro,
-
-                            'tenVaiTro',
-                                danh_sach.ten_vai_tro,
-
-                            'moTa',
-                                danh_sach.mo_ta,
-
-                            'active',
-                                danh_sach.active
+                            'id', danh_sach.id,
+                            'maVaiTro', danh_sach.ma_vai_tro,
+                            'tenVaiTro', danh_sach.ten_vai_tro,
+                            'moTa', danh_sach.mo_ta,
+                            'active', danh_sach.active
                         )
                         ORDER BY danh_sach.id
                     ) AS ds_vai_tro
 
-                FROM
-                (
+                FROM (
                     SELECT DISTINCT
-
                         vt.id,
                         vt.ma_vai_tro,
                         vt.ten_vai_tro,
@@ -1258,16 +910,12 @@ class XacThucRepository {
                         nvt.nhan_vien_id = nv.id
                         AND nvt.active = TRUE
                         AND vt.active = TRUE
-
                 ) danh_sach
-
             ) vai_tro
                 ON TRUE
 
-            LEFT JOIN LATERAL
-            (
+            LEFT JOIN LATERAL (
                 SELECT
-
                     ARRAY_AGG(
                         danh_sach.id
                         ORDER BY danh_sach.id
@@ -1275,28 +923,17 @@ class XacThucRepository {
 
                     JSONB_AGG(
                         JSONB_BUILD_OBJECT(
-                            'id',
-                                danh_sach.id,
-
-                            'maQuyen',
-                                danh_sach.ma_quyen,
-
-                            'tenQuyen',
-                                danh_sach.ten_quyen,
-
-                            'moTa',
-                                danh_sach.mo_ta,
-
-                            'active',
-                                danh_sach.active
+                            'id', danh_sach.id,
+                            'maQuyen', danh_sach.ma_quyen,
+                            'tenQuyen', danh_sach.ten_quyen,
+                            'moTa', danh_sach.mo_ta,
+                            'active', danh_sach.active
                         )
                         ORDER BY danh_sach.id
                     ) AS ds_quyen
 
-                FROM
-                (
+                FROM (
                     SELECT DISTINCT
-
                         q.id,
                         q.ma_quyen,
                         q.ten_quyen,
@@ -1320,9 +957,7 @@ class XacThucRepository {
                     WHERE
                         nvt.nhan_vien_id = nv.id
                         AND nvt.active = TRUE
-
                 ) danh_sach
-
             ) quyen
                 ON TRUE
 
@@ -1331,143 +966,58 @@ class XacThucRepository {
             LIMIT 1
         `;
 
-        const result =
-            await pool.query(
-                sql,
-                [nhanVienId]
-            );
+        const result = await pool.query(
+            sql,
+            [nhanVienId]
+        );
 
-        if (
-            result.rows.length === 0
-        ) {
-
+        if (result.rows.length === 0) {
             return null;
-
         }
 
-        const row =
-            result.rows[0];
+        const row = result.rows[0];
 
         return {
-
-            id:
-                row.nhan_vien_id,
-
-            nhanVienId:
-                row.nhan_vien_id,
-
-            taiKhoanId:
-                row.tai_khoan_id,
-
-            tenDangNhap:
-                row.ten_dang_nhap,
-
-            maNhanVien:
-                row.ma_nhan_vien,
-
-            hoTen:
-                row.ho_ten,
-
-            email:
-                row.email,
-
-            soDienThoai:
-                row.so_dien_thoai,
-
-            anhDaiDien:
-                row.anh_dai_dien,
-
-            ngaySinh:
-                row.ngay_sinh,
-
-            gioiTinh:
-                row.gioi_tinh,
-
-            diaChi:
-                row.dia_chi,
-
-            ghiChu:
-                row.ghi_chu,
-
-            maThe:
-                row.ma_the,
-
-            maQr:
-                row.ma_qr,
-
-            maBarcode:
-                row.ma_barcode,
-
-            quocGiaId:
-                row.quoc_gia_id,
-
-            tinhThanhId:
-                row.tinh_thanh_id,
-
-            xaPhuongId:
-                row.xa_phuong_id,
-
-            coSoId:
-                row.co_so_id,
-
-            coSo:
-                row.co_so,
-
-            phongBanId:
-                row.phong_ban_id,
-
-            phongBan:
-                row.phong_ban,
-
-            chucVuId:
-                row.chuc_vu_id,
-
-            chucVu:
-                row.chuc_vu,
-
-            dsVaiTroId:
-                row.ds_vai_tro_id || [],
-
-            roles:
-                row.vai_tros || [],
-
-            dsVaiTro:
-                row.ds_vai_tro || [],
-
-            dsQuyenId:
-                row.ds_quyen_id || [],
-
-            dsQuyen:
-                row.ds_quyen || [],
-
-            active:
-                row.nhan_vien_active,
-
-            taiKhoanActive:
-                row.tai_khoan_active,
-
-            doiMatKhauLanDau:
-                row.doi_mat_khau_lan_dau,
-
-            soLanDangNhapSai:
-                row.so_lan_dang_nhap_sai,
-
-            khoaDen:
-                row.khoa_den,
-
-            lanDangNhapCuoi:
-                row.lan_dang_nhap_cuoi,
-
-            createdAt:
-                row.nhan_vien_created_at,
-
-            updatedAt:
-                row.nhan_vien_updated_at
-
+            id: row.nhan_vien_id,
+            nhanVienId: row.nhan_vien_id,
+            taiKhoanId: row.tai_khoan_id,
+            tenDangNhap: row.ten_dang_nhap,
+            maNhanVien: row.ma_nhan_vien,
+            hoTen: row.ho_ten,
+            email: row.email,
+            soDienThoai: row.so_dien_thoai,
+            anhDaiDien: row.anh_dai_dien,
+            ngaySinh: row.ngay_sinh,
+            gioiTinh: row.gioi_tinh,
+            diaChi: row.dia_chi,
+            ghiChu: row.ghi_chu,
+            maThe: row.ma_the,
+            maQr: row.ma_qr,
+            maBarcode: row.ma_barcode,
+            quocGiaId: row.quoc_gia_id,
+            tinhThanhId: row.tinh_thanh_id,
+            xaPhuongId: row.xa_phuong_id,
+            coSoId: row.co_so_id,
+            coSo: row.co_so,
+            phongBanId: row.phong_ban_id,
+            phongBan: row.phong_ban,
+            chucVuId: row.chuc_vu_id,
+            chucVu: row.chuc_vu,
+            dsVaiTroId: row.ds_vai_tro_id || [],
+            roles: row.vai_tros || [],
+            dsVaiTro: row.ds_vai_tro || [],
+            dsQuyenId: row.ds_quyen_id || [],
+            dsQuyen: row.ds_quyen || [],
+            active: row.nhan_vien_active,
+            taiKhoanActive: row.tai_khoan_active,
+            doiMatKhauLanDau: row.doi_mat_khau_lan_dau,
+            soLanDangNhapSai: row.so_lan_dang_nhap_sai,
+            khoaDen: row.khoa_den,
+            lanDangNhapCuoi: row.lan_dang_nhap_cuoi,
+            createdAt: row.nhan_vien_created_at,
+            updatedAt: row.nhan_vien_updated_at
         };
-
     }
-
 }
 
 module.exports = new XacThucRepository();

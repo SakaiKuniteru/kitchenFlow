@@ -73,17 +73,11 @@ document.addEventListener(
                 '[type="submit"]'
             );
 
-        const PASSWORD_PATTERN =
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9\s])\S{8,}$/;
-
-        const CHANGE_PASSWORD_ENDPOINT =
-            "/api/mcs/v1/auth/doi-mat-khau";
-
+        const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9\s])\S{8,}$/;
+        const CHANGE_PASSWORD_ENDPOINT = "/api/mcs/v1/dm-tai-khoan/doi-mat-khau";
 
         initializePasswordToggles();
-
         initializeValidation();
-
 
         function initializePasswordToggles() {
 
@@ -163,12 +157,6 @@ document.addEventListener(
                                     );
 
                                 } catch (error) {
-
-                                    /*
-                                     * Một số trình duyệt không hỗ trợ
-                                     * setSelectionRange cho loại input.
-                                     */
-
                                 }
 
                             }
@@ -187,6 +175,8 @@ document.addEventListener(
 
                     event.preventDefault();
 
+                    event.stopPropagation();
+
                     clearAllErrors();
 
                     const valid =
@@ -202,19 +192,6 @@ document.addEventListener(
 
                     try {
 
-                        const accessToken =
-                            localStorage.getItem(
-                                "accessToken"
-                            );
-
-                        if (!accessToken) {
-
-                            throw new Error(
-                                "Phiên đăng nhập không tồn tại. Vui lòng đăng nhập lại."
-                            );
-
-                        }
-
                         const result =
                             await window.MCS
                                 .api
@@ -222,7 +199,7 @@ document.addEventListener(
                                     CHANGE_PASSWORD_ENDPOINT,
                                     {
                                         method:
-                                            "POST",
+                                            "PATCH",
 
                                         body:
                                             JSON.stringify({
@@ -235,40 +212,17 @@ document.addEventListener(
                                                 matKhauMoi:
                                                     fields
                                                         .matKhauMoi
+                                                        .value,
+
+                                                xacNhanMatKhau:
+                                                    fields
+                                                        .xacNhanMatKhauMoi
                                                         .value
 
                                             })
 
                                     }
                                 );
-
-                        let result = null;
-
-                        try {
-
-                            result =
-                                await response.json();
-
-                        } catch {
-
-                            result = null;
-
-                        }
-
-                        if (!response.ok) {
-
-                            const error =
-                                new Error(
-                                    result?.message ||
-                                    "Không thể đổi mật khẩu."
-                                );
-
-                            error.status =
-                                response.status;
-
-                            throw error;
-
-                        }
 
                         window.MCS?.toast
                             ?.success(
@@ -287,11 +241,7 @@ document.addEventListener(
                         resetPasswordToggles();
 
                         window.MCS.modal.close(
-                            "changePasswordModal",
-                            {
-                                force:
-                                    true
-                            }
+                            "changePasswordModal"
                         );
 
                         window.setTimeout(
@@ -330,18 +280,17 @@ document.addEventListener(
                             error?.message ||
                             "Không thể đổi mật khẩu.";
 
+                        const normalizedMessage =
+                            message
+                                .toLowerCase();
+
                         if (
-                            message
-                                .toLowerCase()
-                                .includes(
-                                    "mật khẩu cũ"
-                                )
-                            ||
-                            message
-                                .toLowerCase()
-                                .includes(
-                                    "mật khẩu hiện tại"
-                                )
+                            normalizedMessage.includes(
+                                "mật khẩu cũ"
+                            ) ||
+                            normalizedMessage.includes(
+                                "mật khẩu hiện tại"
+                            )
                         ) {
 
                             setFieldError(
@@ -349,18 +298,23 @@ document.addEventListener(
                                 message
                             );
 
-                            fields.matKhauCu
+                            fields
+                                .matKhauCu
                                 ?.focus();
 
                         } else {
 
                             if (
-                                window.MCS?.toast?.error
+                                window.MCS
+                                    ?.toast
+                                    ?.error
                             ) {
 
-                                window.MCS.toast.error(
-                                    message
-                                );
+                                window.MCS
+                                    .toast
+                                    .error(
+                                        message
+                                    );
 
                             } else {
 
@@ -384,7 +338,9 @@ document.addEventListener(
             );
 
 
-            Object.values(fields)
+            Object.values(
+                fields
+            )
                 .forEach(
                     field => {
 
@@ -396,7 +352,6 @@ document.addEventListener(
                                     field.name
                                 );
 
-
                                 if (
                                     field.name ===
                                     "matKhauMoi"
@@ -406,11 +361,6 @@ document.addEventListener(
                                         field.value
                                     );
 
-                                    /*
-                                    * Khi mật khẩu mới thay đổi,
-                                    * kiểm tra lại trường xác nhận
-                                    * nếu người dùng đã nhập.
-                                    */
                                     if (
                                         fields
                                             .xacNhanMatKhauMoi
