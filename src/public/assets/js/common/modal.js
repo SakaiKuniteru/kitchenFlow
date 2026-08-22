@@ -1,164 +1,80 @@
 "use strict";
 
-
-window.MCS =
-    window.MCS || {};
-
+window.MCS = window.MCS || {};
 
 window.MCS.modal = {
+    activeModal: null,
 
-    activeModal:
-        null,
-
-
-    open(
-        modalOrId,
-        options = {}
-    ) {
-
-        const modal =
-            typeof modalOrId ===
-                "string"
-                ? document.getElementById(
-                    modalOrId
-                )
-                : modalOrId;
+    open(modalOrId, options = {}) {
+        const modal = typeof modalOrId === "string"
+            ? document.getElementById(modalOrId)
+            : modalOrId;
 
         if (!modal) {
             return;
         }
 
-        modal.hidden =
-            false;
+        modal.hidden = false;
+        modal.classList.add("is-open");
+        modal.dataset.dismissible = options.dismissible === false ? "false" : "true";
+        document.body.classList.add("modal-open");
+        this.activeModal = modal;
 
-        modal.classList.add(
-            "is-open"
+        const focusable = modal.querySelector(
+            [
+                "input:not([disabled])",
+                "select:not([disabled])",
+                "textarea:not([disabled])",
+                "button:not([disabled])"
+            ].join(",")
         );
 
-        modal.dataset
-            .dismissible =
-            options.dismissible ===
-                false
-                ? "false"
-                : "true";
-
-        document.body
-            .classList
-            .add(
-                "modal-open"
-            );
-
-        this.activeModal =
-            modal;
-
-        const focusable =
-            modal.querySelector(
-                [
-                    "input:not([disabled])",
-                    "select:not([disabled])",
-                    "textarea:not([disabled])",
-                    "button:not([disabled])"
-                ].join(",")
-            );
-
-        window.setTimeout(
-            () => {
-
-                focusable?.focus();
-
-            },
-            30
-        );
-
+        window.setTimeout(() => {
+            focusable?.focus();
+        }, 30);
     },
 
-
-    close(
-        modalOrId,
-        options = {}
-    ) {
-
-        const modal =
-            typeof modalOrId ===
-                "string"
-                ? document.getElementById(
-                    modalOrId
-                )
-                : (
-                    modalOrId ||
-                    this.activeModal
-                );
+    close(modalOrId, options = {}) {
+        const modal = typeof modalOrId === "string"
+            ? document.getElementById(modalOrId)
+            : (
+                modalOrId ||
+                this.activeModal
+            );
 
         if (!modal) {
             return;
         }
 
-        if (
-            modal.dataset
-                .dismissible ===
-                "false"
-        ) {
+        if (modal.dataset.dismissible === "false") {
             return;
         }
 
-        modal.hidden =
-            true;
+        modal.hidden = true;
+        modal.classList.remove("is-open");
+        document.body.classList.remove("modal-open");
 
-        modal.classList.remove(
-            "is-open"
-        );
-
-        document.body
-            .classList
-            .remove(
-                "modal-open"
-            );
-
-        if (
-            this.activeModal === modal
-        ) {
-
-            this.activeModal =
-                null;
-
+        if (this.activeModal === modal) {
+            this.activeModal = null;
         }
-
     }
-
 };
 
-
 window.MCS.alert = {
-
     show({
         title = "Thông báo",
         message = "",
         type = "info"
     } = {}) {
-
-        const modal =
-            document.getElementById(
-                "alertModal"
-            );
+        const modal = document.getElementById("alertModal");
 
         if (!modal) {
             return;
         }
 
-        const titleElement =
-            modal.querySelector(
-                "[data-alert-title]"
-            );
-
-        const messageElement =
-            modal.querySelector(
-                "[data-alert-message]"
-            );
-
-        const iconElement =
-            modal.querySelector(
-                "[data-alert-icon]"
-            );
+        const titleElement = modal.querySelector("[data-alert-title]");
+        const messageElement = modal.querySelector("[data-alert-message]");
+        const iconElement = modal.querySelector("[data-alert-icon]");
 
         const iconMap = {
             success: "✓",
@@ -168,271 +84,131 @@ window.MCS.alert = {
         };
 
         if (titleElement) {
-
-            titleElement.textContent =
-                title;
-
+            titleElement.textContent = title;
         }
 
         if (messageElement) {
-
-            messageElement.textContent =
-                message;
-
+            messageElement.textContent = message;
         }
 
         if (iconElement) {
-
-            iconElement.textContent =
-                iconMap[type] ||
-                iconMap.info;
-
+            iconElement.textContent = iconMap[type] || iconMap.info;
         }
 
-        modal.dataset.alertType =
-            type;
+        modal.dataset.alertType = type;
 
-        window.MCS.modal.open(
-            modal
-        );
-
+        window.MCS.modal.open(modal);
     },
 
-
-    success(
-        message,
-        title = "Thành công"
-    ) {
-
+    success(message, title = "Thành công") {
         this.show({
             title,
             message,
-            type:
-                "success"
+            type: "success"
         });
-
     },
 
-
-    error(
-        message,
-        title = "Lỗi"
-    ) {
-
+    error(message, title = "Lỗi") {
         this.show({
             title,
             message,
-            type:
-                "error"
+            type: "error"
         });
-
     },
 
-
-    warning(
-        message,
-        title = "Cảnh báo"
-    ) {
-
+    warning(message, title = "Cảnh báo") {
         this.show({
             title,
             message,
-            type:
-                "warning"
+            type: "warning"
         });
-
     },
 
-
-    info(
-        message,
-        title = "Thông báo"
-    ) {
-
+    info(message, title = "Thông báo") {
         this.show({
             title,
             message,
-            type:
-                "info"
+            type: "info"
         });
-
     }
-
 };
 
-
 window.MCS.confirm = {
-
-    callback:
-        null,
-
+    callback: null,
 
     show({
         title = "Xác nhận",
-        message =
-            "Bạn có chắc chắn muốn thực hiện thao tác này?",
-        confirmLabel =
-            "Đồng ý",
-        type =
-            "primary",
-        onConfirm =
-            null
+        message = "Bạn có chắc chắn muốn thực hiện thao tác này?",
+        confirmLabel = "Đồng ý",
+        type = "primary",
+        onConfirm = null
     } = {}) {
-
-        const modal =
-            document.getElementById(
-                "confirmModal"
-            );
+        const modal = document.getElementById("confirmModal");
 
         if (!modal) {
             return;
         }
 
-        modal.querySelector(
-            "[data-confirm-title]"
-        ).textContent =
-            title;
+        modal.querySelector("[data-confirm-title]").textContent = title;
+        modal.querySelector("[data-confirm-message]").textContent = message;
 
-        modal.querySelector(
-            "[data-confirm-message]"
-        ).textContent =
-            message;
+        const button = modal.querySelector("[data-confirm-submit]");
 
-        const button =
-            modal.querySelector(
-                "[data-confirm-submit]"
-            );
+        button.textContent = confirmLabel;
+        button.className = "confirm-modal__button";
 
-        button.textContent =
-            confirmLabel;
-
-        button.className =
-            "confirm-modal__button";
-
-        if (
-            type ===
-            "danger"
-        ) {
-
-            button.classList.add(
-                "confirm-modal__button--danger"
-            );
-
+        if (type === "danger") {
+            button.classList.add("confirm-modal__button--danger");
         } else {
-
-            button.classList.add(
-                "confirm-modal__button--primary"
-            );
-
+            button.classList.add("confirm-modal__button--primary");
         }
 
-        this.callback =
-            onConfirm;
+        this.callback = onConfirm;
 
-        window.MCS.modal.open(
-            modal
-        );
-
+        window.MCS.modal.open(modal);
     }
-
 };
 
+document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("click", async event => {
+        const closeButton = event.target.closest("[data-modal-close]");
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+        if (closeButton) {
+            const modal = closeButton.closest(".modal");
 
-        document.addEventListener(
-            "click",
-            async event => {
+            window.MCS.modal.close(modal);
 
-                const closeButton =
-                    event.target.closest(
-                        "[data-modal-close]"
-                    );
+            return;
+        }
 
-                if (closeButton) {
+        const confirmButton = event.target.closest("[data-confirm-submit]");
 
-                    const modal =
-                        closeButton.closest(
-                            ".modal"
-                        );
+        if (confirmButton) {
+            const callback = window.MCS.confirm.callback;
 
-                    window.MCS.modal
-                        .close(
-                            modal
-                        );
+            if (typeof callback === "function") {
+                confirmButton.disabled = true;
 
-                    return;
-
+                try {
+                    await callback();
+                } finally {
+                    confirmButton.disabled = false;
                 }
-
-                const confirmButton =
-                    event.target.closest(
-                        "[data-confirm-submit]"
-                    );
-
-                if (confirmButton) {
-
-                    const callback =
-                        window.MCS.confirm
-                            .callback;
-
-                    if (
-                        typeof callback ===
-                        "function"
-                    ) {
-
-                        confirmButton.disabled =
-                            true;
-
-                        try {
-
-                            await callback();
-
-                        } finally {
-
-                            confirmButton.disabled =
-                                false;
-
-                        }
-
-                    }
-
-                    const modal =
-                        confirmButton.closest(
-                            ".modal"
-                        );
-
-                    window.MCS.modal
-                        .close(
-                            modal
-                        );
-
-                    window.MCS.confirm
-                        .callback =
-                        null;
-
-                }
-
             }
-        );
 
-        document.addEventListener(
-            "keydown",
-            event => {
+            const modal = confirmButton.closest(".modal");
 
-                if (
-                    event.key !==
-                    "Escape"
-                ) {
-                    return;
-                }
+            window.MCS.modal.close(modal);
 
-                window.MCS.modal.close();
+            window.MCS.confirm.callback = null;
+        }
+    });
 
-            }
-        );
+    document.addEventListener("keydown", event => {
+        if (event.key !== "Escape") {
+            return;
+        }
 
-    }
-);
+        window.MCS.modal.close();
+    });
+});

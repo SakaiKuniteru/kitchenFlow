@@ -1,1963 +1,978 @@
 "use strict";
 
-
 (function initializeSidebar() {
-
-    const sidebar =
-        document.querySelector(
-            "[data-app-sidebar]"
-        );
-
+    const sidebar = document.querySelector("[data-app-sidebar]");
 
     if (!sidebar) {
         return;
     }
 
+    const mainToggle = document.querySelector("[data-sidebar-main-toggle]");
+    const overlay = document.querySelector("[data-sidebar-overlay]");
+    const searchInput = sidebar.querySelector("[data-sidebar-search]");
+    const searchShortcut = sidebar.querySelector("[data-sidebar-search-shortcut]");
+    const searchClear = sidebar.querySelector("[data-sidebar-search-clear]");
+    const expandToggleButton = sidebar.querySelector("[data-sidebar-expand-toggle]");
+    const expandToggleLabel = sidebar.querySelector("[data-sidebar-expand-label]");
+    const expandToggleIcon = sidebar.querySelector("[data-sidebar-expand-icon]");
+    const sortStartButton = sidebar.querySelector("[data-sidebar-sort-start]");
+    const sortActions = sidebar.querySelector("[data-sidebar-sort-actions]");
+    const sortSaveButton = sidebar.querySelector("[data-sidebar-sort-save]");
+    const sortResetButton = sidebar.querySelector("[data-sidebar-sort-reset]");
+    const sortCancelButton = sidebar.querySelector("[data-sidebar-sort-cancel]");
 
-    const mainToggle =
-        document.querySelector(
-            "[data-sidebar-main-toggle]"
-        );
+    if (searchShortcut) {
+        const isMac = /Mac|iPhone|iPad|iPod/i.test(navigator.platform);
 
-
-    const overlay =
-        document.querySelector(
-            "[data-sidebar-overlay]"
-        );
-
-
-    const searchInput =
-        sidebar.querySelector(
-            "[data-sidebar-search]"
-        );
-
-    const searchShortcut =
-        sidebar.querySelector(
-            "[data-sidebar-search-shortcut]"
-        );
-
-    const searchClear =
-        sidebar.querySelector(
-            "[data-sidebar-search-clear]"
-        );
-
-
-    const expandToggleButton =
-        sidebar.querySelector(
-            "[data-sidebar-expand-toggle]"
-        );
-
-
-    const expandToggleLabel =
-        sidebar.querySelector(
-            "[data-sidebar-expand-label]"
-        );
-
-
-    const expandToggleIcon =
-        sidebar.querySelector(
-            "[data-sidebar-expand-icon]"
-        );
-
-
-    const sortStartButton =
-        sidebar.querySelector(
-            "[data-sidebar-sort-start]"
-        );
-
-
-    const sortActions =
-        sidebar.querySelector(
-            "[data-sidebar-sort-actions]"
-        );
-
-
-    const sortSaveButton =
-        sidebar.querySelector(
-            "[data-sidebar-sort-save]"
-        );
-
-
-    const sortResetButton =
-        sidebar.querySelector(
-            "[data-sidebar-sort-reset]"
-        );
-
-
-    const sortCancelButton =
-        sidebar.querySelector(
-            "[data-sidebar-sort-cancel]"
-        );
-
-    if (
-        searchShortcut
-    ) {
-
-        const isMac =
-            /Mac|iPhone|iPad|iPod/i.test(
-                navigator.platform
-            );
-
-
-        searchShortcut.textContent =
-            isMac
-                ? "⌘K"
-                : "Ctrl K";
-
+        searchShortcut.textContent = isMac
+            ? "⌘K"
+            : "Ctrl K";
     }
 
-    const SIDEBAR_ORDER_KEY =
-        "kitchenflow.sidebar.order";
+    const SIDEBAR_ORDER_KEY = "kitchenflow.sidebar.order";
 
-
-    let sortMode =
-        false;
-
-
-    let sortSnapshot =
-        null;
-
-
-    let systemOrder =
-        null;
-
-
-    let openStateBeforeSort =
-        null;
-
+    let sortMode = false;
+    let sortSnapshot = null;
+    let systemOrder = null;
+    let openStateBeforeSort = null;
 
     function isMobile() {
-
-        return window.innerWidth <=
-            1024;
-
+        return window.innerWidth <= 1024;
     }
 
     async function getSidebarDongMacDinh() {
-
         try {
+            const result = await window.MCS?.api?.request(
+                "/api/mcs/v1/thiet-lap/gia-tri?ma=SIDEBAR_MAC_DINH_DONG"
+            );
 
-            const result =
-                await window.MCS
-                    ?.api
-                    ?.request(
-                        "/api/mcs/v1/thiet-lap/gia-tri?ma=SIDEBAR_MAC_DINH_DONG"
-                    );
+            const data = result?.data ?? result;
 
-
-            const data =
-                result?.data ??
-                result;
-
-
-            return data?.giaTri ===
-                true;
-
-        }
-        catch (
-            error
-        ) {
-
+            return data?.giaTri === true;
+        } catch (error) {
             return false;
-
         }
-
     }
 
     async function applySidebarDefaultState() {
+        if (isMobile()) {
+            document.body.classList.remove("sidebar-open");
+            document.body.classList.remove("sidebar-hidden");
 
-        if (
-            isMobile()
-        ) {
-
-            document.body.classList.remove(
-                "sidebar-open"
-            );
-
-
-            document.body.classList.remove(
-                "sidebar-hidden"
-            );
-
-
-            if (
-                overlay
-            ) {
-
-                overlay.hidden =
-                    true;
-
+            if (overlay) {
+                overlay.hidden = true;
             }
-
 
             mainToggle?.setAttribute(
                 "aria-expanded",
                 "false"
             );
 
-
             return;
-
         }
 
-
-        const dongMacDinh =
-            await getSidebarDongMacDinh();
-
+        const dongMacDinh = await getSidebarDongMacDinh();
 
         document.body.classList.toggle(
             "sidebar-hidden",
             dongMacDinh
         );
 
-
         mainToggle?.setAttribute(
             "aria-expanded",
-            String(
-                !dongMacDinh
-            )
+            String(!dongMacDinh)
         );
-
     }
 
     function openMobileSidebar() {
-
-        document.body.classList.add(
-            "sidebar-open"
-        );
-
+        document.body.classList.add("sidebar-open");
 
         if (overlay) {
-
-            overlay.hidden =
-                false;
-
+            overlay.hidden = false;
         }
-
 
         mainToggle?.setAttribute(
             "aria-expanded",
             "true"
         );
-
     }
 
-
     function closeMobileSidebar() {
-
-        document.body.classList.remove(
-            "sidebar-open"
-        );
-
+        document.body.classList.remove("sidebar-open");
 
         if (overlay) {
-
-            overlay.hidden =
-                true;
-
+            overlay.hidden = true;
         }
-
 
         mainToggle?.setAttribute(
             "aria-expanded",
             "false"
         );
-
     }
 
-    mainToggle?.addEventListener(
-        "click",
-        event => {
+    mainToggle?.addEventListener("click", event => {
+        event.preventDefault();
 
-            event.preventDefault();
+        if (isMobile()) {
+            const opened = document.body.classList.contains("sidebar-open");
 
-            if (
-                isMobile()
-            ) {
-
-                const opened =
-                    document.body.classList
-                        .contains(
-                            "sidebar-open"
-                        );
-
-
-                if (
-                    opened
-                ) {
-
-                    closeMobileSidebar();
-
-                }
-                else {
-
-                    openMobileSidebar();
-
-                }
-
-
-                return;
-
+            if (opened) {
+                closeMobileSidebar();
+            } else {
+                openMobileSidebar();
             }
 
-
-            const hidden =
-                document.body.classList
-                    .toggle(
-                        "sidebar-hidden"
-                    );
-
-
-            mainToggle.setAttribute(
-                "aria-expanded",
-                String(
-                    !hidden
-                )
-            );
-
+            return;
         }
-    );
+
+        const hidden = document.body.classList.toggle("sidebar-hidden");
+
+        mainToggle.setAttribute(
+            "aria-expanded",
+            String(!hidden)
+        );
+    });
 
     overlay?.addEventListener(
         "click",
         closeMobileSidebar
     );
 
-    window.addEventListener(
-        "resize",
-        () => {
+    window.addEventListener("resize", () => {
+        if (!isMobile()) {
+            closeMobileSidebar();
 
-            if (
-                !isMobile()
-            ) {
-
-                closeMobileSidebar();
-
-
-                if (
-                    overlay
-                ) {
-
-                    overlay.hidden =
-                        true;
-
-                }
-
+            if (overlay) {
+                overlay.hidden = true;
             }
-
         }
-    );
+    });
 
     function getGroupButtons() {
-
         return Array.from(
-            sidebar.querySelectorAll(
-                "[data-sidebar-toggle]"
-            )
+            sidebar.querySelectorAll("[data-sidebar-toggle]")
         );
-
     }
-
 
     function getSubmenus() {
-
         return Array.from(
-            sidebar.querySelectorAll(
-                "[data-sidebar-submenu]"
-            )
+            sidebar.querySelectorAll("[data-sidebar-submenu]")
         );
-
     }
 
+    function setGroupOpen(name, open) {
+        const button = sidebar.querySelector(
+            `[data-sidebar-toggle="${name}"]`
+        );
 
-    function setGroupOpen(
-        name,
-        open
-    ) {
-
-        const button =
-            sidebar.querySelector(
-                `[data-sidebar-toggle="${name}"]`
-            );
-
-
-        const submenu =
-            sidebar.querySelector(
-                `[data-sidebar-submenu="${name}"]`
-            );
-
+        const submenu = sidebar.querySelector(
+            `[data-sidebar-submenu="${name}"]`
+        );
 
         if (
             !button ||
             !submenu
         ) {
-
             return;
-
         }
 
-
-        submenu.hidden =
-            !open;
-
+        submenu.hidden = !open;
 
         button.setAttribute(
             "aria-expanded",
-            String(
-                open
-            )
+            String(open)
         );
-
 
         button.classList.toggle(
             "is-open",
             open
         );
-
     }
 
+    function closeAllGroups(exceptName = null) {
+        getGroupButtons().forEach(button => {
+            const name = button.dataset.sidebarToggle;
 
-    function closeAllGroups(
-        exceptName = null
-    ) {
+            if (name === exceptName) {
+                return;
+            }
 
-        getGroupButtons()
-            .forEach(
-                button => {
-
-                    const name =
-                        button.dataset
-                            .sidebarToggle;
-
-
-                    if (
-                        name ===
-                        exceptName
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    setGroupOpen(
-                        name,
-                        false
-                    );
-
-                }
+            setGroupOpen(
+                name,
+                false
             );
-
+        });
     }
 
     function expandAllGroups() {
-
-        getGroupButtons()
-            .forEach(
-                button => {
-
-                    setGroupOpen(
-                        button.dataset
-                            .sidebarToggle,
-                        true
-                    );
-
-                }
-            );
-
-
-        updateExpandToggle();
-
-    }
-
-
-    function collapseAllGroups() {
-
-        closeAllGroups();
-
-
-        updateExpandToggle();
-
-    }
-
-
-    function hasOpenedGroup() {
-
-        return getGroupButtons()
-            .some(
-                button =>
-                    button.getAttribute(
-                        "aria-expanded"
-                    ) ===
-                    "true"
-            );
-
-    }
-
-
-    function updateExpandToggle() {
-
-        if (
-            !expandToggleButton
-        ) {
-
-            return;
-
-        }
-
-
-        const hasOpen =
-            hasOpenedGroup();
-
-
-        expandToggleButton.dataset.mode =
-            hasOpen
-                ? "collapse"
-                : "expand";
-
-
-        if (
-            expandToggleLabel
-        ) {
-
-            expandToggleLabel.textContent =
-                hasOpen
-                    ? "Thu gọn"
-                    : "Mở rộng";
-
-        }
-
-
-        if (
-            expandToggleIcon
-        ) {
-
-            expandToggleIcon.className =
-                hasOpen
-                    ? "fa-solid fa-angles-up"
-                    : "fa-solid fa-angles-down";
-
-        }
-
-    }
-
-
-    expandToggleButton
-        ?.addEventListener(
-            "click",
-            event => {
-
-                event.preventDefault();
-
-
-                if (
-                    hasOpenedGroup()
-                ) {
-
-                    collapseAllGroups();
-
-                }
-                else {
-
-                    expandAllGroups();
-
-                }
-
-            }
-        );
-
-    sidebar.addEventListener(
-        "click",
-        event => {
-
-            const groupButton =
-                event.target.closest(
-                    "[data-sidebar-toggle]"
-                );
-
-            if (
-                groupButton
-            ) {
-
-                if (
-                    event.target.closest(
-                        "[data-sidebar-drag-handle]"
-                    )
-                ) {
-
-                    return;
-
-                }
-
-
-                event.preventDefault();
-
-
-                const name =
-                    groupButton.dataset
-                        .sidebarToggle;
-
-
-                const isOpen =
-                    groupButton.getAttribute(
-                        "aria-expanded"
-                    ) ===
-                    "true";
-
-
-                setGroupOpen(
-                    name,
-                    !isOpen
-                );
-
-
-                updateExpandToggle();
-
-
-                return;
-
-            }
-
-            const link =
-                event.target.closest(
-                    "a[href]"
-                );
-
-
-            if (
-                link &&
-                isMobile()
-            ) {
-
-                closeMobileSidebar();
-
-            }
-
-        }
-    );
-
-    function normalizePath(
-        path
-    ) {
-
-        if (
-            !path
-        ) {
-
-            return "/";
-
-        }
-
-
-        let value =
-            String(
-                path
-            )
-                .split("?")[0]
-                .split("#")[0];
-
-
-        if (
-            value.length >
-                1 &&
-            value.endsWith("/")
-        ) {
-
-            value =
-                value.slice(
-                    0,
-                    -1
-                );
-
-        }
-
-
-        return value || "/";
-
-    }
-
-
-    function activateCurrentMenu() {
-
-        const currentPath =
-            normalizePath(
-                window.location.pathname
-            );
-
-
-        const links =
-            Array.from(
-                sidebar.querySelectorAll(
-                    "a[data-sidebar-link][href]"
-                )
-            );
-
-
-        links.forEach(
-            link => {
-
-                link.classList.remove(
-                    "is-active"
-                );
-
-            }
-        );
-
-
-        let bestMatch =
-            null;
-
-
-        links.forEach(
-            link => {
-
-                const href =
-                    normalizePath(
-                        link.getAttribute(
-                            "href"
-                        )
-                    );
-
-
-                let matched =
-                    false;
-
-
-                if (
-                    href === "/"
-                ) {
-
-                    matched =
-                        currentPath ===
-                        "/";
-
-                }
-                else {
-
-                    matched =
-                        currentPath ===
-                            href ||
-                        currentPath.startsWith(
-                            `${href}/`
-                        );
-
-                }
-
-
-                if (
-                    !matched
-                ) {
-
-                    return;
-
-                }
-
-
-                if (
-                    !bestMatch ||
-                    href.length >
-                        bestMatch.href.length
-                ) {
-
-                    bestMatch = {
-
-                        link,
-
-                        href
-
-                    };
-
-                }
-
-            }
-        );
-
-
-        if (
-            !bestMatch
-        ) {
-
-            return;
-
-        }
-
-
-        bestMatch.link.classList.add(
-            "is-active"
-        );
-
-
-        const group =
-            bestMatch.link.closest(
-                "[data-sidebar-group-item]"
-            );
-
-
-        const groupButton =
-            group?.querySelector(
-                ":scope > [data-sidebar-toggle]"
-            );
-
-        if (
-            groupButton
-        ) {
-
+        getGroupButtons().forEach(button => {
             setGroupOpen(
-                groupButton.dataset
-                    .sidebarToggle,
+                button.dataset.sidebarToggle,
                 true
             );
+        });
 
-        }
-
+        updateExpandToggle();
     }
 
-    function normalizeSearchText(
-        value
-    ) {
+    function collapseAllGroups() {
+        closeAllGroups();
 
-        return String(
-            value ||
-            ""
-        )
-            .normalize(
-                "NFD"
+        updateExpandToggle();
+    }
+
+    function hasOpenedGroup() {
+        return getGroupButtons().some(
+            button =>
+                button.getAttribute("aria-expanded") === "true"
+        );
+    }
+
+    function updateExpandToggle() {
+        if (!expandToggleButton) {
+            return;
+        }
+
+        const hasOpen = hasOpenedGroup();
+
+        expandToggleButton.dataset.mode = hasOpen
+            ? "collapse"
+            : "expand";
+
+        if (expandToggleLabel) {
+            expandToggleLabel.textContent = hasOpen
+                ? "Thu gọn"
+                : "Mở rộng";
+        }
+
+        if (expandToggleIcon) {
+            expandToggleIcon.className = hasOpen
+                ? "fa-solid fa-angles-up"
+                : "fa-solid fa-angles-down";
+        }
+    }
+
+    expandToggleButton?.addEventListener("click", event => {
+        event.preventDefault();
+
+        if (hasOpenedGroup()) {
+            collapseAllGroups();
+        } else {
+            expandAllGroups();
+        }
+    });
+
+    sidebar.addEventListener("click", event => {
+        const groupButton = event.target.closest("[data-sidebar-toggle]");
+
+        if (groupButton) {
+            if (
+                event.target.closest(
+                    "[data-sidebar-drag-handle]"
+                )
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const name = groupButton.dataset.sidebarToggle;
+
+            const isOpen =
+                groupButton.getAttribute("aria-expanded") === "true";
+
+            setGroupOpen(
+                name,
+                !isOpen
+            );
+
+            updateExpandToggle();
+
+            return;
+        }
+
+        const link = event.target.closest("a[href]");
+
+        if (
+            link &&
+            isMobile()
+        ) {
+            closeMobileSidebar();
+        }
+    });
+
+    function normalizePath(path) {
+        if (!path) {
+            return "/";
+        }
+
+        let value = String(path)
+            .split("?")[0]
+            .split("#")[0];
+
+        if (
+            value.length > 1 &&
+            value.endsWith("/")
+        ) {
+            value = value.slice(
+                0,
+                -1
+            );
+        }
+
+        return value || "/";
+    }
+
+    function activateCurrentMenu() {
+        const currentPath = normalizePath(
+            window.location.pathname
+        );
+
+        const links = Array.from(
+            sidebar.querySelectorAll(
+                "a[data-sidebar-link][href]"
             )
-            .replace(
-                /[\u0300-\u036f]/g,
-                ""
-            )
-            .replace(
-                /đ/g,
-                "d"
-            )
-            .replace(
-                /Đ/g,
-                "D"
-            )
+        );
+
+        links.forEach(link => {
+            link.classList.remove("is-active");
+        });
+
+        let bestMatch = null;
+
+        links.forEach(link => {
+            const href = normalizePath(
+                link.getAttribute("href")
+            );
+
+            let matched = false;
+
+            if (href === "/") {
+                matched = currentPath === "/";
+            } else {
+                matched =
+                    currentPath === href ||
+                    currentPath.startsWith(`${href}/`);
+            }
+
+            if (!matched) {
+                return;
+            }
+
+            if (
+                !bestMatch ||
+                href.length > bestMatch.href.length
+            ) {
+                bestMatch = {
+                    link,
+                    href
+                };
+            }
+        });
+
+        if (!bestMatch) {
+            return;
+        }
+
+        bestMatch.link.classList.add("is-active");
+
+        const group = bestMatch.link.closest(
+            "[data-sidebar-group-item]"
+        );
+
+        const groupButton = group?.querySelector(
+            ":scope > [data-sidebar-toggle]"
+        );
+
+        if (groupButton) {
+            setGroupOpen(
+                groupButton.dataset.sidebarToggle,
+                true
+            );
+        }
+    }
+
+    function normalizeSearchText(value) {
+        return String(value || "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d")
+            .replace(/Đ/g, "D")
             .toLowerCase()
             .trim();
-
     }
 
+    function searchSidebar(value) {
+        const keyword = normalizeSearchText(value);
 
-    function searchSidebar(
-        value
-    ) {
-
-        const keyword =
-            normalizeSearchText(
-                value
-            );
-
-
-        if (
-            searchClear
-        ) {
-
-            searchClear.hidden =
-                !keyword;
-
+        if (searchClear) {
+            searchClear.hidden = !keyword;
         }
 
+        const rootItem = sidebar.querySelector(
+            ".app-sidebar__menu > " +
+            ".app-sidebar__menu-item"
+        );
 
-        const rootItem =
-            sidebar.querySelector(
-                ".app-sidebar__menu > " +
-                ".app-sidebar__menu-item"
+        if (rootItem) {
+            const rootLink = rootItem.querySelector(
+                "[data-sidebar-link]"
             );
-
-
-        if (
-            rootItem
-        ) {
-
-            const rootLink =
-                rootItem.querySelector(
-                    "[data-sidebar-link]"
-                );
-
 
             const matched =
                 !keyword ||
                 normalizeSearchText(
                     rootLink?.textContent
-                )
-                    .includes(
-                        keyword
-                    );
-
+                ).includes(keyword);
 
             rootItem.classList.toggle(
                 "is-search-hidden",
                 !matched
             );
-
         }
-
 
         sidebar
-            .querySelectorAll(
-                "[data-sidebar-group-item]"
-            )
-            .forEach(
-                group => {
+            .querySelectorAll("[data-sidebar-group-item]")
+            .forEach(group => {
+                const button = group.querySelector(
+                    ":scope > " +
+                    "[data-sidebar-toggle]"
+                );
 
-                    const button =
-                        group.querySelector(
-                            ":scope > " +
-                            "[data-sidebar-toggle]"
-                        );
+                const submenu = group.querySelector(
+                    ":scope > " +
+                    "[data-sidebar-submenu]"
+                );
 
+                if (
+                    !button ||
+                    !submenu
+                ) {
+                    return;
+                }
 
-                    const submenu =
-                        group.querySelector(
-                            ":scope > " +
-                            "[data-sidebar-submenu]"
-                        );
+                const groupMatched = normalizeSearchText(
+                    button.textContent
+                ).includes(keyword);
 
+                let childMatched = false;
 
-                    if (
-                        !button ||
-                        !submenu
-                    ) {
+                Array.from(submenu.children).forEach(item => {
+                    const link = item.querySelector(
+                        "[data-sidebar-link]"
+                    );
 
-                        return;
-
-                    }
-
-
-                    const groupMatched =
-                        normalizeSearchText(
-                            button.textContent
-                        )
-                            .includes(
-                                keyword
-                            );
-
-
-                    let childMatched =
-                        false;
-
-
-                    Array.from(
-                        submenu.children
-                    )
-                        .forEach(
-                            item => {
-
-                                const link =
-                                    item.querySelector(
-                                        "[data-sidebar-link]"
-                                    );
-
-
-                                const matched =
-                                    !keyword ||
-                                    groupMatched ||
-                                    normalizeSearchText(
-                                        link?.textContent
-                                    )
-                                        .includes(
-                                            keyword
-                                        );
-
-
-                                item.classList.toggle(
-                                    "is-search-hidden",
-                                    !matched
-                                );
-
-
-                                if (
-                                    matched &&
-                                    keyword
-                                ) {
-
-                                    childMatched =
-                                        true;
-
-                                }
-
-                            }
-                        );
-
-
-                    const visible =
+                    const matched =
                         !keyword ||
                         groupMatched ||
-                        childMatched;
+                        normalizeSearchText(
+                            link?.textContent
+                        ).includes(keyword);
 
-
-                    group.classList.toggle(
+                    item.classList.toggle(
                         "is-search-hidden",
-                        !visible
+                        !matched
                     );
-
 
                     if (
-                        keyword &&
-                        visible
+                        matched &&
+                        keyword
                     ) {
-
-                        setGroupOpen(
-                            button.dataset
-                                .sidebarToggle,
-                            true
-                        );
-
+                        childMatched = true;
                     }
+                });
 
+                const visible =
+                    !keyword ||
+                    groupMatched ||
+                    childMatched;
+
+                group.classList.toggle(
+                    "is-search-hidden",
+                    !visible
+                );
+
+                if (
+                    keyword &&
+                    visible
+                ) {
+                    setGroupOpen(
+                        button.dataset.sidebarToggle,
+                        true
+                    );
                 }
-            );
+            });
 
-
-        if (
-            !keyword
-        ) {
-
+        if (!keyword) {
             collapseAllGroups();
-
             activateCurrentMenu();
-
         }
-
 
         updateExpandToggle();
-
     }
 
+    searchInput?.addEventListener("input", event => {
+        searchSidebar(
+            event.target.value
+        );
+    });
 
-    searchInput?.addEventListener(
-        "input",
-        event => {
-
-            searchSidebar(
-                event.target.value
-            );
-
+    searchClear?.addEventListener("click", () => {
+        if (searchInput) {
+            searchInput.value = "";
+            searchInput.focus();
         }
-    );
 
+        searchSidebar("");
+    });
 
-    searchClear?.addEventListener(
-        "click",
-        () => {
+    document.addEventListener("keydown", event => {
+        const isSearchShortcut =
+            (
+                event.metaKey ||
+                event.ctrlKey
+            ) &&
+            event.key.toLowerCase() === "k";
 
-            if (
-                searchInput
-            ) {
+        if (isSearchShortcut) {
+            event.preventDefault();
 
-                searchInput.value =
-                    "";
-
-
-                searchInput.focus();
-
+            if (isMobile()) {
+                openMobileSidebar();
             }
 
+            searchInput?.focus();
+            searchInput?.select();
 
-            searchSidebar(
-                ""
-            );
-
+            return;
         }
-    );
 
-    document.addEventListener(
-        "keydown",
-        event => {
+        if (
+            event.key === "Escape" &&
+            document.activeElement === searchInput
+        ) {
+            if (searchInput.value) {
+                searchInput.value = "";
 
-            const isSearchShortcut =
-                (
-                    event.metaKey ||
-                    event.ctrlKey
-                ) &&
-                event.key
-                    .toLowerCase() ===
-                    "k";
-
-
-            if (
-                isSearchShortcut
-            ) {
-
-                event.preventDefault();
-
-
-                if (
-                    isMobile()
-                ) {
-
-                    openMobileSidebar();
-
-                }
-
-
-                searchInput
-                    ?.focus();
-
-
-                searchInput
-                    ?.select();
-
-
-                return;
-
+                searchSidebar("");
+            } else {
+                searchInput.blur();
             }
-
-
-            if (
-                event.key ===
-                    "Escape" &&
-                document.activeElement ===
-                    searchInput
-            ) {
-
-                if (
-                    searchInput.value
-                ) {
-
-                    searchInput.value =
-                        "";
-
-
-                    searchSidebar(
-                        ""
-                    );
-
-                }
-                else {
-
-                    searchInput.blur();
-
-                }
-
-            }
-
         }
-    );
+    });
 
     function getSortableContainers() {
-
         return [
-
-            sidebar.querySelector(
-                ".app-sidebar__menu"
-            ),
-
-            ...sidebar.querySelectorAll(
-                "[data-sidebar-submenu]"
-            )
-
-        ].filter(
-            Boolean
-        );
-
+            sidebar.querySelector(".app-sidebar__menu"),
+            ...sidebar.querySelectorAll("[data-sidebar-submenu]")
+        ].filter(Boolean);
     }
 
-
-    function getContainerKey(
-        container
-    ) {
-
+    function getContainerKey(container) {
         if (
-            container.classList
-                .contains(
-                    "app-sidebar__menu"
-                )
+            container.classList.contains(
+                "app-sidebar__menu"
+            )
         ) {
-
             return "root";
-
         }
 
-
-        if (
-            container.dataset
-                .sidebarSubmenu
-        ) {
-
+        if (container.dataset.sidebarSubmenu) {
             return (
                 "submenu:" +
-                container.dataset
-                    .sidebarSubmenu
+                container.dataset.sidebarSubmenu
             );
-
         }
 
-
         return null;
-
     }
 
+    function getSortableKey(item) {
+        const groupButton = item.querySelector(
+            ":scope > " +
+            "[data-sidebar-toggle]"
+        );
 
-    function getSortableKey(
-        item
-    ) {
-
-        const groupButton =
-            item.querySelector(
-                ":scope > " +
-                "[data-sidebar-toggle]"
-            );
-
-
-        if (
-            groupButton
-        ) {
-
+        if (groupButton) {
             return (
                 "group:" +
-                groupButton.dataset
-                    .sidebarToggle
+                groupButton.dataset.sidebarToggle
             );
-
         }
 
+        const link = item.querySelector(
+            ":scope > " +
+            "[data-sidebar-link]"
+        );
 
-        const link =
-            item.querySelector(
-                ":scope > " +
-                "[data-sidebar-link]"
-            );
-
-
-        if (
-            link
-        ) {
-
+        if (link) {
             return (
                 "link:" +
-                link.dataset
-                    .sidebarLink
+                link.dataset.sidebarLink
             );
-
         }
 
-
         return null;
-
     }
-
 
     function captureSidebarOrder() {
+        const result = {};
 
-        const result =
-            {};
+        getSortableContainers().forEach(container => {
+            const key = getContainerKey(container);
 
+            if (!key) {
+                return;
+            }
 
-        getSortableContainers()
-            .forEach(
-                container => {
-
-                    const key =
-                        getContainerKey(
-                            container
-                        );
-
-
-                    if (!key) {
-                        return;
-                    }
-
-
-                    result[key] =
-                        Array.from(
-                            container.children
-                        )
-                            .map(
-                                getSortableKey
-                            )
-                            .filter(
-                                Boolean
-                            );
-
-                }
-            );
-
+            result[key] = Array.from(
+                container.children
+            )
+                .map(getSortableKey)
+                .filter(Boolean);
+        });
 
         return result;
-
     }
 
-
-    function applySidebarOrder(
-        state
-    ) {
-
+    function applySidebarOrder(state) {
         if (!state) {
             return;
         }
 
+        getSortableContainers().forEach(container => {
+            const key = getContainerKey(container);
+            const order = state[key];
 
-        getSortableContainers()
-            .forEach(
-                container => {
+            if (!Array.isArray(order)) {
+                return;
+            }
 
-                    const key =
-                        getContainerKey(
-                            container
-                        );
+            order.forEach(itemKey => {
+                const item = Array.from(
+                    container.children
+                ).find(
+                    child =>
+                        getSortableKey(child) === itemKey
+                );
 
-
-                    const order =
-                        state[key];
-
-
-                    if (
-                        !Array.isArray(
-                            order
-                        )
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    order.forEach(
-                        itemKey => {
-
-                            const item =
-                                Array.from(
-                                    container.children
-                                )
-                                    .find(
-                                        child =>
-                                            getSortableKey(
-                                                child
-                                            ) ===
-                                            itemKey
-                                    );
-
-
-                            if (
-                                item
-                            ) {
-
-                                container.appendChild(
-                                    item
-                                );
-
-                            }
-
-                        }
-                    );
-
+                if (item) {
+                    container.appendChild(item);
                 }
-            );
-
+            });
+        });
     }
 
-
     function saveSidebarOrder() {
-
         localStorage.setItem(
             SIDEBAR_ORDER_KEY,
             JSON.stringify(
                 captureSidebarOrder()
             )
         );
-
     }
 
-
     function restoreSidebarOrder() {
-
         try {
+            const saved = JSON.parse(
+                localStorage.getItem(
+                    SIDEBAR_ORDER_KEY
+                )
+            );
 
-            const saved =
-                JSON.parse(
-                    localStorage.getItem(
-                        SIDEBAR_ORDER_KEY
-                    )
-                );
-
-
-            if (
-                saved
-            ) {
-
-                applySidebarOrder(
-                    saved
-                );
-
+            if (saved) {
+                applySidebarOrder(saved);
             }
-
-        }
-        catch {
-
+        } catch {
             localStorage.removeItem(
                 SIDEBAR_ORDER_KEY
             );
-
         }
-
     }
-
 
     function captureOpenState() {
-
-        return getGroupButtons()
-            .map(
-                button => ({
-
-                    name:
-                        button.dataset
-                            .sidebarToggle,
-
-                    open:
-                        button.getAttribute(
-                            "aria-expanded"
-                        ) ===
-                        "true"
-
-                })
-            );
-
+        return getGroupButtons().map(
+            button => ({
+                name: button.dataset.sidebarToggle,
+                open:
+                    button.getAttribute("aria-expanded") ===
+                    "true"
+            })
+        );
     }
 
-
-    function restoreOpenState(
-        state
-    ) {
-
-        if (
-            !Array.isArray(
-                state
-            )
-        ) {
-
+    function restoreOpenState(state) {
+        if (!Array.isArray(state)) {
             return;
-
         }
-
 
         closeAllGroups();
 
-
-        state.forEach(
-            item => {
-
-                if (
-                    item.open
-                ) {
-
-                    setGroupOpen(
-                        item.name,
-                        true
-                    );
-
-                }
-
+        state.forEach(item => {
+            if (item.open) {
+                setGroupOpen(
+                    item.name,
+                    true
+                );
             }
-        );
-
+        });
 
         updateExpandToggle();
-
     }
 
-
     function removeDragHandles() {
-
         sidebar
             .querySelectorAll(
                 "[data-sidebar-drag-handle]"
             )
             .forEach(
-                handle =>
-                    handle.remove()
+                handle => handle.remove()
             );
-
     }
-
 
     function createDragHandles() {
-
         removeDragHandles();
 
-
-        getSortableContainers()
-            .forEach(
-                container => {
-
-                    Array.from(
-                        container.children
-                    )
-                        .forEach(
-                            item => {
-
-                                if (
-                                    !getSortableKey(
-                                        item
-                                    )
-                                ) {
-
-                                    return;
-
-                                }
-
-
-                                const target =
-                                    item.querySelector(
-                                        ":scope > button, " +
-                                        ":scope > a"
-                                    );
-
-
-                                if (
-                                    !target
-                                ) {
-
-                                    return;
-
-                                }
-
-
-                                const handle =
-                                    document.createElement(
-                                        "span"
-                                    );
-
-
-                                handle.className =
-                                    "app-sidebar__drag-handle";
-
-
-                                handle.dataset
-                                    .sidebarDragHandle =
-                                    "";
-
-
-                                handle.innerHTML =
-                                    '<i class="fa-solid fa-grip-vertical"></i>';
-
-
-                                handle.draggable =
-                                    true;
-
-
-                                target.appendChild(
-                                    handle
-                                );
-
-                            }
-                        );
-
+        getSortableContainers().forEach(container => {
+            Array.from(container.children).forEach(item => {
+                if (!getSortableKey(item)) {
+                    return;
                 }
-            );
 
-    }
-
-
-    function getDragAfterElement(
-        container,
-        y
-    ) {
-
-        const elements =
-            Array.from(
-                container.children
-            )
-                .filter(
-                    element =>
-                        !element.classList
-                            .contains(
-                                "is-dragging"
-                            )
+                const target = item.querySelector(
+                    ":scope > button, " +
+                    ":scope > a"
                 );
 
+                if (!target) {
+                    return;
+                }
+
+                const handle = document.createElement("span");
+
+                handle.className =
+                    "app-sidebar__drag-handle";
+
+                handle.dataset.sidebarDragHandle = "";
+
+                handle.innerHTML =
+                    '<i class="fa-solid fa-grip-vertical"></i>';
+
+                handle.draggable = true;
+
+                target.appendChild(handle);
+            });
+        });
+    }
+
+    function getDragAfterElement(container, y) {
+        const elements = Array.from(
+            container.children
+        ).filter(
+            element =>
+                !element.classList.contains(
+                    "is-dragging"
+                )
+        );
 
         return elements.reduce(
             (
                 closest,
                 element
             ) => {
-
                 const box =
                     element.getBoundingClientRect();
-
 
                 const offset =
                     y -
                     box.top -
-                    box.height /
-                    2;
-
+                    box.height / 2;
 
                 if (
-                    offset <
-                        0 &&
-                    offset >
-                        closest.offset
+                    offset < 0 &&
+                    offset > closest.offset
                 ) {
-
                     return {
-
                         offset,
-
                         element
-
                     };
-
                 }
 
-
                 return closest;
-
             },
             {
-
-                offset:
-                    Number
-                        .NEGATIVE_INFINITY,
-
-                element:
-                    null
-
+                offset: Number.NEGATIVE_INFINITY,
+                element: null
             }
         ).element;
-
     }
 
-
     function startSorting() {
-
-        if (
-            sortMode
-        ) {
-
+        if (sortMode) {
             return;
-
         }
 
+        if (searchInput) {
+            searchInput.value = "";
 
-        if (
-            searchInput
-        ) {
+            searchSidebar("");
 
-            searchInput.value =
-                "";
-
-
-            searchSidebar(
-                ""
-            );
-
-
-            searchInput.disabled =
-                true;
-
+            searchInput.disabled = true;
         }
 
+        sortSnapshot = captureSidebarOrder();
+        openStateBeforeSort = captureOpenState();
+        sortMode = true;
 
-        sortSnapshot =
-            captureSidebarOrder();
+        sidebar.classList.add("is-sorting");
 
-
-        openStateBeforeSort =
-            captureOpenState();
-
-
-        sortMode =
-            true;
-
-
-        sidebar.classList.add(
-            "is-sorting"
-        );
-
-        if (
-            sortActions
-        ) {
-
-            sortActions.hidden =
-                false;
-
+        if (sortActions) {
+            sortActions.hidden = false;
         }
 
         collapseAllGroups();
         createDragHandles();
-
     }
 
-
     function finishSorting() {
+        sortMode = false;
 
-        sortMode =
-            false;
-
-
-        sidebar.classList.remove(
-            "is-sorting"
-        );
-
+        sidebar.classList.remove("is-sorting");
 
         removeDragHandles();
 
-
-        if (
-            sortActions
-        ) {
-
-            sortActions.hidden =
-                true;
-
+        if (sortActions) {
+            sortActions.hidden = true;
         }
 
-
-        if (
-            searchInput
-        ) {
-
-            searchInput.disabled =
-                false;
-
+        if (searchInput) {
+            searchInput.disabled = false;
         }
-
 
         restoreOpenState(
             openStateBeforeSort
         );
 
-
         activateCurrentMenu();
 
-
-        sortSnapshot =
-            null;
-
-
-        openStateBeforeSort =
-            null;
-
+        sortSnapshot = null;
+        openStateBeforeSort = null;
     }
 
-
-    sidebar.addEventListener(
-        "dragstart",
-        event => {
-
-            if (
-                !sortMode
-            ) {
-
-                return;
-
-            }
-
-
-            const handle =
-                event.target.closest(
-                    "[data-sidebar-drag-handle]"
-                );
-
-
-            if (
-                !handle
-            ) {
-
-                return;
-
-            }
-
-
-            const item =
-                handle.closest(
-                    "li"
-                );
-
-
-            if (
-                !item
-            ) {
-
-                return;
-
-            }
-
-
-            item.classList.add(
-                "is-dragging"
-            );
-
-
-            event.dataTransfer
-                .setData(
-                    "text/plain",
-                    getSortableKey(
-                        item
-                    ) ||
-                    ""
-                );
-
-
-            event.dataTransfer
-                .effectAllowed =
-                "move";
-
+    sidebar.addEventListener("dragstart", event => {
+        if (!sortMode) {
+            return;
         }
-    );
 
+        const handle = event.target.closest(
+            "[data-sidebar-drag-handle]"
+        );
 
-    sidebar.addEventListener(
-        "dragover",
-        event => {
+        if (!handle) {
+            return;
+        }
 
-            if (
-                !sortMode
-            ) {
+        const item = handle.closest("li");
 
-                return;
+        if (!item) {
+            return;
+        }
 
-            }
+        item.classList.add("is-dragging");
 
+        event.dataTransfer.setData(
+            "text/plain",
+            getSortableKey(item) || ""
+        );
 
-            const dragging =
-                sidebar.querySelector(
-                    ".is-dragging"
-                );
+        event.dataTransfer.effectAllowed = "move";
+    });
 
+    sidebar.addEventListener("dragover", event => {
+        if (!sortMode) {
+            return;
+        }
 
-            if (
-                !dragging
-            ) {
+        const dragging = sidebar.querySelector(
+            ".is-dragging"
+        );
 
-                return;
+        if (!dragging) {
+            return;
+        }
 
-            }
+        const container = event.target.closest(
+            ".app-sidebar__menu, " +
+            "[data-sidebar-submenu]"
+        );
 
+        if (
+            !container ||
+            dragging.parentElement !== container
+        ) {
+            return;
+        }
 
-            const container =
-                event.target.closest(
-                    ".app-sidebar__menu, " +
-                    "[data-sidebar-submenu]"
-                );
+        event.preventDefault();
 
+        const after = getDragAfterElement(
+            container,
+            event.clientY
+        );
 
-            if (
-                !container ||
-                dragging.parentElement !==
-                    container
-            ) {
-
-                return;
-
-            }
-
-
-            event.preventDefault();
-
-
-            const after =
-                getDragAfterElement(
-                    container,
-                    event.clientY
-                );
-
-
-            if (
+        if (after) {
+            container.insertBefore(
+                dragging,
                 after
-            ) {
-
-                container.insertBefore(
-                    dragging,
-                    after
-                );
-
-            }
-            else {
-
-                container.appendChild(
-                    dragging
-                );
-
-            }
-
+            );
+        } else {
+            container.appendChild(
+                dragging
+            );
         }
-    );
+    });
 
+    sidebar.addEventListener("dragend", () => {
+        sidebar
+            .querySelector(".is-dragging")
+            ?.classList
+            .remove("is-dragging");
+    });
 
-    sidebar.addEventListener(
-        "dragend",
-        () => {
+    sortStartButton?.addEventListener("click", event => {
+        event.preventDefault();
 
-            sidebar
-                .querySelector(
-                    ".is-dragging"
-                )
-                ?.classList
-                .remove(
-                    "is-dragging"
-                );
+        startSorting();
+    });
 
-        }
-    );
+    sortSaveButton?.addEventListener("click", () => {
+        saveSidebarOrder();
 
+        finishSorting();
+    });
 
-    sortStartButton
-        ?.addEventListener(
-            "click",
-            event => {
-
-                event.preventDefault();
-
-                startSorting();
-
-            }
+    sortCancelButton?.addEventListener("click", () => {
+        applySidebarOrder(
+            sortSnapshot
         );
 
+        finishSorting();
+    });
 
-    sortSaveButton
-        ?.addEventListener(
-            "click",
-            () => {
-
-                saveSidebarOrder();
-
-                finishSorting();
-
-            }
+    sortResetButton?.addEventListener("click", () => {
+        applySidebarOrder(
+            systemOrder
         );
+    });
 
+    async function initialize() {
+        systemOrder = captureSidebarOrder();
+        restoreSidebarOrder();
+        collapseAllGroups();
+        activateCurrentMenu();
+        updateExpandToggle();
+        await applySidebarDefaultState();
+    }
 
-    sortCancelButton
-        ?.addEventListener(
-            "click",
-            () => {
-
-                applySidebarOrder(
-                    sortSnapshot
-                );
-
-                finishSorting();
-
-            }
-        );
-
-
-    sortResetButton
-        ?.addEventListener(
-            "click",
-            () => {
-
-                applySidebarOrder(
-                    systemOrder
-                );
-
-            }
-        );
-
-async function initialize() {
-    systemOrder = captureSidebarOrder();
-    restoreSidebarOrder();
-    collapseAllGroups();
-    activateCurrentMenu();
-    updateExpandToggle();
-    await applySidebarDefaultState();
-}
-initialize();
-
+    initialize();
 })();

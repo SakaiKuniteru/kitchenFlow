@@ -700,3 +700,232 @@ Phần **Thêm ngày** trong nội dung thực đơn tiếp tục sử dụng kh
 
 để sinh danh sách ngày có thể lựa chọn.
 
+---
+
+## 13. QUY_TAC_CHON_DON_VI_QUY_DOI
+
+**Mã:** `QUY_TAC_CHON_DON_VI_QUY_DOI`
+
+**Giá trị:** `1`, `2`, `3` hoặc `4`.
+
+**Mô tả:**
+
+Quy định phạm vi đơn vị tính được phép lựa chọn tại trường **Đơn vị sử dụng** dựa trên **Đơn vị sơ cấp** của thực phẩm.
+
+Thiết lập này được sử dụng trong danh mục **Thực phẩm** để kiểm soát việc lựa chọn cặp:
+
+- Đơn vị sơ cấp.
+- Đơn vị sử dụng.
+
+Các loại đơn vị tính hiện tại gồm:
+
+- `10` → Khối lượng.
+- `20` → Thể tích.
+- `30` → Đếm.
+
+Khi người dùng chọn hoặc thay đổi **Đơn vị sơ cấp**, hệ thống phải tự động lọc lại danh sách **Đơn vị sử dụng** theo giá trị của thiết lập `QUY_TAC_CHON_DON_VI_QUY_DOI`.
+
+### Giá trị `1` - Cho phép mọi loại đơn vị
+
+Nếu:
+
+`QUY_TAC_CHON_DON_VI_QUY_DOI = 1`
+
+thì **Đơn vị sử dụng** được phép chọn từ tất cả các loại đơn vị tính đang hoạt động, không phụ thuộc vào loại của **Đơn vị sơ cấp**.
+
+Ví dụ:
+
+- Kg → Gram: hợp lệ.
+- Kg → Lít: hợp lệ.
+- Kg → Chai: hợp lệ.
+- Chai → Kg: hợp lệ.
+- Chai → Lít: hợp lệ.
+
+Đây là quy tắc ít hạn chế nhất.
+
+### Giá trị `2` - Chỉ cho phép cùng loại đơn vị
+
+Nếu:
+
+`QUY_TAC_CHON_DON_VI_QUY_DOI = 2`
+
+thì **Đơn vị sử dụng** bắt buộc phải có cùng loại đơn vị với **Đơn vị sơ cấp**.
+
+Ví dụ:
+
+Đơn vị sơ cấp thuộc loại **Khối lượng**:
+
+- Kg → Gram: hợp lệ.
+- Kg → Tấn: hợp lệ.
+- Kg → Lít: không hợp lệ.
+- Kg → Chai: không hợp lệ.
+
+Đơn vị sơ cấp thuộc loại **Thể tích**:
+
+- Lít → ml: hợp lệ.
+- Lít → Kg: không hợp lệ.
+- Lít → Chai: không hợp lệ.
+
+Đơn vị sơ cấp thuộc loại **Đếm**:
+
+- Chai → Cái: hợp lệ.
+- Chai → Kg: không hợp lệ.
+- Chai → Lít: không hợp lệ.
+
+Nếu người dùng lựa chọn hai đơn vị không cùng loại thì không cho phép lưu và thông báo:
+
+`Đơn vị sơ cấp và đơn vị sử dụng phải cùng loại đơn vị.`
+
+### Giá trị `3` - Cho phép cùng loại hoặc quy đổi sang đơn vị Đếm
+
+Nếu:
+
+`QUY_TAC_CHON_DON_VI_QUY_DOI = 3`
+
+thì hệ thống áp dụng quy tắc:
+
+- Khối lượng → được chọn Khối lượng hoặc Đếm.
+- Thể tích → được chọn Thể tích hoặc Đếm.
+- Đếm → được chọn tất cả các loại đơn vị.
+
+Ví dụ với **Khối lượng**:
+
+- Kg → Gram: hợp lệ.
+- Kg → Bao: hợp lệ nếu Bao thuộc loại Đếm.
+- Kg → Lít: không hợp lệ.
+
+Ví dụ với **Thể tích**:
+
+- Lít → ml: hợp lệ.
+- Lít → Chai: hợp lệ nếu Chai thuộc loại Đếm.
+- Lít → Kg: không hợp lệ.
+
+Ví dụ với **Đếm**:
+
+- Bao → Cái: hợp lệ.
+- Bao → Kg: hợp lệ.
+- Bao → Lít: hợp lệ.
+
+Quy tắc này cho phép thực phẩm có đơn vị sơ cấp thuộc Khối lượng hoặc Thể tích được sử dụng theo một đơn vị đóng gói hoặc đơn vị đếm.
+
+### Giá trị `4` - Đếm được phép quy đổi sang mọi loại
+
+Nếu:
+
+`QUY_TAC_CHON_DON_VI_QUY_DOI = 4`
+
+thì hệ thống áp dụng quy tắc:
+
+- Khối lượng → chỉ được chọn Khối lượng.
+- Thể tích → chỉ được chọn Thể tích.
+- Đếm → được chọn tất cả các loại đơn vị.
+
+Ví dụ với **Khối lượng**:
+
+- Kg → Gram: hợp lệ.
+- Kg → Bao: không hợp lệ.
+- Kg → Lít: không hợp lệ.
+
+Ví dụ với **Thể tích**:
+
+- Lít → ml: hợp lệ.
+- Lít → Chai: không hợp lệ.
+- Lít → Kg: không hợp lệ.
+
+Ví dụ với **Đếm**:
+
+- Bao → Cái: hợp lệ.
+- Bao → Kg: hợp lệ.
+- Bao → Lít: hợp lệ.
+
+Điểm khác biệt chính giữa giá trị `3` và `4` là:
+
+- Giá trị `3` cho phép Khối lượng và Thể tích quy đổi sang đơn vị thuộc loại Đếm.
+- Giá trị `4` không cho phép Khối lượng và Thể tích quy đổi sang Đếm.
+- Cả hai giá trị đều cho phép đơn vị thuộc loại Đếm quy đổi sang các loại đơn vị khác.
+
+### Quy tắc xử lý trên giao diện
+
+Khi mở form thêm mới hoặc cập nhật thực phẩm, hệ thống tải giá trị thiết lập:
+
+`QUY_TAC_CHON_DON_VI_QUY_DOI`
+
+đồng thời tải danh sách đơn vị tính đang hoạt động.
+
+Khi người dùng chọn **Đơn vị sơ cấp**, hệ thống phải lọc lại danh sách **Đơn vị sử dụng** ngay lập tức theo quy tắc hiện tại.
+
+Nếu **Đơn vị sử dụng** đã được chọn trước đó nhưng không còn hợp lệ sau khi thay đổi **Đơn vị sơ cấp**, hệ thống phải tự động xóa giá trị **Đơn vị sử dụng** đang chọn.
+
+Ví dụ:
+
+Ban đầu:
+
+- Quy tắc = `4`.
+- Đơn vị sơ cấp = Kg.
+- Đơn vị sử dụng = Gram.
+
+Cặp đơn vị trên hợp lệ.
+
+Nếu người dùng thay đổi **Đơn vị sơ cấp** thành Lít thì Gram không còn hợp lệ với Lít theo quy tắc `4`.
+
+Hệ thống phải:
+
+- Xóa lựa chọn Gram.
+- Render lại danh sách Đơn vị sử dụng.
+- Chỉ hiển thị các đơn vị thuộc loại Thể tích.
+
+### Quy tắc kiểm tra trước khi lưu
+
+Việc lọc danh sách trên giao diện không phải là bước kiểm tra duy nhất.
+
+Trước khi thêm mới hoặc cập nhật thực phẩm, hệ thống phải kiểm tra lại cặp:
+
+`Đơn vị sơ cấp → Đơn vị sử dụng`
+
+theo `QUY_TAC_CHON_DON_VI_QUY_DOI`.
+
+Nếu cặp đơn vị không hợp lệ thì không cho phép lưu dữ liệu.
+
+Đối với quy tắc `2`, thông báo:
+
+`Đơn vị sơ cấp và đơn vị sử dụng phải cùng loại đơn vị.`
+
+Đối với các trường hợp không hợp lệ của quy tắc khác, thông báo theo dạng:
+
+`Không thể quy đổi từ "<đơn vị sơ cấp>" sang "<đơn vị sử dụng>" theo quy tắc đơn vị hiện tại.`
+
+### Giá trị mặc định
+
+Thiết lập chỉ được sử dụng khi giá trị có thể chuyển thành một trong các số:
+
+- `1`
+- `2`
+- `3`
+- `4`
+
+Nếu:
+
+- Không tồn tại thiết lập.
+- Không lấy được giá trị thiết lập.
+- Giá trị để trống.
+- Giá trị không phải số hợp lệ.
+- Giá trị khác `1`, `2`, `3`, `4`.
+
+thì hệ thống sử dụng giá trị mặc định:
+
+`4`
+
+### Phạm vi áp dụng
+
+Thiết lập này áp dụng cho nghiệp vụ lựa chọn đơn vị quy đổi trong danh mục **Thực phẩm**.
+
+Thiết lập ảnh hưởng đến:
+
+- Danh sách Đơn vị sử dụng được phép lựa chọn.
+- Việc tự động loại bỏ Đơn vị sử dụng không còn hợp lệ.
+- Kiểm tra dữ liệu trước khi thêm mới thực phẩm.
+- Kiểm tra dữ liệu trước khi cập nhật thực phẩm.
+
+Thiết lập không làm thay đổi loại của đơn vị tính và không tự động thay đổi dữ liệu thực phẩm đã được lưu trước đó.
+
+---
