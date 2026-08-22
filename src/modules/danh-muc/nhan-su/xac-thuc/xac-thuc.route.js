@@ -40,7 +40,7 @@ router.post(
     controller.logout
 );
 
-router.post(
+router.patch(
 
     "/doi-mat-khau",
     authenticate,

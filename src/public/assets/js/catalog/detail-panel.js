@@ -11,7 +11,7 @@ class MCSDetailPanel {
             : root;
 
         this.options = {
-            mobileBreakpoint: 820,
+            mobileBreakpoint: 1100,
             defaultTitle: "Thông tin chi tiết",
             onEdit: null,
             onClose: null,

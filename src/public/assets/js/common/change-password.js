@@ -74,7 +74,7 @@ document.addEventListener(
             );
 
         const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9\s])\S{8,}$/;
-        const CHANGE_PASSWORD_ENDPOINT = "/api/mcs/v1/dm-tai-khoan/doi-mat-khau";
+        const CHANGE_PASSWORD_ENDPOINT = "/api/mcs/v1/auth/doi-mat-khau";
 
         initializePasswordToggles();
         initializeValidation();
@@ -137,10 +137,6 @@ document.addEventListener(
                                         : "Hiện mật khẩu"
                                 );
 
-                                /*
-                                 * Giữ con trỏ ở cuối input
-                                 * nhưng không kích hoạt validation.
-                                 */
                                 const length =
                                     input.value.length;
 
