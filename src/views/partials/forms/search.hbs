@@ -1,0 +1,81 @@
+<div
+    class="search-picker {{className}}"
+    data-search-picker
+    {{#if searchPickerId}}
+        id="{{searchPickerId}}"
+    {{/if}}>
+
+    <div
+        class="search-picker__control"
+        data-search-picker-control>
+
+        <svg
+            class="search-picker__search-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true">
+
+            <circle
+                cx="11"
+                cy="11"
+                r="8">
+            </circle>
+
+            <path d="m21 21-4.3-4.3">
+            </path>
+
+        </svg>
+
+        <input
+            type="text"
+            class="search-picker__input"
+            data-search-picker-input
+            placeholder="{{#if placeholder}}{{placeholder}}{{else}}Nhập để tìm kiếm{{/if}}"
+            autocomplete="off"
+            spellcheck="false"
+            aria-autocomplete="list"
+            aria-expanded="false">
+
+        {{#if showShortcut}}
+
+            <span
+                class="search-picker__shortcut"
+                data-search-picker-shortcut>
+
+                ⌘ + K
+
+            </span>
+
+        {{/if}}
+
+    </div>
+
+
+    <div
+        class="search-picker__dropdown"
+        data-search-picker-dropdown
+        hidden>
+
+        <div
+            class="search-picker__list"
+            data-search-picker-list
+            role="listbox">
+        </div>
+
+
+        <div
+            class="search-picker__empty"
+            data-search-picker-empty
+            hidden>
+
+            Không tìm thấy tính năng phù hợp.
+
+        </div>
+
+    </div>
+
+</div>

@@ -42,7 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
         genderSelect: document.getElementById("gioiTinh"),
         countrySelect: document.getElementById("quocGiaId"),
         provinceSelect: document.getElementById("tinhThanhId"),
-        wardSelect: document.getElementById("xaPhuongId")
+        wardSelect: document.getElementById("xaPhuongId"),
+        featureSearch: document.getElementById("headerFeatureSearch")
     };
 
     const enumState = {
@@ -73,12 +74,37 @@ document.addEventListener("DOMContentLoaded", () => {
     function initialize() {
         initializeAddressSmartSelects();
         initializeProfileFieldValidation();
+        initializeHeaderSearch();
         bindEvents();
         renderStoredCurrentUser();
         Promise.allSettled([
             loadCurrentUser(),
             loadSystemInformation()
         ]);
+    }
+
+    function initializeHeaderSearch() {
+        if (
+            !elements.featureSearch ||
+            !window.MCS?.searchPicker
+        ) {
+            return;
+        }
+
+        window.MCS.searchPicker.initialize(
+            elements.featureSearch,
+            {
+                items: window.MCS.navigationItems || [],
+
+                onSelect(item) {
+                    if (!item?.url) {
+                        return;
+                    }
+
+                    window.location.href = item.url;
+                }
+            }
+        );
     }
 
     async function loadProfileEnums() {
