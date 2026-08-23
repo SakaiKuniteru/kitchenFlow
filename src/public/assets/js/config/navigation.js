@@ -14,117 +14,117 @@ window.MCS.navigationItems = [
         url: "/thuc-don/danh-sach-thuc-don"
     },
     {
-        label: "Cơ sở",
+        label: "Danh mục Cơ sở",
         group: "Tổ chức",
         url: "/to-chuc/co-so"
     },
     {
-        label: "Nhà ăn",
+        label: "Danh mục Nhà ăn",
         group: "Tổ chức",
         url: "/to-chuc/nha-an"
     },
     {
-        label: "Phòng ban",
+        label: "Danh mục Phòng ban",
         group: "Tổ chức",
         url: "/to-chuc/phong-ban"
     },
     {
-        label: "Chức vụ",
+        label: "Danh mục Chức vụ",
         group: "Tổ chức",
         url: "/to-chuc/chuc-vu"
     },
     {
-        label: "Nhân viên",
+        label: "Danh mục Nhân viên",
         group: "Tổ chức",
         url: "/to-chuc/nhan-vien"
     },
     {
-        label: "Kho",
+        label: "Danh mục Kho",
         group: "Tổ chức",
         url: "/to-chuc/kho"
     },
     {
-        label: "Vai trò",
+        label: "Danh mục Vai trò",
         group: "Phân quyền",
         url: "/phan-quyen/vai-tro"
     },
     {
-        label: "Quyền",
+        label: "Danh mục Quyền",
         group: "Phân quyền",
         url: "/phan-quyen/quyen"
     },
     {
-        label: "Tài khoản",
+        label: "Danh mục Tài khoản",
         group: "Phân quyền",
         url: "/phan-quyen/tai-khoan"
     },
     {
-        label: "Ca ăn",
+        label: "Danh mục Ca ăn",
         group: "Suất ăn",
         url: "/suat-an/ca-an"
     },
     {
-        label: "Món ăn",
+        label: "Danh mục Món ăn",
         group: "Suất ăn",
         url: "/suat-an/mon-an"
     },
     {
-        label: "Thực phẩm",
+        label: "Danh mục Thực phẩm",
         group: "Suất ăn",
         url: "/suat-an/thuc-pham"
     },
     {
-        label: "Đơn vị tính",
+        label: "Danh mục Đơn vị tính",
         group: "Suất ăn",
         url: "/suat-an/don-vi-tinh"
     },
     {
-        label: "Chính sách",
+        label: "Danh mục Chính sách",
         group: "Chính sách",
         url: "/chuong-trinh/chinh-sach"
     },
     {
-        label: "Voucher",
+        label: "Danh mục Voucher",
         group: "Chính sách",
         url: "/chuong-trinh/voucher"
     },
     {
-        label: "Tổng hợp địa chỉ",
+        label: "Danh mục Tổng hợp địa chỉ",
         group: "Địa chỉ hành chính",
         url: "/dia-chi/dia-chi-hanh-chinh"
     },
     {
-        label: "Quốc gia",
+        label: "Danh mục Quốc gia",
         group: "Địa chỉ hành chính",
         url: "/dia-chi/quoc-gia"
     },
     {
-        label: "Tỉnh thành",
+        label: "Danh mục Tỉnh thành",
         group: "Địa chỉ hành chính",
         url: "/dia-chi/tinh-thanh"
     },
     {
-        label: "Xã phường",
+        label: "Danh mục Xã phường",
         group: "Địa chỉ hành chính",
         url: "/dia-chi/xa-phuong"
     },
     {
-        label: "Nhóm tính năng",
+        label: "Danh mục Nhóm tính năng",
         group: "Hệ thống",
         url: "/he-thong/nhom-tinh-nang"
     },
     {
-        label: "Nhóm món ăn",
+        label: "Danh mục Nhóm món ăn",
         group: "Hệ thống",
         url: "/he-thong/nhom-mon-an"
     },
     {
-        label: "Báo cáo",
+        label: "Danh mục Báo cáo",
         group: "Hệ thống",
         url: "/he-thong/bao-cao"
     },
     {
-        label: "Thiết lập",
+        label: "Danh mục Thiết lập",
         group: "Hệ thống",
         url: "/he-thong/thiet-lap"
     }

@@ -929,3 +929,788 @@ Thiết lập ảnh hưởng đến:
 Thiết lập không làm thay đổi loại của đơn vị tính và không tự động thay đổi dữ liệu thực phẩm đã được lưu trước đó.
 
 ---
+
+## 14. QUY_TAC_LAM_TRON
+
+**Mã:** `QUY_TAC_LAM_TRON`
+
+**Giá trị:** `0`, `1` hoặc `2`.
+
+**Mô tả:**
+
+Quy định phương pháp làm tròn số được sử dụng trong hệ thống khi các phép tính phát sinh giá trị có phần thập phân vượt quá số chữ số được phép giữ lại.
+
+Thiết lập này được sử dụng kết hợp với thiết lập:
+
+`SO_CHU_SO_SAU_DAU_PHAY`
+
+Trong đó:
+
+- `QUY_TAC_LAM_TRON` quyết định làm tròn theo hướng nào.
+- `SO_CHU_SO_SAU_DAU_PHAY` quyết định giữ lại bao nhiêu chữ số sau dấu phẩy.
+
+Thiết lập này có thể được sử dụng cho các phép tính như:
+
+- Giá theo đơn vị sử dụng.
+- Giá hao hụt.
+- Giá sau hao hụt.
+- Định lượng.
+- Định lượng hao hụt.
+- Định lượng sau hao hụt.
+- Thành tiền trước hao hụt.
+- Thành tiền hao hụt.
+- Thành tiền sau hao hụt.
+- Các phép tính số học khác có yêu cầu làm tròn trong hệ thống.
+
+### Giá trị `0` - Làm tròn thông thường
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 0`
+
+thì hệ thống thực hiện làm tròn theo chữ số ngay sau vị trí cần giữ lại.
+
+Quy tắc:
+
+- `0`, `1`, `2`, `3`, `4` → làm tròn xuống.
+- `5`, `6`, `7`, `8`, `9` → làm tròn lên.
+
+Ví dụ khi:
+
+`SO_CHU_SO_SAU_DAU_PHAY = 2`
+
+Giá trị:
+
+`123,454`
+
+Kết quả:
+
+`123,45`
+
+Vì chữ số thứ ba sau dấu phẩy là `4`, hệ thống làm tròn xuống.
+
+Giá trị:
+
+`123,455`
+
+Kết quả:
+
+`123,46`
+
+Vì chữ số thứ ba sau dấu phẩy là `5`, hệ thống làm tròn lên.
+
+Giá trị:
+
+`123,459`
+
+Kết quả:
+
+`123,46`
+
+Vì chữ số thứ ba sau dấu phẩy là `9`, hệ thống làm tròn lên.
+
+Đây là quy tắc làm tròn mặc định của hệ thống.
+
+### Giá trị `1` - Luôn làm tròn lên
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 1`
+
+thì nếu giá trị còn phần dư sau số chữ số thập phân được phép giữ lại, hệ thống luôn làm tròn lên.
+
+Ví dụ khi:
+
+`SO_CHU_SO_SAU_DAU_PHAY = 2`
+
+Giá trị:
+
+`123,451`
+
+Kết quả:
+
+`123,46`
+
+Giá trị:
+
+`123,454`
+
+Kết quả:
+
+`123,46`
+
+Giá trị:
+
+`123,459`
+
+Kết quả:
+
+`123,46`
+
+Nếu giá trị đã chính xác đến số chữ số cần giữ và không còn phần dư thì hệ thống không tăng thêm.
+
+Ví dụ:
+
+`123,450`
+
+Kết quả:
+
+`123,45`
+
+Không được hiểu quy tắc làm tròn lên là luôn cộng thêm một đơn vị vào chữ số cuối cùng.
+
+Hệ thống chỉ làm tròn lên khi tồn tại phần số bị loại bỏ có giá trị khác `0`.
+
+### Giá trị `2` - Luôn làm tròn xuống
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 2`
+
+thì hệ thống luôn loại bỏ phần số vượt quá số chữ số sau dấu phẩy được phép giữ lại.
+
+Không phụ thuộc chữ số tiếp theo là:
+
+- `1`
+- `2`
+- `3`
+- `4`
+- `5`
+- `6`
+- `7`
+- `8`
+- `9`
+
+Ví dụ khi:
+
+`SO_CHU_SO_SAU_DAU_PHAY = 2`
+
+Giá trị:
+
+`123,451`
+
+Kết quả:
+
+`123,45`
+
+Giá trị:
+
+`123,456`
+
+Kết quả:
+
+`123,45`
+
+Giá trị:
+
+`123,459`
+
+Kết quả:
+
+`123,45`
+
+Quy tắc này tương đương với việc cắt bỏ phần thập phân vượt quá số chữ số được cấu hình.
+
+### Ví dụ kết hợp với số chữ số sau dấu phẩy
+
+Giả sử giá trị cần xử lý:
+
+`123,45678`
+
+Và:
+
+`SO_CHU_SO_SAU_DAU_PHAY = 2`
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 0`
+
+thì:
+
+`123,45678 → 123,46`
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 1`
+
+thì:
+
+`123,45678 → 123,46`
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 2`
+
+thì:
+
+`123,45678 → 123,45`
+
+Ví dụ khác:
+
+`123,45111`
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 0`
+
+thì:
+
+`123,45111 → 123,45`
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 1`
+
+thì:
+
+`123,45111 → 123,46`
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 2`
+
+thì:
+
+`123,45111 → 123,45`
+
+### Giá trị mặc định
+
+Thiết lập chỉ được sử dụng khi giá trị có thể chuyển thành một trong các số:
+
+- `0`
+- `1`
+- `2`
+
+Nếu:
+
+- Không tồn tại thiết lập.
+- Không lấy được giá trị thiết lập.
+- Thiết lập có `active = false`.
+- Giá trị để trống.
+- Giá trị không phải số nguyên hợp lệ.
+- Giá trị khác `0`, `1`, `2`.
+
+thì hệ thống sử dụng giá trị mặc định:
+
+`0`
+
+Tức là:
+
+- `0` đến `4` → làm tròn xuống.
+- `5` đến `9` → làm tròn lên.
+
+### Quy tắc xử lý
+
+Trước khi làm tròn một giá trị, hệ thống phải lấy đồng thời:
+
+`QUY_TAC_LAM_TRON`
+
+và:
+
+`SO_CHU_SO_SAU_DAU_PHAY`
+
+Quy trình xử lý:
+
+1. Xác định số chữ số sau dấu phẩy cần giữ lại.
+2. Xác định phần số vượt quá số chữ số được giữ.
+3. Áp dụng `QUY_TAC_LAM_TRON`.
+4. Trả về giá trị đã làm tròn.
+5. Các phép tính tiếp theo sử dụng giá trị theo quy tắc nghiệp vụ được xác định tại từng chức năng.
+
+Ví dụ:
+
+Giá trị ban đầu:
+
+`126,315789`
+
+Số chữ số:
+
+`2`
+
+Quy tắc:
+
+`0`
+
+Kết quả:
+
+`126,32`
+
+Nếu quy tắc:
+
+`1`
+
+Kết quả:
+
+`126,32`
+
+Nếu quy tắc:
+
+`2`
+
+Kết quả:
+
+`126,31`
+
+### Phạm vi áp dụng
+
+Thiết lập này là quy tắc làm tròn dùng chung của hệ thống.
+
+Thiết lập có thể áp dụng cho:
+
+- Giá tiền.
+- Hệ số tính toán.
+- Giá theo đơn vị sơ cấp.
+- Giá theo đơn vị sử dụng.
+- Hao hụt.
+- Định lượng.
+- Thành tiền.
+- Tổng tiền.
+- Các giá trị số được tính toán từ nghiệp vụ.
+
+Thiết lập không tự động thay đổi dữ liệu gốc đã được lưu trong cơ sở dữ liệu nếu nghiệp vụ đó không yêu cầu làm tròn khi lưu.
+
+Việc một trường được:
+
+- Làm tròn trước khi lưu.
+- Chỉ làm tròn khi tính toán.
+- Chỉ làm tròn khi hiển thị.
+
+sẽ được xác định riêng tại nghiệp vụ sử dụng trường đó.
+
+---
+
+## 15. SO_CHU_SO_SAU_DAU_PHAY
+
+**Mã:** `SO_CHU_SO_SAU_DAU_PHAY`
+
+**Giá trị:** `0`, `1`, `2`, `3`, `4` hoặc `5`.
+
+**Mô tả:**
+
+Quy định số lượng chữ số tối đa được giữ lại sau dấu phẩy khi hệ thống thực hiện làm tròn các giá trị số.
+
+Thiết lập này luôn được sử dụng kết hợp với:
+
+`QUY_TAC_LAM_TRON`
+
+Trong đó:
+
+- `SO_CHU_SO_SAU_DAU_PHAY` xác định vị trí làm tròn.
+- `QUY_TAC_LAM_TRON` xác định hướng làm tròn.
+
+### Giá trị `0`
+
+Nếu:
+
+`SO_CHU_SO_SAU_DAU_PHAY = 0`
+
+thì hệ thống không giữ chữ số nào sau dấu phẩy.
+
+Ví dụ:
+
+Giá trị:
+
+`123,45678`
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 0`
+
+Kết quả:
+
+`123`
+
+vì chữ số đầu tiên sau dấu phẩy là `4`.
+
+Giá trị:
+
+`123,55678`
+
+Kết quả:
+
+`124`
+
+vì chữ số đầu tiên sau dấu phẩy là `5`.
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 1`
+
+thì:
+
+`123,00001 → 124`
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 2`
+
+thì:
+
+`123,99999 → 123`
+
+### Giá trị `1`
+
+Nếu:
+
+`SO_CHU_SO_SAU_DAU_PHAY = 1`
+
+thì hệ thống giữ tối đa một chữ số sau dấu phẩy.
+
+Ví dụ:
+
+`123,45678`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 0`
+
+Kết quả:
+
+`123,5`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 1`
+
+Kết quả:
+
+`123,5`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 2`
+
+Kết quả:
+
+`123,4`
+
+### Giá trị `2`
+
+Nếu:
+
+`SO_CHU_SO_SAU_DAU_PHAY = 2`
+
+thì hệ thống giữ tối đa hai chữ số sau dấu phẩy.
+
+Ví dụ:
+
+`123,45678`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 0`
+
+Kết quả:
+
+`123,46`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 1`
+
+Kết quả:
+
+`123,46`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 2`
+
+Kết quả:
+
+`123,45`
+
+Đây là giá trị mặc định của hệ thống.
+
+### Giá trị `3`
+
+Nếu:
+
+`SO_CHU_SO_SAU_DAU_PHAY = 3`
+
+thì hệ thống giữ tối đa ba chữ số sau dấu phẩy.
+
+Ví dụ:
+
+`123,45678`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 0`
+
+Kết quả:
+
+`123,457`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 1`
+
+Kết quả:
+
+`123,457`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 2`
+
+Kết quả:
+
+`123,456`
+
+### Giá trị `4`
+
+Nếu:
+
+`SO_CHU_SO_SAU_DAU_PHAY = 4`
+
+thì hệ thống giữ tối đa bốn chữ số sau dấu phẩy.
+
+Ví dụ:
+
+`123,45678`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 0`
+
+Kết quả:
+
+`123,4568`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 1`
+
+Kết quả:
+
+`123,4568`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 2`
+
+Kết quả:
+
+`123,4567`
+
+### Giá trị `5`
+
+Nếu:
+
+`SO_CHU_SO_SAU_DAU_PHAY = 5`
+
+thì hệ thống giữ tối đa năm chữ số sau dấu phẩy.
+
+Ví dụ:
+
+`123,456789`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 0`
+
+Kết quả:
+
+`123,45679`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 1`
+
+Kết quả:
+
+`123,45679`
+
+Với:
+
+`QUY_TAC_LAM_TRON = 2`
+
+Kết quả:
+
+`123,45678`
+
+`5` là số chữ số sau dấu phẩy tối đa mà thiết lập cho phép.
+
+### Các giá trị hợp lệ
+
+Thiết lập chỉ chấp nhận sáu giá trị:
+
+- `0`
+- `1`
+- `2`
+- `3`
+- `4`
+- `5`
+
+Không chấp nhận:
+
+- Số âm.
+- Số lớn hơn `5`.
+- Số thập phân.
+- Chuỗi không thể chuyển thành số nguyên hợp lệ.
+
+Ví dụ các giá trị không hợp lệ:
+
+- `-1`
+- `6`
+- `10`
+- `2.5`
+- `abc`
+- Chuỗi rỗng.
+
+### Giá trị mặc định
+
+Nếu:
+
+- Không tồn tại thiết lập.
+- Không lấy được giá trị thiết lập.
+- Thiết lập có `active = false`.
+- Giá trị để trống.
+- Giá trị không phải số nguyên.
+- Giá trị nhỏ hơn `0`.
+- Giá trị lớn hơn `5`.
+
+thì hệ thống sử dụng giá trị mặc định:
+
+`2`
+
+Tức là mặc định hệ thống giữ tối đa:
+
+`2 chữ số sau dấu phẩy`
+
+### Quy tắc kết hợp với QUY_TAC_LAM_TRON
+
+Ví dụ:
+
+Giá trị ban đầu:
+
+`126,315789`
+
+Nếu:
+
+`SO_CHU_SO_SAU_DAU_PHAY = 2`
+
+và:
+
+`QUY_TAC_LAM_TRON = 0`
+
+thì:
+
+`126,315789 → 126,32`
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 1`
+
+thì:
+
+`126,315789 → 126,32`
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 2`
+
+thì:
+
+`126,315789 → 126,31`
+
+Ví dụ:
+
+`SO_CHU_SO_SAU_DAU_PHAY = 4`
+
+và giá trị:
+
+`126,315789`
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 0`
+
+thì:
+
+`126,315789 → 126,3158`
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 1`
+
+thì:
+
+`126,315789 → 126,3158`
+
+Nếu:
+
+`QUY_TAC_LAM_TRON = 2`
+
+thì:
+
+`126,315789 → 126,3157`
+
+### Không tự bổ sung số 0 khi tính toán
+
+Thiết lập quy định số chữ số tối đa sau dấu phẩy được giữ lại, không bắt buộc giá trị phải luôn hiển thị đủ số chữ số.
+
+Ví dụ:
+
+`SO_CHU_SO_SAU_DAU_PHAY = 2`
+
+Giá trị:
+
+`123`
+
+có thể giữ dưới dạng:
+
+`123`
+
+không bắt buộc trở thành:
+
+`123,00`
+
+Giá trị:
+
+`123,5`
+
+có thể giữ dưới dạng:
+
+`123,5`
+
+không bắt buộc trở thành:
+
+`123,50`
+
+Việc hiển thị cố định số chữ số, ví dụ luôn hiển thị:
+
+`123,50`
+
+thay vì:
+
+`123,5`
+
+thuộc về quy tắc định dạng giao diện và không thuộc trách nhiệm của thiết lập này.
+
+### Phạm vi áp dụng
+
+Thiết lập này được sử dụng làm số chữ số thập phân mặc định cho các phép tính trong hệ thống có yêu cầu làm tròn.
+
+Có thể áp dụng cho:
+
+- Giá theo đơn vị sử dụng.
+- Giá hao hụt.
+- Giá sau hao hụt.
+- Định lượng quy đổi.
+- Định lượng hao hụt.
+- Định lượng sau hao hụt.
+- Thành tiền.
+- Tổng thành tiền.
+- Các giá trị tính toán khác.
+
+Thiết lập không thay đổi:
+
+- Độ chính xác vật lý của cột trong cơ sở dữ liệu.
+- Kiểu dữ liệu của cột.
+- Giá trị gốc nếu nghiệp vụ không yêu cầu làm tròn trước khi lưu.
+
+Nếu một nghiệp vụ có quy tắc làm tròn riêng được quy định rõ ràng thì quy tắc riêng của nghiệp vụ đó được ưu tiên áp dụng.
+
+---

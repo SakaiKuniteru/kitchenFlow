@@ -16,7 +16,9 @@ const MA_THIET_LAP = {
     THUC_DON_BAT_BUOC_DU_SO_NGAY: "THUC_DON_BAT_BUOC_DU_SO_NGAY",
     SO_TUAN_HIEN_THI_THUC_DON: "SO_TUAN_HIEN_THI_THUC_DON",
     SO_NAM_HIEN_THI_THUC_DON_THANG: "SO_NAM_HIEN_THI_THUC_DON_THANG",
-    QUY_TAC_CHON_DON_VI_QUY_DOI: "QUY_TAC_CHON_DON_VI_QUY_DOI"
+    QUY_TAC_CHON_DON_VI_QUY_DOI: "QUY_TAC_CHON_DON_VI_QUY_DOI",
+    QUY_TAC_LAM_TRON: "QUY_TAC_LAM_TRON",
+    SO_CHU_SO_SAU_DAU_PHAY: "SO_CHU_SO_SAU_DAU_PHAY"
 };
 
 class CauHinhService {
@@ -111,10 +113,21 @@ class CauHinhService {
                     giaTri: await this.getQuyTacChonDonViQuyDoi()
                 };
 
-            default:
-                return this.resolveMacDinh(thietLap);
-        }
-    }
+            case MA_THIET_LAP.QUY_TAC_LAM_TRON:
+                return {
+                    ma: maThietLap,
+                    giaTri: await this.getQuyTacLamTron()
+                };
+
+            case MA_THIET_LAP.SO_CHU_SO_SAU_DAU_PHAY:
+                return {
+                    ma: maThietLap,
+                    giaTri: await this.getSoChuSoSauDauPhay()
+                };
+
+                    default: return this.resolveMacDinh(thietLap);
+                }
+            }
 
     async resolveLogoCoSoMacDinh(thietLap) {
         const maCoSo = thietLap.gia_tri?.trim();
@@ -489,6 +502,111 @@ class CauHinhService {
         ) {
             return MAC_DINH;
         }
+
+        return giaTri;
+
+    }
+
+    async getQuyTacLamTron() {
+
+        const MAC_DINH =
+            0;
+
+
+        const thietLap =
+            await cauHinhRepository
+                .getThietLapByMa(
+                    MA_THIET_LAP
+                        .QUY_TAC_LAM_TRON
+                );
+
+
+        if (
+            !thietLap ||
+            thietLap.active !== true
+        ) {
+
+            return MAC_DINH;
+
+        }
+
+
+        const giaTri =
+            Number(
+                String(
+                    thietLap.gia_tri ??
+                    ""
+                ).trim()
+            );
+
+
+        if (
+            !Number.isInteger(
+                giaTri
+            ) ||
+            ![
+                0,
+                1,
+                2
+            ].includes(
+                giaTri
+            )
+        ) {
+
+            return MAC_DINH;
+
+        }
+
+
+        return giaTri;
+
+    }
+
+    async getSoChuSoSauDauPhay() {
+
+        const MAC_DINH =
+            2;
+
+
+        const thietLap =
+            await cauHinhRepository
+                .getThietLapByMa(
+                    MA_THIET_LAP
+                        .SO_CHU_SO_SAU_DAU_PHAY
+                );
+
+
+        if (
+            !thietLap ||
+            thietLap.active !== true
+        ) {
+
+            return MAC_DINH;
+
+        }
+
+
+        const giaTri =
+            Number(
+                String(
+                    thietLap.gia_tri ??
+                    ""
+                ).trim()
+            );
+
+
+        if (
+            !Number.isInteger(
+                giaTri
+            ) ||
+            giaTri < 0 ||
+            giaTri > 5
+        ) {
+
+            return MAC_DINH;
+
+        }
+
 
         return giaTri;
 
