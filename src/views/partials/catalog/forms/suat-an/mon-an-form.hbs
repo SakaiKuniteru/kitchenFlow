@@ -1,11 +1,7 @@
 <div class="detail-panel__section">
-
-    <h3 class="detail-panel__section-title">
-        Thông tin món ăn
-    </h3>
+    <h3 class="detail-panel__section-title">Thông tin món ăn</h3>
 
     <div class="catalog-form-grid">
-
         {{> forms/input
             id="maMonAn"
             name="maMonAn"
@@ -24,36 +20,14 @@
             required=true
         }}
 
-        <div class="catalog-form-grid__full">
-
-            {{> forms/select
-                id="nhomMonAnId"
-                name="nhomMonAnId"
-                label="Nhóm món ăn"
-                placeholder="Chọn nhóm món ăn"
-                required=true
-            }}
-
-        </div>
-
-        {{> forms/number
-            id="giaTien"
-            name="giaTien"
-            label="Giá tiền"
-            placeholder="Nhập giá tiền"
-            min=0
-            step="0.01"
-            suffix="VNĐ"
-        }}
-
-        {{> forms/number
-            id="giaDuKien"
-            name="giaDuKien"
-            label="Giá dự kiến"
-            placeholder="Nhập giá dự kiến"
-            min=0
-            step="0.01"
-            suffix="VNĐ"
+        {{> forms/select
+            id="nhomMonAnId"
+            name="nhomMonAnId"
+            label="Nhóm món ăn"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn nhóm món ăn..."
             required=true
         }}
 
@@ -68,38 +42,197 @@
             suffix="kcal"
         }}
 
-        {{> forms/input
+        {{> forms/number
+            id="giaTien"
+            name="giaTien"
+            label="Giá món ăn"
+            placeholder="Nhập giá món ăn"
+            min=0
+            step="0.01"
+            suffix="VNĐ"
+        }}
+
+        {{> forms/number
+            id="giaDuKien"
+            name="giaDuKien"
+            label="Giá dự kiến"
+            placeholder="Tự động tính theo công thức"
+            min=0
+            step="0.01"
+            suffix="VNĐ"
+            disabled=true
+        }}
+
+        {{> forms/textarea
+            id="moTa"
+            name="moTa"
+            label="Mô tả"
+            placeholder="Nhập mô tả món ăn"
+            maxlength=500
+            rows=3
+            showCounter=true
+        }}
+
+        {{> forms/image
             id="hinhAnh"
             name="hinhAnh"
             label="Hình ảnh"
-            placeholder="/uploads/mon-an/hinh-anh.jpg"
+            accept="image/jpeg,image/png,image/webp"
+            width=100
+            height=100
+            minWidth=100
+            minHeight=100
+            placeholder="Tải ảnh lên"
         }}
 
         <div class="catalog-form-grid__full">
-
-            {{> forms/textarea
-                id="moTa"
-                name="moTa"
-                label="Mô tả"
-                placeholder="Nhập mô tả món ăn"
-                maxlength=500
-                rows=4
-                showCounter=true
+            {{> forms/switch
+                id="active"
+                name="active"
+                label="Đang hoạt động"
+                checked=true
             }}
+        </div>
+    </div>
+</div>
 
+<div class="detail-panel__section mon-an-cong-thuc">
+    <div class="mon-an-cong-thuc__heading">
+        <div>
+            <h3 class="detail-panel__section-title">Công thức món ăn</h3>
+            <p class="mon-an-cong-thuc__description">Danh sách thực phẩm và định lượng sử dụng cho món ăn.</p>
         </div>
 
+        <button type="button" class="mon-an-cong-thuc__choose-button" data-mon-an-open-ingredient hidden>
+            <i class="fa-solid fa-list-check"></i>
+            <span>Chọn thực phẩm</span>
+        </button>
     </div>
 
+    <div class="mon-an-cong-thuc__summary" data-mon-an-ingredient-summary>
+        <span data-mon-an-ingredient-count>0 thực phẩm</span>
+        <span data-mon-an-estimated-price>0 VNĐ</span>
+    </div>
+
+    <div class="mon-an-cong-thuc__list" data-mon-an-ingredient-list></div>
 </div>
 
-<div class="detail-panel__section">
+<div class="mon-an-ingredient-modal" data-mon-an-ingredient-modal hidden>
+    <div class="mon-an-ingredient-modal__backdrop"></div>
 
-    {{> forms/switch
-        id="active"
-        name="active"
-        label="Đang hoạt động"
-        checked=true
-    }}
+    <div class="mon-an-ingredient-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="monAnIngredientModalTitle">
+        <header class="mon-an-ingredient-modal__header">
+            <div>
+                <h2 id="monAnIngredientModalTitle" class="mon-an-ingredient-modal__title">Chọn thực phẩm</h2>
+                <p class="mon-an-ingredient-modal__subtitle" data-mon-an-ingredient-popup-summary>Đã chọn 0 thực phẩm</p>
+            </div>
 
+            <button type="button" class="mon-an-ingredient-modal__close" data-mon-an-ingredient-close aria-label="Đóng">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </header>
+
+        <div class="mon-an-ingredient-modal__body">
+            <div class="mon-an-ingredient-modal__toolbar">
+                <div class="mon-an-ingredient-modal__filter">
+                    {{> forms/select
+                        id="monAnIngredientBaoQuan"
+                        name="monAnIngredientBaoQuan"
+                        label="Điều kiện bảo quản"
+                        mode="multiple"
+                        multiple=true
+                        allowAll=true
+                        allLabel="Tất cả"
+                        placeholder="Tất cả điều kiện"
+                        compactMultiple=true
+                        checkboxOptions=true
+                    }}
+                </div>
+
+                <div class="mon-an-ingredient-modal__search">
+                    {{> forms/input
+                        id="monAnIngredientSearch"
+                        name="monAnIngredientSearch"
+                        label="Tìm kiếm"
+                        placeholder="Tìm theo mã hoặc tên thực phẩm"
+                    }}
+                </div>
+
+                <button type="button" class="mon-an-ingredient-modal__add" data-mon-an-ingredient-add>
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Thêm mới</span>
+                </button>
+            </div>
+
+            <div class="mon-an-ingredient-modal__table-wrapper">
+                <table class="mon-an-ingredient-table">
+                    <thead>
+                        <tr>
+                            <th class="is-index">STT</th>
+                            <th>Thực phẩm</th>
+                            <th>Định lượng</th>
+                            <th>Giá tiền</th>
+                            <th class="is-status">Trạng thái</th>
+                        </tr>
+                    </thead>
+
+                    <tbody data-mon-an-ingredient-popup-list></tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer class="mon-an-ingredient-modal__footer">
+            <button type="button" class="mon-an-ingredient-modal__button" data-mon-an-ingredient-cancel>Hủy bỏ</button>
+            <button type="button" class="mon-an-ingredient-modal__button is-primary" data-mon-an-ingredient-save>Lưu</button>
+        </footer>
+    </div>
 </div>
+
+<template id="monAnIngredientRowTemplate">
+    <tr data-mon-an-ingredient-row>
+        <td class="is-index">
+            <span data-mon-an-ingredient-index>1</span>
+        </td>
+
+        <td>
+            {{> forms/select
+                id="monAnIngredientFoodTemplate"
+                name="monAnIngredientFoodTemplate"
+                label=""
+                mode="single"
+                multiple=false
+                allowAll=false
+                placeholder="Chọn thực phẩm..."
+            }}
+        </td>
+
+        <td>
+            {{> forms/number
+                id="monAnIngredientQuantityTemplate"
+                name="monAnIngredientQuantityTemplate"
+                label=""
+                placeholder="Nhập định lượng"
+                min=0.001
+                step="0.001"
+            }}
+        </td>
+
+        <td>
+            {{> forms/input
+                id="monAnIngredientPriceTemplate"
+                name="monAnIngredientPriceTemplate"
+                label=""
+                placeholder=""
+                disabled=true
+            }}
+        </td>
+
+        <td class="is-status">
+            {{> forms/checkbox
+                id="monAnIngredientSelectedTemplate"
+                name="monAnIngredientSelectedTemplate"
+                label=""
+            }}
+        </td>
+    </tr>
+</template>

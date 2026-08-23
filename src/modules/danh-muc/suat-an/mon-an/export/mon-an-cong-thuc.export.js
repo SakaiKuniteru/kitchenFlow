@@ -3,7 +3,7 @@
 const monAnRepository = require("../mon-an.repository");
 const { createExportFile } = require("../../../../../helpers/excel/excel-export");
 
-const MA_BAO_CAO = "ct_mon_an_thuc_pham";
+const MA_BAO_CAO = "thanh_phan_mon_an";
 const HEADER_ROW = 3;
 const TEMPLATE_ROW = 5;
 const DATA_START_ROW = 5;
@@ -20,7 +20,7 @@ function mapExportItem(row) {
         dinhLuong: row.dinh_luong !== null
             ? Number(row.dinh_luong)
             : null,
-        ghiChu: row.ghi_chu
+        active: row.active
     };
 }
 

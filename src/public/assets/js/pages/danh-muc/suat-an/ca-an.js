@@ -157,17 +157,31 @@ document.addEventListener("DOMContentLoaded", () => {
                     return errors;
                 },
 
-                onAction(
-                    action,
-                    id,
-                    catalogInstance
-                ) {
-                    if (action === "export") {
+                toolbarActions: [
+                    {
+                        action: "filter",
+                        label: "Tìm kiếm chi tiết",
+                        icon: "search"
+                    },
+                    {
+                        action: "export-ca-an",
+                        label: "Xuất danh mục ca ăn",
+                        icon: "download"
+                    },
+                    {
+                        action: "import-ca-an",
+                        label: "Nhập danh mục ca ăn",
+                        icon: "upload"
+                    }
+                ],
+
+                onAction(action, id, catalogInstance) {
+                    if (action === "export-ca-an") {
                         exportData();
                         return;
                     }
 
-                    if (action === "import") {
+                    if (action === "import-ca-an") {
                         importData(catalogInstance);
                     }
                 }

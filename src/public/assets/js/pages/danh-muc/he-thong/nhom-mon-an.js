@@ -128,13 +128,31 @@ document.addEventListener("DOMContentLoaded", () => {
                     };
                 },
 
+                toolbarActions: [
+                    {
+                        action: "filter",
+                        label: "Tìm kiếm chi tiết",
+                        icon: "search"
+                    },
+                    {
+                        action: "export-nhom-mon-an",
+                        label: "Xuất danh mục nhóm món ăn",
+                        icon: "download"
+                    },
+                    {
+                        action: "import-nhom-mon-an",
+                        label: "Nhập danh mục nhóm món ăn",
+                        icon: "upload"
+                    }
+                ],
+
                 onAction(action, id, catalogInstance) {
-                    if (action === "export") {
+                    if (action === "export-nhom-mon-an") {
                         exportData();
                         return;
                     }
 
-                    if (action === "import") {
+                    if (action === "import-nhom-mon-an") {
                         importData(catalogInstance);
                     }
                 }

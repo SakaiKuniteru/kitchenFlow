@@ -25,6 +25,7 @@ window.MCS.pages.createCatalogPage = async function createCatalogPage(options = 
         mapListResponse,
         mapDetailResponse,
         actions,
+        toolbarActions = [],
         onRecordLoaded,
         onAction,
         viewOnly = false
@@ -259,6 +260,7 @@ window.MCS.pages.createCatalogPage = async function createCatalogPage(options = 
         root,
         endpoints,
         columns,
+        toolbarActions,
         detailTitle,
         createTitle,
         updateTitle,

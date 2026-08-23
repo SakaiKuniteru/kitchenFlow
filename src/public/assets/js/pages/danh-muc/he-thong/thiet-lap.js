@@ -298,13 +298,31 @@ document.addEventListener("DOMContentLoaded", () => {
                         );
                 },
 
+                toolbarActions: [
+                    {
+                        action: "filter",
+                        label: "Tìm kiếm chi tiết",
+                        icon: "search"
+                    },
+                    {
+                        action: "export-thiet-lap",
+                        label: "Xuất danh mục thiết lập",
+                        icon: "download"
+                    },
+                    {
+                        action: "import-thiet-lap",
+                        label: "Nhập danh mục thiết lập",
+                        icon: "upload"
+                    }
+                ],
+
                 onAction(action, id, catalogInstance) {
-                    if (action === "export") {
+                    if (action === "export-thiet-lap") {
                         exportData();
                         return;
                     }
 
-                    if (action === "import") {
+                    if (action === "import-thiet-lap") {
                         importData(catalogInstance);
                     }
                 }

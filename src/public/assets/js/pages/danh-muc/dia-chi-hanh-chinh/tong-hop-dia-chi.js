@@ -104,9 +104,23 @@ document.addEventListener("DOMContentLoaded", async () => {
             return record?.maDiaChi || "";
         },
 
-        onAction(action) {
-            if (action === "export") {
+        toolbarActions: [
+            {
+                action: "filter",
+                label: "Tìm kiếm chi tiết",
+                icon: "search"
+            },
+            {
+                action: "export-tong-hop-dia-chi",
+                label: "Xuất danh mục địa chỉ tổng hợp",
+                icon: "download"
+            }
+        ],
+
+        onAction(action, id, catalogInstance) {
+            if (action === "export-tong-hop-dia-chi") {
                 exportData();
+                return;
             }
         }
     });

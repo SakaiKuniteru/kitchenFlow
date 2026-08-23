@@ -274,13 +274,31 @@ document.addEventListener("DOMContentLoaded", () => {
                         );
                 },
 
+                toolbarActions: [
+                    {
+                        action: "filter",
+                        label: "Tìm kiếm chi tiết",
+                        icon: "search"
+                    },
+                    {
+                        action: "export-quyen",
+                        label: "Xuất danh mục quyền",
+                        icon: "download"
+                    },
+                    {
+                        action: "import-quyen",
+                        label: "Nhập danh mục quyền",
+                        icon: "upload"
+                    }
+                ],
+
                 onAction(action, id, catalogInstance) {
-                    if (action === "export") {
+                    if (action === "export-quyen") {
                         exportData();
                         return;
                     }
 
-                    if (action === "import") {
+                    if (action === "import-quyen") {
                         importData(catalogInstance);
                     }
                 }

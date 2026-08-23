@@ -318,13 +318,31 @@ document.addEventListener("DOMContentLoaded", () => {
                     syncAddressHierarchy(record, mode);
                 },
 
+                toolbarActions: [
+                    {
+                        action: "filter",
+                        label: "Tìm kiếm chi tiết",
+                        icon: "search"
+                    },
+                    {
+                        action: "export-nhan-vien",
+                        label: "Xuất danh mục nhân viên",
+                        icon: "download"
+                    },
+                    {
+                        action: "import-nhan-vien",
+                        label: "Nhập danh mục nhân viên",
+                        icon: "upload"
+                    }
+                ],
+
                 onAction(action, id, catalogInstance) {
-                    if (action === "export") {
+                    if (action === "export-nhan-vien") {
                         exportData();
                         return;
                     }
 
-                    if (action === "import") {
+                    if (action === "import-nhan-vien") {
                         importData(catalogInstance);
                     }
                 }

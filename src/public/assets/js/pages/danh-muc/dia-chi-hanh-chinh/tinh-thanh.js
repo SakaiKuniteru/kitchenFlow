@@ -167,13 +167,31 @@ document.addEventListener("DOMContentLoaded", () => {
                         );
                 },
 
+                toolbarActions: [
+                    {
+                        action: "filter",
+                        label: "Tìm kiếm chi tiết",
+                        icon: "search"
+                    },
+                    {
+                        action: "export-tinh-thanh",
+                        label: "Xuất danh mục tỉnh thành",
+                        icon: "download"
+                    },
+                    {
+                        action: "import-tinh-thanh",
+                        label: "Nhập danh mục tỉnh thành",
+                        icon: "upload"
+                    }
+                ],
+
                 onAction(action, id, catalogInstance) {
-                    if (action === "export") {
+                    if (action === "export-tinh-thanh") {
                         exportData();
                         return;
                     }
 
-                    if (action === "import") {
+                    if (action === "import-tinh-thanh") {
                         importData(catalogInstance);
                     }
                 }

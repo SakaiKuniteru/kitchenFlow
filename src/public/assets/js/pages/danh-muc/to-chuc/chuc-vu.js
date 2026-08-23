@@ -121,13 +121,31 @@ document.addEventListener("DOMContentLoaded", () => {
                     };
                 },
 
+                toolbarActions: [
+                    {
+                        action: "filter",
+                        label: "Tìm kiếm chi tiết",
+                        icon: "search"
+                    },
+                    {
+                        action: "export-chuc-vu",
+                        label: "Xuất danh mục chức vụ",
+                        icon: "download"
+                    },
+                    {
+                        action: "import-chuc-vu",
+                        label: "Nhập danh mục chức vụ",
+                        icon: "upload"
+                    }
+                ],
+
                 onAction(action, id, catalogInstance) {
-                    if (action === "export") {
+                    if (action === "export-chuc-vu") {
                         exportData();
                         return;
                     }
 
-                    if (action === "import") {
+                    if (action === "import-chuc-vu") {
                         importData(catalogInstance);
                     }
                 }

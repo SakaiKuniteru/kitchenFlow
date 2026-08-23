@@ -344,20 +344,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderDetailVaiTro();
             },
 
-            onAction(
-                action,
-                id,
-                catalogInstance
-            ) {
-                if (action === "export") {
+            toolbarActions: [
+                {
+                    action: "filter",
+                    label: "Tìm kiếm chi tiết",
+                    icon: "search"
+                },
+                {
+                    action: "export-tai-khoan",
+                    label: "Xuất danh mục tài khoản",
+                    icon: "download"
+                },
+                {
+                    action: "import-tai-khoan",
+                    label: "Nhập danh mục tài khoản",
+                    icon: "upload"
+                }
+            ],
+
+            onAction(action, id, catalogInstance) {
+                if (action === "export-tai-khoan") {
                     exportData();
                     return;
                 }
 
-                if (action === "import") {
-                    importData(
-                        catalogInstance
-                    );
+                if (action === "import-tai-khoan") {
+                    importData(catalogInstance);
                 }
             }
         });

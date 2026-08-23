@@ -138,16 +138,34 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderDetailQuyen();
             },
 
-            onAction(action, id, catalogInstance) {
-                if (action === "export") {
-                    exportData();
-                    return;
-                }
+            toolbarActions: [
+                    {
+                        action: "filter",
+                        label: "Tìm kiếm chi tiết",
+                        icon: "search"
+                    },
+                    {
+                        action: "export-vai-tro",
+                        label: "Xuất danh mục vai trò",
+                        icon: "download"
+                    },
+                    {
+                        action: "import-vai-tro",
+                        label: "Nhập danh mục vai trò",
+                        icon: "upload"
+                    }
+                ],
 
-                if (action === "import") {
-                    importData(catalogInstance);
+                onAction(action, id, catalogInstance) {
+                    if (action === "export-vai-tro") {
+                        exportData();
+                        return;
+                    }
+
+                    if (action === "import-vai-tro") {
+                        importData(catalogInstance);
+                    }
                 }
-            }
         });
     }
 

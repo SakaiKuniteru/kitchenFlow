@@ -593,20 +593,32 @@ document.addEventListener(
                         return payload;
                     },
 
-                    onAction(
-                        action,
-                        id,
-                        catalogInstance
-                    ) {
-                        if (action === "export") {
+                    toolbarActions: [
+                        {
+                            action: "filter",
+                            label: "Tìm kiếm chi tiết",
+                            icon: "search"
+                        },
+                        {
+                            action: "export-thuc-pham",
+                            label: "Xuất danh mục thực phẩm",
+                            icon: "download"
+                        },
+                        {
+                            action: "import-thuc-pham",
+                            label: "Nhập danh mục thực phẩm",
+                            icon: "upload"
+                        }
+                    ],
+
+                    onAction(action, id, catalogInstance) {
+                        if (action === "export-thuc-pham") {
                             exportData();
                             return;
                         }
 
-                        if (action === "import") {
-                            importData(
-                                catalogInstance
-                            );
+                        if (action === "import-thuc-pham") {
+                            importData(catalogInstance);
                         }
                     }
                 });

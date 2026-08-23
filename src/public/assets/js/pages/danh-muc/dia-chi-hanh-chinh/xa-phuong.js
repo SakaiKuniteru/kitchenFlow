@@ -195,14 +195,31 @@ document.addEventListener("DOMContentLoaded", () => {
                     setQuocGiaReadonly();
                 },
 
-                onAction(action, id, catalogInstance) {
-                    if (action === "export") {
-                        exportData();
+                toolbarActions: [
+                    {
+                        action: "filter",
+                        label: "Tìm kiếm chi tiết",
+                        icon: "search"
+                    },
+                    {
+                        action: "export-xa-phuong",
+                        label: "Xuất danh mục xã phường",
+                        icon: "download"
+                    },
+                    {
+                        action: "import-xa-phuong",
+                        label: "Nhập danh mục xã phường",
+                        icon: "upload"
+                    }
+                ],
 
+                onAction(action, id, catalogInstance) {
+                    if (action === "export-xa-phuong") {
+                        exportData();
                         return;
                     }
 
-                    if (action === "import") {
+                    if (action === "import-xa-phuong") {
                         importData(catalogInstance);
                     }
                 }

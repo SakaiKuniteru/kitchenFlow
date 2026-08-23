@@ -847,7 +847,7 @@ class MonAnService {
     }
 
     async capNhatGiaDuKien(
-        monAnId
+        monAnId, db = pool
     ) {
         const dsCongThuc = await monAnRepository
             .getCongThuc(

@@ -1,0 +1,565 @@
+#monAnDetailPanel {
+    min-width: 0;
+}
+
+#monAnDetailPanel [data-form-field="hinhAnh"] {
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+    justify-self: start;
+    align-self: start;
+}
+
+#monAnDetailPanel [data-form-field="hinhAnh"] [data-image-picker],
+#monAnDetailPanel [data-form-field="hinhAnh"] .image-picker {
+    width: 100px !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
+    height: 100px !important;
+    min-height: 100px !important;
+    max-height: 100px !important;
+    flex: 0 0 100px;
+}
+
+#monAnDetailPanel [data-form-field="hinhAnh"] [data-image-picker-control],
+#monAnDetailPanel [data-form-field="hinhAnh"] .image-picker__control,
+#monAnDetailPanel [data-form-field="hinhAnh"] .image-picker__preview {
+    width: 100px !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
+    height: 100px !important;
+    min-height: 100px !important;
+    max-height: 100px !important;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+}
+
+#monAnDetailPanel [data-form-field="hinhAnh"] .image-picker__preview img,
+#monAnDetailPanel [data-form-field="hinhAnh"] img {
+    display: block;
+    width: 100px !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
+    height: 100px !important;
+    min-height: 100px !important;
+    max-height: 100px !important;
+    object-fit: cover;
+}
+
+.mon-an-cong-thuc {
+    min-width: 0;
+}
+
+.mon-an-cong-thuc__heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.mon-an-cong-thuc__heading .detail-panel__section-title {
+    margin-bottom: 0;
+}
+
+.mon-an-cong-thuc__description {
+    margin: 5px 0 0;
+    color: var(--color-text-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.mon-an-cong-thuc__choose-button {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    color: #ffffff;
+    background: var(--color-primary);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.mon-an-cong-thuc__choose-button:hover {
+    border-color: var(--color-primary-hover);
+    background: var(--color-primary-hover);
+}
+
+.mon-an-cong-thuc__choose-button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.14);
+}
+
+.mon-an-cong-thuc__choose-button[hidden] {
+    display: none !important;
+}
+
+.mon-an-cong-thuc__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 14px;
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-soft);
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.mon-an-cong-thuc__list {
+    display: grid;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+}
+
+.mon-an-cong-thuc__item {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) minmax(100px, auto) minmax(110px, auto);
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.mon-an-cong-thuc__item:last-child {
+    border-bottom: 0;
+}
+
+.mon-an-cong-thuc__item:hover {
+    background: var(--color-surface-soft);
+}
+
+.mon-an-cong-thuc__item-index {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    color: var(--color-text-secondary);
+    background: var(--color-surface-secondary);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.mon-an-cong-thuc__item-name {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.mon-an-cong-thuc__item-name strong {
+    overflow: hidden;
+    color: var(--color-text-primary);
+    font-size: 13px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mon-an-cong-thuc__item-name small {
+    overflow: hidden;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mon-an-cong-thuc__item-value {
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.mon-an-cong-thuc__item-price {
+    color: var(--color-primary);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.mon-an-cong-thuc__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    padding: 22px;
+    color: var(--color-text-muted);
+    font-size: 13px;
+    text-align: center;
+}
+
+.mon-an-ingredient-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.mon-an-ingredient-modal[hidden] {
+    display: none !important;
+}
+
+.mon-an-ingredient-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(1px);
+}
+
+.mon-an-ingredient-modal__dialog {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    width: min(1180px, calc(100vw - 48px));
+    height: min(700px, calc(100vh - 48px));
+    min-height: min(620px, calc(100vh - 48px));
+    max-height: calc(100vh - 48px);
+    overflow: hidden;
+    border: 1px solid var(--color-border-light);
+    border-radius: 14px;
+    background: var(--color-surface);
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+}
+
+.mon-an-ingredient-modal__header {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 22px;
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.mon-an-ingredient-modal__title {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.mon-an-ingredient-modal__subtitle {
+    margin: 5px 0 0;
+    color: var(--color-text-muted);
+    font-size: 12px;
+}
+
+.mon-an-ingredient-modal__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    color: var(--color-text-secondary);
+    background: transparent;
+    cursor: pointer;
+}
+
+.mon-an-ingredient-modal__close:hover {
+    color: var(--color-danger);
+    background: var(--color-danger-soft);
+}
+
+.mon-an-ingredient-modal__body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    padding: 18px 22px;
+    overflow: hidden;
+}
+
+.mon-an-ingredient-modal__toolbar {
+    display: grid;
+    grid-template-columns: minmax(220px, 280px) minmax(260px, 1fr) auto;
+    flex: 0 0 auto;
+    align-items: end;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.mon-an-ingredient-modal__filter,
+.mon-an-ingredient-modal__search {
+    min-width: 0;
+}
+
+.mon-an-ingredient-modal__add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 110px;
+    height: 42px;
+    padding: 0 15px;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    color: #ffffff;
+    background: var(--color-primary);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.mon-an-ingredient-modal__add:hover {
+    background: var(--color-primary-hover);
+}
+
+.mon-an-ingredient-modal__table-wrapper {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+}
+
+.mon-an-ingredient-table {
+    width: 100%;
+    min-width: 920px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.mon-an-ingredient-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--color-surface-soft);
+}
+
+.mon-an-ingredient-table th {
+    height: 46px;
+    padding: 0 10px;
+    border-bottom: 1px solid var(--color-border-light);
+    color: var(--color-text-secondary);
+    font-size: 11px;
+    font-weight: 750;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.mon-an-ingredient-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--color-border-light);
+    vertical-align: middle;
+}
+
+.mon-an-ingredient-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.mon-an-ingredient-table tbody tr:hover {
+    background: var(--color-surface-soft);
+}
+
+.mon-an-ingredient-table th:nth-child(1),
+.mon-an-ingredient-table td:nth-child(1) {
+    width: 60px;
+    text-align: center;
+}
+
+.mon-an-ingredient-table th:nth-child(2),
+.mon-an-ingredient-table td:nth-child(2) {
+    width: 36%;
+}
+
+.mon-an-ingredient-table th:nth-child(3),
+.mon-an-ingredient-table td:nth-child(3) {
+    width: 220px;
+}
+
+.mon-an-ingredient-table th:nth-child(4),
+.mon-an-ingredient-table td:nth-child(4) {
+    width: 190px;
+}
+
+.mon-an-ingredient-table th:nth-child(5),
+.mon-an-ingredient-table td:nth-child(5) {
+    width: 100px;
+    text-align: center;
+}
+
+.mon-an-ingredient-table .form-input {
+    height: 42px;
+}
+
+.mon-an-ingredient-table .form-input:disabled {
+    color: var(--color-text-secondary);
+    background: var(--color-surface-secondary);
+}
+
+.mon-an-ingredient-modal__footer {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 22px;
+    border-top: 1px solid var(--color-border-light);
+}
+
+.mon-an-ingredient-modal__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 92px;
+    min-height: 40px;
+    padding: 0 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    background: var(--color-surface);
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.mon-an-ingredient-modal__button.is-primary {
+    margin-left: auto;
+    border-color: var(--color-primary);
+    color: #ffffff;
+    background: var(--color-primary);
+}
+
+.mon-an-ingredient-modal__button.is-primary:hover {
+    background: var(--color-primary-hover);
+}
+
+body.mon-an-ingredient-open {
+    overflow: hidden;
+}
+
+body.mon-an-ingredient-open .app-header,
+body.mon-an-ingredient-open .catalog-page,
+body.mon-an-ingredient-open .app-sidebar,
+body.mon-an-ingredient-open .app-footer {
+    pointer-events: none;
+}
+
+body.mon-an-ingredient-open .mon-an-ingredient-modal {
+    pointer-events: auto;
+}
+
+@media (max-width: 820px) {
+    .mon-an-cong-thuc__heading {
+        flex-direction: column;
+    }
+
+    .mon-an-cong-thuc__choose-button {
+        width: 100%;
+    }
+
+    .mon-an-cong-thuc__item {
+        grid-template-columns: 30px minmax(0, 1fr);
+    }
+
+    .mon-an-cong-thuc__item-value,
+    .mon-an-cong-thuc__item-price {
+        grid-column: 2;
+        text-align: left;
+    }
+
+    .mon-an-ingredient-modal {
+        padding: 12px;
+    }
+
+    .mon-an-ingredient-modal__dialog {
+        width: calc(100vw - 24px);
+        height: calc(100dvh - 24px);
+        max-height: calc(100dvh - 24px);
+    }
+
+    .mon-an-ingredient-modal__toolbar {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .mon-an-ingredient-modal__add {
+        width: 100%;
+    }
+}
+
+.mon-an-ingredient-table .form-field {
+    gap: 0;
+    margin: 0;
+}
+
+.mon-an-ingredient-table .form-field__label,
+.mon-an-ingredient-table .form-field__description,
+.mon-an-ingredient-table .form-field__error,
+.mon-an-ingredient-table .form-field__meta {
+    display: none;
+}
+
+.mon-an-ingredient-table .form-field__control {
+    width: 100%;
+}
+
+.mon-an-ingredient-table .smart-select,
+.mon-an-ingredient-table .form-input {
+    width: 100%;
+}
+
+.mon-an-ingredient-table .form-field__suffix {
+    right: 12px;
+    color: var(--color-text-muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.mon-an-ingredient-table .form-field__control:has(.form-field__suffix) .form-input {
+    padding-right: 52px;
+}
+
+.mon-an-ingredient-table td.is-status {
+    text-align: center;
+}
+
+.mon-an-ingredient-table td.is-status .form-field {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0;
+}
+
+.mon-an-ingredient-table td.is-status .form-checkbox {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+.mon-an-ingredient-table td.is-status .form-checkbox__content {
+    display: none;
+}

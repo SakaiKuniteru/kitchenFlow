@@ -1402,15 +1402,6 @@ class DanhMucWebController {
                             }
                         ),
 
-                        textColumn(
-                            "moTa",
-                            "Mô tả",
-                            {
-                                width:
-                                    "250px"
-                            }
-                        ),
-
                         booleanColumn(
                             "active",
                             "Hiệu lực",

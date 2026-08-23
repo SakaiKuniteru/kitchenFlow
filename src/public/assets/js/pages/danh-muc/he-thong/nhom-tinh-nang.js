@@ -128,13 +128,31 @@ document.addEventListener("DOMContentLoaded", () => {
                     };
                 },
 
+                toolbarActions: [
+                    {
+                        action: "filter",
+                        label: "Tìm kiếm chi tiết",
+                        icon: "search"
+                    },
+                    {
+                        action: "export-don-vi-tinh",
+                        label: "Xuất danh mục nhóm tính năng",
+                        icon: "download"
+                    },
+                    {
+                        action: "import-don-vi-tinh",
+                        label: "Nhập danh mục nhóm tính năng",
+                        icon: "upload"
+                    }
+                ],
+
                 onAction(action, id, catalogInstance) {
-                    if (action === "export") {
+                    if (action === "export-nhom-tinh-nang") {
                         exportData();
                         return;
                     }
 
-                    if (action === "import") {
+                    if (action === "import-nhom-tinh-nang") {
                         importData(catalogInstance);
                     }
                 }

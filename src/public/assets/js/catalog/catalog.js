@@ -17,6 +17,7 @@ class MCSCatalog {
             },
 
             columns: [],
+            toolbarActions: [],
             rowKey: "id",
             pageSize: 20,
             clientPagination: true,
@@ -95,8 +96,6 @@ class MCSCatalog {
             utilityMenu: this.root.querySelector("[data-catalog-utility-menu]"),
             expandTable: this.root.querySelector("[data-catalog-expand-table]"),
             expandInfo: this.root.querySelector("[data-catalog-expand-info]"),
-            exportButton: this.root.querySelector("[data-catalog-export]"),
-            importButton: this.root.querySelector("[data-catalog-import]"),
             tableSection: this.root.querySelector("[data-catalog-table-section]"),
             filterRow: this.root.querySelector("[data-table-filter-row]"),
             clearFilters: this.root.querySelector("[data-clear-table-filters]"),
@@ -218,27 +217,27 @@ class MCSCatalog {
             }
         );
 
+        this.toolbar =
+            new window.MCS.catalog.Toolbar(
+                this.root,
+                {
+                    actions: this.options.toolbarActions,
+
+                    onAction:
+                        (action) => {
+                            if (
+                                action === "filter") {
+                                    this.toggleFilterRow();
+                                    return;
+                                }
+                            this.options.onAction?.(action, null, this);
+                        }
+                }
+            );
+
         this.lastIsMobile = this.detailPanel.isMobile();
 
         this.bindEvents();
-    }
-
-    closeUtilityMenu() {
-
-        if (
-            !this.elements.utilityMenu
-        ) {
-            return;
-        }
-
-        this.elements.utilityMenu.hidden =
-            true;
-
-        this.elements.utilityToggle
-            ?.setAttribute(
-                "aria-expanded",
-                "false"
-            );
     }
 
     bindEvents() {
@@ -286,70 +285,8 @@ class MCSCatalog {
             event => {
                 event.preventDefault();
                 event.stopPropagation();
-                this.closeUtilityMenu();
+                this.toolbar?.close();
                 this.openCreate();
-            }
-        );
-
-        this.elements.utilityToggle?.addEventListener(
-            "click",
-            event => {
-                event.preventDefault();
-                event.stopPropagation();
-
-                const menu = this.elements.utilityMenu;
-
-                if (!menu) {
-                    return;
-                }
-
-                const open = menu.hidden;
-
-                menu.hidden = !open;
-
-                this.elements.utilityToggle.setAttribute(
-                    "aria-expanded",
-                    String(open)
-                );
-            }
-        );
-
-        document.addEventListener("click", event => {
-
-                const utility =
-                    this.elements.utilityToggle
-                        ?.closest(
-                            "[data-catalog-utility]"
-                        );
-
-
-                if (
-                    !utility ||
-                    !this.elements.utilityMenu
-                ) {
-                    return;
-                }
-
-
-                if (
-                    utility.contains(
-                        event.target
-                    )
-                ) {
-                    return;
-                }
-
-
-                this.elements.utilityMenu.hidden =
-                    true;
-
-
-                this.elements.utilityToggle
-                    ?.setAttribute(
-                        "aria-expanded",
-                        "false"
-                    );
-
             }
         );
 
@@ -358,7 +295,7 @@ class MCSCatalog {
             event => {
                 event.preventDefault();
                 event.stopPropagation();
-                this.closeUtilityMenu();
+                this.toolbar?.close();
 
                 const expanded =
                     !this.root.classList.contains(
@@ -396,7 +333,7 @@ class MCSCatalog {
             event => {
                 event.preventDefault();
                 event.stopPropagation();
-                this.closeUtilityMenu();
+                this.toolbar?.close();
 
                 if (
                     this.root.classList.contains(
@@ -456,34 +393,6 @@ class MCSCatalog {
             }
         );
 
-        this.elements.exportButton?.addEventListener(
-            "click",
-            event => {
-                event.preventDefault();
-                event.stopPropagation();
-                this.closeUtilityMenu();
-                this.options.onAction?.(
-                    "export",
-                    null,
-                    this
-                );
-            }
-        );
-
-        this.elements.importButton?.addEventListener(
-            "click",
-            event => {
-                event.preventDefault();
-                event.stopPropagation();
-                this.closeUtilityMenu();
-                this.options.onAction?.(
-                    "import",
-                    null,
-                    this
-                );
-            }
-        );
-
         this.elements.refresh?.addEventListener(
             "click",
             async event => {
@@ -501,16 +410,6 @@ class MCSCatalog {
                 } finally {
                     this.elements.refresh.disabled = false;
                 }
-            }
-        );
-
-        this.elements.filterToggle?.addEventListener(
-            "click",
-            event => {
-                event.preventDefault();
-                event.stopPropagation();
-
-                this.toggleFilterRow();
             }
         );
 
@@ -693,43 +592,31 @@ class MCSCatalog {
 
     toggleFilterRow() {
         const filterRow = this.elements.filterRow;
-        const button = this.elements.filterToggle;
 
-        if (
-            !filterRow ||
-            !button
-        ) {
+        if (!filterRow) {
             return;
         }
+
+        const button =this.root.querySelector('[data-catalog-toolbar-action="filter"]');
 
         const willOpen = filterRow.hidden;
 
         filterRow.hidden = !willOpen;
 
-        button.classList.toggle(
-            "is-active",
-            willOpen
-        );
+        if (button) {button.classList.toggle("is-active", willOpen);
 
-        button.setAttribute(
-            "aria-expanded",
-            String(willOpen)
-        );
+            button.setAttribute("aria-expanded", String(willOpen));
 
-        if (this.elements.filterToggleLabel) {
-            this.elements.filterToggleLabel.textContent =
-                willOpen
+            const label = button.querySelector("span");
+
+            if (label) {
+                label.textContent = willOpen
                     ? "Đóng tìm kiếm chi tiết"
                     : "Tìm kiếm chi tiết";
+            }
         }
 
-        if (this.elements.utilityMenu) {
-            this.closeUtilityMenu();
-            this.elements.utilityToggle?.setAttribute(
-                "aria-expanded",
-                "false"
-            );
-        }
+        this.toolbar?.close();
 
         if (willOpen) {
             filterRow

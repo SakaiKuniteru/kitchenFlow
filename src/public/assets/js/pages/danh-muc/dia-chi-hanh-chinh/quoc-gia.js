@@ -181,13 +181,31 @@ document.addEventListener("DOMContentLoaded", () => {
                     };
                 },
 
+                toolbarActions: [
+                    {
+                        action: "filter",
+                        label: "Tìm kiếm chi tiết",
+                        icon: "search"
+                    },
+                    {
+                        action: "export-quoc-gia",
+                        label: "Xuất danh mục quốc gia",
+                        icon: "download"
+                    },
+                    {
+                        action: "import-quoc-gia",
+                        label: "Nhập danh mục quốc gia",
+                        icon: "upload"
+                    }
+                ],
+
                 onAction(action, id, catalogInstance) {
-                    if (action === "export") {
+                    if (action === "export-quoc-gia") {
                         exportData();
                         return;
                     }
 
-                    if (action === "import") {
+                    if (action === "import-quoc-gia") {
                         importData(catalogInstance);
                     }
                 }
