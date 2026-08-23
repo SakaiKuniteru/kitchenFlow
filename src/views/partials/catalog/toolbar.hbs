@@ -30,33 +30,15 @@
         </div>
 
         <div class="catalog-toolbar__search">
-            <span
-                class="catalog-toolbar__search-icon"
-                aria-hidden="true">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </span>
+            {{> forms/search
+                inputId=searchInputId
+                className="search-picker--catalog"
+                placeholder=searchPlaceholder
+                catalogSearch=true
+                showClear=true
+                hideDropdown=true
+            }}
 
-            <input
-                id="{{searchInputId}}"
-                type="search"
-                class="catalog-toolbar__search-input"
-                placeholder="{{#if searchPlaceholder}}{{searchPlaceholder}}{{else}}Tìm kiếm theo mã, tên, mô tả...{{/if}}"
-                autocomplete="off"
-                data-catalog-search
-            >
-
-            <button
-                type="button"
-                class="catalog-toolbar__search-clear"
-                data-catalog-clear-search
-                aria-label="Xóa nội dung tìm kiếm"
-                title="Xóa tìm kiếm"
-                hidden>
-                <i
-                    class="fa-solid fa-xmark"
-                    aria-hidden="true">
-                </i>
-            </button>
         </div>
     </div>
 

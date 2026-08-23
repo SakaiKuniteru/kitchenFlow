@@ -129,162 +129,6 @@
     max-width: 520px;
 }
 
-
-.catalog-toolbar__search-icon {
-    position: absolute;
-
-    top: 50%;
-    left: 16px;
-
-    z-index: 2;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 18px;
-    height: 18px;
-
-    color:
-        #94a3b8;
-
-    font-size: 14px;
-
-    pointer-events: none;
-
-    transform:
-        translateY(-50%);
-}
-
-
-.catalog-toolbar__search-input {
-    width: 100%;
-    min-width: 0;
-    height: 42px;
-
-    padding:
-        0
-        42px
-        0
-        43px;
-
-    border:
-        1px solid
-        #dbe3ef;
-
-    border-radius:
-        10px;
-
-    outline: none;
-
-    color:
-        var(--color-text-primary);
-
-    background:
-        #ffffff;
-
-    font-family:
-        inherit;
-
-    font-size:
-        var(--font-size-sm);
-
-    transition:
-        border-color
-        var(--transition-fast),
-        box-shadow
-        var(--transition-fast),
-        background
-        var(--transition-fast);
-}
-
-
-.catalog-toolbar__search-input::placeholder {
-    color:
-        #94a3b8;
-}
-
-
-.catalog-toolbar__search-input:hover {
-    border-color:
-        #cbd5e1;
-}
-
-
-.catalog-toolbar__search-input:focus {
-    border-color:
-        #8bb1ff;
-
-    background:
-        #ffffff;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(
-            37,
-            99,
-            235,
-            0.08
-        );
-}
-
-
-.catalog-toolbar__search:focus-within
-.catalog-toolbar__search-icon {
-    color:
-        var(--color-primary);
-}
-
-
-.catalog-toolbar__search-clear {
-    position: absolute;
-
-    top: 50%;
-    right: 8px;
-
-    z-index: 3;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 28px;
-    height: 28px;
-
-    padding: 0;
-
-    border: 0;
-
-    border-radius:
-        7px;
-
-    color:
-        #94a3b8;
-
-    background:
-        transparent;
-
-    cursor: pointer;
-
-    transform:
-        translateY(-50%);
-}
-
-
-.catalog-toolbar__search-clear[hidden] {
-    display:
-        none !important;
-}
-
-
-.catalog-toolbar__search-clear:hover {
-    color:
-        #475569;
-
-    background:
-        #f1f5f9;
-}
-
 .catalog-toolbar__bottom {
     display: flex;
     align-items: center;
@@ -703,26 +547,7 @@ and (
         min-width: 0;
         max-width: none;
     }
-
-
-    .catalog-toolbar__search-input {
-        width: 100%;
-        min-width: 0;
-        height: 40px;
-
-        padding:
-            0
-            36px
-            0
-            38px;
-    }
-
-
-    .catalog-toolbar__search-icon {
-        left: 13px;
-    }
-
-
+    
     .catalog-toolbar__utility,
     .catalog-toolbar__icon-button--expand-table,
     .catalog-toolbar__icon-button--expand-info {
@@ -776,7 +601,6 @@ and (
             10px;
     }
 
-
     .catalog-toolbar__top {
         grid-template-columns:
             minmax(
@@ -791,20 +615,10 @@ and (
         gap: 8px;
     }
 
-
     .catalog-toolbar__title {
         font-size:
             15px;
     }
-
-
-    .catalog-toolbar__search-input {
-        height: 38px;
-
-        font-size:
-            12px;
-    }
-
 
     .catalog-toolbar__button[
         data-catalog-create

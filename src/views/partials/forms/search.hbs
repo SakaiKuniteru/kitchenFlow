@@ -32,13 +32,49 @@
 
         <input
             type="text"
+            {{#if inputId}}
+                id="{{inputId}}"
+            {{/if}}
             class="search-picker__input"
             data-search-picker-input
+            {{#if catalogSearch}}
+                data-catalog-search
+            {{/if}}
+            {{#if listSearch}}
+                data-list-search
+            {{/if}}
             placeholder="{{#if placeholder}}{{placeholder}}{{else}}Nhập để tìm kiếm{{/if}}"
             autocomplete="off"
             spellcheck="false"
             aria-autocomplete="list"
             aria-expanded="false">
+
+        {{#if showClear}}
+
+            <button
+                type="button"
+                class="search-picker__clear"
+                data-search-picker-clear
+                {{#if catalogSearch}}
+                    data-catalog-clear-search
+                {{/if}}
+                
+                {{#if listSearch}}
+                    data-list-clear-search
+                {{/if}}
+
+                aria-label="Xóa tìm kiếm"
+                title="Xóa tìm kiếm"
+                hidden>
+
+                <i
+                    class="fa-solid fa-xmark"
+                    aria-hidden="true">
+                </i>
+
+            </button>
+
+        {{/if}}
 
         {{#if showShortcut}}
 
@@ -55,27 +91,30 @@
     </div>
 
 
-    <div
-        class="search-picker__dropdown"
-        data-search-picker-dropdown
-        hidden>
+    {{#unless hideDropdown}}
 
         <div
-            class="search-picker__list"
-            data-search-picker-list
-            role="listbox">
-        </div>
-
-
-        <div
-            class="search-picker__empty"
-            data-search-picker-empty
+            class="search-picker__dropdown"
+            data-search-picker-dropdown
             hidden>
 
-            Không tìm thấy tính năng phù hợp.
+            <div
+                class="search-picker__list"
+                data-search-picker-list
+                role="listbox">
+            </div>
+
+            <div
+                class="search-picker__empty"
+                data-search-picker-empty
+                hidden>
+
+                Không tìm thấy dữ liệu phù hợp.
+
+            </div>
 
         </div>
 
-    </div>
+    {{/unless}}
 
 </div>

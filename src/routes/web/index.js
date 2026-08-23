@@ -78,15 +78,7 @@ router.get(
                     appVersion:
                         process.env
                             .APP_VERSION ||
-                        "1.0.0",
-
-                    breadcrumbs: [
-                        {
-                            label:
-                                "Trang chủ"
-                        }
-                    ]
-
+                        "1.0.0"
                 }
             );
 

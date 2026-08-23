@@ -686,7 +686,8 @@
     window.MCS.searchPicker = {
         initialize,
         normalizeText,
-        getInitials
+        getInitials,
+        getSearchScore
     };
 })(
     window,

@@ -55,21 +55,14 @@
         </button>
 
         <div class="module-list-page__search">
-
-            <i
-                class="
-                    fa-solid
-                    fa-magnifying-glass
-                    module-list-page__search-icon
-                ">
-            </i>
-
-            <input
-                type="search"
-                class="module-list-page__search-input"
-                placeholder="{{searchPlaceholder}}"
-                data-list-search>
-
+            {{> forms/search
+                inputId=searchInputId
+                className="search-picker--module-list"
+                placeholder=searchPlaceholder
+                listSearch=true
+                showClear=true
+                hideDropdown=true
+            }}
         </div>
 
     </div>
