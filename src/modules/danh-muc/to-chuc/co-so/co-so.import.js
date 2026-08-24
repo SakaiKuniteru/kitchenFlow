@@ -1,11 +1,8 @@
 "use strict";
 
 const ApiError = require("../../../../utils/api-error");
-
 const coSoRepository = require("./co-so.repository");
-
 const coSoService = require("./co-so.service");
-
 const { readExcel } = require("../../../../helpers/excel/excel-reader");
 
 const {
@@ -26,16 +23,11 @@ const {
 
 const { isTemplateValue } = require("../../../../helpers/excel/excel-template");
 
-
 const MA_BAO_CAO = "dm_co_so";
-
 const HEADER_ROW = 3;
-
 const DATA_START_ROW = 5;
 
-
 function validateHeaders(headerMap) {
-
     return validateKeyHeaders(
         headerMap,
         {
@@ -44,18 +36,10 @@ function validateHeaders(headerMap) {
             codeField: "maCoSo"
         }
     );
-
 }
 
-
-function dongLaTemplate(
-    row,
-    getValue,
-    headerMap
-) {
-
+function dongLaTemplate(row, getValue, headerMap) {
     for (const field of headerMap.keys()) {
-
         if (
             isTemplateValue(
                 getValue(
@@ -66,16 +50,12 @@ function dongLaTemplate(
         ) {
             return true;
         }
-
     }
 
     return false;
-
 }
 
-
 async function docDuLieuImport(file) {
-
     const {
         workbook,
         worksheet,
@@ -89,29 +69,20 @@ async function docDuLieuImport(file) {
         }
     );
 
-    const cauHinh =
-        validateHeaders(
-            headerMap
-        );
+    const cauHinh = validateHeaders(headerMap);
 
-    const fieldMa =
-        cauHinh.hasCodeKey
-            ? cauHinh.codeKey
-            : cauHinh.codeField;
+    const fieldMa = cauHinh.hasCodeKey
+        ? cauHinh.codeKey
+        : cauHinh.codeField;
 
     const danhSach = [];
-
 
     for (
         let rowNumber = DATA_START_ROW;
         rowNumber <= worksheet.rowCount;
         rowNumber++
     ) {
-
-        const row =
-            worksheet.getRow(
-                rowNumber
-            );
+        const row = worksheet.getRow(rowNumber);
 
         if (!hasData(row)) {
             continue;
@@ -127,39 +98,32 @@ async function docDuLieuImport(file) {
             continue;
         }
 
-
-        const idRaw =
-            cauHinh.hasIdKey
-                ? getValue(
-                    row,
-                    cauHinh.idKey
-                )
-                : undefined;
-
-        const maCoSo =
-            getValue(
+        const idRaw = cauHinh.hasIdKey
+            ? getValue(
                 row,
-                fieldMa
-            );
+                cauHinh.idKey
+            )
+            : undefined;
 
-        const tenCoSo =
-            getValue(
-                row,
-                "tenCoSo"
-            );
+        const maCoSo = getValue(
+            row,
+            fieldMa
+        );
 
-        const moTa =
-            getValue(
-                row,
-                "moTa"
-            );
+        const tenCoSo = getValue(
+            row,
+            "tenCoSo"
+        );
 
-        const activeRaw =
-            getValue(
-                row,
-                "active"
-            );
+        const moTa = getValue(
+            row,
+            "moTa"
+        );
 
+        const activeRaw = getValue(
+            row,
+            "active"
+        );
 
         const item = {
             rowNumbers: [rowNumber],
@@ -170,7 +134,6 @@ async function docDuLieuImport(file) {
             code: maCoSo
         };
 
-
         if (tenCoSo !== undefined) {
             item.tenCoSo = tenCoSo;
         }
@@ -180,89 +143,66 @@ async function docDuLieuImport(file) {
         }
 
         if (activeRaw !== undefined) {
-
             try {
                 item.active = toBoolean(activeRaw);
             } catch (error) {
                 item.active = activeRaw;
             }
-
         }
 
-
         danhSach.push(item);
-
     }
-
 
     return {
         workbook,
         worksheet,
         danhSach
     };
-
 }
 
-
 function validateDongImport(item) {
-
     if (
         item.idRaw !== undefined &&
         (
             item.id === null ||
-            !Number.isInteger(
-                Number(item.id)
-            ) ||
+            !Number.isInteger(Number(item.id)) ||
             Number(item.id) <= 0
         )
     ) {
-
         throw new ApiError(
             400,
             "ID cơ sở phải là số nguyên lớn hơn 0."
         );
-
     }
 
     if (
         item.active !== undefined &&
         typeof item.active !== "boolean"
     ) {
-
         throw new ApiError(
             400,
             "Trạng thái không hợp lệ. Chỉ chấp nhận TRUE hoặc FALSE."
         );
-
     }
-
 }
 
-
 function validateThemMoi(item) {
-
     if (!item.code) {
-
         throw new ApiError(
             400,
             "Thêm mới cơ sở phải có mã cơ sở."
         );
-
     }
 
     if (!item.tenCoSo) {
-
         throw new ApiError(
             400,
             "Thêm mới cơ sở phải có tên cơ sở."
         );
-
     }
-
 }
 
 function taoDuLieuNghiepVu(item) {
-
     const data = {};
 
     if (item.tenCoSo !== undefined)
@@ -293,11 +233,9 @@ function taoDuLieuNghiepVu(item) {
         data.maXaPhuong = item.maXaPhuong;
 
     return data;
-
 }
 
 async function timCoSoImport(item) {
-
     return await resolveImportStrategy(
         item,
         {
@@ -316,55 +254,33 @@ async function timCoSoImport(item) {
             entityName: "cơ sở"
         }
     );
-
 }
 
-
 async function xuLyImport(file) {
-
     const {
         workbook,
         worksheet,
         danhSach
-    } = await docDuLieuImport(
-        file
-    );
-
+    } = await docDuLieuImport(file);
 
     if (danhSach.length === 0) {
-
         throw new ApiError(
             400,
             "File import không có dữ liệu."
         );
-
     }
 
-
     const successes = [];
-
     const errors = [];
 
-
     for (const item of danhSach) {
-
         try {
-
             validateDongImport(item);
 
-            const xuLy =
-                await timCoSoImport(
-                    item
-                );
-
-            const data =
-                taoDuLieuNghiepVu(
-                    item
-                );
-
+            const xuLy = await timCoSoImport(item);
+            const data = taoDuLieuNghiepVu(item);
 
             if (xuLy.action === "UPDATE") {
-
                 if (
                     xuLy.allowCodeChange &&
                     item.code !== undefined &&
@@ -373,31 +289,20 @@ async function xuLyImport(file) {
                         xuLy.record.maCoSo
                     )
                 ) {
-
-                    data.maCoSo =
-                        item.code;
-
+                    data.maCoSo = item.code;
                 }
 
-
-                if (
-                    Object.keys(data).length === 0
-                ) {
-
+                if (Object.keys(data).length === 0) {
                     throw new ApiError(
                         400,
                         "Không có dữ liệu cần cập nhật."
                     );
-
                 }
 
-
-                const result =
-                    await coSoService.update(
-                        xuLy.record.id,
-                        data
-                    );
-
+                const result = await coSoService.update(
+                    xuLy.record.id,
+                    data
+                );
 
                 successes.push({
                     rowNumbers: item.rowNumbers,
@@ -408,21 +313,13 @@ async function xuLyImport(file) {
                 });
 
                 continue;
-
             }
-
 
             validateThemMoi(item);
 
-            data.maCoSo =
-                item.code;
+            data.maCoSo = item.code;
 
-
-            const result =
-                await coSoService.create(
-                    data
-                );
-
+            const result = await coSoService.create(data);
 
             successes.push({
                 rowNumbers: item.rowNumbers,
@@ -431,18 +328,13 @@ async function xuLyImport(file) {
                 hanhDong: "THEM_MOI",
                 message: `Thêm mới thành công - ID ${result.id}`
             });
-
         } catch (error) {
-
             errors.push({
                 rowNumbers: item.rowNumbers,
                 message: error.message || "Dữ liệu không hợp lệ."
             });
-
         }
-
     }
-
 
     return await createResultFile(
         workbook,
@@ -454,36 +346,20 @@ async function xuLyImport(file) {
             errors
         }
     );
-
 }
 
-
-async function importData(
-    req,
-    res,
-    next
-) {
-
+async function importData(req, res, next) {
     try {
-
-        const result =
-            await xuLyImport(
-                req.file
-            );
+        const result = await xuLyImport(req.file);
 
         return sendExcel(
             res,
             result
         );
-
     } catch (error) {
-
         next(error);
-
     }
-
 }
-
 
 module.exports = {
     importData,

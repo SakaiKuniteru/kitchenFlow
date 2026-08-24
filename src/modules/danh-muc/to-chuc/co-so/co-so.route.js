@@ -1,57 +1,29 @@
 const express = require("express");
-
 const router = express.Router();
 
 const { createSchema, updateSchema } = require("./co-so.validation");
-
 const validate = require("../../../../middlewares/validate.middleware");
-
 const authenticate = require("../../../../middlewares/authenticate.middleware");
-
-const uploadCoSo = require( "./upload-co-so.middleware" );
-
-const mapCoSoUpload = require( "./map-co-so-upload.middleware" );
-
+const uploadCoSo = require("./upload-co-so.middleware");
+const mapCoSoUpload = require("./map-co-so-upload.middleware");
 const controller = require("./co-so.controller");
+const validateUpdateCoSo = validate(updateSchema);
+const uploadImportExcel = require("../../../../middlewares/upload-import-excel.middleware");
+const coSoExcel = require("./co-so.excel");
 
-const validateUpdateCoSo = validate( updateSchema );
+function validateCoSoUpdate(req, res, next) {
+    const hasBody = Object.keys(req.body || {}).length > 0;
 
-const uploadImportExcel = require( "../../../../middlewares/upload-import-excel.middleware" );
+    const hasFile = Object
+        .values(req.files || {})
+        .some(
+            files =>
+                Array.isArray(files) &&
+                files.length > 0
+        );
 
-const coSoExcel = require( "./co-so.excel" );
-
-function validateCoSoUpdate(
-    req,
-    res,
-    next
-) {
-
-    const hasBody =
-        Object.keys(
-            req.body || {}
-        ).length > 0;
-
-
-    const hasFile =
-        Object
-            .values(
-                req.files || {}
-            )
-            .some(
-                files =>
-                    Array.isArray(
-                        files
-                    ) &&
-                    files.length > 0
-            );
-
-    if (
-        !hasBody &&
-        hasFile
-    ) {
-
+    if (!hasBody && hasFile) {
         return next();
-
     }
 
     return validateUpdateCoSo(
@@ -59,7 +31,6 @@ function validateCoSoUpdate(
         res,
         next
     );
-
 }
 
 router.get(
@@ -74,13 +45,10 @@ router.get(
     coSoExcel.exportData
 );
 
-
 router.post(
     "/import-du-lieu",
     authenticate,
-    uploadImportExcel.single(
-        "file"
-    ),
+    uploadImportExcel.single("file"),
     coSoExcel.importData
 );
 
@@ -92,73 +60,45 @@ router.get(
 
 router.post(
     "/them-moi",
-
     authenticate,
-
     uploadCoSo.fields([
         {
-            name:
-                "logo",
-
-            maxCount:
-                1
+            name: "logo",
+            maxCount: 1
         },
         {
-            name:
-                "favicon",
-
-            maxCount:
-                1
+            name: "favicon",
+            maxCount: 1
         },
         {
-            name:
-                "logoDoiTac",
-
-            maxCount:
-                1
+            name: "logoDoiTac",
+            maxCount: 1
         }
     ]),
-
     mapCoSoUpload,
-
     validate(createSchema),
-
     controller.create
 );
 
 router.patch(
     "/cap-nhat/:id",
-
     authenticate,
-
     uploadCoSo.fields([
         {
-            name:
-                "logo",
-
-            maxCount:
-                1
+            name: "logo",
+            maxCount: 1
         },
         {
-            name:
-                "favicon",
-
-            maxCount:
-                1
+            name: "favicon",
+            maxCount: 1
         },
         {
-            name:
-                "logoDoiTac",
-
-            maxCount:
-                1
+            name: "logoDoiTac",
+            maxCount: 1
         }
     ]),
-
     mapCoSoUpload,
-
     validateCoSoUpdate,
-
     controller.update
 );
 

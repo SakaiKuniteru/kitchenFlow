@@ -1,15 +1,10 @@
 const coSoService = require("./co-so.service");
-
-const { successResponse } = require( "../../../../utils/response.util" );
+const { successResponse } = require("../../../../utils/response.util");
 
 class CoSoController {
-
     async getTongHop(req, res, next) {
-
         try {
-
-            const data =
-                await coSoService.getTongHop();
+            const data = await coSoService.getTongHop();
 
             return successResponse(
                 res,
@@ -17,23 +12,15 @@ class CoSoController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
     async getChiTiet(req, res, next) {
-
         try {
-
             const { id } = req.params;
-
-            const data =
-                await coSoService.getChiTiet(id);
+            const data = await coSoService.getChiTiet(id);
 
             return successResponse(
                 res,
@@ -41,28 +28,17 @@ class CoSoController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
-    async create(
-        req,
-        res,
-        next
-    ) {
-
+    async create(req, res, next) {
         try {
-
-            const data =
-                await coSoService.create(
-                    req.body,
-                    req.files
-                );
+            const data = await coSoService.create(
+                req.body,
+                req.files
+            );
 
             return successResponse(
                 res,
@@ -70,29 +46,18 @@ class CoSoController {
                 data,
                 201
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
-    async update(
-        req,
-        res,
-        next
-    ) {
-
+    async update(req, res, next) {
         try {
-
-            const data =
-                await coSoService.update(
-                    req.params.id,
-                    req.body,
-                    req.files
-                );
+            const data = await coSoService.update(
+                req.params.id,
+                req.body,
+                req.files
+            );
 
             return successResponse(
                 res,
@@ -100,13 +65,9 @@ class CoSoController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 }
 

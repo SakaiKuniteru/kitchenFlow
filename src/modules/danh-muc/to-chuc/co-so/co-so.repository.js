@@ -2,11 +2,8 @@ const pool = require("../../../../config/database");
 const { active } = require("../../../../constants/enums");
 
 class CoSoRepository {
-
     mapCoSo(row) {
-
         return {
-
             id: row.id,
             maCoSo: row.ma_co_so,
             tenCoSo: row.ten_co_so,
@@ -49,67 +46,47 @@ class CoSoRepository {
             active: row.active,
             createdAt: row.created_at,
             updatedAt: row.updated_at
-
         };
-
     }
 
     getBaseQuery() {
-
         return `
-
             SELECT
-
                 cs.id,
                 cs.ma_co_so,
                 cs.ten_co_so,
                 cs.dia_chi,
-
                 cs.logo,
                 cs.favicon,
                 cs.logo_doi_tac,
-
                 cs.active,
                 cs.created_at,
                 cs.updated_at,
-
                 qg.id AS quoc_gia_id,
                 qg.ma_quoc_gia,
                 qg.ten_quoc_gia,
-                qg.ten_viet_tat
-                    AS quoc_gia_ten_viet_tat,
-
+                qg.ten_viet_tat AS quoc_gia_ten_viet_tat,
                 tt.id AS tinh_thanh_id,
                 tt.ma_tinh_thanh,
                 tt.ten_tinh_thanh,
-                tt.ten_viet_tat 
-                    AS tinh_thanh_ten_viet_tat,
-
+                tt.ten_viet_tat AS tinh_thanh_ten_viet_tat,
                 xp.id AS xa_phuong_id,
                 xp.ma_xa_phuong,
                 xp.ten_xa_phuong,
-                xp.ten_viet_tat 
-                    AS xa_phuong_ten_viet_tat
-
+                xp.ten_viet_tat AS xa_phuong_ten_viet_tat
             FROM dm_co_so cs
-
             LEFT JOIN dm_quoc_gia qg
                 ON qg.id = cs.quoc_gia_id
-
             LEFT JOIN dm_tinh_thanh tt
                 ON tt.id = cs.tinh_thanh_id
-
             LEFT JOIN dm_xa_phuong xp
                 ON xp.id = cs.xa_phuong_id
-
         `;
-
     }
-    async getTongHop() {
 
+    async getTongHop() {
         const sql = `
             ${this.getBaseQuery()}
-
             ORDER BY cs.ma_co_so ASC
         `;
 
@@ -118,14 +95,11 @@ class CoSoRepository {
         return result.rows.map(
             row => this.mapCoSo(row)
         );
-
     }
 
     async getChiTiet(id) {
-
         const sql = `
             ${this.getBaseQuery()}
-
             WHERE cs.id = $1
         `;
 
@@ -136,11 +110,9 @@ class CoSoRepository {
         }
 
         return this.mapCoSo(result.rows[0]);
-
     }
 
     async existsMaCoSo(maCoSo, excludeId = null) {
-
         let sql = `
             SELECT id
             FROM dm_co_so
@@ -150,11 +122,8 @@ class CoSoRepository {
         const params = [maCoSo];
 
         if (excludeId) {
-
             sql += ` AND id <> $2`;
-
             params.push(excludeId);
-
         }
 
         const result = await pool.query(
@@ -163,11 +132,9 @@ class CoSoRepository {
         );
 
         return result.rows.length > 0;
-
     }
 
     async existsTenCoSo(tenCoSo, excludeId = null) {
-
         let sql = `
             SELECT id
             FROM dm_co_so
@@ -177,11 +144,8 @@ class CoSoRepository {
         const params = [tenCoSo];
 
         if (excludeId) {
-
             sql += ` AND id <> $2`;
-
             params.push(excludeId);
-
         }
 
         const result = await pool.query(
@@ -190,11 +154,9 @@ class CoSoRepository {
         );
 
         return result.rows.length > 0;
-
     }
 
     async existsQuocGia(id) {
-
         const sql = `
             SELECT id
             FROM dm_quoc_gia
@@ -208,14 +170,9 @@ class CoSoRepository {
         );
 
         return result.rows.length > 0;
-
     }
 
-    async existsTinhThanh(
-        tinhThanhId,
-        quocGiaId
-    ) {
-
+    async existsTinhThanh(tinhThanhId, quocGiaId) {
         const sql = `
             SELECT id
             FROM dm_tinh_thanh
@@ -233,14 +190,9 @@ class CoSoRepository {
         );
 
         return result.rows.length > 0;
-
     }
 
-    async existsXaPhuong(
-        xaPhuongId,
-        tinhThanhId
-    ) {
-
+    async existsXaPhuong(xaPhuongId, tinhThanhId) {
         const sql = `
             SELECT id
             FROM dm_xa_phuong
@@ -258,11 +210,9 @@ class CoSoRepository {
         );
 
         return result.rows.length > 0;
-
     }
 
     async getQuocGiaByMa(maQuocGia) {
-
         const sql = `
             SELECT
                 id,
@@ -279,14 +229,9 @@ class CoSoRepository {
         );
 
         return result.rows[0] || null;
-
     }
 
-    async getTinhThanhByMa(
-        maTinhThanh,
-        quocGiaId
-    ) {
-
+    async getTinhThanhByMa(maTinhThanh, quocGiaId) {
         const sql = `
             SELECT
                 id,
@@ -308,14 +253,9 @@ class CoSoRepository {
         );
 
         return result.rows[0] || null;
-
     }
 
-    async getXaPhuongByMa(
-        maXaPhuong,
-        tinhThanhId
-    ) {
-
+    async getXaPhuongByMa(maXaPhuong, tinhThanhId) {
         const sql = `
             SELECT
                 id,
@@ -337,52 +277,36 @@ class CoSoRepository {
         );
 
         return result.rows[0] || null;
-
     }
 
-    async getChiTietByMa(
-        maCoSo
-    ) {
-
+    async getChiTietByMa(maCoSo) {
         const sql = `
             ${this.getBaseQuery()}
-
             WHERE UPPER(
                 TRIM(cs.ma_co_so)
             ) = UPPER(
                 TRIM($1)
             )
-
             LIMIT 1
         `;
 
+        const result = await pool.query(
+            sql,
+            [
+                maCoSo
+            ]
+        );
 
-        const result =
-            await pool.query(
-                sql,
-                [
-                    maCoSo
-                ]
-            );
-
-
-        if (
-            result.rows.length === 0
-        ) {
-
+        if (result.rows.length === 0) {
             return null;
-
         }
-
 
         return this.mapCoSo(
             result.rows[0]
         );
-
     }
 
     async create(data) {
-
         const {
             maCoSo,
             tenCoSo,
@@ -447,11 +371,9 @@ class CoSoRepository {
         return await this.getChiTiet(
             result.rows[0].id
         );
-
     }
 
     async update(id, data) {
-
         const {
             maCoSo,
             tenCoSo,
@@ -507,7 +429,6 @@ class CoSoRepository {
         }
 
         return await this.getChiTiet(id);
-
     }
 }
 

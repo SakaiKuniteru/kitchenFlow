@@ -1,39 +1,21 @@
-const fs =
-    require("fs");
+const fs = require("fs");
+const path = require("path");
+const multer = require("multer");
+const ApiError = require("../../../../utils/api-error");
 
-const path =
-    require("path");
+const uploadDirectory = path.join(
+    process.cwd(),
+    "src/public/uploads/temp/co-so"
+);
 
-const multer =
-    require("multer");
-
-const ApiError =
-    require("../../../../utils/api-error");
-
-
-const uploadDirectory =
-    path.join(
-        process.cwd(),
-        "src/public/uploads/temp/co-so"
-    );
-
-
-if (
-    !fs.existsSync(
-        uploadDirectory
-    )
-) {
-
+if (!fs.existsSync(uploadDirectory)) {
     fs.mkdirSync(
         uploadDirectory,
         {
-            recursive:
-                true
+            recursive: true
         }
     );
-
 }
-
 
 const IMAGE_EXTENSIONS = [
     ".jpg",
@@ -43,7 +25,6 @@ const IMAGE_EXTENSIONS = [
     ".ico"
 ];
 
-
 const IMAGE_MIME_TYPES = [
     "image/jpeg",
     "image/png",
@@ -52,112 +33,57 @@ const IMAGE_MIME_TYPES = [
     "image/vnd.microsoft.icon"
 ];
 
+const storage = multer.diskStorage({
+    destination(req, file, callback) {
+        callback(
+            null,
+            uploadDirectory
+        );
+    },
 
-const storage =
-    multer.diskStorage({
+    filename(req, file, callback) {
+        const extension = path.extname(file.originalname).toLowerCase();
 
-        destination(
-            req,
-            file,
-            callback
-        ) {
+        const fileName = `temp-${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2, 10)}${extension}`;
 
-            callback(
-                null,
-                uploadDirectory
-            );
+        callback(
+            null,
+            fileName
+        );
+    }
+});
 
-        },
-
-
-        filename(
-            req,
-            file,
-            callback
-        ) {
-
-            const extension =
-                path.extname(
-                    file.originalname
-                )
-                    .toLowerCase();
-
-
-            const fileName =
-                `temp-${Date.now()}-${Math.random()
-                    .toString(36)
-                    .slice(2, 10)}${extension}`;
-
-
-            callback(
-                null,
-                fileName
-            );
-
-        }
-
-    });
-
-
-function fileFilter(
-    req,
-    file,
-    callback
-) {
-
-    const extension =
-        path.extname(
-            file.originalname
-        )
-            .toLowerCase();
-
+function fileFilter(req, file, callback) {
+    const extension = path.extname(file.originalname).toLowerCase();
 
     if (
-        !IMAGE_EXTENSIONS.includes(
-            extension
-        ) ||
-        !IMAGE_MIME_TYPES.includes(
-            file.mimetype
-        )
+        !IMAGE_EXTENSIONS.includes(extension) ||
+        !IMAGE_MIME_TYPES.includes(file.mimetype)
     ) {
-
         return callback(
             new ApiError(
                 400,
                 "File ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP hoặc ICO."
             )
         );
-
     }
-
 
     return callback(
         null,
         true
     );
-
 }
 
+const uploadCoSo = multer({
+    storage,
+    fileFilter,
 
-const uploadCoSo =
-    multer({
+    limits: {
+        fileSize: 5 * 1024 * 1024,
+        files: 3
+    }
+});
 
-        storage,
-
-        fileFilter,
-
-        limits: {
-
-            fileSize:
-                5 * 1024 * 1024,
-
-            files:
-                3
-
-        }
-
-    });
-
-
-module.exports =
-    uploadCoSo;
+module.exports = uploadCoSo;
