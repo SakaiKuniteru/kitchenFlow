@@ -89,6 +89,31 @@ CREATE TABLE ct_kho_nhan_vien_quan_ly (
     updated_at TIMESTAMP DEFAULT now() NOT NULL
 );
 
+CREATE TABLE ct_mon_an_thuc_pham (
+    id SERIAL PRIMARY KEY,
+    mon_an_id INTEGER NOT NULL,
+    thuc_pham_id INTEGER NOT NULL,
+    dinh_luong NUMERIC(12, 3) NOT NULL,
+    ghi_chu VARCHAR(500),
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_ct_mon_an_thuc_pham_mon_an
+        FOREIGN KEY (mon_an_id)
+        REFERENCES dm_mon_an(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_ct_mon_an_thuc_pham_thuc_pham
+        FOREIGN KEY (thuc_pham_id)
+        REFERENCES dm_thuc_pham(id),
+    CONSTRAINT chk_ct_mon_an_thuc_pham_dinh_luong
+        CHECK (dinh_luong > 0),
+    CONSTRAINT uq_ct_mon_an_thuc_pham
+        UNIQUE (
+            mon_an_id,
+            thuc_pham_id
+        )
+);
+
 CREATE TABLE ct_nha_an_nhan_vien (
     id BIGSERIAL NOT NULL,
     nha_an_id INTEGER NOT NULL,
@@ -215,9 +240,9 @@ CREATE TABLE dm_kho (
     updated_at TIMESTAMP DEFAULT now() NOT NULL,
     loai_kho SMALLINT,
     dia_diem VARCHAR(255),
-    dien_tich NUMERIC(12, 2),
-    nhiet_do_toi_thieu NUMERIC(5, 2),
-    nhiet_do_toi_da NUMERIC(5, 2),
+    dien_tich NUMERIC(17, 5),
+    nhiet_do_toi_thieu NUMERIC(14, 4),
+    nhiet_do_toi_da NUMERIC(14, 4),
     mo_ta VARCHAR(500),
     ghi_chu VARCHAR(500),
     CONSTRAINT chk_dm_kho_nhiet_do CHECK (

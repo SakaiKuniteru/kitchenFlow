@@ -1714,3 +1714,4 @@ Thiết lập không thay đổi:
 Nếu một nghiệp vụ có quy tắc làm tròn riêng được quy định rõ ràng thì quy tắc riêng của nghiệp vụ đó được ưu tiên áp dụng.
 
 ---
+

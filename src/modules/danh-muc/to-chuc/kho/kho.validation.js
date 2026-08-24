@@ -62,6 +62,39 @@ const createSchema = Joi.object({
             "string.max": "Địa điểm không được vượt quá 255 ký tự."
         }),
 
+    dienTich: Joi.number()
+        .min(0)
+        .allow(null)
+        .optional()
+        .messages({
+            "number.base": "Diện tích phải là số.",
+            "number.min": "Diện tích không được nhỏ hơn 0."
+        }),
+
+    ghiChu: Joi.string()
+        .trim()
+        .max(500)
+        .allow("", null)
+        .optional()
+        .messages({
+            "string.base": "Ghi chú phải là chuỗi.",
+            "string.max": "Ghi chú không được vượt quá 500 ký tự."
+        }),
+
+    dsNvQuanLyId: Joi.array()
+        .items(
+            Joi.number()
+                .integer()
+                .positive()
+        )
+        .optional()
+        .messages({
+            "array.base": "Danh sách nhân viên quản lý phải là mảng.",
+            "number.base": "ID nhân viên quản lý phải là số.",
+            "number.integer": "ID nhân viên quản lý phải là số nguyên.",
+            "number.positive": "ID nhân viên quản lý phải lớn hơn 0."
+        }),
+
     nhietDoToiThieu: Joi.number()
         .allow(null)
         .optional()
@@ -156,6 +189,39 @@ const updateSchema = Joi.object({
         .messages({
             "string.base": "Địa điểm phải là chuỗi.",
             "string.max": "Địa điểm không được vượt quá 255 ký tự."
+        }),
+
+    dienTich: Joi.number()
+        .min(0)
+        .allow(null)
+        .optional()
+        .messages({
+            "number.base": "Diện tích phải là số.",
+            "number.min": "Diện tích không được nhỏ hơn 0."
+        }),
+
+    ghiChu: Joi.string()
+        .trim()
+        .max(500)
+        .allow("", null)
+        .optional()
+        .messages({
+            "string.base": "Ghi chú phải là chuỗi.",
+            "string.max": "Ghi chú không được vượt quá 500 ký tự."
+        }),
+
+    dsNvQuanLyId: Joi.array()
+        .items(
+            Joi.number()
+                .integer()
+                .positive()
+        )
+        .optional()
+        .messages({
+            "array.base": "Danh sách nhân viên quản lý phải là mảng.",
+            "number.base": "ID nhân viên quản lý phải là số.",
+            "number.integer": "ID nhân viên quản lý phải là số nguyên.",
+            "number.positive": "ID nhân viên quản lý phải lớn hơn 0."
         }),
 
     nhietDoToiThieu: Joi.number()

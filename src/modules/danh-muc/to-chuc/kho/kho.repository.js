@@ -70,6 +70,9 @@ class KhoRepository {
                 : null,
             loaiKho: row.loai_kho,
             diaDiem: row.dia_diem,
+            dienTich: row.dien_tich !== null
+                ? Number(row.dien_tich)
+                : null,
             nhietDoToiThieu: row.nhiet_do_toi_thieu !== null
                 ? Number(row.nhiet_do_toi_thieu)
                 : null,
@@ -77,6 +80,7 @@ class KhoRepository {
                 ? Number(row.nhiet_do_toi_da)
                 : null,
             moTa: row.mo_ta,
+            ghiChu: row.ghi_chu,
             active: row.active,
             createdAt: row.created_at,
             updatedAt: row.updated_at
@@ -94,9 +98,11 @@ class KhoRepository {
                 k.nha_an_id,
                 k.loai_kho,
                 k.dia_diem,
+                k.dien_tich,
                 k.nhiet_do_toi_thieu,
                 k.nhiet_do_toi_da,
                 k.mo_ta,
+                k.ghi_chu,
                 k.active,
                 k.created_at,
                 k.updated_at,
@@ -304,9 +310,11 @@ class KhoRepository {
                 nha_an_id,
                 loai_kho,
                 dia_diem,
+                dien_tich,
                 nhiet_do_toi_thieu,
                 nhiet_do_toi_da,
                 mo_ta,
+                ghi_chu,
                 active,
                 created_at,
                 updated_at
@@ -321,6 +329,8 @@ class KhoRepository {
                 $7,
                 $8,
                 $9,
+                $10,
+                $11,
                 NOW(),
                 NOW()
             )
@@ -333,6 +343,10 @@ class KhoRepository {
             data.nhaAnId,
             data.loaiKho,
             data.diaDiem || null,
+            data.dienTich !== undefined
+                ? data.dienTich
+                : null,
+
             data.nhietDoToiThieu !== undefined
                 ? data.nhietDoToiThieu
                 : null,
@@ -340,6 +354,7 @@ class KhoRepository {
                 ? data.nhietDoToiDa
                 : null,
             data.moTa || null,
+            data.ghiChu || null,
             data.active !== undefined
                 ? data.active
                 : true
@@ -361,12 +376,14 @@ class KhoRepository {
                 nha_an_id = $3,
                 loai_kho = $4,
                 dia_diem = $5,
-                nhiet_do_toi_thieu = $6,
-                nhiet_do_toi_da = $7,
-                mo_ta = $8,
-                active = $9,
+                dien_tich = $6,
+                nhiet_do_toi_thieu = $7,
+                nhiet_do_toi_da = $8,
+                mo_ta = $9,
+                ghi_chu = $10,
+                active = $11,
                 updated_at = NOW()
-            WHERE id = $10
+            WHERE id = $12
             RETURNING id
         `;
 
@@ -376,6 +393,9 @@ class KhoRepository {
             data.nhaAnId,
             data.loaiKho,
             data.diaDiem || null,
+            data.dienTich !== undefined
+                ? data.dienTich
+                : null,
             data.nhietDoToiThieu !== undefined
                 ? data.nhietDoToiThieu
                 : null,
@@ -383,6 +403,7 @@ class KhoRepository {
                 ? data.nhietDoToiDa
                 : null,
             data.moTa || null,
+            data.ghiChu || null,
             data.active,
             id
         ];

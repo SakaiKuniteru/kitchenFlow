@@ -58,12 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         filterable: true
                     },
                     {
-                        key: "moTa",
-                        label: "Mô tả",
-                        width: "320px",
-                        filterable: true
-                    },
-                    {
                         key: "active",
                         label: "Trạng thái",
                         width: "130px",
@@ -77,7 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     maNhaAn: "",
                     tenNhaAn: "",
                     coSoId: "",
-                    moTa: "",
                     dsNvQuanLyId: [],
                     active: true
                 },
@@ -107,12 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         label: "Cơ sở",
                         required: true,
                         requiredMessage: "Vui lòng chọn cơ sở."
-                    },
-
-                    moTa: {
-                        label: "Mô tả",
-                        maxLength: 500,
-                        maxLengthMessage: "Mô tả không được vượt quá 500 ký tự."
                     }
                 },
 
@@ -147,7 +134,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             record?.coSoId ??
                             record?.coSo?.id ??
                             "",
-                        moTa: record?.moTa || "",
                         dsNvQuanLyId: Array.isArray(record?.dsNvQuanLyId)
                             ? record.dsNvQuanLyId
                             : [],
@@ -172,13 +158,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         coSoId: normalizeRequiredNumber(
                             formData.coSoId
                         ),
-
-                        moTa:
-                            String(
-                                formData.moTa ||
-                                ""
-                            ).trim() ||
-                            null,
 
                         active: formData.active === true
                     };

@@ -190,7 +190,9 @@ class DanhMucWebController {
                     textColumn("tenNhaAn", "Nhà ăn", { width: "200px" }),
                     textColumn("loaiKhoText", "Loại kho", { width: "160px" }),
                     textColumn("diaDiem", "Địa điểm", { width: "200px" }),
-                    textColumn("moTa", "Mô tả", { width: "250px" }),
+                    textColumn("dienTich", "Diện tích", { width: "160px" }),
+                    textColumn("nhietDoToiThieu", "Nhiệt độ tối thiếu", { width: "140px" }),
+                    textColumn("nhietDoToiDa", "Nhiệt độ tối đa", { width: "140px" }),
                     booleanColumn("active", "Hiệu lực", { width: "130px" })
                 ]
             });

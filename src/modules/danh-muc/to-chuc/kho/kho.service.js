@@ -164,12 +164,99 @@ class KhoService {
             );
         }
 
-        if (nhietDoMin >= nhietDoMax) {
+        if (nhietDoMin > nhietDoMax) {
             throw new ApiError(
                 400,
-                "Nhiệt độ tối thiểu phải nhỏ hơn nhiệt độ tối đa."
+                "Nhiệt độ tối thiểu không được lớn hơn nhiệt độ tối đa."
             );
         }
+    }
+
+    validateGiaTriNhietDo(
+        value,
+        tenTruong
+    ) {
+
+        if (
+            value ===
+            undefined ||
+            value ===
+            null
+        ) {
+
+            return;
+
+        }
+
+
+        const number =
+            Number(
+                value
+            );
+
+
+        if (
+            !Number.isFinite(
+                number
+            )
+        ) {
+
+            throw new ApiError(
+                400,
+                `${tenTruong} không hợp lệ.`
+            );
+
+        }
+
+
+        const raw =
+            String(
+                Math.abs(
+                    number
+                )
+            );
+
+
+        const [
+            phanNguyen,
+            phanThapPhan =
+                ""
+        ] =
+            raw.split(
+                "."
+            );
+
+
+        const tongSoChuSo =
+            phanNguyen.length +
+            phanThapPhan.length;
+
+
+        if (
+            tongSoChuSo >
+            14
+        ) {
+
+            throw new ApiError(
+                400,
+                `${tenTruong} vượt quá giới hạn cho phép.`
+            );
+
+        }
+
+
+        if (
+            phanThapPhan.length >
+            4
+        ) {
+
+            throw new ApiError(
+                400,
+                `${tenTruong} chỉ được tối đa 4 chữ số sau dấu phẩy.`
+            );
+
+        }
+
     }
 
     async validateTrungDuLieu(
@@ -210,6 +297,16 @@ class KhoService {
             duLieu.loaiKho
         );
 
+        this.validateGiaTriNhietDo(
+            duLieu.nhietDoToiThieu,
+            "Nhiệt độ tối thiểu"
+        );
+
+        this.validateGiaTriNhietDo(
+            duLieu.nhietDoToiDa,
+            "Nhiệt độ tối đa"
+        );
+
         this.validateNhietDo(
             duLieu.nhietDoToiThieu,
             duLieu.nhietDoToiDa
@@ -228,6 +325,12 @@ class KhoService {
 
             diaDiem: duLieu.diaDiem?.trim() || null,
 
+            dienTich:
+                duLieu.dienTich !== undefined &&
+                duLieu.dienTich !== null
+                    ? Number(duLieu.dienTich)
+                    : null,
+                    
             nhietDoToiThieu:
                 duLieu.nhietDoToiThieu !== undefined
                     ? Number(duLieu.nhietDoToiThieu)
@@ -239,6 +342,8 @@ class KhoService {
                     : null,
 
             moTa: duLieu.moTa?.trim() || null,
+
+            ghiChu: duLieu.ghiChu?.trim() || null,
 
             active:
                 duLieu.active !== undefined
@@ -300,6 +405,11 @@ class KhoService {
                     )
                     : kho.diaDiem,
 
+            dienTich:
+                data.dienTich !== undefined
+                    ? data.dienTich
+                    : kho.dienTich,
+
             nhietDoToiThieu:
                 data.nhietDoToiThieu !== undefined
                     ? data.nhietDoToiThieu
@@ -319,6 +429,15 @@ class KhoService {
                     )
                     : kho.moTa,
 
+            ghiChu:
+                data.ghiChu !== undefined
+                    ? (
+                        data.ghiChu === null
+                            ? null
+                            : data.ghiChu.trim() || null
+                    )
+                    : kho.ghiChu,
+
             active:
                 data.active !== undefined
                     ? data.active
@@ -335,10 +454,26 @@ class KhoService {
             duLieuDaChuanHoa.loaiKho
         );
 
+        this.validateGiaTriNhietDo(
+            duLieuDaChuanHoa.nhietDoToiThieu,
+            "Nhiệt độ tối thiểu"
+        );
+
+        this.validateGiaTriNhietDo(
+            duLieuDaChuanHoa.nhietDoToiDa,
+            "Nhiệt độ tối đa"
+        );
+
         this.validateNhietDo(
             duLieuDaChuanHoa.nhietDoToiThieu,
             duLieuDaChuanHoa.nhietDoToiDa
         );
+
+        if (duLieuDaChuanHoa.dienTich !== null) {
+            duLieuDaChuanHoa.dienTich = Number(
+                duLieuDaChuanHoa.dienTich
+            );
+        }
 
         if (duLieuDaChuanHoa.nhietDoToiThieu !== null) {
             duLieuDaChuanHoa.nhietDoToiThieu = Number(

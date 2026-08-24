@@ -24,11 +24,15 @@
             required=true
         }}
 
+
         {{> forms/select
             id="nhaAnId"
             name="nhaAnId"
             label="Nhà ăn"
-            placeholder="Chọn nhà ăn"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn nhà ăn..."
             required=true
         }}
 
@@ -36,57 +40,77 @@
             id="loaiKho"
             name="loaiKho"
             label="Loại kho"
-            placeholder="Chọn loại kho"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn loại kho..."
             required=true
         }}
 
-        <div class="catalog-form-grid__full">
 
-            {{> forms/input
-                id="diaDiem"
-                name="diaDiem"
-                label="Địa điểm"
-                placeholder="Nhập vị trí kho"
-                maxlength=255
-            }}
+        {{> forms/input
+            id="diaDiem"
+            name="diaDiem"
+            label="Địa điểm"
+            placeholder="Nhập địa điểm kho"
+            maxlength=255
+        }}
 
-        </div>
+        {{> forms/number
+            id="dienTich"
+            name="dienTich"
+            label="Diện tích"
+            placeholder="Nhập diện tích"
+            min=0
+            step="0.01"
+            suffix="m²"
+        }}
 
         {{> forms/number
             id="nhietDoToiThieu"
             name="nhietDoToiThieu"
             label="Nhiệt độ tối thiểu"
-            placeholder="Ví dụ: -18"
-            step="0.01"
+            placeholder="Nhập nhiệt độ tối thiểu"
+            step="0.0001"
             suffix="°C"
+            allowSign=true
         }}
 
         {{> forms/number
             id="nhietDoToiDa"
             name="nhietDoToiDa"
             label="Nhiệt độ tối đa"
-            placeholder="Ví dụ: 5"
-            step="0.01"
+            placeholder="Nhập nhiệt độ tối đa"
+            step="0.0001"
             suffix="°C"
+            allowSign=true
         }}
 
-        <div class="catalog-form-grid__full">
 
-            {{> forms/textarea
-                id="moTa"
-                name="moTa"
-                label="Mô tả"
-                placeholder="Nhập mô tả kho"
-                maxlength=500
-                rows=4
-                showCounter=true
-            }}
+        {{> forms/textarea
+            id="moTa"
+            name="moTa"
+            label="Mô tả"
+            placeholder="Nhập mô tả kho"
+            maxlength=500
+            rows=4
+            showCounter=true
+        }}
 
-        </div>
+        {{> forms/textarea
+            id="ghiChu"
+            name="ghiChu"
+            label="Ghi chú"
+            placeholder="Nhập ghi chú"
+            maxlength=500
+            rows=4
+            showCounter=true
+        }}
 
     </div>
 
 </div>
+
 
 <div class="detail-panel__section">
 
@@ -98,3 +122,289 @@
     }}
 
 </div>
+
+
+<div
+    class="detail-panel__section kho-quan-ly"
+    data-kho-manager-section>
+
+    <div class="kho-quan-ly__heading">
+
+        <div>
+
+            <h3 class="detail-panel__section-title">
+                Nhân viên quản lý
+            </h3>
+
+            <p class="kho-quan-ly__description">
+                Chỉ được chọn nhân viên quản lý thuộc nhà ăn của kho.
+            </p>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="kho-quan-ly__choose-button"
+            data-kho-open-manager
+            hidden>
+
+            <i class="fa-solid fa-user-plus"></i>
+
+            <span>
+                Chọn nhân viên
+            </span>
+
+        </button>
+
+    </div>
+
+
+    <div
+        class="kho-quan-ly__summary"
+        data-kho-manager-summary
+        hidden>
+
+        <span data-kho-manager-count>
+            0 nhân viên
+        </span>
+
+    </div>
+
+
+    <div
+        class="kho-quan-ly__list"
+        data-kho-manager-list
+        hidden>
+    </div>
+
+</div>
+
+
+<div
+    class="kho-manager-modal"
+    data-kho-manager-modal
+    hidden>
+
+    <div class="kho-manager-modal__backdrop">
+    </div>
+
+
+    <div
+        class="kho-manager-modal__dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="khoManagerModalTitle">
+
+        <header class="kho-manager-modal__header">
+
+            <div>
+
+                <h2
+                    id="khoManagerModalTitle"
+                    class="kho-manager-modal__title">
+                    Chọn nhân viên quản lý
+                </h2>
+
+                <p
+                    class="kho-manager-modal__subtitle"
+                    data-kho-manager-popup-summary>
+                    Đã chọn 0 nhân viên
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="kho-manager-modal__close"
+                data-kho-manager-close
+                aria-label="Đóng">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </header>
+
+
+        <div class="kho-manager-modal__body">
+
+            <div class="kho-manager-modal__toolbar">
+
+                <div class="kho-manager-modal__search">
+
+                    {{> forms/input
+                        id="khoManagerSearch"
+                        name="khoManagerSearch"
+                        label="Tìm kiếm"
+                        placeholder="Tìm theo mã hoặc tên nhân viên"
+                    }}
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="kho-manager-modal__add"
+                    data-kho-manager-add>
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    <span>
+                        Thêm mới
+                    </span>
+
+                </button>
+
+            </div>
+
+
+            <div class="kho-manager-modal__table-wrapper">
+
+                <table class="kho-manager-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th class="is-index">
+                                STT
+                            </th>
+
+                            <th>
+                                Nhân viên
+                            </th>
+
+                            <th>
+                                Nhà ăn
+                            </th>
+
+                            <th>
+                                Chức vụ
+                            </th>
+
+                            <th>
+                                Phòng ban
+                            </th>
+
+                            <th class="is-status">
+                                Trạng thái
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody data-kho-manager-popup-list>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <footer class="kho-manager-modal__footer">
+
+            <button
+                type="button"
+                class="kho-manager-modal__button"
+                data-kho-manager-cancel>
+                Hủy bỏ
+            </button>
+
+
+            <button
+                type="button"
+                class="kho-manager-modal__button is-primary"
+                data-kho-manager-save>
+                Lưu
+            </button>
+
+        </footer>
+
+    </div>
+
+</div>
+
+
+<template id="khoManagerRowTemplate">
+
+    <tr data-kho-manager-row>
+
+        <td class="is-index">
+
+            <span data-kho-manager-index>
+                1
+            </span>
+
+        </td>
+
+
+        <td>
+
+            {{> forms/select
+                id="khoManagerEmployeeTemplate"
+                name="khoManagerEmployeeTemplate"
+                label=""
+                mode="single"
+                multiple=false
+                allowAll=false
+                placeholder="Chọn nhân viên..."
+            }}
+
+        </td>
+
+
+        <td>
+
+            {{> forms/input
+                id="khoManagerCanteenTemplate"
+                name="khoManagerCanteenTemplate"
+                label=""
+                disabled=true
+            }}
+
+        </td>
+
+
+        <td>
+
+            {{> forms/input
+                id="khoManagerPositionTemplate"
+                name="khoManagerPositionTemplate"
+                label=""
+                disabled=true
+            }}
+
+        </td>
+
+
+        <td>
+
+            {{> forms/input
+                id="khoManagerDepartmentTemplate"
+                name="khoManagerDepartmentTemplate"
+                label=""
+                disabled=true
+            }}
+
+        </td>
+
+
+        <td class="is-status">
+
+            {{> forms/checkbox
+                id="khoManagerSelectedTemplate"
+                name="khoManagerSelectedTemplate"
+                label=""
+            }}
+
+        </td>
+
+    </tr>
+
+</template>
