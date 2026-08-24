@@ -30,11 +30,15 @@
                 id="coSoId"
                 name="coSoId"
                 label="Cơ sở"
-                placeholder="Chọn cơ sở"
+                mode="single"
+                multiple=false
+                allowAll=false
+                placeholder="Chọn cơ sở..."
                 required=true
             }}
 
         </div>
+
 
         <div class="catalog-form-grid__full">
 
@@ -54,13 +58,13 @@
 
 </div>
 
+
 <div class="detail-panel__section">
 
     {{> forms/switch
         id="active"
         name="active"
         label="Đang hoạt động"
-        description="Cho phép phòng ban được sử dụng."
         checked=true
     }}
 

@@ -5,14 +5,10 @@ const router = express.Router();
 const { createSchema, updateSchema } = require("./phong-ban.validation");
 
 const validate = require("../../../../middlewares/validate.middleware");
-
 const authenticate = require("../../../../middlewares/authenticate.middleware");
-
 const controller = require("./phong-ban.controller");
-
-const uploadImportExcel = require( "../../../../middlewares/upload-import-excel.middleware" );
-
-const phongBanExcel = require( "./phong-ban.excel" );
+const uploadImportExcel = require("../../../../middlewares/upload-import-excel.middleware");
+const phongBanExcel = require("./phong-ban.excel");
 
 router.get(
     "/tong-hop",
@@ -26,13 +22,10 @@ router.get(
     phongBanExcel.exportData
 );
 
-
 router.post(
     "/import-du-lieu",
     authenticate,
-    uploadImportExcel.single(
-        "file"
-    ),
+    uploadImportExcel.single("file"),
     phongBanExcel.importData
 );
 
