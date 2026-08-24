@@ -847,7 +847,7 @@ class MonAnService {
     }
 
     async capNhatGiaDuKien(
-        monAnId, db = pool
+        monAnId
     ) {
         const dsCongThuc = await monAnRepository
             .getCongThuc(
@@ -872,6 +872,57 @@ class MonAnService {
 
         return {
             giaDuKien,
+            congThuc
+        };
+    }
+
+    async capNhatToanBoGiaMonAn(
+        monAnId
+    ) {
+        const dsCongThuc =
+            await monAnRepository
+                .getCongThuc(
+                    monAnId
+                );
+
+        const congThuc =
+            await monAnCongThucService
+                .build(
+                    dsCongThuc
+                );
+
+        const giaMoi =
+            Number(
+                congThuc
+                    ?.tongTien
+                    ?.thanhTien
+            ) || 0;
+
+
+        const ketQua =
+            await monAnRepository
+                .updateGia(
+                    monAnId,
+                    giaMoi,
+                    giaMoi
+                );
+
+
+        if (!ketQua) {
+            throw new ApiError(
+                404,
+                "Món ăn không tồn tại."
+            );
+        }
+
+
+        return {
+            giaTien:
+                ketQua.giaTien,
+
+            giaDuKien:
+                ketQua.giaDuKien,
+
             congThuc
         };
     }
@@ -908,10 +959,11 @@ class MonAnService {
             const monAnId of
             dsMonAnId
         ) {
-            const monAn = await monAnRepository
-                .getChiTiet(
-                    monAnId
-                );
+            const monAn =
+                await monAnRepository
+                    .getChiTiet(
+                        monAnId
+                    );
 
             if (!monAn) {
                 throw new ApiError(
@@ -920,21 +972,26 @@ class MonAnService {
                 );
             }
 
-            const gia = await this
-                .capNhatGiaDuKien(
+            await this
+                .capNhatToanBoGiaMonAn(
                     monAnId
                 );
 
-            ketQua.push({
-                monAnId,
-                giaDuKien:
-                    gia.giaDuKien
-            });
+            const chiTietMoi =
+                await this
+                    .getChiTiet(
+                        monAnId
+                    );
+
+            ketQua.push(
+                chiTietMoi
+            );
         }
 
         return {
             soLuong:
                 ketQua.length,
+
             dsMonAn:
                 ketQua
         };

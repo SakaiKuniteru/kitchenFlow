@@ -48,6 +48,16 @@ document.addEventListener("DOMContentLoaded", () => {
             createTitle: "Thêm món ăn",
             updateTitle: "Cập nhật món ăn",
 
+            headerAction: {
+                action: "cap-nhat-gia",
+                label: "Cập nhật giá",
+                icon: "fa-solid fa-arrows-rotate",
+                modes: [
+                    "view",
+                    "update"
+                ]
+            },
+
             toolbarActions: [
                 {
                     action: "filter",
@@ -312,6 +322,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 syncChooseButton();
                 renderIngredientDetail();
+            },
+
+            onHeaderAction: async (
+                context,
+                catalogInstance
+            ) => {
+                if (
+                    context.action?.action !==
+                    "cap-nhat-gia"
+                ) {
+                    return;
+                }
+
+                await capNhatGiaMonAn(
+                    context.record,
+                    catalogInstance
+                );
             },
 
             onAction(action, id, catalogInstance) {
@@ -2283,6 +2310,68 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
         return div.innerHTML;
+    }
+
+    async function capNhatGiaMonAn(
+        record,
+        catalogInstance
+    ) {
+        const monAnId = Number(
+            record?.id
+        );
+
+        if (
+            !Number.isInteger(monAnId) ||
+            monAnId <= 0
+        ) {
+            window.MCS?.toast?.error(
+                "Không xác định được món ăn cần cập nhật giá."
+            );
+
+            return;
+        }
+
+        try {
+            const result =
+                await window.MCS.api.request(
+                    `${API_BASE}/cap-nhat-gia`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            dsMonAnId: [
+                                monAnId
+                            ]
+                        })
+                    }
+                );
+
+            window.MCS?.toast?.success(
+                result?.message ||
+                "Cập nhật giá món ăn thành công."
+            );
+
+            await catalogInstance?.load?.();
+
+            await catalogInstance?.openUpdate?.(
+                monAnId
+            );
+        } catch (error) {
+            console.error(
+                "Cập nhật giá món ăn thất bại:",
+                error
+            );
+
+            window.MCS?.toast?.error(
+                error?.message ||
+                "Cập nhật giá món ăn thất bại."
+            );
+        }
     }
 
     async function exportData() {

@@ -22,6 +22,8 @@ window.MCS.pages.createCatalogPage = async function createCatalogPage(options = 
         validate,
         onSubmitError,
         getRecordSubtitle,
+        headerAction,
+        onHeaderAction,
         mapListResponse,
         mapDetailResponse,
         actions,
@@ -264,6 +266,8 @@ window.MCS.pages.createCatalogPage = async function createCatalogPage(options = 
         detailTitle,
         createTitle,
         updateTitle,
+        headerAction,
+        onHeaderAction,
         defaultValues,
         mapRecordToForm,
         getRecordSubtitle,
@@ -292,11 +296,8 @@ window.MCS.pages.createCatalogPage = async function createCatalogPage(options = 
             transformPayload,
             validate: commonValidate
         },
-
         onSubmitError,
-
         onRecordLoaded,
-
         onAction
     });
 
@@ -307,7 +308,6 @@ window.MCS.pages.createCatalogPage = async function createCatalogPage(options = 
     ] = catalog;
 
     await catalog.initialize();
-
     return catalog;
 };
 

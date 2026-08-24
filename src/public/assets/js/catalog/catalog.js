@@ -169,6 +169,15 @@ class MCSCatalog {
                     this.options.detailTitle ||
                     "Thông tin chi tiết",
 
+                headerAction:
+                    this.options.headerAction ||
+                    null,
+
+                onHeaderAction:
+                    context => {
+                        this.options.onHeaderAction?.(context, this);
+                    },
+
                 onEdit: record => {
                     if (!record) {
                         return;

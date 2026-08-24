@@ -618,6 +618,63 @@ class MonAnRepository {
             result.rows.length > 0
         );
     }
+
+    async updateGia(
+        id,
+        giaTien,
+        giaDuKien
+    ) {
+        const sql = `
+            UPDATE dm_mon_an
+            SET
+                gia_tien = $1,
+                gia_du_kien = $2,
+                updated_at = NOW()
+            WHERE id = $3
+            RETURNING
+                id,
+                gia_tien,
+                gia_du_kien
+        `;
+
+        const result = await pool.query(
+            sql,
+            [
+                giaTien,
+                giaDuKien,
+                id
+            ]
+        );
+
+        if (
+            result.rows.length === 0
+        ) {
+            return null;
+        }
+
+        return {
+            id:
+                result.rows[0].id,
+
+            giaTien:
+                result.rows[0]
+                    .gia_tien !== null
+                        ? Number(
+                            result.rows[0]
+                                .gia_tien
+                        )
+                        : null,
+
+            giaDuKien:
+                result.rows[0]
+                    .gia_du_kien !== null
+                        ? Number(
+                            result.rows[0]
+                                .gia_du_kien
+                        )
+                        : null
+        };
+    }
 }
 
 module.exports = new MonAnRepository();

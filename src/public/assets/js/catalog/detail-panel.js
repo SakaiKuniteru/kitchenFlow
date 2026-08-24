@@ -15,6 +15,8 @@ class MCSDetailPanel {
             defaultTitle: "Thông tin chi tiết",
             onEdit: null,
             onClose: null,
+            headerAction: null,
+            onHeaderAction: null,
             ...options
         };
 
@@ -23,6 +25,7 @@ class MCSDetailPanel {
         this.title = this.panel?.querySelector("[data-detail-title]");
         this.subtitle = this.panel?.querySelector("[data-detail-subtitle]");
         this.editButton = this.panel?.querySelector("[data-detail-edit]");
+        this.headerAction = this.panel?.querySelector("[data-detail-header-action]");
 
         this.closeButtons = this.panel?.querySelectorAll(
             [
@@ -64,6 +67,91 @@ class MCSDetailPanel {
                 );
             });
         });
+
+        this.headerAction?.addEventListener("click", event => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.options.onHeaderAction?.(
+                    {
+                        mode: this.mode,
+                        record: this.record,
+                        panel: this,
+                        action: this.options.headerAction
+                    }
+                );
+
+            }
+        );
+    }
+
+    syncHeaderAction() {
+
+        if (
+            !this.headerAction
+        ) {
+            return;
+        }
+
+
+        const action =
+            this.options.headerAction;
+
+
+        if (
+            !action
+        ) {
+
+            this.headerAction.hidden =
+                true;
+
+            return;
+
+        }
+
+
+        const modes =
+            Array.isArray(
+                action.modes
+            )
+                ? action.modes
+                : null;
+
+
+        const visible =
+            !modes ||
+            modes.includes(
+                this.mode
+            );
+
+
+        this.headerAction.hidden =
+            !visible;
+
+
+        if (
+            !visible
+        ) {
+            return;
+        }
+
+
+        this.headerAction.innerHTML = `
+            ${
+                action.icon
+                    ? `<i class="${action.icon}" aria-hidden="true"></i>`
+                    : ""
+            }
+
+            <span>
+                ${action.label || ""}
+            </span>
+        `;
+
+
+        this.headerAction.dataset.action =
+            action.action ||
+            "";
+
     }
 
     showDefault({
@@ -94,6 +182,7 @@ class MCSDetailPanel {
             this.editButton.hidden = true;
         }
 
+        this.syncHeaderAction();
         this.close();
     }
 
@@ -136,6 +225,7 @@ class MCSDetailPanel {
             );
         }
 
+        this.syncHeaderAction();
         this.open();
     }
 
@@ -152,6 +242,7 @@ class MCSDetailPanel {
                 !this.record
             );
         }
+        this.syncHeaderAction();
     }
 
     getModeTitle(mode) {
