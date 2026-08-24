@@ -1,66 +1,179 @@
 <div class="detail-panel__section">
-
-    <h3 class="detail-panel__section-title">
-        Thông tin nhà ăn
-    </h3>
+    <h3 class="detail-panel__section-title">Thông tin nhà ăn</h3>
 
     <div class="catalog-form-grid">
-
-        {{> forms/input
-            id="maNhaAn"
-            name="maNhaAn"
-            label="Mã nhà ăn"
-            placeholder="Nhập mã nhà ăn"
-            maxlength=50
-            required=true
+        {{> forms/input 
+            id="maNhaAn" 
+            name="maNhaAn" 
+            label="Mã nhà ăn" 
+            placeholder="Nhập mã nhà ăn" 
+            maxlength=50 
+            required=true 
         }}
 
-        {{> forms/input
-            id="tenNhaAn"
-            name="tenNhaAn"
-            label="Tên nhà ăn"
-            placeholder="Nhập tên nhà ăn"
-            maxlength=150
-            required=true
+        {{> forms/input 
+            id="tenNhaAn" 
+            name="tenNhaAn" 
+            label="Tên nhà ăn" 
+            placeholder="Nhập tên nhà ăn" 
+            maxlength=150 
+            required=true 
         }}
 
         <div class="catalog-form-grid__full">
-
-            {{> forms/select
-                id="coSoId"
-                name="coSoId"
-                label="Cơ sở"
-                placeholder="Chọn cơ sở"
-                required=true
+            {{> forms/select 
+                id="coSoId" 
+                name="coSoId" 
+                label="Cơ sở" 
+                mode="single" 
+                multiple=false 
+                allowAll=false 
+                placeholder="Chọn cơ sở..." 
+                required=true 
             }}
-
         </div>
 
         <div class="catalog-form-grid__full">
-
-            {{> forms/textarea
-                id="moTa"
-                name="moTa"
-                label="Mô tả"
-                placeholder="Nhập mô tả nhà ăn"
-                maxlength=500
-                rows=4
-                showCounter=true
+            {{> forms/textarea 
+                id="moTa" 
+                name="moTa" 
+                label="Mô tả" 
+                placeholder="Nhập mô tả nhà ăn" 
+                maxlength=500 
+                rows=4 
+                showCounter=true 
             }}
-
         </div>
-
     </div>
-
 </div>
 
 <div class="detail-panel__section">
-
-    {{> forms/switch
-        id="active"
-        name="active"
-        label="Đang hoạt động"
-        checked=true
+    {{> forms/switch 
+        id="active" 
+        name="active" 
+        label="Đang hoạt động" 
+        checked=true 
     }}
-
 </div>
+
+<div class="detail-panel__section nha-an-quan-ly" data-nha-an-manager-section>
+    <div class="nha-an-quan-ly__heading">
+        <div>
+            <h3 class="detail-panel__section-title">Nhân viên quản lý</h3>
+            <p class="nha-an-quan-ly__description">Danh sách nhân viên được phân công quản lý nhà ăn.</p>
+        </div>
+
+        <button type="button" class="nha-an-quan-ly__choose-button" data-nha-an-open-manager hidden>
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Chọn nhân viên</span>
+        </button>
+    </div>
+
+    <div class="nha-an-quan-ly__summary" data-nha-an-manager-summary hidden>
+        <span data-nha-an-manager-count>0 nhân viên</span>
+    </div>
+
+    <div class="nha-an-quan-ly__list" data-nha-an-manager-list hidden></div>
+</div>
+
+<div class="nha-an-manager-modal" data-nha-an-manager-modal hidden>
+    <div class="nha-an-manager-modal__backdrop"></div>
+
+    <div class="nha-an-manager-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="nhaAnManagerModalTitle">
+        <header class="nha-an-manager-modal__header">
+            <div>
+                <h2 id="nhaAnManagerModalTitle" class="nha-an-manager-modal__title">Chọn nhân viên quản lý</h2>
+                <p class="nha-an-manager-modal__subtitle" data-nha-an-manager-popup-summary>Đã chọn 0 nhân viên</p>
+            </div>
+
+            <button type="button" class="nha-an-manager-modal__close" data-nha-an-manager-close aria-label="Đóng">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </header>
+
+        <div class="nha-an-manager-modal__body">
+            <div class="nha-an-manager-modal__toolbar">
+                <div class="nha-an-manager-modal__search">
+                    {{> forms/input 
+                        id="nhaAnManagerSearch" 
+                        name="nhaAnManagerSearch" 
+                        label="Tìm kiếm" 
+                        placeholder="Tìm theo mã hoặc tên nhân viên" 
+                    }}
+                </div>
+
+                <button type="button" class="nha-an-manager-modal__add" data-nha-an-manager-add>
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Thêm mới</span>
+                </button>
+            </div>
+
+            <div class="nha-an-manager-modal__table-wrapper">
+                <table class="nha-an-manager-table">
+                    <thead>
+                        <tr>
+                            <th class="is-index">STT</th>
+                            <th>Nhân viên</th>
+                            <th>Chức vụ</th>
+                            <th>Phòng ban</th>
+                            <th class="is-status">Trạng thái</th>
+                        </tr>
+                    </thead>
+
+                    <tbody data-nha-an-manager-popup-list></tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer class="nha-an-manager-modal__footer">
+            <button type="button" class="nha-an-manager-modal__button" data-nha-an-manager-cancel>Hủy bỏ</button>
+            <button type="button" class="nha-an-manager-modal__button is-primary" data-nha-an-manager-save>Lưu</button>
+        </footer>
+    </div>
+</div>
+
+<template id="nhaAnManagerRowTemplate">
+    <tr data-nha-an-manager-row>
+        <td class="is-index">
+            <span data-nha-an-manager-index>1</span>
+        </td>
+
+        <td>
+            {{> forms/select 
+                id="nhaAnManagerEmployeeTemplate" 
+                name="nhaAnManagerEmployeeTemplate" 
+                label="" mode="single" 
+                multiple=false 
+                allowAll=false 
+                placeholder="Chọn nhân viên..." 
+            }}
+        </td>
+
+        <td>
+            {{> forms/input 
+                id="nhaAnManagerPositionTemplate" 
+                name="nhaAnManagerPositionTemplate" 
+                label="" 
+                placeholder="" 
+                disabled=true 
+            }}
+        </td>
+
+        <td>
+            {{> forms/input 
+                id="nhaAnManagerDepartmentTemplate" 
+                name="nhaAnManagerDepartmentTemplate" 
+                label="" 
+                placeholder="" 
+                disabled=true 
+            }}
+        </td>
+
+        <td class="is-status">
+            {{> forms/checkbox 
+                id="nhaAnManagerSelectedTemplate" 
+                name="nhaAnManagerSelectedTemplate" label="" 
+            }}
+        </td>
+    </tr>
+</template>

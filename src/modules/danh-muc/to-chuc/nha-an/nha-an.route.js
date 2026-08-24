@@ -2,16 +2,16 @@ const express = require("express");
 
 const router = express.Router();
 
-const { createSchema,updateSchema } = require("./nha-an.validation");
+const { createSchema, updateSchema } = require("./nha-an.validation");
 
 const validate = require("../../../../middlewares/validate.middleware");
 const authenticate = require("../../../../middlewares/authenticate.middleware");
 
 const controller = require("./nha-an.controller");
 
-const uploadImportExcel = require( "../../../../middlewares/upload-import-excel.middleware" );
+const uploadImportExcel = require("../../../../middlewares/upload-import-excel.middleware");
 
-const nhaAnExcel = require( "./nha-an.excel" );
+const nhaAnExcel = require("./nha-an.excel");
 
 router.get(
     "/tong-hop",
@@ -25,13 +25,10 @@ router.get(
     nhaAnExcel.exportData
 );
 
-
 router.post(
     "/import-du-lieu",
     authenticate,
-    uploadImportExcel.single(
-        "file"
-    ),
+    uploadImportExcel.single("file"),
     nhaAnExcel.importData
 );
 

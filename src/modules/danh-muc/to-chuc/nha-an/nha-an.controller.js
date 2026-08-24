@@ -1,19 +1,12 @@
-const nhaAnService =
-    require("./nha-an.service");
+const nhaAnService = require("./nha-an.service");
 
-const {
-    successResponse
-} = require("../../../../utils/response.util");
+const { successResponse } = require("../../../../utils/response.util");
 
 class NhaAnController {
 
     async getTongHop(req, res, next) {
-
         try {
-
-            const data =
-                await nhaAnService
-                    .getTongHop();
+            const data = await nhaAnService.getTongHop();
 
             return successResponse(
                 res,
@@ -21,25 +14,16 @@ class NhaAnController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
     async getChiTiet(req, res, next) {
-
         try {
+            const { id } = req.params;
 
-            const { id } =
-                req.params;
-
-            const data =
-                await nhaAnService
-                    .getChiTiet(id);
+            const data = await nhaAnService.getChiTiet(id);
 
             return successResponse(
                 res,
@@ -47,22 +31,14 @@ class NhaAnController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
     async create(req, res, next) {
-
         try {
-
-            const data =
-                await nhaAnService
-                    .create(req.body);
+            const data = await nhaAnService.create(req.body);
 
             return successResponse(
                 res,
@@ -70,25 +46,17 @@ class NhaAnController {
                 data,
                 201
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
     async update(req, res, next) {
-
         try {
-
-            const data =
-                await nhaAnService
-                    .update(
-                        req.params.id,
-                        req.body
-                    );
+            const data = await nhaAnService.update(
+                req.params.id,
+                req.body
+            );
 
             return successResponse(
                 res,
@@ -96,16 +64,11 @@ class NhaAnController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
 }
 
-module.exports =
-    new NhaAnController();
+module.exports = new NhaAnController();

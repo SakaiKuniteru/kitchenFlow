@@ -1,28 +1,13 @@
-const khoService =
-    require("./kho.service");
-
-const {
-    successResponse
-} = require(
-    "../../../../utils/response.util"
-);
-
+const khoService = require("./kho.service");
+const { successResponse } = require("../../../../utils/response.util");
 
 class KhoController {
 
-    async getTongHop(
-        req,
-        res,
-        next
-    ) {
-
+    async getTongHop(req, res, next) {
         try {
-
-            const data =
-                await khoService
-                    .getTongHop(
-                        req.query
-                    );
+            const data = await khoService.getTongHop(
+                req.query
+            );
 
             return successResponse(
                 res,
@@ -30,33 +15,18 @@ class KhoController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
-
-    async getChiTiet(
-        req,
-        res,
-        next
-    ) {
-
+    async getChiTiet(req, res, next) {
         try {
+            const { id } = req.params;
 
-            const {
+            const data = await khoService.getChiTiet(
                 id
-            } = req.params;
-
-            const data =
-                await khoService
-                    .getChiTiet(
-                        id
-                    );
+            );
 
             return successResponse(
                 res,
@@ -64,29 +34,16 @@ class KhoController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
-
-    async create(
-        req,
-        res,
-        next
-    ) {
-
+    async create(req, res, next) {
         try {
-
-            const data =
-                await khoService
-                    .create(
-                        req.body
-                    );
+            const data = await khoService.create(
+                req.body
+            );
 
             return successResponse(
                 res,
@@ -94,34 +51,19 @@ class KhoController {
                 data,
                 201
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
-
-    async update(
-        req,
-        res,
-        next
-    ) {
-
+    async update(req, res, next) {
         try {
+            const { id } = req.params;
 
-            const {
-                id
-            } = req.params;
-
-            const data =
-                await khoService
-                    .update(
-                        id,
-                        req.body
-                    );
+            const data = await khoService.update(
+                id,
+                req.body
+            );
 
             return successResponse(
                 res,
@@ -129,17 +71,11 @@ class KhoController {
                 data,
                 200
             );
-
         } catch (error) {
-
             next(error);
-
         }
-
     }
 
 }
 
-
-module.exports =
-    new KhoController();
+module.exports = new KhoController();
