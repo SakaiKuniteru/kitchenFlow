@@ -24,6 +24,17 @@
             required=true
         }}
 
+        {{> forms/select
+            id="loaiMienGiam"
+            name="loaiMienGiam"
+            label="Loại miễn giảm"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn loại miễn giảm..."
+            required=true
+        }}
+
         {{> forms/number
             id="giaTri"
             name="giaTri"
@@ -31,29 +42,39 @@
             placeholder="Nhập giá trị"
             min=0
             step="0.01"
-            suffix="VNĐ"
             required=true
         }}
 
-        {{> forms/input
-            id="hinhAnh"
-            name="hinhAnh"
-            label="Hình ảnh"
-            placeholder="/uploads/voucher/banner.jpg"
-            maxlength=500
+        {{> forms/number
+            id="soLuong"
+            name="soLuong"
+            label="Số lượng"
+            placeholder="Nhập số lượng"
+            min=0
+            step="1"
+        }}
+
+        {{> forms/number
+            id="daSuDung"
+            name="daSuDung"
+            label="Đã sử dụng"
+            placeholder="Nhập số lượng đã sử dụng"
+            min=0
+            step="1"
+            disabled=true
         }}
 
         {{> forms/date
-            id="ngayBatDau"
-            name="ngayBatDau"
-            label="Ngày bắt đầu"
+            id="thoiGianBatDau"
+            name="thoiGianBatDau"
+            label="Thời gian bắt đầu"
             type="date"
         }}
 
         {{> forms/date
-            id="ngayKetThuc"
-            name="ngayKetThuc"
-            label="Ngày kết thúc"
+            id="thoiGianKetThuc"
+            name="thoiGianKetThuc"
+            label="Thời gian kết thúc"
             type="date"
         }}
 
@@ -74,6 +95,7 @@
     </div>
 
 </div>
+
 
 <div class="detail-panel__section">
 

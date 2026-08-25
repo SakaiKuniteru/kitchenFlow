@@ -1199,7 +1199,19 @@ class MCSCatalog {
 
             await this.load();
 
-            this.initializeDefaultDetail();
+            if (saved) {
+                const savedId =
+                    saved[this.options.rowKey];
+
+                if (
+                    savedId !== null &&
+                    savedId !== undefined
+                ) {
+                    this.state.selectedId = savedId;
+
+                    await this.openUpdate(savedId);
+                }
+            }
 
             return saved;
         } catch (error) {

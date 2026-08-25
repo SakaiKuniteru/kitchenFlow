@@ -95,6 +95,20 @@ const createSchema = Joi.object({
             "number.positive": "ID nhân viên quản lý phải lớn hơn 0."
         }),
 
+    dsNvQuanLyMa: Joi.array()
+        .items(
+            Joi.string()
+                .trim()
+                .max(50)
+        )
+        .optional()
+        .messages({
+            "array.base": "Danh sách mã nhân viên quản lý phải là mảng.",
+            "string.base": "Mã nhân viên quản lý phải là chuỗi.",
+            "string.empty": "Mã nhân viên quản lý không được để trống.",
+            "string.max": "Mã nhân viên quản lý không được vượt quá 50 ký tự."
+        }),
+
     nhietDoToiThieu: Joi.number()
         .allow(null)
         .optional()
@@ -224,6 +238,20 @@ const updateSchema = Joi.object({
             "number.positive": "ID nhân viên quản lý phải lớn hơn 0."
         }),
 
+    dsNvQuanLyMa: Joi.array()
+        .items(
+            Joi.string()
+                .trim()
+                .max(50)
+        )
+        .optional()
+        .messages({
+            "array.base": "Danh sách mã nhân viên quản lý phải là mảng.",
+            "string.base": "Mã nhân viên quản lý phải là chuỗi.",
+            "string.empty": "Mã nhân viên quản lý không được để trống.",
+            "string.max": "Mã nhân viên quản lý không được vượt quá 50 ký tự."
+        }),
+        
     nhietDoToiThieu: Joi.number()
         .allow(null)
         .optional()

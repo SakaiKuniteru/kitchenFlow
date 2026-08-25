@@ -483,30 +483,20 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const nhaAn = dsNhaAn.find(
-            item => Number(item.id) === Number(nhaAnId)
-        );
-
-        if (Array.isArray(nhaAn?.dsNvQuanLy)) {
-            dsNhanVienNhaAn = nhaAn.dsNvQuanLy;
-            return;
-        }
-
         try {
-            const response = await window.MCS.api.request(
+            const responseNhaAn = await window.MCS.api.request(
                 `/api/mcs/v1/dm-nha-an/${nhaAnId}`
             );
 
-            const record = response?.data;
-
-            if (Array.isArray(record?.dsNvQuanLy)) {
-                dsNhanVienNhaAn = record.dsNvQuanLy;
-                return;
-            }
+            const record = responseNhaAn?.data;
 
             const ids = Array.isArray(record?.dsNvQuanLyId)
                 ? record.dsNvQuanLyId.map(Number)
-                : [];
+                : Array.isArray(record?.dsNvQuanLy)
+                    ? record.dsNvQuanLy
+                        .map(item => Number(item.id ?? item.nhanVienId))
+                        .filter(Number.isInteger)
+                    : [];
 
             if (ids.length === 0) {
                 return;
@@ -520,13 +510,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 ? responseNhanVien.data
                 : (
                     responseNhanVien?.data?.items ||
+                    responseNhanVien?.data?.data ||
                     []
                 );
 
             dsNhanVienNhaAn = data.filter(
                 item => ids.includes(Number(item.id))
             );
+
         } catch (error) {
+            console.error(
+                "Không thể tải danh sách nhân viên theo nhà ăn.",
+                error
+            );
+
             dsNhanVienNhaAn = [];
         }
     }
