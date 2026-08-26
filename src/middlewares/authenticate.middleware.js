@@ -1,45 +1,70 @@
-const jwt = require("../utils/jwt");
+const jwt =
+    require(
+        "../utils/jwt"
+    );
 
-const ApiError = require("../utils/api-error");
+const ApiError =
+    require(
+        "../utils/api-error"
+    );
 
-function authenticate(req, res, next) {
 
-    const authorization = req.headers.authorization;
+function authenticate(
+    req,
+    res,
+    next
+) {
+
+    const authorization =
+        req.headers.authorization;
+
 
     if (!authorization) {
 
         return next(
-
             new ApiError(
                 401,
                 "Chưa đăng nhập."
             )
-
         );
 
     }
 
-    if (
-        !authorization.startsWith(
-            "Bearer "
-        )
-    ) {
+
+    const match =
+        authorization.match(
+            /^Bearer\s+(.+)$/i
+        );
+
+
+    if (!match) {
 
         return next(
-
             new ApiError(
                 401,
                 "Access Token không hợp lệ."
             )
-
         );
 
     }
 
-    const accessToken = authorization.replace(
-        "Bearer ",
-        ""
-    );
+
+    const accessToken =
+        match[1]
+            ?.trim();
+
+
+    if (!accessToken) {
+
+        return next(
+            new ApiError(
+                401,
+                "Access Token không hợp lệ."
+            )
+        );
+
+    }
+
 
     try {
 
@@ -48,24 +73,58 @@ function authenticate(req, res, next) {
                 accessToken
             );
 
-        req.user = payload;
 
-        next();
+        if (
+            !payload ||
+            !payload.taiKhoanId
+        ) {
+
+            return next(
+                new ApiError(
+                    401,
+                    "Access Token không hợp lệ."
+                )
+            );
+
+        }
+
+
+        req.user = {
+            ...payload
+        };
+
+
+        return next();
 
     }
     catch (error) {
 
-        next(
+        if (
+            error?.name ===
+            "TokenExpiredError"
+        ) {
 
+            return next(
+                new ApiError(
+                    401,
+                    "Access Token đã hết hạn."
+                )
+            );
+
+        }
+
+
+        return next(
             new ApiError(
                 401,
-                "Access Token đã hết hạn."
+                "Access Token không hợp lệ."
             )
-
         );
 
     }
 
 }
 
-module.exports = authenticate;
+
+module.exports =
+    authenticate;

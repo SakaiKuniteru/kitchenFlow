@@ -54,7 +54,7 @@ window.MCS.navigationItems = [
         url: "/phan-quyen/quyen"
     },
     {
-        label: "Danh mục Tài khoản",
+        label: "Quản lý Tài khoản",
         group: "Phân quyền",
         url: "/phan-quyen/tai-khoan"
     },
@@ -124,7 +124,7 @@ window.MCS.navigationItems = [
         url: "/he-thong/bao-cao"
     },
     {
-        label: "Danh mục Thiết lập",
+        label: "Thiết lập chung",
         group: "Hệ thống",
         url: "/he-thong/thiet-lap"
     }

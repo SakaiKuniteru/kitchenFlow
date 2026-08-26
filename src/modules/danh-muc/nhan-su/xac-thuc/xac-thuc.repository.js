@@ -58,6 +58,7 @@ class XacThucRepository {
                 tk.active,
                 tk.doi_mat_khau_lan_dau,
                 tk.so_lan_dang_nhap_sai,
+                tk.bi_khoa,
                 tk.khoa_den,
                 tk.lan_dang_nhap_cuoi,
 
@@ -185,15 +186,15 @@ class XacThucRepository {
                         vt.mo_ta,
                         vt.active
 
-                    FROM dm_nhan_vien_vai_tro nvt
+                    FROM dm_tai_khoan_vai_tro tkvt
 
                     INNER JOIN dm_vai_tro vt
-                        ON vt.id = nvt.vai_tro_id
+                        ON vt.id = tkvt.vai_tro_id
                         AND vt.active = TRUE
 
                     WHERE
-                        nvt.nhan_vien_id = nv.id
-                        AND nvt.active = TRUE
+                        tkvt.tai_khoan_id = tk.id
+                        AND tkvt.active = TRUE
                 ) danh_sach
             ) vai_tro
                 ON TRUE
@@ -222,10 +223,10 @@ class XacThucRepository {
                         q.ten_quyen,
                         q.active
 
-                    FROM dm_nhan_vien_vai_tro nvt
+                    FROM dm_tai_khoan_vai_tro tkvt
 
                     INNER JOIN dm_vai_tro vt
-                        ON vt.id = nvt.vai_tro_id
+                        ON vt.id = tkvt.vai_tro_id
                         AND vt.active = TRUE
 
                     INNER JOIN dm_vai_tro_quyen vtq
@@ -237,8 +238,8 @@ class XacThucRepository {
                         AND q.active = TRUE
 
                     WHERE
-                        nvt.nhan_vien_id = nv.id
-                        AND nvt.active = TRUE
+                        tkvt.tai_khoan_id = tk.id
+                        AND tkvt.active = TRUE
                 ) danh_sach
             ) quyen
                 ON TRUE
@@ -537,7 +538,7 @@ class XacThucRepository {
                 tk.active,
                 tk.doi_mat_khau_lan_dau,
                 tk.so_lan_dang_nhap_sai,
-                tk.khoa_den,
+                tk.bi_khoa,
                 tk.khoa_den,
                 tk.lan_dang_nhap_cuoi,
 
@@ -665,15 +666,15 @@ class XacThucRepository {
                         vt.mo_ta,
                         vt.active
 
-                    FROM dm_nhan_vien_vai_tro nvt
+                    FROM dm_tai_khoan_vai_tro tkvt
 
                     INNER JOIN dm_vai_tro vt
-                        ON vt.id = nvt.vai_tro_id
+                        ON vt.id = tkvt.vai_tro_id
                         AND vt.active = TRUE
 
                     WHERE
-                        nvt.nhan_vien_id = nv.id
-                        AND nvt.active = TRUE
+                        tkvt.tai_khoan_id = tk.id
+                        AND tkvt.active = TRUE
                 ) danh_sach
             ) vai_tro
                 ON TRUE
@@ -702,10 +703,10 @@ class XacThucRepository {
                         q.ten_quyen,
                         q.active
 
-                    FROM dm_nhan_vien_vai_tro nvt
+                    FROM dm_tai_khoan_vai_tro tkvt
 
                     INNER JOIN dm_vai_tro vt
-                        ON vt.id = nvt.vai_tro_id
+                        ON vt.id = tkvt.vai_tro_id
                         AND vt.active = TRUE
 
                     INNER JOIN dm_vai_tro_quyen vtq
@@ -717,8 +718,8 @@ class XacThucRepository {
                         AND q.active = TRUE
 
                     WHERE
-                        nvt.nhan_vien_id = nv.id
-                        AND nvt.active = TRUE
+                        tkvt.tai_khoan_id = tk.id
+                        AND tkvt.active = TRUE
                 ) danh_sach
             ) quyen
                 ON TRUE
@@ -901,14 +902,14 @@ class XacThucRepository {
                         vt.mo_ta,
                         vt.active
 
-                    FROM dm_nhan_vien_vai_tro nvt
+                    FROM dm_tai_khoan_vai_tro tkvt
 
                     INNER JOIN dm_vai_tro vt
-                        ON vt.id = nvt.vai_tro_id
+                        ON vt.id = tkvt.vai_tro_id
 
                     WHERE
-                        nvt.nhan_vien_id = nv.id
-                        AND nvt.active = TRUE
+                        tkvt.tai_khoan_id = tk.id
+                        AND tkvt.active = TRUE
                         AND vt.active = TRUE
                 ) danh_sach
             ) vai_tro
@@ -940,10 +941,10 @@ class XacThucRepository {
                         q.mo_ta,
                         q.active
 
-                    FROM dm_nhan_vien_vai_tro nvt
+                    FROM dm_tai_khoan_vai_tro tkvt
 
                     INNER JOIN dm_vai_tro vt
-                        ON vt.id = nvt.vai_tro_id
+                        ON vt.id = tkvt.vai_tro_id
                         AND vt.active = TRUE
 
                     INNER JOIN dm_vai_tro_quyen vtq
@@ -955,8 +956,8 @@ class XacThucRepository {
                         AND q.active = TRUE
 
                     WHERE
-                        nvt.nhan_vien_id = nv.id
-                        AND nvt.active = TRUE
+                        tkvt.tai_khoan_id = tk.id
+                        AND tkvt.active = TRUE
                 ) danh_sach
             ) quyen
                 ON TRUE
@@ -1018,6 +1019,87 @@ class XacThucRepository {
             updatedAt: row.nhan_vien_updated_at
         };
     }
+
+    async getMaQuyenHienTai(
+        taiKhoanId
+    ) {
+
+        const id =
+            Number(
+                taiKhoanId
+            );
+
+
+        if (
+            !Number.isInteger(id) ||
+            id <= 0
+        ) {
+
+            return [];
+
+        }
+
+
+        const sql = `
+            SELECT DISTINCT
+                q.ma_quyen
+            FROM dm_tai_khoan tk
+
+            INNER JOIN dm_tai_khoan_vai_tro tkvt
+                ON tkvt.tai_khoan_id = tk.id
+                AND tkvt.active = TRUE
+
+            INNER JOIN dm_vai_tro vt
+                ON vt.id = tkvt.vai_tro_id
+                AND vt.active = TRUE
+
+            INNER JOIN dm_vai_tro_quyen vtq
+                ON vtq.vai_tro_id = vt.id
+                AND vtq.active = TRUE
+
+            INNER JOIN dm_quyen q
+                ON q.id = vtq.quyen_id
+                AND q.active = TRUE
+
+            WHERE
+                tk.id = $1
+                AND tk.active = TRUE
+                AND COALESCE(
+                    tk.bi_khoa,
+                    FALSE
+                ) = FALSE
+
+            ORDER BY
+                q.ma_quyen ASC
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    id
+                ]
+            );
+
+
+        return [
+            ...new Set(
+                result.rows
+                    .map(
+                        row =>
+                            String(
+                                row.ma_quyen || ""
+                            )
+                                .trim()
+                                .toUpperCase()
+                    )
+                    .filter(Boolean)
+            )
+        ];
+
+    }
+
 }
 
 module.exports = new XacThucRepository();

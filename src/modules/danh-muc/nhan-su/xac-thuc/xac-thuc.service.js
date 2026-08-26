@@ -5,6 +5,37 @@ const authRepository = require("./xac-thuc.repository");
 const cauHinhService = require("../../../cau-hinh/cau-hinh.service");
 
 class XacThucService {
+    layDanhSachMaQuyen(
+        account
+    ) {
+
+        if (
+            !Array.isArray(
+                account?.dsQuyen
+            )
+        ) {
+
+            return [];
+
+        }
+
+
+        return [
+            ...new Set(
+                account.dsQuyen
+                    .map(
+                        quyen =>
+                            String(
+                                quyen?.maQuyen || ""
+                            )
+                                .trim()
+                                .toUpperCase()
+                    )
+                    .filter(Boolean)
+            )
+        ];
+
+    }
     tinhThoiGianMoKhoa(
         batDau,
         {
@@ -192,13 +223,16 @@ class XacThucService {
             account.id
         );
 
+        const permissions = this.layDanhSachMaQuyen(account);
+
         const payload = {
             taiKhoanId: account.id,
             nhanVienId: account.nhanVienId,
             taiKhoan: account.taiKhoan,
             roles: account.roles,
             dsVaiTroId: account.dsVaiTroId,
-            dsQuyenId: account.dsQuyenId
+            dsQuyenId: account.dsQuyenId,
+            permissions
         };
 
         const accessTokenMinutes = await cauHinhService
@@ -263,6 +297,7 @@ class XacThucService {
             chucVu: account.chucVu,
             dsQuyenId: account.dsQuyenId,
             dsQuyen: account.dsQuyen,
+            permissions,
             active: account.active,
             createdAt: account.createdAt,
             updatedAt: account.updatedAt
@@ -329,13 +364,16 @@ class XacThucService {
             );
         }
 
+        const permissions = this.layDanhSachMaQuyen(account);    
+    
         const newPayload = {
             taiKhoanId: account.id,
             nhanVienId: account.nhanVienId,
             taiKhoan: account.taiKhoan,
             roles: account.roles,
             dsVaiTroId: account.dsVaiTroId,
-            dsQuyenId: account.dsQuyenId
+            dsQuyenId: account.dsQuyenId,
+            permissions
         };
 
         const accessTokenMinutes = await cauHinhService

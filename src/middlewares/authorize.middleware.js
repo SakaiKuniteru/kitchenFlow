@@ -1,41 +1,187 @@
-const ApiError = require("../utils/api-error");
+const ApiError =
+    require(
+        "../utils/api-error"
+    );
 
-function authorize(...roles) {
+const authRepository =
+    require(
+        "../modules/danh-muc/nhan-su/xac-thuc/xac-thuc.repository"
+    );
 
-    return (req, res, next) => {
 
-        const user = req.user;
+function normalizePermission(
+    value
+) {
 
-        if (!user) {
+    return String(
+        value || ""
+    )
+        .trim()
+        .toUpperCase();
 
-            return next(
-                new ApiError(
+}
+
+
+function authorize(
+    ...requiredPermissions
+) {
+
+    const permissionsRequired =
+        [
+            ...new Set(
+                requiredPermissions
+                    .map(
+                        normalizePermission
+                    )
+                    .filter(Boolean)
+            )
+        ];
+
+
+    return async (
+        req,
+        res,
+        next
+    ) => {
+
+        try {
+
+            /*
+             * ========================================
+             * 1. BẮT BUỘC ĐÃ AUTHENTICATE
+             * ========================================
+             */
+            const user =
+                req.user;
+
+
+            if (
+                !user ||
+                !user.taiKhoanId
+            ) {
+
+                throw new ApiError(
                     401,
                     "Chưa đăng nhập."
-                )
-            );
+                );
 
-        }
+            }
 
-        const hasRole = user.roles.some(
-            role => roles.includes(role)
-        );
 
-        if (!hasRole) {
+            /*
+             * ========================================
+             * 2. ROUTE PHẢI KHAI BÁO QUYỀN
+             * ========================================
+             */
+            if (
+                permissionsRequired.length ===
+                0
+            ) {
 
-            return next(
-                new ApiError(
+                throw new ApiError(
+                    500,
+                    "API chưa được cấu hình quyền truy cập."
+                );
+
+            }
+
+
+            /*
+             * ========================================
+             * 3. LẤY QUYỀN HIỆN TẠI TỪ DB
+             *
+             * Một request có thể chạy:
+             *
+             * authorize("Q000067")
+             * authorize("Q000032", ...)
+             *
+             * nên chỉ query DB 1 lần/request.
+             * ========================================
+             */
+            let permissions =
+                req.authorizationPermissions;
+
+
+            if (
+                !(permissions instanceof Set)
+            ) {
+
+                const dsMaQuyen =
+                    await authRepository
+                        .getMaQuyenHienTai(
+                            user.taiKhoanId
+                        );
+
+
+                permissions =
+                    new Set(
+                        dsMaQuyen
+                            .map(
+                                normalizePermission
+                            )
+                            .filter(Boolean)
+                    );
+
+
+                req.authorizationPermissions =
+                    permissions;
+
+
+                /*
+                 * Đồng bộ lại req.user để các middleware /
+                 * controller phía sau có quyền mới nhất.
+                 */
+                req.user.permissions =
+                    [
+                        ...permissions
+                    ];
+
+            }
+
+
+            /*
+             * ========================================
+             * 4. KIỂM TRA:
+             *
+             * authorize(A, B, C)
+             *
+             * = A OR B OR C
+             * ========================================
+             */
+            const hasPermission =
+                permissionsRequired.some(
+                    permission =>
+                        permissions.has(
+                            permission
+                        )
+                );
+
+
+            if (!hasPermission) {
+
+                throw new ApiError(
                     403,
                     "Bạn không có quyền truy cập."
-                )
+                );
+
+            }
+
+
+            return next();
+
+        }
+        catch (error) {
+
+            return next(
+                error
             );
 
         }
-
-        next();
 
     };
 
 }
 
-module.exports = authorize;
+
+module.exports =
+    authorize;

@@ -8,6 +8,7 @@ const {
 } = require("./tai-khoan.validation");
 const validate = require("../../../../middlewares/validate.middleware");
 const authenticate = require("../../../../middlewares/authenticate.middleware");
+const authorize = require("../../../../middlewares/authorize.middleware");
 const controller = require("./tai-khoan.controller");
 const uploadNhanVien = require("../nhan-vien/upload-nhan-vien.middleware");
 const uploadImportExcel = require("../../../../middlewares/upload-import-excel.middleware");
@@ -46,18 +47,22 @@ function validateTaiKhoanUpdate(
 router.get(
     "/tong-hop",
     authenticate,
+    authorize("Q000067"),
+    authorize("Q000032", "Q000033", "Q000034"),
     controller.getTongHop
 );
 
 router.get(
     "/xuat-du-lieu",
     authenticate,
+    authorize("Q000065"),
     chucVuExcel.exportData
 );
 
 router.post(
     "/import-du-lieu",
     authenticate,
+    authorize("Q000066"),
     uploadImportExcel.single(
         "file"
     ),
@@ -67,12 +72,14 @@ router.post(
 router.get(
     "/:id",
     authenticate,
+    authorize("Q000032", "Q000033", "Q000034"),
     controller.getChiTiet
 );
 
 router.post(
     "/them-moi",
     authenticate,
+    authorize("Q000033", "Q000034"),
     uploadNhanVien.single(
         "anhDaiDien"
     ),
@@ -83,6 +90,7 @@ router.post(
 router.patch(
     "/cap-nhat/:id",
     authenticate,
+    authorize("Q000034"),
     uploadNhanVien.single(
         "anhDaiDien"
     ),
@@ -93,6 +101,7 @@ router.patch(
 router.patch(
     "/doi-mat-khau",
     authenticate,
+    authorize("Q000034"),
     validate(doiMatKhauSchema),
     controller.doiMatKhau
 );
@@ -100,6 +109,7 @@ router.patch(
 router.patch(
     "/dat-lai-mat-khau/:id",
     authenticate,
+    authorize("Q000034"),
     validate(datLaiMatKhauSchema),
     controller.datLaiMatKhau
 );

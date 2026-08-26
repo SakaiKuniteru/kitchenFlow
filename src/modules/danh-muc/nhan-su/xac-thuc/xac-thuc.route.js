@@ -36,7 +36,6 @@ router.post(
 
 router.post(
     "/logout",
-    // validate(logoutSchema),
     controller.logout
 );
 
