@@ -54,23 +54,29 @@ const createSchema = Joi.object({
         .positive()
         .required()
         .when(
-            "loaiGiam",
+            "loaiMienGiam",
             {
-                is: "PHAN_TRAM",
+                is: 10,
+
                 then: Joi.number()
                     .positive()
                     .max(100),
-                otherwise: Joi.number()
-                    .positive()
+
+                otherwise:
+                    Joi.number()
+                        .positive()
             }
         )
         .messages({
             "number.base":
                 "Giá trị voucher phải là số.",
+
             "number.positive":
                 "Giá trị voucher phải lớn hơn 0.",
+
             "number.max":
                 "Giá trị phần trăm không được vượt quá 100.",
+
             "any.required":
                 "Giá trị voucher là bắt buộc."
         }),
@@ -193,25 +199,33 @@ const updateSchema = Joi.object({
 
     giaTri: Joi.number()
         .positive()
+        .required()
         .when(
-            "loaiGiam",
+            "loaiMienGiam",
             {
-                is: "PHAN_TRAM",
+                is: 10,
+
                 then: Joi.number()
                     .positive()
                     .max(100),
-                otherwise: Joi.number()
-                    .positive()
+
+                otherwise:
+                    Joi.number()
+                        .positive()
             }
         )
-        .optional()
         .messages({
             "number.base":
                 "Giá trị voucher phải là số.",
+
             "number.positive":
                 "Giá trị voucher phải lớn hơn 0.",
+
             "number.max":
-                "Giá trị phần trăm không được vượt quá 100."
+                "Giá trị phần trăm không được vượt quá 100.",
+
+            "any.required":
+                "Giá trị voucher là bắt buộc."
         }),
 
     soLuong: Joi.number()
