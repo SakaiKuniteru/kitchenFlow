@@ -365,6 +365,32 @@ Ctrl + L
 
 ---
 
+## Xuất toàn bộ bảng và cột
+
+/Applications/Postgres.app/Contents/Versions/latest/bin/pg_dump \
+  -U postgres \
+  -d kitchenflow \
+  --schema-only \
+  --schema=public \
+  --no-owner \
+  --no-privileges \
+  -f kitchenflow_schema.sql
+
+---
+
+## Xuất toàn bộ bảng, cột và dữ liệu
+
+pg_dump \
+  -U postgres \
+  -d kitchenflow \
+  --clean \
+  --if-exists \
+  --no-owner \
+  --no-privileges \
+  -f kitchenflow_full.sql
+  
+---
+
 ## Hiển thị thời gian thực thi câu SQL
 
 ```sql

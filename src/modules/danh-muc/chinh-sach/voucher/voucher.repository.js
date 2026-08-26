@@ -1,70 +1,36 @@
 const pool = require("../../../../config/database");
 
 class VoucherRepository {
-
     mapVoucher(row) {
-
         if (!row) {
             return null;
         }
 
         return {
-
             id: row.id,
-
-            maVoucher:
-                row.ma_voucher,
-
-            tenVoucher:
-                row.ten_voucher,
-
-            loaiMienGiam: 
-                row.loai_mien_giam,
-
-            giaTri:
-                Number(
-                    row.gia_tri
-                ),
-
-            soLuong:
-                row.so_luong,
-
-            daSuDung:
-                row.da_su_dung,
-
-            soLuongConLai: 
-                Number(
-                    row.so_luong_con_lai
-                ),
-
-            thoiGianBatDau:
-                row.thoi_gian_bat_dau,
-
-            thoiGianKetThuc: 
-                row.thoi_gian_ket_thuc,
-            
-            moTa:
-                row.mo_ta,
-
-            active:
-                row.active,
-
-            createdAt:
-                row.created_at,
-
-            updatedAt:
-                row.updated_at
-
+            maVoucher: row.ma_voucher,
+            tenVoucher: row.ten_voucher,
+            loaiMienGiam: row.loai_mien_giam,
+            giaTri: Number(
+                row.gia_tri
+            ),
+            soLuong: row.so_luong,
+            daSuDung: row.da_su_dung,
+            soLuongConLai: Number(
+                row.so_luong_con_lai
+            ),
+            thoiGianBatDau: row.thoi_gian_bat_dau,
+            thoiGianKetThuc: row.thoi_gian_ket_thuc,
+            moTa: row.mo_ta,
+            active: row.active,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at
         };
-
     }
 
     getBaseQuery() {
-
         return `
-
             SELECT
-
                 v.id,
                 v.ma_voucher,
                 v.ten_voucher,
@@ -82,18 +48,13 @@ class VoucherRepository {
                 v.active,
                 v.created_at,
                 v.updated_at
-
             FROM dm_voucher v
-
         `;
-
     }
 
     async getTongHop() {
-
         const sql = `
             ${this.getBaseQuery()}
-
             ORDER BY v.ma_voucher ASC
         `;
 
@@ -103,16 +64,12 @@ class VoucherRepository {
         return result.rows.map(
             row => this.mapVoucher(row)
         );
-
     }
 
     async getChiTiet(id) {
-
         const sql = `
             ${this.getBaseQuery()}
-
             WHERE v.id = $1
-
             LIMIT 1
         `;
 
@@ -129,14 +86,12 @@ class VoucherRepository {
         return this.mapVoucher(
             result.rows[0]
         );
-
     }
 
     async existsMaVoucher(
         maVoucher,
         excludeId = null
     ) {
-
         const values = [
             maVoucher
         ];
@@ -150,13 +105,11 @@ class VoucherRepository {
         `;
 
         if (excludeId) {
-
             values.push(excludeId);
 
             sql += `
                 AND id <> $2
             `;
-
         }
 
         sql += `
@@ -170,14 +123,12 @@ class VoucherRepository {
             );
 
         return result.rows[0].exists;
-
     }
 
     async existsTenVoucher(
         tenVoucher,
         excludeId = null
     ) {
-
         const values = [
             tenVoucher,
         ];
@@ -191,13 +142,11 @@ class VoucherRepository {
         `;
 
         if (excludeId) {
-
             values.push(excludeId);
 
             sql += `
                 AND id <> $2
             `;
-
         }
 
         sql += `
@@ -211,11 +160,85 @@ class VoucherRepository {
             );
 
         return result.rows[0].exists;
+    }
 
+    async suDungVoucher(
+        id,
+        client = pool
+    ) {
+        const sql = `
+            UPDATE dm_voucher
+            SET
+                da_su_dung =
+                    da_su_dung + 1,
+                updated_at =
+                    NOW()
+            WHERE
+                id = $1
+                AND active = TRUE
+                AND da_su_dung <
+                    so_luong
+            RETURNING
+                id,
+                so_luong,
+                da_su_dung
+        `;
+
+        const result =
+            await client.query(
+                sql,
+                [
+                    id
+                ]
+            );
+
+        if (
+            result.rows.length === 0
+        ) {
+            return null;
+        }
+
+        return result.rows[0];
+    }
+
+    async hoanVoucher(
+        id,
+        client = pool
+    ) {
+        const sql = `
+            UPDATE dm_voucher
+            SET
+                da_su_dung =
+                    da_su_dung - 1,
+                updated_at =
+                    NOW()
+            WHERE
+                id = $1
+                AND da_su_dung > 0
+            RETURNING
+                id,
+                so_luong,
+                da_su_dung
+        `;
+
+        const result =
+            await client.query(
+                sql,
+                [
+                    id
+                ]
+            );
+
+        if (
+            result.rows.length === 0
+        ) {
+            return null;
+        }
+
+        return result.rows[0];
     }
 
     async create(data) {
-
         const sql = `
             INSERT INTO dm_voucher (
                 ma_voucher,
@@ -249,29 +272,18 @@ class VoucherRepository {
         `;
 
         const values = [
-
             data.maVoucher,
-
             data.tenVoucher,
-
             data.loaiMienGiam,
-
             data.giaTri,
-
             data.soLuong,
-
             data.daSuDung,
-
             data.thoiGianBatDau,
-
             data.thoiGianKetThuc,
-
             data.moTa || null,
-
             data.active !== undefined
                 ? data.active
                 : true
-
         ];
 
         const result =
@@ -283,11 +295,9 @@ class VoucherRepository {
         return await this.getChiTiet(
             result.rows[0].id
         );
-
     }
 
     async update(id, data) {
-
         const sql = `
             UPDATE dm_voucher
             SET
@@ -307,29 +317,17 @@ class VoucherRepository {
         `;
 
         const values = [
-
             data.maVoucher,
-
             data.tenVoucher,
-
             data.loaiMienGiam,
-
             data.giaTri,
-
             data.soLuong,
-
             data.daSuDung,
-
             data.thoiGianBatDau,
-
             data.thoiGianKetThuc,
-
             data.moTa,
-
             data.active,
-
             id
-
         ];
 
         const result =
@@ -345,9 +343,7 @@ class VoucherRepository {
         return await this.getChiTiet(
             result.rows[0].id
         );
-
     }
-
 }
 
 module.exports = new VoucherRepository();

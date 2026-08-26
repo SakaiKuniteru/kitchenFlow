@@ -1,23 +1,164 @@
 const Joi = require("joi");
 
-const { loaiChinhSach: danhSachLoaiChinhSach } = require("../../../../constants/enums");
+const {
+    loaiChinhSach: danhSachLoaiChinhSach
+} = require("../../../../constants/enums");
 
 const danhSachGiaTriLoaiChinhSach =
     danhSachLoaiChinhSach.map(
-        item =>
-            Number(item.value)
+        item => Number(item.value)
     );
+
+const LOAI_CHINH_SACH = {
+    VAI_TRO: 10,
+    CHUC_VU: 20,
+    TAI_KHOAN: 30
+};
+
+function schemaDanhSachId(label) {
+    return Joi.array()
+        .items(
+            Joi.number()
+                .integer()
+                .positive()
+                .messages({
+                    "number.base":
+                        `ID ${label} phải là số.`,
+
+                    "number.integer":
+                        `ID ${label} phải là số nguyên.`,
+
+                    "number.positive":
+                        `ID ${label} phải lớn hơn 0.`
+                })
+        )
+        .unique()
+        .messages({
+            "array.base":
+                `Danh sách ${label} phải là một mảng.`,
+
+            "array.unique":
+                `Danh sách ${label} không được chứa ID trùng nhau.`
+        });
+}
+
+function validatePhamVi(
+    value,
+    helpers
+) {
+    const loai =
+        Number(
+            value.loaiChinhSach
+        );
+
+    if (
+        !Number.isInteger(
+            loai
+        )
+    ) {
+        return value;
+    }
+
+    const dsVaiTroId =
+        Array.isArray(
+            value.dsVaiTroId
+        )
+            ? value.dsVaiTroId
+            : [];
+
+    const dsChucVuId =
+        Array.isArray(
+            value.dsChucVuId
+        )
+            ? value.dsChucVuId
+            : [];
+
+    const dsTaiKhoanId =
+        Array.isArray(
+            value.dsTaiKhoanId
+        )
+            ? value.dsTaiKhoanId
+            : [];
+
+    switch (loai) {
+        case LOAI_CHINH_SACH.VAI_TRO:
+            if (
+                dsVaiTroId.length === 0
+            ) {
+                return helpers.message({
+                    custom:
+                        "Vui lòng chọn ít nhất một vai trò áp dụng."
+                });
+            }
+
+            if (
+                dsChucVuId.length > 0 ||
+                dsTaiKhoanId.length > 0
+            ) {
+                return helpers.message({
+                    custom:
+                        "Chính sách loại Vai trò chỉ được phép chọn danh sách vai trò."
+                });
+            }
+
+            break;
+
+        case LOAI_CHINH_SACH.CHUC_VU:
+            if (
+                dsChucVuId.length === 0
+            ) {
+                return helpers.message({
+                    custom:
+                        "Vui lòng chọn ít nhất một chức vụ áp dụng."
+                });
+            }
+
+            if (
+                dsVaiTroId.length > 0 ||
+                dsTaiKhoanId.length > 0
+            ) {
+                return helpers.message({
+                    custom:
+                        "Chính sách loại Chức vụ chỉ được phép chọn danh sách chức vụ."
+                });
+            }
+
+            break;
+
+        case LOAI_CHINH_SACH.TAI_KHOAN:
+            if (
+                dsTaiKhoanId.length === 0
+            ) {
+                return helpers.message({
+                    custom:
+                        "Vui lòng chọn ít nhất một tài khoản áp dụng."
+                });
+            }
+
+            if (
+                dsVaiTroId.length > 0 ||
+                dsChucVuId.length > 0
+            ) {
+                return helpers.message({
+                    custom:
+                        "Chính sách loại Tài khoản chỉ được phép chọn danh sách tài khoản."
+                });
+            }
+
+            break;
+    }
+
+    return value;
+}
 
 const createSchema =
     Joi.object({
-
         maChinhSach:
             Joi.string()
                 .trim()
                 .max(50)
                 .required()
                 .messages({
-
                     "string.base":
                         "Mã chính sách phải là chuỗi.",
 
@@ -29,7 +170,6 @@ const createSchema =
 
                     "any.required":
                         "Mã chính sách là bắt buộc."
-
                 }),
 
         tenChinhSach:
@@ -38,7 +178,6 @@ const createSchema =
                 .max(255)
                 .required()
                 .messages({
-
                     "string.base":
                         "Tên chính sách phải là chuỗi.",
 
@@ -50,7 +189,6 @@ const createSchema =
 
                     "any.required":
                         "Tên chính sách là bắt buộc."
-
                 }),
 
         loaiChinhSach:
@@ -61,7 +199,6 @@ const createSchema =
                 )
                 .required()
                 .messages({
-
                     "number.base":
                         "Loại chính sách phải là số.",
 
@@ -73,132 +210,96 @@ const createSchema =
 
                     "any.required":
                         "Loại chính sách là bắt buộc."
-
                 }),
 
-        voucherId:
-            Joi.number()
-                .integer()
-                .positive()
-                .required()
-                .messages({
-
-                    "number.base":
-                        "Voucher phải là số.",
-
-                    "number.integer":
-                        "Voucher phải là số nguyên.",
-
-                    "number.positive":
-                        "Voucher phải có giá trị lớn hơn 0.",
-
-                    "any.required":
-                        "Voucher là bắt buộc."
-
-                }),
-
-        doiTuongIds:
-            Joi.array()
-                .items(
-
-                    Joi.number()
-                        .integer()
-                        .positive()
-                        .messages({
-
-                            "number.base":
-                                "ID đối tượng áp dụng phải là số.",
-
-                            "number.integer":
-                                "ID đối tượng áp dụng phải là số nguyên.",
-
-                            "number.positive":
-                                "ID đối tượng áp dụng phải lớn hơn 0."
-
-                        })
-
-                )
+        dsVoucherId:
+            schemaDanhSachId(
+                "voucher"
+            )
                 .min(1)
-                .unique()
                 .required()
                 .messages({
-
-                    "array.base":
-                        "Danh sách đối tượng áp dụng phải là một mảng.",
-
                     "array.min":
-                        "Vui lòng chọn ít nhất một đối tượng áp dụng.",
-
-                    "array.unique":
-                        "Danh sách đối tượng áp dụng không được chứa ID trùng nhau.",
+                        "Vui lòng chọn ít nhất một voucher.",
 
                     "any.required":
-                        "Danh sách đối tượng áp dụng là bắt buộc."
-
+                        "Danh sách voucher là bắt buộc."
                 }),
+
+        dsVaiTroId:
+            schemaDanhSachId(
+                "vai trò"
+            )
+                .default([]),
+
+        dsChucVuId:
+            schemaDanhSachId(
+                "chức vụ"
+            )
+                .default([]),
+
+        dsTaiKhoanId:
+            schemaDanhSachId(
+                "tài khoản"
+            )
+                .default([]),
 
         moTa:
             Joi.string()
                 .trim()
-                .max(1000)
+                .max(500)
                 .allow(
                     "",
                     null
                 )
                 .optional()
                 .messages({
-
                     "string.base":
                         "Mô tả phải là chuỗi.",
 
                     "string.max":
-                        "Mô tả không được vượt quá 1000 ký tự."
-
+                        "Mô tả không được vượt quá 500 ký tự."
                 }),
 
         mucDoUuTien:
             Joi.number()
                 .integer()
-                .min(0)
+                .positive()
                 .required()
                 .messages({
-
                     "number.base":
                         "Mức độ ưu tiên phải là số.",
 
                     "number.integer":
                         "Mức độ ưu tiên phải là số nguyên.",
 
-                    "number.min":
-                        "Mức độ ưu tiên không được nhỏ hơn 0.",
+                    "number.positive":
+                        "Mức độ ưu tiên phải lớn hơn 0.",
 
                     "any.required":
                         "Mức độ ưu tiên là bắt buộc."
-
                 }),
 
         active:
             Joi.boolean()
                 .optional()
                 .messages({
-
                     "boolean.base":
                         "Trạng thái phải là true hoặc false."
-
                 })
-
-    });
+    })
+        .custom(
+            validatePhamVi
+        );
 
 const updateSchema =
     Joi.object({
-
         maChinhSach:
             Joi.string()
                 .trim()
                 .max(50)
                 .optional()
                 .messages({
-
                     "string.base":
                         "Mã chính sách phải là chuỗi.",
 
@@ -207,7 +308,6 @@ const updateSchema =
 
                     "string.max":
                         "Mã chính sách không được vượt quá 50 ký tự."
-
                 }),
 
         tenChinhSach:
@@ -216,7 +316,6 @@ const updateSchema =
                 .max(255)
                 .optional()
                 .messages({
-
                     "string.base":
                         "Tên chính sách phải là chuỗi.",
 
@@ -225,7 +324,6 @@ const updateSchema =
 
                     "string.max":
                         "Tên chính sách không được vượt quá 255 ký tự."
-
                 }),
 
         loaiChinhSach:
@@ -236,7 +334,6 @@ const updateSchema =
                 )
                 .optional()
                 .messages({
-
                     "number.base":
                         "Loại chính sách phải là số.",
 
@@ -245,125 +342,88 @@ const updateSchema =
 
                     "any.only":
                         `Loại chính sách chỉ được là ${danhSachGiaTriLoaiChinhSach.join(", ")}.`
-
                 }),
 
-        voucherId:
-            Joi.number()
-                .integer()
-                .positive()
-                .optional()
-                .messages({
-
-                    "number.base":
-                        "Voucher phải là số.",
-
-                    "number.integer":
-                        "Voucher phải là số nguyên.",
-
-                    "number.positive":
-                        "Voucher phải có giá trị lớn hơn 0."
-
-                }),
-
-        doiTuongIds:
-            Joi.array()
-                .items(
-
-                    Joi.number()
-                        .integer()
-                        .positive()
-                        .messages({
-
-                            "number.base":
-                                "ID đối tượng áp dụng phải là số.",
-
-                            "number.integer":
-                                "ID đối tượng áp dụng phải là số nguyên.",
-
-                            "number.positive":
-                                "ID đối tượng áp dụng phải lớn hơn 0."
-
-                        })
-
-                )
+        dsVoucherId:
+            schemaDanhSachId(
+                "voucher"
+            )
                 .min(1)
-                .unique()
                 .optional()
                 .messages({
-
-                    "array.base":
-                        "Danh sách đối tượng áp dụng phải là một mảng.",
-
                     "array.min":
-                        "Vui lòng chọn ít nhất một đối tượng áp dụng.",
-
-                    "array.unique":
-                        "Danh sách đối tượng áp dụng không được chứa ID trùng nhau."
-
+                        "Vui lòng chọn ít nhất một voucher."
                 }),
+
+        dsVaiTroId:
+            schemaDanhSachId(
+                "vai trò"
+            )
+                .optional(),
+
+        dsChucVuId:
+            schemaDanhSachId(
+                "chức vụ"
+            )
+                .optional(),
+
+        dsTaiKhoanId:
+            schemaDanhSachId(
+                "tài khoản"
+            )
+                .optional(),
 
         moTa:
             Joi.string()
                 .trim()
-                .max(1000)
+                .max(500)
                 .allow(
                     "",
                     null
                 )
                 .optional()
                 .messages({
-
                     "string.base":
                         "Mô tả phải là chuỗi.",
 
                     "string.max":
-                        "Mô tả không được vượt quá 1000 ký tự."
-
+                        "Mô tả không được vượt quá 500 ký tự."
                 }),
 
         mucDoUuTien:
             Joi.number()
                 .integer()
-                .min(0)
+                .positive()
                 .optional()
                 .messages({
-
                     "number.base":
                         "Mức độ ưu tiên phải là số.",
 
                     "number.integer":
                         "Mức độ ưu tiên phải là số nguyên.",
 
-                    "number.min":
-                        "Mức độ ưu tiên không được nhỏ hơn 0."
-
+                    "number.positive":
+                        "Mức độ ưu tiên phải lớn hơn 0."
                 }),
 
         active:
             Joi.boolean()
                 .optional()
                 .messages({
-
                     "boolean.base":
                         "Trạng thái phải là true hoặc false."
-
                 })
-
     })
         .min(1)
+        .custom(
+            validatePhamVi
+        )
         .messages({
-
             "object.min":
                 "Phải truyền ít nhất một trường cần cập nhật."
-
         });
 
-
 module.exports = {
-
     createSchema,
-
     updateSchema
-
 };

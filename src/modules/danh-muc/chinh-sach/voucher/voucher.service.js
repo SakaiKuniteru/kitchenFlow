@@ -1,116 +1,93 @@
 const {
-    loaiMienGiam:
-        danhSachLoaiMienGiam
+    loaiMienGiam: danhSachLoaiMienGiam
 } = require("../../../../constants/enums");
 
 const ApiError = require("../../../../utils/api-error");
-
 const voucherRepository = require("./voucher.repository");
 
-
 class VoucherService {
-
     async getTongHop(query) {
-
         return await voucherRepository
             .getTongHop(query);
-
     }
 
     async getChiTiet(id) {
-
         const voucher =
             await voucherRepository
                 .getChiTiet(id);
 
         if (!voucher) {
-
             throw new ApiError(
                 404,
                 "Voucher không tồn tại."
             );
-
         }
 
         return voucher;
-
     }
 
-validateLoaiMienGiam(
-    giaTriLoaiMienGiam
-) {
-
-    const giaTriSo =
-        Number(
-            giaTriLoaiMienGiam
-        );
-
-    const hopLe =
-        danhSachLoaiMienGiam
-            .some(
-                item =>
-                    Number(item.value)
-                    === giaTriSo
+    validateLoaiMienGiam(
+        giaTriLoaiMienGiam
+    ) {
+        const giaTriSo =
+            Number(
+                giaTriLoaiMienGiam
             );
 
-    if (!hopLe) {
+        const hopLe =
+            danhSachLoaiMienGiam
+                .some(
+                    item =>
+                        Number(item.value) === giaTriSo
+                );
 
-        throw new ApiError(
-            400,
-            "Loại miễn giảm không hợp lệ."
-        );
-
+        if (!hopLe) {
+            throw new ApiError(
+                400,
+                "Loại miễn giảm không hợp lệ."
+            );
+        }
     }
 
-}
-
-validateGiaTriMienGiam(
-    loaiMienGiam,
-    giaTri
-) {
-
-    const loaiMienGiamSo =
-        Number(
-            loaiMienGiam
-        );
-
-    const giaTriSo =
-        Number(
-            giaTri
-        );
-
-    if (
-        Number.isNaN(giaTriSo)
-        ||
-        giaTriSo <= 0
+    validateGiaTriMienGiam(
+        loaiMienGiam,
+        giaTri
     ) {
+        const loaiMienGiamSo =
+            Number(
+                loaiMienGiam
+            );
 
-        throw new ApiError(
-            400,
-            "Giá trị miễn giảm phải lớn hơn 0."
-        );
+        const giaTriSo =
+            Number(
+                giaTri
+            );
 
+        if (
+            Number.isNaN(giaTriSo) ||
+            giaTriSo <= 0
+        ) {
+            throw new ApiError(
+                400,
+                "Giá trị miễn giảm phải lớn hơn 0."
+            );
+        }
+
+        if (
+            loaiMienGiamSo === 10 &&
+            giaTriSo > 100
+        ) {
+            throw new ApiError(
+                400,
+                "Giá trị miễn giảm theo phần trăm không được vượt quá 100."
+            );
+        }
     }
 
-    if (
-        loaiMienGiamSo === 10
-        &&
-        giaTriSo > 100
-    ) {
-
-        throw new ApiError(
-            400,
-            "Giá trị miễn giảm theo phần trăm không được vượt quá 100."
-        );
-
-    }
-
-}
     validateSoLuong(
         soLuong,
         daSuDung
     ) {
-
         const soLuongSo =
             Number(soLuong);
 
@@ -120,54 +97,43 @@ validateGiaTriMienGiam(
         if (
             !Number.isInteger(
                 soLuongSo
-            )
-            ||
+            ) ||
             soLuongSo < 0
         ) {
-
             throw new ApiError(
                 400,
                 "Số lượng voucher phải là số nguyên lớn hơn hoặc bằng 0."
             );
-
         }
 
         if (
             !Number.isInteger(
                 daSuDungSo
-            )
-            ||
+            ) ||
             daSuDungSo < 0
         ) {
-
             throw new ApiError(
                 400,
                 "Số lượng voucher đã sử dụng phải là số nguyên lớn hơn hoặc bằng 0."
             );
-
         }
 
         if (
             daSuDungSo > soLuongSo
         ) {
-
             throw new ApiError(
                 400,
                 "Số lượng voucher đã sử dụng không được lớn hơn tổng số lượng."
             );
-
         }
-
     }
 
     validateThoiGian(
         thoiGianBatDau,
         thoiGianKetThuc
     ) {
-
         if (
-            !thoiGianBatDau
-            ||
+            !thoiGianBatDau ||
             !thoiGianKetThuc
         ) {
             return;
@@ -186,42 +152,34 @@ validateGiaTriMienGiam(
         if (
             Number.isNaN(
                 batDau.getTime()
-            )
-            ||
+            ) ||
             Number.isNaN(
                 ketThuc.getTime()
             )
         ) {
-
             throw new ApiError(
                 400,
                 "Thời gian áp dụng voucher không hợp lệ."
             );
-
         }
 
         if (
             ketThuc <= batDau
         ) {
-
             throw new ApiError(
                 400,
                 "Thời gian kết thúc phải lớn hơn thời gian bắt đầu."
             );
-
         }
-
     }
 
     async validateTrungDuLieu(
         data,
         excludeId = null
     ) {
-
         if (
             data.maVoucher !== undefined
         ) {
-
             const trungMa =
                 await voucherRepository
                     .existsMaVoucher(
@@ -230,20 +188,16 @@ validateGiaTriMienGiam(
                     );
 
             if (trungMa) {
-
                 throw new ApiError(
                     409,
                     "Mã voucher đã tồn tại."
                 );
-
             }
-
         }
 
         if (
             data.tenVoucher !== undefined
         ) {
-
             const trungTen =
                 await voucherRepository
                     .existsTenVoucher(
@@ -252,20 +206,57 @@ validateGiaTriMienGiam(
                     );
 
             if (trungTen) {
-
                 throw new ApiError(
                     409,
                     "Tên voucher đã tồn tại."
                 );
-
             }
+        }
+    }
 
+    async suDungVoucher(
+        id,
+        client
+    ) {
+        const ketQua =
+            await voucherRepository
+                .suDungVoucher(
+                    id,
+                    client
+                );
+
+        if (!ketQua) {
+            throw new ApiError(
+                400,
+                "Voucher không tồn tại, đã bị khóa hoặc đã hết lượt sử dụng."
+            );
         }
 
+        return ketQua;
+    }
+
+    async hoanVoucher(
+        id,
+        client
+    ) {
+        const ketQua =
+            await voucherRepository
+                .hoanVoucher(
+                    id,
+                    client
+                );
+
+        if (!ketQua) {
+            throw new ApiError(
+                400,
+                "Voucher không tồn tại hoặc số lượng đã sử dụng bằng 0."
+            );
+        }
+
+        return ketQua;
     }
 
     async create(data) {
-
         const duLieu = {
             ...data
         };
@@ -294,7 +285,6 @@ validateGiaTriMienGiam(
         );
 
         const duLieuTao = {
-
             ...duLieu,
 
             maVoucher:
@@ -318,10 +308,7 @@ validateGiaTriMienGiam(
                     duLieu.soLuong
                 ),
 
-            daSuDung:
-                Number(
-                    duLieu.daSuDung
-                ),
+            daSuDung: 0,
 
             thoiGianBatDau:
                 duLieu.thoiGianBatDau
@@ -340,36 +327,30 @@ validateGiaTriMienGiam(
                 duLieu.active !== undefined
                     ? duLieu.active
                     : true
-
         };
 
         return await voucherRepository
             .create(
                 duLieuTao
             );
-
     }
 
     async update(
         id,
         data
     ) {
-
         const voucher =
             await voucherRepository
                 .getChiTiet(id);
 
         if (!voucher) {
-
             throw new ApiError(
                 404,
                 "Voucher không tồn tại."
             );
-
         }
 
         const duLieuCapNhat = {
-
             maVoucher:
                 data.maVoucher !== undefined
                     ? data.maVoucher.trim()
@@ -381,8 +362,7 @@ validateGiaTriMienGiam(
                     : voucher.tenVoucher,
 
             loaiMienGiam:
-                data.loaiMienGiam
-                    !== undefined
+                data.loaiMienGiam !== undefined
                     ? data.loaiMienGiam
                     : voucher.loaiMienGiam,
 
@@ -403,21 +383,15 @@ validateGiaTriMienGiam(
                     : voucher.soLuong,
 
             daSuDung:
-                data.daSuDung !== undefined
-                    ? Number(
-                        data.daSuDung
-                    )
-                    : voucher.daSuDung,
+                voucher.daSuDung,
 
             thoiGianBatDau:
-                data.thoiGianBatDau
-                    !== undefined
+                data.thoiGianBatDau !== undefined
                     ? data.thoiGianBatDau
                     : voucher.thoiGianBatDau,
 
             thoiGianKetThuc:
-                data.thoiGianKetThuc
-                    !== undefined
+                data.thoiGianKetThuc !== undefined
                     ? data.thoiGianKetThuc
                     : voucher.thoiGianKetThuc,
 
@@ -436,7 +410,6 @@ validateGiaTriMienGiam(
                 data.active !== undefined
                     ? data.active
                     : voucher.active
-
         };
 
         this.validateLoaiMienGiam(
@@ -478,18 +451,14 @@ validateGiaTriMienGiam(
                 );
 
         if (!ketQua) {
-
             throw new ApiError(
                 404,
                 "Voucher không tồn tại."
             );
-
         }
 
         return ketQua;
-
     }
-
 }
 
 module.exports =
