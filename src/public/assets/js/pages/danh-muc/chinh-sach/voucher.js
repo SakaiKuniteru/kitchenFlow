@@ -74,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         key: "loaiMienGiam",
                         label: "Loại miễn giảm",
                         sortable: true,
+                        className: "catalog-table__cell--center",
                         filterable: true,
 
                         render(value) {
@@ -97,24 +98,28 @@ document.addEventListener("DOMContentLoaded", () => {
                         key: "soLuong",
                         label: "Số lượng",
                         sortable: true,
+                        className: "catalog-table__cell--center",
                         type: "number"
                     },
                     {
                         key: "daSuDung",
                         label: "Đã sử dụng",
                         sortable: true,
+                        className: "catalog-table__cell--center",
                         type: "number"
                     },
                     {
                         key: "thoiGianBatDau",
                         label: "Thời gian bắt đầu",
                         sortable: true,
+                        className: "catalog-table__cell--center",
                         type: "date"
                     },
                     {
                         key: "thoiGianKetThuc",
                         label: "Thời gian kết thúc",
                         sortable: true,
+                        className: "catalog-table__cell--center",
                         type: "date"
                     },
                     {

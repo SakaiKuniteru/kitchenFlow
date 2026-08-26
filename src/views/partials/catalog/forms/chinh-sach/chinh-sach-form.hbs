@@ -24,6 +24,55 @@
             required=true
         }}
 
+
+        {{> forms/select
+            id="loaiChinhSach"
+            name="loaiChinhSach"
+            label="Loại chính sách"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn loại chính sách..."
+            required=true
+        }}
+
+        {{> forms/select
+            id="doiTuongApDungIds"
+            name="doiTuongApDungIds"
+            label="Đối tượng áp dụng"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn loại chính sách trước"
+            disabled=true
+            required=true
+        }}
+
+
+        {{> forms/select
+            id="voucherIds"
+            name="voucherIds"
+            label="Voucher áp dụng"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn voucher..."
+            required=true
+        }}
+
+        {{> forms/number
+            id="mucDoUuTien"
+            name="mucDoUuTien"
+            label="Mức độ ưu tiên"
+            placeholder="Nhập mức độ ưu tiên"
+            min=1
+            step="1"
+            required=true
+        }}
+
+
         <div class="catalog-form-grid__full">
 
             {{> forms/textarea
@@ -32,7 +81,7 @@
                 label="Mô tả"
                 placeholder="Nhập nội dung chính sách"
                 maxlength=500
-                rows=5
+                rows=4
                 showCounter=true
             }}
 
@@ -42,42 +91,6 @@
 
 </div>
 
-<div class="detail-panel__section">
-
-    <h3 class="detail-panel__section-title">
-        Phạm vi áp dụng
-    </h3>
-
-    <div class="catalog-form-grid">
-
-        {{> forms/select
-            id="dsVaiTroId"
-            name="dsVaiTroId"
-            label="Vai trò áp dụng"
-            multiple=true
-        }}
-
-        {{> forms/select
-            id="dsChucVuId"
-            name="dsChucVuId"
-            label="Chức vụ áp dụng"
-            multiple=true
-        }}
-
-        <div class="catalog-form-grid__full">
-
-            {{> forms/select
-                id="dsNhanVienId"
-                name="dsNhanVienId"
-                label="Nhân viên áp dụng"
-                multiple=true
-            }}
-
-        </div>
-
-    </div>
-
-</div>
 
 <div class="detail-panel__section">
 

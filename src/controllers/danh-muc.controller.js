@@ -100,13 +100,13 @@ class DanhMucWebController {
                 activeSubmenu: "co-so",
                 searchPlaceholder: "Tìm theo mã, tên hoặc địa chỉ...",
                 columns: [
-                    textColumn("maCoSo", "Mã cơ sở", { width: "150px" }),
-                    textColumn("tenCoSo", "Tên cơ sở", { width: "220px" }),
-                    textColumn("diaChi", "Địa chỉ"),
-                    textColumn("tenQuocGia", "Quốc gia", { width: "150px" }),
-                    textColumn("tenTinhThanh", "Tỉnh/Thành", { width: "180px" }),
-                    textColumn("tenXaPhuong", "Xã/Phường", { width: "180px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maCoSo", "Mã cơ sở", { width: "150px", className: "catalog-table__cell--center" }),
+                    textColumn("tenCoSo", "Tên cơ sở", { width: "220px", className: "catalog-table__cell--center" }),
+                    textColumn("diaChi", "Địa chỉ", { className: "catalog-table__cell--center"}),
+                    textColumn("tenQuocGia", "Quốc gia", { width: "150px", className: "catalog-table__cell--center" }),
+                    textColumn("tenTinhThanh", "Tỉnh/Thành", { width: "180px", className: "catalog-table__cell--center" }),
+                    textColumn("tenXaPhuong", "Xã/Phường", { width: "180px", className: "catalog-table__cell--center" }),
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" })
                 ]
             });
         } catch (error) {
@@ -124,11 +124,11 @@ class DanhMucWebController {
                 activeSubmenu: "phong-ban",
                 searchPlaceholder: "Tìm theo mã hoặc tên phòng ban...",
                 columns: [
-                    textColumn("maPhongBan", "Mã phòng ban", { width: "160px" }),
-                    textColumn("tenPhongBan", "Tên phòng ban", { width: "220px" }),
-                    textColumn("tenCoSo", "Cơ sở", { width: "220px" }),
-                    textColumn("moTa", "Mô tả", { width: "250px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maPhongBan", "Mã phòng ban", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("tenPhongBan", "Tên phòng ban", { width: "220px", className: "catalog-table__cell--center" }),
+                    textColumn("tenCoSo", "Cơ sở", { width: "220px", className: "catalog-table__cell--center" }),
+                    textColumn("moTa", "Mô tả", { width: "250px", className: "catalog-table__cell--center" }),
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" })
                 ]
             });
         } catch (error) {
@@ -145,10 +145,10 @@ class DanhMucWebController {
                 page: "Chức vụ",
                 activeSubmenu: "chuc-vu",
                 columns: [
-                    textColumn("maChucVu", "Mã chức vụ", { width: "160px" }),
-                    textColumn("tenChucVu", "Tên chức vụ", { width: "240px" }),
-                    textColumn("moTa", "Mô tả", { width: "250px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maChucVu", "Mã chức vụ", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("tenChucVu", "Tên chức vụ", { width: "240px", className: "catalog-table__cell--center" }),
+                    textColumn("moTa", "Mô tả", { width: "250px", className: "catalog-table__cell--center" }),
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" })
                 ]
             });
         } catch (error) {
@@ -165,10 +165,10 @@ class DanhMucWebController {
                 page: "Nhà ăn",
                 activeSubmenu: "nha-an",
                 columns: [
-                    textColumn("maNhaAn", "Mã nhà ăn", { width: "150px" }),
-                    textColumn("tenNhaAn", "Tên nhà ăn"),
-                    textColumn("tenCoSo", "Cơ sở", { width: "210px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maNhaAn", "Mã nhà ăn", { width: "150px", className: "catalog-table__cell--center" }),
+                    textColumn("tenNhaAn", "Tên nhà ăn", { className: "catalog-table__cell--center"}),
+                    textColumn("tenCoSo", "Cơ sở", { width: "210px", className: "catalog-table__cell--center" }),
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" })
                 ]
             });
         } catch (error) {
@@ -185,15 +185,15 @@ class DanhMucWebController {
                 page: "Kho",
                 activeSubmenu: "kho",
                 columns: [
-                    textColumn("maKho", "Mã kho", { width: "140px" }),
-                    textColumn("tenKho", "Tên kho", { width: "200px" }),
-                    textColumn("tenNhaAn", "Nhà ăn", { width: "200px" }),
-                    textColumn("loaiKhoText", "Loại kho", { width: "160px" }),
-                    textColumn("diaDiem", "Địa điểm", { width: "200px" }),
-                    textColumn("dienTich", "Diện tích", { width: "160px" }),
-                    textColumn("nhietDoToiThieu", "Nhiệt độ tối thiếu", { width: "140px" }),
-                    textColumn("nhietDoToiDa", "Nhiệt độ tối đa", { width: "140px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maKho", "Mã kho", { width: "140px", className: "catalog-table__cell--center" }),
+                    textColumn("tenKho", "Tên kho", { width: "200px", className: "catalog-table__cell--center" }),
+                    textColumn("tenNhaAn", "Nhà ăn", { width: "200px", className: "catalog-table__cell--center" }),
+                    textColumn("loaiKhoText", "Loại kho", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("diaDiem", "Địa điểm", { width: "200px", className: "catalog-table__cell--center" }),
+                    textColumn("dienTich", "Diện tích", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("nhietDoToiThieu", "Nhiệt độ tối thiếu", { width: "140px", className: "catalog-table__cell--center" }),
+                    textColumn("nhietDoToiDa", "Nhiệt độ tối đa", { width: "140px", className: "catalog-table__cell--center" }),
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" })
                 ]
             });
         } catch (error) {
@@ -211,17 +211,17 @@ class DanhMucWebController {
                 activeSubmenu: "tong-hop-dia-chi",
                 hideCreateButton: true,
                 columns: [
-                    textColumn("maDiaChi", "Mã địa chỉ", { width: "140px" }),
-                    textColumn("tenDiaChi", "Tên địa chỉ"),
-                    textColumn("tenQuocGia", "Tên quốc gia", { width: "180px" }),
-                    textColumn("tenTiengAnh", "Tên tiếng Anh", { width: "200px" }),
-                    textColumn("quocGiaTenVietTat", "Tên viết tắt QG", { width: "160px" }),
-                    textColumn("maIso2", "ISO2", { width: "90px" }),
-                    textColumn("maIso3", "ISO3", { width: "90px" }),
-                    textColumn("tenTinhThanh", "Tên Tỉnh/TP", { width: "190px" }),
-                    textColumn("tinhThanhTenVietTat", "Tên viết tắt Tỉnh/TP", { width: "190px" }),
-                    textColumn("tenXaPhuong", "Tên Xã/Phường", { width: "190px" }),
-                    textColumn("xaPhuongTenVietTat", "Tên viết tắt Xã/Phường", { width: "190px" })
+                    textColumn("maDiaChi", "Mã địa chỉ", { width: "140px", className: "catalog-table__cell--center" }),
+                    textColumn("tenDiaChi", "Tên địa chỉ", { className: "catalog-table__cell--center"}),
+                    textColumn("tenQuocGia", "Tên quốc gia", { width: "180px", className: "catalog-table__cell--center" }),
+                    textColumn("tenTiengAnh", "Tên tiếng Anh", { width: "200px", className: "catalog-table__cell--center" }),
+                    textColumn("quocGiaTenVietTat", "Tên viết tắt QG", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("maIso2", "ISO2", { width: "90px", className: "catalog-table__cell--center" }),
+                    textColumn("maIso3", "ISO3", { width: "90px", className: "catalog-table__cell--center" }),
+                    textColumn("tenTinhThanh", "Tên Tỉnh/TP", { width: "190px", className: "catalog-table__cell--center" }),
+                    textColumn("tinhThanhTenVietTat", "Tên viết tắt Tỉnh/TP", { width: "190px", className: "catalog-table__cell--center" }),
+                    textColumn("tenXaPhuong", "Tên Xã/Phường", { width: "190px", className: "catalog-table__cell--center" }),
+                    textColumn("xaPhuongTenVietTat", "Tên viết tắt Xã/Phường", { width: "190px", className: "catalog-table__cell--center" })
                 ]
             });
         } catch (error) {
@@ -238,13 +238,13 @@ class DanhMucWebController {
                 page: "Quốc gia",
                 activeSubmenu: "quoc-gia",
                 columns: [
-                    textColumn("maQuocGia", "Mã quốc gia", { width: "140px" }),
-                    textColumn("tenQuocGia", "Tên quốc gia"),
-                    textColumn("tenTiengAnh", "Tên tiếng Anh", { width: "220px" }),
-                    textColumn("tenVietTat", "Tên viết tắt", { width: "160px" }),
-                    textColumn("maIso2", "ISO2", { width: "85px" }),
-                    textColumn("maIso3", "ISO3", { width: "85px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maQuocGia", "Mã quốc gia", { width: "140px", className: "catalog-table__cell--center" }),
+                    textColumn("tenQuocGia", "Tên quốc gia", { className: "catalog-table__cell--center"}),
+                    textColumn("tenTiengAnh", "Tên tiếng Anh", { width: "220px", className: "catalog-table__cell--center" }),
+                    textColumn("tenVietTat", "Tên viết tắt", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("maIso2", "ISO2", { width: "85px", className: "catalog-table__cell--center" }),
+                    textColumn("maIso3", "ISO3", { width: "85px", className: "catalog-table__cell--center" }),
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" })
                 ]
             });
         } catch (error) {
@@ -261,11 +261,11 @@ class DanhMucWebController {
                 page: "Tỉnh thành",
                 activeSubmenu: "tinh-thanh",
                 columns: [
-                    textColumn("maTinhThanh", "Mã tỉnh thành", { width: "160px" }),
-                    textColumn("tenTinhThanh", "Tên tỉnh thành"),
-                    textColumn("tenVietTat", "Tên viết tắt"),
-                    textColumn("tenQuocGia", "Quốc gia"),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maTinhThanh", "Mã tỉnh thành", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("tenTinhThanh", "Tên tỉnh thành", { className: "catalog-table__cell--center"}),
+                    textColumn("tenVietTat", "Tên viết tắt", { className: "catalog-table__cell--center"}),
+                    textColumn("tenQuocGia", "Quốc gia", { className: "catalog-table__cell--center"}),
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -282,12 +282,12 @@ class DanhMucWebController {
                 page: "Xã phường",
                 activeSubmenu: "xa-phuong",
                 columns: [
-                    textColumn("maXaPhuong", "Mã xã phường", { width: "160px" }),
-                    textColumn("tenXaPhuong", "Tên xã phường", { width: "200px" }),
-                    textColumn("tenVietTat", "Tên viết tắt", { width: "160px" }),
-                    textColumn("tenTinhThanh", "Tỉnh thành", { width: "200px" }),
-                    textColumn("tenQuocGia", "Quốc gia", { width: "170px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maXaPhuong", "Mã xã phường", { width: "160px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenXaPhuong", "Tên xã phường", { width: "200px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenVietTat", "Tên viết tắt", { width: "160px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenTinhThanh", "Tỉnh thành", { width: "200px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenQuocGia", "Quốc gia", { width: "170px", className: "catalog-table__cell--center" }),,
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -304,11 +304,11 @@ class DanhMucWebController {
                 page: "Ca ăn",
                 activeSubmenu: "ca-an",
                 columns: [
-                    textColumn("maCaAn", "Mã ca ăn", { width: "140px" }),
-                    textColumn("tenCaAn", "Tên ca ăn"),
-                    textColumn("gioBatDau", "Giờ bắt đầu", { width: "130px" }),
-                    textColumn("gioKetThuc", "Giờ kết thúc", { width: "130px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maCaAn", "Mã ca ăn", { width: "140px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenCaAn", "Tên ca ăn", { className: "catalog-table__cell--center"}),
+                    textColumn("gioBatDau", "Giờ bắt đầu", { width: "130px", className: "catalog-table__cell--center" }),,
+                    textColumn("gioKetThuc", "Giờ kết thúc", { width: "130px", className: "catalog-table__cell--center" }),,
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -325,10 +325,10 @@ class DanhMucWebController {
                 page: "Nhóm món ăn",
                 activeSubmenu: "nhom-mon-an",
                 columns: [
-                    textColumn("maNhomMonAn", "Mã nhóm món ăn"),
-                    textColumn("tenNhomMonAn", "Tên nhóm món ăn"),
-                    textColumn("moTa", "Mô tả", { width: "250px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maNhomMonAn", "Mã nhóm món ăn", { className: "catalog-table__cell--center"}),
+                    textColumn("tenNhomMonAn", "Tên nhóm món ăn", { className: "catalog-table__cell--center"}),
+                    textColumn("moTa", "Mô tả", { width: "250px", className: "catalog-table__cell--center" }),,
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -345,13 +345,13 @@ class DanhMucWebController {
                 page: "Món ăn",
                 activeSubmenu: "mon-an",
                 columns: [
-                    textColumn("maMonAn", "Mã món ăn", { width: "140px" }),
-                    textColumn("tenMonAn", "Tên món ăn", { width: "220px" }),
-                    textColumn("tenNhomMonAn", "Nhóm món ăn", { width: "200px" }),
-                    numberColumn("giaTien", "Giá tiền", { width: "140px" }),
-                    numberColumn("giaDuKien", "Giá dự kiến", { width: "150px" }),
-                    numberColumn("calories", "Calories", { width: "120px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maMonAn", "Mã món ăn", { width: "140px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenMonAn", "Tên món ăn", { width: "220px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenNhomMonAn", "Nhóm món ăn", { width: "200px", className: "catalog-table__cell--center" }),,
+                    numberColumn("giaTien", "Giá tiền", { width: "140px", className: "catalog-table__cell--center" }),,
+                    numberColumn("giaDuKien", "Giá dự kiến", { width: "150px", className: "catalog-table__cell--center" }),,
+                    numberColumn("calories", "Calories", { width: "120px", className: "catalog-table__cell--center" }),,
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -368,19 +368,19 @@ class DanhMucWebController {
                 page: "Thực phẩm",
                 activeSubmenu: "thuc-pham",
                 columns: [
-                    textColumn("maThucPham", "Mã thực phẩm", { width: "150px" }),
-                    textColumn("tenThucPham", "Tên thực phẩm", { width: "220px" }),
-                    textColumn("tenDonViSoCap", "Đơn vị sơ cấp", { width: "160px" }),
-                    textColumn("tenDonViSuDung", "Đơn vị sử dụng", { width: "160px" }),
-                    numberColumn("heSoQuyDoi", "Hệ số quy đổi", { width: "140px" }),
-                    textColumn("quyCach", "Quy cách", { width: "180px" }),
-                    numberColumn("giaNhap", "Giá nhập", { width: "140px" }),
-                    numberColumn("tyLeHaoHutDuKien", "Tỷ lệ hao hụt", { width: "150px" }),
-                    textColumn("xuatXu", "Xuất xứ", { width: "180px" }),
-                    textColumn("dieuKienBaoQuan", "Điều kiện bảo quản", { width: "220px" }),
-                    textColumn("moTa", "Mô tả", { width: "250px" }),
-                    textColumn("ghiChu", "Ghi chú", { width: "220px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maThucPham", "Mã thực phẩm", { width: "150px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenThucPham", "Tên thực phẩm", { width: "220px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenDonViSoCap", "Đơn vị sơ cấp", { width: "160px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenDonViSuDung", "Đơn vị sử dụng", { width: "160px", className: "catalog-table__cell--center" }),,
+                    numberColumn("heSoQuyDoi", "Hệ số quy đổi", { width: "140px", className: "catalog-table__cell--center" }),,
+                    textColumn("quyCach", "Quy cách", { width: "180px", className: "catalog-table__cell--center" }),,
+                    numberColumn("giaNhap", "Giá nhập", { width: "140px", className: "catalog-table__cell--center" }),,
+                    numberColumn("tyLeHaoHutDuKien", "Tỷ lệ hao hụt", { width: "150px", className: "catalog-table__cell--center" }),,
+                    textColumn("xuatXu", "Xuất xứ", { width: "180px", className: "catalog-table__cell--center" }),,
+                    textColumn("dieuKienBaoQuan", "Điều kiện bảo quản", { width: "220px", className: "catalog-table__cell--center" }),,
+                    textColumn("moTa", "Mô tả", { width: "250px", className: "catalog-table__cell--center" }),,
+                    textColumn("ghiChu", "Ghi chú", { width: "220px", className: "catalog-table__cell--center" }),,
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -397,11 +397,11 @@ class DanhMucWebController {
                 page: "Đơn vị tính",
                 activeSubmenu: "don-vi-tinh",
                 columns: [
-                    textColumn("maDonViTinh", "Mã đơn vị tính"),
-                    textColumn("tenDonViTinh", "Tên đơn vị tính"),
-                    textColumn("loaiDonViText", "Loại đơn vị"),
-                    textColumn("kyHieu", "Ký hiệu"),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maDonViTinh", "Mã đơn vị tính", { className: "catalog-table__cell--center"}),
+                    textColumn("tenDonViTinh", "Tên đơn vị tính", { className: "catalog-table__cell--center"}),
+                    textColumn("loaiDonViText", "Loại đơn vị", { className: "catalog-table__cell--center"}),
+                    textColumn("kyHieu", "Ký hiệu", { className: "catalog-table__cell--center"}),
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -418,12 +418,12 @@ class DanhMucWebController {
                 page: "Nhân viên",
                 activeSubmenu: "nhan-vien",
                 columns: [
-                    textColumn("maNhanVien", "Mã nhân viên", { width: "150px" }),
-                    textColumn("tenDangNhap", "Tên đăng nhập", { width: "170px" }),
-                    textColumn("hoTen", "Họ tên", { width: "220px" }),
-                    textColumn("email", "Email", { width: "220px" }),
-                    textColumn("soDienThoai", "Số điện thoại", { width: "150px" }),
-                    textColumn("ngaySinh", "Ngày sinh", { width: "130px" }),
+                    textColumn("maNhanVien", "Mã nhân viên", { width: "150px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenDangNhap", "Tên đăng nhập", { width: "170px", className: "catalog-table__cell--center" }),,
+                    textColumn("hoTen", "Họ tên", { width: "220px", className: "catalog-table__cell--center" }),,
+                    textColumn("email", "Email", { width: "220px", className: "catalog-table__cell--center" }),,
+                    textColumn("soDienThoai", "Số điện thoại", { width: "150px", className: "catalog-table__cell--center" }),,
+                    textColumn("ngaySinh", "Ngày sinh", { width: "130px", className: "catalog-table__cell--center" }),,
                     textColumn("gioiTinh", "Giới tính", {
                         width: "120px",
                         format: value => {
@@ -436,16 +436,16 @@ class DanhMucWebController {
                             return labels[value] ?? "";
                         }
                     }),
-                    textColumn("tenChucVu", "Chức vụ", { width: "180px" }),
-                    textColumn("tenPhongBan", "Phòng ban", { width: "190px" }),
-                    textColumn("tenCoSo", "Cơ sở", { width: "190px" }),
-                    textColumn("diaChi", "Địa chỉ"),
-                    textColumn("tenQuocGia", "Quốc gia", { width: "160px" }),
-                    textColumn("tenTinhThanh", "Tỉnh/Thành", { width: "180px" }),
-                    textColumn("tenXaPhuong", "Xã/Phường", { width: "180px" }),
-                    textColumn("maThe", "Mã thẻ", { width: "150px" }),
-                    textColumn("ghiChu", "Ghi chú", { width: "220px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("tenChucVu", "Chức vụ", { width: "180px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenPhongBan", "Phòng ban", { width: "190px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenCoSo", "Cơ sở", { width: "190px", className: "catalog-table__cell--center" }),,
+                    textColumn("diaChi", "Địa chỉ", { className: "catalog-table__cell--center"}),
+                    textColumn("tenQuocGia", "Quốc gia", { width: "160px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenTinhThanh", "Tỉnh/Thành", { width: "180px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenXaPhuong", "Xã/Phường", { width: "180px", className: "catalog-table__cell--center" }),,
+                    textColumn("maThe", "Mã thẻ", { width: "150px", className: "catalog-table__cell--center" }),,
+                    textColumn("ghiChu", "Ghi chú", { width: "220px", className: "catalog-table__cell--center" }),,
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -462,15 +462,15 @@ class DanhMucWebController {
                 page: "Tài khoản",
                 activeSubmenu: "tai-khoan",
                 columns: [
-                    textColumn("maNhanVien", "Mã nhân viên", { width: "150px" }),
-                    textColumn("tenDangNhap", "Tên đăng nhập", { width: "170px" }),
-                    textColumn("hoTenNhanVien", "Tên nhân viên", { width: "220px" }),
-                    numberColumn("soLanDangNhap", "Số lần đăng nhập", { width: "160px" }),
-                    numberColumn("soLanDangNhapSai", "Số lần nhập sai", { width: "150px" }),
-                    booleanColumn("biKhoa", "Bị khóa", { width: "120px" }),
-                    textColumn("khoaDen", "Khóa đến", { width: "180px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" }),
-                    textColumn("__resetPassword", "Thao tác", { width: "90px" })
+                    textColumn("maNhanVien", "Mã nhân viên", { width: "150px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenDangNhap", "Tên đăng nhập", { width: "170px", className: "catalog-table__cell--center" }),,
+                    textColumn("hoTenNhanVien", "Tên nhân viên", { width: "220px", className: "catalog-table__cell--center" }),,
+                    numberColumn("soLanDangNhap", "Số lần đăng nhập", { width: "160px", className: "catalog-table__cell--center" }),,
+                    numberColumn("soLanDangNhapSai", "Số lần nhập sai", { width: "150px", className: "catalog-table__cell--center" }),,
+                    booleanColumn("biKhoa", "Bị khóa", { width: "120px", className: "catalog-table__cell--center" }),,
+                    textColumn("khoaDen", "Khóa đến", { width: "180px", className: "catalog-table__cell--center" }),,
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),,
+                    textColumn("__resetPassword", "Thao tác", { width: "90px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -487,10 +487,10 @@ class DanhMucWebController {
                 page: "Vai trò",
                 activeSubmenu: "vai-tro",
                 columns: [
-                    textColumn("maVaiTro", "Mã vai trò"),
-                    textColumn("tenVaiTro", "Tên vai trò"),
-                    textColumn("moTa", "Mô tả"),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maVaiTro", "Mã vai trò", { className: "catalog-table__cell--center"}),
+                    textColumn("tenVaiTro", "Tên vai trò", { className: "catalog-table__cell--center"}),
+                    textColumn("moTa", "Mô tả", { className: "catalog-table__cell--center"}),
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -507,11 +507,11 @@ class DanhMucWebController {
                 page: "Quyền",
                 activeSubmenu: "quyen",
                 columns: [
-                    textColumn("maQuyen", "Mã quyền", { width: "200px" }),
-                    textColumn("tenQuyen", "Tên quyền", { width: "240px" }),
-                    textColumn("nhomTinhNang", "Nhóm tính năng", { width: "260px" }),
-                    textColumn("moTa", "Mô tả", { width: "300px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maQuyen", "Mã quyền", { width: "200px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenQuyen", "Tên quyền", { width: "240px", className: "catalog-table__cell--center" }),,
+                    textColumn("nhomTinhNang", "Nhóm tính năng", { width: "260px", className: "catalog-table__cell--center" }),,
+                    textColumn("moTa", "Mô tả", { width: "300px", className: "catalog-table__cell--center" }),,
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -528,10 +528,10 @@ class DanhMucWebController {
                 page: "Nhóm tính năng",
                 activeSubmenu: "nhom-tinh-nang",
                 columns: [
-                    textColumn("maNhomTinhNang", "Mã nhóm"),
-                    textColumn("tenNhomTinhNang", "Tên nhóm tính năng"),
-                    textColumn("moTa", "Mô tả"),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maNhomTinhNang", "Mã nhóm", { className: "catalog-table__cell--center"}),
+                    textColumn("tenNhomTinhNang", "Tên nhóm tính năng", { className: "catalog-table__cell--center"}),
+                    textColumn("moTa", "Mô tả", { className: "catalog-table__cell--center"}),
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -548,12 +548,15 @@ class DanhMucWebController {
                 page: "Voucher",
                 activeSubmenu: "voucher",
                 columns: [
-                    textColumn("maVoucher", "Mã voucher", { width: "150px" }),
-                    textColumn("tenVoucher", "Tên voucher"),
-                    textColumn("loaiMienGiamText", "Loại", { width: "170px" }),
-                    numberColumn("giaTri", "Giá trị", { width: "140px" }),
-                    numberColumn("soLuong", "Số lượng", { width: "120px" }),
-                    booleanColumn("active", "Trạng thái", { width: "130px" })
+                    textColumn("maVoucher", "Mã voucher", { width: "160px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenVoucher", "Tên voucher", { width: "220px", className: "catalog-table__cell--center" }),,
+                    textColumn("loaiMienGiamText", "Loại", { width: "120px", className: "catalog-table__cell--center" }),,
+                    numberColumn("giaTri", "Giá trị", { width: "120px", className: "catalog-table__cell--center", }),
+                    numberColumn("soLuong", "Số lượng", { width: "100px", className: "catalog-table__cell--center" }),,
+                    numberColumn("daSuDung", "Đã sử dụng", { width: "100px", className: "catalog-table__cell--center" }),,
+                    numberColumn("thoiGianBatDau", "Thời gian bắt đầu", { width: "150px", className: "catalog-table__cell--center" }),,
+                    numberColumn("thoiGianKetThuc", "Thời gian kết thúc", { width: "150px", className: "catalog-table__cell--center" }),,
+                    booleanColumn("active", "Trạng thái", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -570,12 +573,12 @@ class DanhMucWebController {
                 page: "Chính sách",
                 activeSubmenu: "chinh-sach",
                 columns: [
-                    textColumn("maChinhSach", "Mã chính sách", { width: "160px" }),
-                    textColumn("tenChinhSach", "Tên chính sách", { width: "220px" }),
-                    textColumn("loaiChinhSachText", "Loại chính sách", { width: "180px" }),
-                    textColumn("tenVoucher", "Tên voucher", { width: "220px" }),
-                    textColumn("moTa", "Mô tả", { width: "250px" }),
-                    booleanColumn("active", "Trạng thái", { width: "130px" })
+                    textColumn("maChinhSach", "Mã chính sách", { width: "160px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenChinhSach", "Tên chính sách", { width: "220px", className: "catalog-table__cell--center" }),,
+                    textColumn("loaiChinhSachText", "Loại chính sách", { width: "180px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenVoucher", "Tên voucher", { width: "220px", className: "catalog-table__cell--center" }),,
+                    textColumn("moTa", "Mô tả", { width: "250px", className: "catalog-table__cell--center" }),,
+                    booleanColumn("active", "Trạng thái", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -592,12 +595,12 @@ class DanhMucWebController {
                 page: "Thiết lập",
                 activeSubmenu: "thiet-lap",
                 columns: [
-                    textColumn("maThietLap", "Mã thiết lập", { width: "230px" }),
-                    textColumn("tenThietLap", "Tên thiết lập", { width: "220px" }),
-                    textColumn("giaTri", "Giá trị", { width: "160px" }),
-                    textColumn("nhomTinhNang", "Nhóm tính năng", { width: "220px" }),
-                    textColumn("moTa", "Mô tả", { width: "250px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maThietLap", "Mã thiết lập", { width: "230px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenThietLap", "Tên thiết lập", { width: "220px", className: "catalog-table__cell--center" }),,
+                    textColumn("giaTri", "Giá trị", { width: "160px", className: "catalog-table__cell--center" }),,
+                    textColumn("nhomTinhNang", "Nhóm tính năng", { width: "220px", className: "catalog-table__cell--center" }),,
+                    textColumn("moTa", "Mô tả", { width: "250px", className: "catalog-table__cell--center" }),,
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
@@ -614,11 +617,11 @@ class DanhMucWebController {
                 page: "Báo cáo",
                 activeSubmenu: "bao-cao",
                 columns: [
-                    textColumn("maBaoCao", "Mã báo cáo", { width: "200px" }),
-                    textColumn("tenBaoCao", "Tên báo cáo", { width: "240px" }),
-                    textColumn("loaiXuatFileText", "Loại xuất file", { width: "160px" }),
-                    textColumn("moTa", "Mô tả", { width: "280px" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px" })
+                    textColumn("maBaoCao", "Mã báo cáo", { width: "200px", className: "catalog-table__cell--center" }),,
+                    textColumn("tenBaoCao", "Tên báo cáo", { width: "240px", className: "catalog-table__cell--center" }),,
+                    textColumn("loaiXuatFileText", "Loại xuất file", { width: "160px", className: "catalog-table__cell--center" }),,
+                    textColumn("moTa", "Mô tả", { width: "280px", className: "catalog-table__cell--center" }),,
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {
