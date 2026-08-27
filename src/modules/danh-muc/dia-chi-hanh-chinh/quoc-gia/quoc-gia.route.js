@@ -16,18 +16,22 @@ const chucVuExcel = require( "./quoc-gia.excel" );
 router.get(
     "/tong-hop",
     authenticate,
+    authorize("Q000006"),
+    authorize("Q000511", "Q000512", "Q000513"),
     controller.getTongHop
 );
 
 router.get(
     "/xuat-du-lieu",
     authenticate,
+    authorize("Q100001"),
     chucVuExcel.exportData
 );
 
 router.post(
     "/import-du-lieu",
     authenticate,
+    authorize("Q100002"),
     uploadImportExcel.single(
         "file"
     ),
@@ -37,12 +41,14 @@ router.post(
 router.get(
     "/:id",
     authenticate,
+    authorize("Q000511", "Q000512", "Q000513"),
     controller.getChiTiet
 );
 
 router.post(
     "/them-moi",
     authenticate,
+    authorize("Q000512", "Q000513"),
     validate(createSchema),
     controller.create
 );
@@ -50,6 +56,7 @@ router.post(
 router.patch(
     "/cap-nhat/:id",
     authenticate,
+    authorize("Q000513"),
     validate(updateSchema),
     controller.update
 );

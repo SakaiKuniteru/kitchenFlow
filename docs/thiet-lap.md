@@ -209,9 +209,9 @@ Thiết lập này độc lập với thời gian hết hạn của Access Token
 
 ---
 
-## 8. SIDEBAR_DONG_MAC_DINH
+## 8. SIDEBAR_MAC_DINH_DONG
 
-**Mã:** `SIDEBAR_DONG_MAC_DINH`
+**Mã:** `SIDEBAR_MAC_DINH_DONG`
 
 **Giá trị:** `true` hoặc `false`.
 

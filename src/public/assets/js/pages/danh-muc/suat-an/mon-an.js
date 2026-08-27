@@ -5,8 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const API_NHOM_MON_AN = "/api/mcs/v1/dm-nhom-mon-an/tong-hop?active=true";
     const API_THUC_PHAM = "/api/mcs/v1/dm-thuc-pham/tong-hop?active=true";
     const API_LOAI_BAO_QUAN = "/api/mcs/v1/enums?name=loaiBaoQuan";
-    const API_QUY_TAC_LAM_TRON = "/api/mcs/v1/thiet-lap/gia-tri?QUY_TAC_LAM_TRON";
-    const API_SO_CHU_SO_SAU_DAU_PHAY = "/api/mcs/v1/thiet-lap/gia-tri?SO_CHU_SO_SAU_DAU_PHAY";
+    const API_QUY_TAC_LAM_TRON = "/api/mcs/v1/thiet-lap/gia-tri?ma=QUY_TAC_LAM_TRON";
+    const API_SO_CHU_SO_SAU_DAU_PHAY = "/api/mcs/v1/thiet-lap/gia-tri?ma=SO_CHU_SO_SAU_DAU_PHAY";
 
     let catalog = null;
     let dsNhomMonAn = [];

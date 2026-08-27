@@ -11,18 +11,22 @@ const chucVuExcel = require( "./dia-chi.excel" );
 router.get(
     "/tong-hop",
     authenticate,
+    authorize("Q000005"),
+    authorize("Q000510"),
     controller.getTongHop
 );
 
 router.get(
     "/xuat-du-lieu",
     authenticate,
+    authorize("Q100001"),
     chucVuExcel.exportData
 );
 
 router.get(
     "/:id",
     authenticate,
+    authorize("Q000510"),
     controller.getChiTiet
 );
 

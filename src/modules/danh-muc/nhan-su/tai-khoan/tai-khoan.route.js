@@ -12,7 +12,7 @@ const authorize = require("../../../../middlewares/authorize.middleware");
 const controller = require("./tai-khoan.controller");
 const uploadNhanVien = require("../nhan-vien/upload-nhan-vien.middleware");
 const uploadImportExcel = require("../../../../middlewares/upload-import-excel.middleware");
-const chucVuExcel = require("./tai-khoan.excel");
+const taiKhoanExcel = require("./tai-khoan.excel");
 const validateUpdateTaiKhoan = validate(updateSchema);
 
 function validateTaiKhoanUpdate(
@@ -47,39 +47,39 @@ function validateTaiKhoanUpdate(
 router.get(
     "/tong-hop",
     authenticate,
-    authorize("Q000067"),
-    authorize("Q000032", "Q000033", "Q000034"),
+    authorize("Q000012"),
+    authorize("Q000529", "Q000530", "Q000531"),
     controller.getTongHop
 );
 
 router.get(
     "/xuat-du-lieu",
     authenticate,
-    authorize("Q000065"),
-    chucVuExcel.exportData
+    authorize("Q100001"),
+    taiKhoanExcel.exportData
 );
 
 router.post(
     "/import-du-lieu",
     authenticate,
-    authorize("Q000066"),
+    authorize("Q100002"),
     uploadImportExcel.single(
         "file"
     ),
-    chucVuExcel.importData
+    taiKhoanExcel.importData
 );
 
 router.get(
     "/:id",
     authenticate,
-    authorize("Q000032", "Q000033", "Q000034"),
+    authorize("Q000529", "Q000530", "Q000531"),
     controller.getChiTiet
 );
 
 router.post(
     "/them-moi",
     authenticate,
-    authorize("Q000033", "Q000034"),
+    authorize("Q000530", "Q000531"),
     uploadNhanVien.single(
         "anhDaiDien"
     ),
@@ -90,7 +90,7 @@ router.post(
 router.patch(
     "/cap-nhat/:id",
     authenticate,
-    authorize("Q000034"),
+    authorize("Q000531"),
     uploadNhanVien.single(
         "anhDaiDien"
     ),
@@ -101,7 +101,7 @@ router.patch(
 router.patch(
     "/doi-mat-khau",
     authenticate,
-    authorize("Q000034"),
+    authorize("Q000531"),
     validate(doiMatKhauSchema),
     controller.doiMatKhau
 );
@@ -109,7 +109,7 @@ router.patch(
 router.patch(
     "/dat-lai-mat-khau/:id",
     authenticate,
-    authorize("Q000034"),
+    authorize("Q000531"),
     validate(datLaiMatKhauSchema),
     controller.datLaiMatKhau
 );

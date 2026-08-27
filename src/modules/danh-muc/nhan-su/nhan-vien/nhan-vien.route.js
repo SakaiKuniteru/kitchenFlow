@@ -47,57 +47,49 @@ function validateNhanVienUpdate(
 }
 
 router.get(
-
     "/tong-hop",
-
     authenticate,
-
+    authorize("Q000023"),
+    authorize("Q000562", "Q000563", "Q000564"),
     controller.getTongHop
-
 );
 
 router.get(
     "/xuat-du-lieu",
     authenticate,
+    authorize("Q100001"),
     chucVuExcel.exportData
 );
 
 router.post(
     "/import-du-lieu",
     authenticate,
-    uploadImportExcel.single(
-        "file"
-    ),
+    authorize("Q100002"),
+    uploadImportExcel.single("file"),
     chucVuExcel.importData
 );
 
 router.get(
-
     "/:id",
-
     authenticate,
-
+    authorize("Q000562", "Q000563", "Q000564"),
     controller.getChiTiet
 
 );
 
 router.post(
-
     "/them-moi",
-
     authenticate,
-
+    authorize("Q000563", "Q000564"),
     uploadNhanVien.single( "anhDaiDien" ),
-
     validate(createSchema),
-
     controller.create
-
 );
 
 router.patch(
     "/cap-nhat/:id",
     authenticate,
+    authorize("Q000564"),
     uploadNhanVien.single( "anhDaiDien" ),
     validateNhanVienUpdate,
     controller.update

@@ -70,6 +70,12 @@ module.exports = [
         ma_nhom_tinh_nang: "NTN12",
         ten_nhom_tinh_nang: "Hệ thống",
         mo_ta: "Quản trị hệ thống, nhật ký, phân quyền, bảo mật và sao lưu dữ liệu."
+    },
+
+    {
+        ma_nhom_tinh_nang: "NTN13",
+        ten_nhom_tinh_nang: "Thực Đơn",
+        mo_ta: "Quản trị thực đơn."
     }
 
 ];
