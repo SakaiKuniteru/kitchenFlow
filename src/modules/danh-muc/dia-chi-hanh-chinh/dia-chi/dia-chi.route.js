@@ -1,11 +1,8 @@
 const express = require("express");
-
 const router = express.Router();
-
 const authenticate = require("../../../../middlewares/authenticate.middleware");
-
+const authorize = require("../../../../middlewares/authorize.middleware");
 const controller = require("./dia-chi.controller");
-
 const chucVuExcel = require( "./dia-chi.excel" );
 
 router.get(

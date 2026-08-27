@@ -568,6 +568,36 @@ module.exports = [
         ten_quyen: "Xem + Sửa thực đơn",
         mo_ta: "Cho phép người dùng xem, cập nhật và chỉnh sửa thực đơn trong hệ thống."
     },
+    
+    {
+        ma_quyen: "Q001004",
+        ten_quyen: "Xóa thực đơn",
+        mo_ta: "Cho phép người dùng xóa thực đơn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q001005",
+        ten_quyen: "Duyệt thực đơn",
+        mo_ta: "Cho phép người dùng duyệt thực đơn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q001006",
+        ten_quyen: "Hủy duyệt thực đơn",
+        mo_ta: "Cho phép người dùng hủy trạng thái duyệt của thực đơn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q001007",
+        ten_quyen: "Hủy thực đơn",
+        mo_ta: "Cho phép người dùng hủy thực đơn trong hệ thống."
+    },
+
+    {
+        ma_quyen: "Q001008",
+        ten_quyen: "Hoàn hủy thực đơn",
+        mo_ta: "Cho phép người dùng hoàn hủy và khôi phục thực đơn đã bị hủy trong hệ thống."
+    },
 
     {
         ma_quyen: "Q100001",

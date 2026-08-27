@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-
 const { createSchema, updateSchema } = require("./co-so.validation");
 const validate = require("../../../../middlewares/validate.middleware");
 const authenticate = require("../../../../middlewares/authenticate.middleware");
+const authorize = require("../../../../middlewares/authorize.middleware");
 const uploadCoSo = require("./upload-co-so.middleware");
 const mapCoSoUpload = require("./map-co-so-upload.middleware");
 const controller = require("./co-so.controller");
@@ -36,18 +36,22 @@ function validateCoSoUpdate(req, res, next) {
 router.get(
     "/tong-hop",
     authenticate,
+    authorize("Q000002"),
+    authorize("Q000501", "Q000502", "Q000503"),
     controller.getTongHop
 );
 
 router.get(
     "/xuat-du-lieu",
     authenticate,
+    authorize("Q100001"),
     coSoExcel.exportData
 );
 
 router.post(
     "/import-du-lieu",
     authenticate,
+    authorize("Q100002"),
     uploadImportExcel.single("file"),
     coSoExcel.importData
 );
@@ -55,12 +59,14 @@ router.post(
 router.get(
     "/:id",
     authenticate,
+    authorize("Q000501", "Q000502", "Q000503"),
     controller.getChiTiet
 );
 
 router.post(
     "/them-moi",
     authenticate,
+    authorize("Q000502", "Q000503"),
     uploadCoSo.fields([
         {
             name: "logo",
@@ -83,6 +89,7 @@ router.post(
 router.patch(
     "/cap-nhat/:id",
     authenticate,
+    authorize("Q000503"),
     uploadCoSo.fields([
         {
             name: "logo",

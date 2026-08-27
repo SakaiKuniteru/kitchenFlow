@@ -466,6 +466,31 @@ module.exports = [
     },
 
     {
+        ma_quyen: "Q001004",
+        ma_nhom_tinh_nang: "NTN13"
+    },
+
+    {
+        ma_quyen: "Q001005",
+        ma_nhom_tinh_nang: "NTN13"
+    },
+
+    {
+        ma_quyen: "Q001006",
+        ma_nhom_tinh_nang: "NTN13"
+    },
+
+    {
+        ma_quyen: "Q001007",
+        ma_nhom_tinh_nang: "NTN13"
+    },
+
+    {
+        ma_quyen: "Q001008",
+        ma_nhom_tinh_nang: "NTN13"
+    },
+
+    {
         ma_quyen: "Q001002",
         ma_nhom_tinh_nang: "NTN13"
     },

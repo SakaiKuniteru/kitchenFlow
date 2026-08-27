@@ -1,16 +1,11 @@
 const express = require("express");
-
 const router = express.Router();
-
 const { createSchema, updateSchema } = require("./quoc-gia.validation");
-
 const validate = require("../../../../middlewares/validate.middleware");
 const authenticate = require("../../../../middlewares/authenticate.middleware");
-
+const authorize = require("../../../../middlewares/authorize.middleware");
 const controller = require("./quoc-gia.controller");
-
 const uploadImportExcel = require( "../../../../middlewares/upload-import-excel.middleware" );
-
 const chucVuExcel = require( "./quoc-gia.excel" );
 
 router.get(

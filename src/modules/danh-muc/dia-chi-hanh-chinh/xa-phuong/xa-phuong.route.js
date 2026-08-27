@@ -1,16 +1,11 @@
 const express = require("express");
-
 const router = express.Router();
-
 const { createSchema, updateSchema } = require("./xa-phuong.validation");
-
 const validate = require("../../../../middlewares/validate.middleware");
 const authenticate = require("../../../../middlewares/authenticate.middleware");
-
+const authorize = require("../../../../middlewares/authorize.middleware");
 const controller = require("./xa-phuong.controller");
-
 const uploadImportExcel = require( "../../../../middlewares/upload-import-excel.middleware" );
-
 const chucVuExcel = require( "./xa-phuong.excel" );
 
 router.get(
