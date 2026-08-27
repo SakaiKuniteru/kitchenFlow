@@ -35,6 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
     async function initializeCatalog() {
         catalog = await window.MCS.pages.createCatalogPage({
             moduleName: "vai-tro",
+            permissionCodes: {
+                view: "Q000526",
+                create: "Q000527",
+                update: "Q000528"
+            },
             detailTitle: "Thông tin vai trò",
             createTitle: "Thêm vai trò",
             updateTitle: "Cập nhật vai trò",

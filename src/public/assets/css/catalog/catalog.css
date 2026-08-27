@@ -352,3 +352,211 @@
     }
 
 }
+
+.catalog-no-permission {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+}
+
+.catalog-no-permission[hidden] {
+    display: none !important;
+}
+
+.catalog-no-permission__content {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-height: 520px;
+    padding: 24px 24px 56px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.catalog-no-permission__illustration {
+    position: relative;
+    width: 360px;
+    height: 300px;
+    margin-bottom: 18px;
+}
+
+.catalog-no-permission__browser {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    width: 220px;
+    height: 160px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.76);
+    box-shadow:
+        0 12px 40px
+        rgba(30, 64, 175, 0.06);
+    transform: translateX(-50%);
+}
+
+.catalog-no-permission__browser-bar {
+    display: flex;
+    height: 22px;
+    padding: 0 10px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    background: #dce5f4;
+}
+
+.catalog-no-permission__browser-bar span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ffffff;
+}
+
+.catalog-no-permission__browser-body {
+    display: grid;
+    gap: 12px;
+    padding: 28px 24px;
+}
+
+.catalog-no-permission__browser-body span {
+    display: block;
+    width: 68%;
+    height: 10px;
+    border-radius: 999px;
+    background: #e7edf7;
+}
+
+.catalog-no-permission__browser-body span:nth-child(2) {
+    width: 88%;
+}
+
+.catalog-no-permission__browser-body span:nth-child(3) {
+    width: 76%;
+}
+
+.catalog-no-permission__cloud {
+    position: absolute;
+    color: #e3e9f4;
+    font-size: 44px;
+}
+
+.catalog-no-permission__cloud--left {
+    top: 46px;
+    left: 12px;
+}
+
+.catalog-no-permission__cloud--right {
+    top: 122px;
+    right: 8px;
+    font-size: 36px;
+}
+
+.catalog-no-permission__shield {
+    position: absolute;
+    top: 92px;
+    left: 50%;
+    display: flex;
+    width: 190px;
+    height: 190px;
+    align-items: center;
+    justify-content: center;
+    color: #3f68bf;
+    font-size: 182px;
+    filter:
+        drop-shadow(
+            0 14px 16px
+            rgba(44, 87, 170, 0.13)
+        );
+    transform: translateX(-50%);
+}
+
+.catalog-no-permission__lock {
+    position: absolute;
+    top: 69px;
+    left: 50%;
+    display: flex;
+    width: 66px;
+    height: 66px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    color: #ffffff;
+    font-size: 40px;
+    transform: translateX(-50%);
+}
+
+.catalog-no-permission__deny {
+    position: absolute;
+    right: 65px;
+    bottom: 4px;
+    display: flex;
+    width: 82px;
+    height: 82px;
+    align-items: center;
+    justify-content: center;
+    border: 6px solid rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    color: #ffffff;
+    background: #f05252;
+    box-shadow:
+        0 10px 25px
+        rgba(240, 82, 82, 0.22);
+    font-size: 46px;
+}
+
+.catalog-no-permission__title {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: 34px;
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.5px;
+}
+
+.catalog-no-permission__description {
+    max-width: 620px;
+    margin: 18px 0 0;
+    color: var(--color-text-muted);
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.8;
+}
+
+@media (max-width: 820px) {
+
+    .catalog-no-permission__content {
+        min-height: 420px;
+        padding: 24px 18px;
+    }
+
+    .catalog-no-permission__illustration {
+        width: 300px;
+        height: 250px;
+        transform: scale(0.86);
+        transform-origin: center bottom;
+        margin-bottom: 0;
+    }
+
+    .catalog-no-permission__title {
+        font-size: 28px;
+    }
+
+    .catalog-no-permission__description {
+        margin-top: 12px;
+        font-size: 15px;
+    }
+
+}
+
+[data-catalog-content] {
+    display: contents;
+}
+
+[data-catalog-content][hidden] {
+    display: none !important;
+}

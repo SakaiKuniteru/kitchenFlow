@@ -43,7 +43,11 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             catalog = await window.MCS.pages.createCatalogPage({
                 moduleName: "kho",
-
+                permissionCodes: {
+                    view: "Q000559",
+                    create: "Q000560",
+                    update: "Q000561"
+                },
                 columns: [
                     {
                         key: "maKho",

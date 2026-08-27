@@ -3,68 +3,69 @@
     class="catalog-page"
     data-catalog-page
     data-module="{{moduleName}}"
-    data-api-base="{{apiBase}}">
+    data-api-base="{{apiBase}}"
+    data-permissions="">
 
-    <div class="catalog-page__list">
+    <div data-catalog-content>
 
-        {{> catalog/toolbar
-            title=title
-            description=description
-            searchInputId=searchInputId
-            searchPlaceholder=searchPlaceholder
-            createButtonId=createButtonId
-            showExportButton=showExportButton
-            showImportButton=showImportButton
-            hideCreateButton=hideCreateButton
-        }}
+        <div class="catalog-page__list">
+
+            {{> catalog/toolbar
+                title=title
+                description=description
+                searchInputId=searchInputId
+                searchPlaceholder=searchPlaceholder
+                createButtonId=createButtonId
+                showExportButton=showExportButton
+                showImportButton=showImportButton
+                hideCreateButton=hideCreateButton
+            }}
+
+            <div
+                class="catalog-page__table-section"
+                data-catalog-table-section>
+
+                {{> catalog/table
+                    tableId=tableId
+                    tableBodyId=tableBodyId
+                    columns=columns
+                    showIndex=true
+                    showFilterRow=true
+                }}
+
+                {{> catalog/pagination
+                    paginationId=paginationId
+                }}
+
+            </div>
+
+        </div>
+
+        <aside
+            id="{{detailPanelId}}"
+            class="catalog-page__detail"
+            data-catalog-detail-panel
+            data-panel-mode="create"
+            aria-label="{{detailTitle}}">
+
+            {{> catalog/detail-panel
+                panelId=detailContentId
+                formId=formId
+                title=detailTitle
+                formPartial=formPartial
+                showCloseButton=true
+            }}
+
+        </aside>
 
         <div
-            class="catalog-page__table-section"
-            data-catalog-table-section>
-
-            {{> catalog/table
-                tableId=tableId
-                tableBodyId=tableBodyId
-                columns=columns
-                showIndex=true
-                showFilterRow=true
-            }}
-
-            {{> catalog/pagination
-                paginationId=paginationId
-            }}
-
+            class="catalog-page__overlay"
+            data-catalog-overlay
+            hidden>
         </div>
 
     </div>
 
-    <aside
-        id="{{detailPanelId}}"
-        class="catalog-page__detail"
-        data-catalog-detail-panel
-        data-panel-mode="create"
-        aria-label="{{detailTitle}}">
-
-        {{> catalog/detail-panel
-            panelId=detailContentId
-            formId=formId
-            title=detailTitle
-            formPartial=formPartial
-            showCloseButton=true
-        }}
-
-    </aside>
-
-    <div
-        class="catalog-page__overlay"
-        data-catalog-overlay
-        hidden>
-    </div>
+    {{> catalog/no-permission}}
 
 </section>
-
-<script
-    type="application/json"
-    id="{{moduleName}}PageConfig">
-    {"moduleName":"{{moduleName}}","apiBase":"{{apiBase}}","listEndpoint":"{{apiBase}}/tong-hop","detailEndpoint":"{{apiBase}}","createEndpoint":"{{apiBase}}/them-moi","updateEndpoint":"{{apiBase}}/cap-nhat","deleteEndpoint":"{{apiBase}}/xoa"}
-</script>

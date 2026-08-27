@@ -12,7 +12,7 @@ class MCSCatalogToolbar {
             onAction: null,
             ...options
         };
-
+        this.permissions = this.getPermissions();
         this.elements = {
             utility: this.root?.querySelector("[data-catalog-utility]"),
             toggle: this.root?.querySelector("[data-catalog-utility-toggle]"),
@@ -28,6 +28,76 @@ class MCSCatalogToolbar {
         this.renderActions();
     }
 
+    getPermissions() {
+        const value =
+            this.root?.dataset?.permissions ||
+            "";
+
+        return new Set(
+            String(value)
+                .split(",")
+                .map(permission =>
+                    String(permission || "")
+                        .trim()
+                        .toUpperCase()
+                )
+                .filter(Boolean)
+        );
+    }
+
+    hasPermission(permission) {
+        const code =
+            String(permission || "")
+                .trim()
+                .toUpperCase();
+
+        if (!code) {
+            return true;
+        }
+
+        return this.permissions.has(code);
+    }
+
+    canRenderAction(action) {
+        if (
+            !action ||
+            action.hidden === true
+        ) {
+            return false;
+        }
+
+        if (action.permission) {
+            return this.hasPermission(
+                action.permission
+            );
+        }
+
+        const actionName =
+            String(action.action || "")
+                .trim()
+                .toLowerCase();
+
+        if (
+            actionName === "import" ||
+            actionName.startsWith("import-")
+        ) {
+            return this.hasPermission(
+                "Q100002"
+            );
+        }
+
+        if (
+            actionName === "export" ||
+            actionName.startsWith("export-")
+        ) {
+            return this.hasPermission(
+                "Q100001"
+            );
+        }
+
+        return true;
+    }
+
     renderActions() {
         const menu = this.elements.menu;
 
@@ -40,7 +110,7 @@ class MCSCatalogToolbar {
             .forEach(element => element.remove());
 
         this.options.actions
-            .filter(action => action && action.hidden !== true)
+            .filter(action => this.canRenderAction(action))
             .forEach(action => {
                 const button = document.createElement("button");
 

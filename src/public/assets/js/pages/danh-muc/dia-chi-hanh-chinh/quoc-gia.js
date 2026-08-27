@@ -15,6 +15,11 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             catalog = await window.MCS.pages.createCatalogPage({
                 moduleName: "quoc-gia",
+                permissionCodes: {
+                    view: "Q000511",
+                    create: "Q000512",
+                    update: "Q000513"
+                },
 
                 columns: [
                     {

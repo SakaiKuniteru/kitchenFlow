@@ -323,6 +323,116 @@
         return value || "/";
     }
 
+    function applySidebarPermissions(
+        currentUser = null
+    ) {
+        const navigation =
+            window.MCS.navigation;
+
+        if (!navigation) {
+            return;
+        }
+
+        const user =
+            currentUser ||
+            window.MCS.storage
+                ?.getCurrentUser?.() ||
+            null;
+
+        sidebar
+            .querySelectorAll(
+                "a[data-sidebar-link][href]"
+            )
+            .forEach(link => {
+
+                const href =
+                    link.getAttribute(
+                        "href"
+                    );
+
+                const navigationItem =
+                    navigation.findByUrl(
+                        href
+                    );
+
+                const allowed =
+                    navigationItem
+                        ? navigation.canAccess(
+                            navigationItem,
+                            user
+                        )
+                        : false;
+
+                const item =
+                    link.closest(
+                        "li"
+                    );
+
+                if (item) {
+                    item.hidden =
+                        !allowed;
+                }
+            });
+
+        sidebar
+            .querySelectorAll(
+                "[data-sidebar-group-item]"
+            )
+            .forEach(group => {
+
+                const submenu =
+                    group.querySelector(
+                        ":scope > " +
+                        "[data-sidebar-submenu]"
+                    );
+
+                if (!submenu) {
+                    group.hidden =
+                        true;
+
+                    return;
+                }
+
+                const children =
+                    Array.from(
+                        submenu.children
+                    );
+
+                const hasAllowedChild =
+                    children.some(
+                        item =>
+                            item.hidden !==
+                            true
+                    );
+
+                group.hidden =
+                    !hasAllowedChild;
+
+                if (
+                    !hasAllowedChild
+                ) {
+                    const button =
+                        group.querySelector(
+                            ":scope > " +
+                            "[data-sidebar-toggle]"
+                        );
+
+                    if (button) {
+                        setGroupOpen(
+                            button.dataset
+                                .sidebarToggle,
+                            false
+                        );
+                    }
+                }
+            });
+
+
+        activateCurrentMenu();
+
+        updateExpandToggle();
+    }
+
     function activateCurrentMenu() {
         const currentPath = normalizePath(
             window.location.pathname
@@ -458,6 +568,9 @@
                 let childMatched = false;
 
                 Array.from(submenu.children).forEach(item => {
+                    if (item.hidden) {
+                        return;
+                    }
                     const link = item.querySelector(
                         "[data-sidebar-link]"
                     );
@@ -968,11 +1081,23 @@
     async function initialize() {
         systemOrder = captureSidebarOrder();
         restoreSidebarOrder();
+        applySidebarPermissions();
         collapseAllGroups();
         activateCurrentMenu();
         updateExpandToggle();
         await applySidebarDefaultState();
     }
+
+    window.addEventListener(
+        "mcs:current-user-updated",
+        event => {
+            applySidebarPermissions(
+                event.detail
+                    ?.currentUser ||
+                null
+            );
+        }
+    );
 
     initialize();
 })();

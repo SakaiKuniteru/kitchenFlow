@@ -20,6 +20,11 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             catalog = await window.MCS.pages.createCatalogPage({
                 moduleName: "xa-phuong",
+                permissionCodes: {
+                    view: "Q000517",
+                    create: "Q000518",
+                    update: "Q000519"
+                },
 
                 columns: [
                     {

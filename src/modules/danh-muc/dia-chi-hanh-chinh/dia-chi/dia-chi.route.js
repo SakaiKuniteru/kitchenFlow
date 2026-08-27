@@ -16,7 +16,7 @@ router.get(
 router.get(
     "/xuat-du-lieu",
     authenticate,
-    authorize("Q100001"),
+    authorize("Q100001"), 
     chucVuExcel.exportData
 );
 

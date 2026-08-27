@@ -19,7 +19,11 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             catalog = await window.MCS.pages.createCatalogPage({
                 moduleName: "phong-ban",
-
+                permissionCodes: {
+                    view: "Q000504",
+                    create: "Q000505",
+                    update: "Q000506"
+                },
                 columns: [
                     {
                         key: "maPhongBan",

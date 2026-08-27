@@ -1,14 +1,147 @@
 "use strict";
-
 window.MCS = window.MCS || {};
-
 window.MCS.pages = window.MCS.pages || {};
-
 window.MCS.pages.instances = window.MCS.pages.instances || {};
+let currentPermissionsPromise = null;
+
+async function loadCurrentPermissions() {
+    if (currentPermissionsPromise) {
+        return currentPermissionsPromise;
+    }
+
+    currentPermissionsPromise =
+        window.MCS.api.request(
+            "/api/mcs/v1/auth/nhan-vien-hien-tai"
+        )
+            .then(result => {
+                const dsQuyen =
+                    Array.isArray(
+                        result?.data?.dsQuyen
+                    )
+                        ? result.data.dsQuyen
+                        : [];
+
+                return [
+                    ...new Set(
+                        dsQuyen
+                            .map(item =>
+                                String(
+                                    item?.maQuyen ||
+                                    ""
+                                )
+                                    .trim()
+                                    .toUpperCase()
+                            )
+                            .filter(Boolean)
+                    )
+                ];
+            })
+            .catch(error => {
+                currentPermissionsPromise = null;
+
+                throw error;
+            });
+
+    return currentPermissionsPromise;
+}
+
+function normalizePermissionCode(value) {
+    return String(
+        value ||
+        ""
+    )
+        .trim()
+        .toUpperCase();
+}
+
+function resolveCatalogPermissionState(
+    permissionCodes,
+    currentPermissions = []
+) {
+    const codes = {
+        view: normalizePermissionCode(
+            permissionCodes?.view
+        ),
+        create: normalizePermissionCode(
+            permissionCodes?.create
+        ),
+        update: normalizePermissionCode(
+            permissionCodes?.update
+        )
+    };
+
+    const configured =
+        Boolean(
+            codes.view ||
+            codes.create ||
+            codes.update
+        );
+
+    if (!configured) {
+        return {
+            configured: false,
+            codes,
+            canView: true,
+            canCreate: true,
+            canUpdate: true
+        };
+    }
+
+    const permissionSet =
+        new Set(
+            currentPermissions
+                .map(
+                    normalizePermissionCode
+                )
+                .filter(Boolean)
+        );
+
+    const hasView =
+        Boolean(
+            codes.view &&
+            permissionSet.has(
+                codes.view
+            )
+        );
+
+    const hasCreate =
+        Boolean(
+            codes.create &&
+            permissionSet.has(
+                codes.create
+            )
+        );
+
+    const hasUpdate =
+        Boolean(
+            codes.update &&
+            permissionSet.has(
+                codes.update
+            )
+        );
+
+    return {
+        configured: true,
+        codes,
+
+        canView:
+            hasView ||
+            hasCreate ||
+            hasUpdate,
+
+        canCreate:
+            hasCreate ||
+            hasUpdate,
+
+        canUpdate:
+            hasUpdate
+    };
+}
 
 window.MCS.pages.createCatalogPage = async function createCatalogPage(options = {}) {
     const {
         moduleName,
+        permissionCodes = null,
         columns = [],
         defaultValues = {
             active: true
@@ -50,6 +183,45 @@ window.MCS.pages.createCatalogPage = async function createCatalogPage(options = 
 
         return null;
     }
+
+    let currentPermissions = [];
+
+    try {
+        currentPermissions =
+            await loadCurrentPermissions();
+
+        root.dataset.permissions =
+            currentPermissions.join(",");
+    } catch (error) {
+        console.error(
+            "Không thể tải quyền người dùng hiện tại.",
+            error
+        );
+
+        currentPermissions = [];
+        root.dataset.permissions = "";
+    }
+
+    const permissionState =
+        resolveCatalogPermissionState(
+            permissionCodes,
+            currentPermissions
+        );
+
+    root.dataset.canView =
+        String(
+            permissionState.canView
+        );
+
+    root.dataset.canCreate =
+        String(
+            permissionState.canCreate
+        );
+
+    root.dataset.canUpdate =
+        String(
+            permissionState.canUpdate
+        );
 
     const configElement = document.getElementById(
         `${moduleName}PageConfig`
@@ -262,6 +434,7 @@ window.MCS.pages.createCatalogPage = async function createCatalogPage(options = 
         root,
         endpoints,
         columns,
+        permissions: permissionState,
         toolbarActions,
         detailTitle,
         createTitle,

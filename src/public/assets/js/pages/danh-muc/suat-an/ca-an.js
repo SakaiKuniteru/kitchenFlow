@@ -15,7 +15,11 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             catalog = await window.MCS.pages.createCatalogPage({
                 moduleName: "ca-an",
-
+                permissionCodes: {
+                    view: "Q000547",
+                    create: "Q000548",
+                    update: "Q000549"
+                },
                 columns: [
                     {
                         key: "maCaAn",

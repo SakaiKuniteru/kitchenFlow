@@ -36,6 +36,34 @@ window.MCS.storage = {
         }
     },
 
+    setCurrentUser(currentUser) {
+        if (!currentUser) {
+            localStorage.removeItem(
+                window.MCS.config.currentUserKey
+            );
+
+            return;
+        }
+
+        localStorage.setItem(
+            window.MCS.config.currentUserKey,
+            JSON.stringify(
+                currentUser
+            )
+        );
+
+        window.dispatchEvent(
+            new CustomEvent(
+                "mcs:current-user-updated",
+                {
+                    detail: {
+                        currentUser
+                    }
+                }
+            )
+        );
+    },
+
     clearAuthentication() {
         localStorage.removeItem(window.MCS.config.accessTokenKey);
         localStorage.removeItem(window.MCS.config.refreshTokenKey);

@@ -5,6 +5,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const catalog = await window.MCS.pages.createCatalogPage({
         moduleName: "tong-hop-dia-chi",
+        permissionCodes: {
+            view: "Q000510"
+        },
         viewOnly: true,
         detailTitle: "Thông tin địa chỉ hành chính",
 

@@ -19,7 +19,11 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             catalog = await window.MCS.pages.createCatalogPage({
                 moduleName: "bao-cao",
-
+                permissionCodes: {
+                    view: "Q000565",
+                    create: "Q000566",
+                    update: "Q000567"
+                },
                 columns: [
                     {
                         key: "maBaoCao",

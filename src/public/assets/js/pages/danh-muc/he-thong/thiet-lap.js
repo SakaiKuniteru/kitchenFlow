@@ -115,7 +115,11 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             catalog = await window.MCS.pages.createCatalogPage({
                 moduleName: "thiet-lap",
-
+                permissionCodes: {
+                    view: "Q000532",
+                    create: "Q000533",
+                    update: "Q000534"
+                },
                 columns: [
                     {
                         key: "maThietLap",

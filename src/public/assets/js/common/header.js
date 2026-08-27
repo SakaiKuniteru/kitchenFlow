@@ -74,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function initialize() {
         initializeAddressSmartSelects();
         initializeProfileFieldValidation();
-        initializeHeaderSearch();
         bindEvents();
         renderStoredCurrentUser();
         Promise.allSettled([
@@ -83,7 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
         ]);
     }
 
-    function initializeHeaderSearch() {
+    function initializeHeaderSearch(
+        currentUser = null
+    ) {
         if (
             !elements.featureSearch ||
             !window.MCS?.searchPicker
@@ -91,17 +92,25 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        const items =
+            window.MCS.navigation
+                ?.getAllowedItems?.(
+                    currentUser
+                ) ||
+            [];
+
         window.MCS.searchPicker.initialize(
             elements.featureSearch,
             {
-                items: window.MCS.navigationItems || [],
+                items,
 
                 onSelect(item) {
                     if (!item?.url) {
                         return;
                     }
 
-                    window.location.href = item.url;
+                    window.location.href =
+                        item.url;
                 }
             }
         );
@@ -202,6 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             saveCurrentUser(currentUser);
             renderCurrentUser(currentUser);
+            initializeHeaderSearch(currentUser);
         } catch (error) {
             console.error(
                 "Không thể tải thông tin người dùng:",
@@ -221,6 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (storedUser) {
                 renderCurrentUser(storedUser);
+                initializeHeaderSearch(storedUser);
             }
         }
     }

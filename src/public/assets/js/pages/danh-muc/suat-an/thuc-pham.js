@@ -159,7 +159,11 @@ document.addEventListener(
             try {
                 catalog = await window.MCS.pages.createCatalogPage({
                     moduleName: "thuc-pham",
-
+                    permissionCodes: {
+                        view: "Q000556",
+                        create: "Q000557",
+                        update: "Q000558"
+                    },
                     columns: [
                         {
                             key: "maThucPham",

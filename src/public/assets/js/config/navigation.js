@@ -3,129 +3,343 @@
 window.MCS = window.MCS || {};
 
 window.MCS.navigationItems = [
+
     {
         label: "Tổng quan",
         group: "Trang chủ",
-        url: "/"
+        url: "/",
+        permission: "Q000001"
     },
+
     {
         label: "Danh sách thực đơn",
         group: "Thực đơn",
-        url: "/thuc-don/danh-sach-thuc-don"
+        url: "/thuc-don/danh-sach-thuc-don",
+        permission: "Q000025"
     },
+
     {
         label: "Danh mục Cơ sở",
         group: "Tổ chức",
-        url: "/to-chuc/co-so"
+        url: "/to-chuc/co-so",
+        permission: "Q000002"
     },
+
     {
         label: "Danh mục Nhà ăn",
         group: "Tổ chức",
-        url: "/to-chuc/nha-an"
+        url: "/to-chuc/nha-an",
+        permission: "Q000017"
     },
+
     {
         label: "Danh mục Phòng ban",
         group: "Tổ chức",
-        url: "/to-chuc/phong-ban"
+        url: "/to-chuc/phong-ban",
+        permission: "Q000003"
     },
+
     {
         label: "Danh mục Chức vụ",
         group: "Tổ chức",
-        url: "/to-chuc/chuc-vu"
+        url: "/to-chuc/chuc-vu",
+        permission: "Q000004"
     },
+
     {
         label: "Danh mục Nhân viên",
         group: "Tổ chức",
-        url: "/to-chuc/nhan-vien"
+        url: "/to-chuc/nhan-vien",
+        permission: "Q000023"
     },
+
     {
         label: "Danh mục Kho",
         group: "Tổ chức",
-        url: "/to-chuc/kho"
+        url: "/to-chuc/kho",
+        permission: "Q000022"
     },
+
     {
         label: "Danh mục Vai trò",
         group: "Phân quyền",
-        url: "/phan-quyen/vai-tro"
+        url: "/phan-quyen/vai-tro",
+        permission: "Q000011"
     },
+
     {
         label: "Danh mục Quyền",
         group: "Phân quyền",
-        url: "/phan-quyen/quyen"
+        url: "/phan-quyen/quyen",
+        permission: "Q000010"
     },
+
     {
         label: "Quản lý Tài khoản",
         group: "Phân quyền",
-        url: "/phan-quyen/tai-khoan"
+        url: "/phan-quyen/tai-khoan",
+        permission: "Q000012"
     },
+
     {
         label: "Danh mục Ca ăn",
         group: "Suất ăn",
-        url: "/suat-an/ca-an"
+        url: "/suat-an/ca-an",
+        permission: "Q000018"
     },
+
     {
         label: "Danh mục Món ăn",
         group: "Suất ăn",
-        url: "/suat-an/mon-an"
+        url: "/suat-an/mon-an",
+        permission: "Q000020"
     },
+
     {
         label: "Danh mục Thực phẩm",
         group: "Suất ăn",
-        url: "/suat-an/thuc-pham"
+        url: "/suat-an/thuc-pham",
+        permission: "Q000021"
     },
+
     {
         label: "Danh mục Đơn vị tính",
         group: "Suất ăn",
-        url: "/suat-an/don-vi-tinh"
+        url: "/suat-an/don-vi-tinh",
+        permission: "Q000016"
     },
+
     {
         label: "Danh mục Chính sách",
         group: "Chính sách",
-        url: "/chuong-trinh/chinh-sach"
+        url: "/chuong-trinh/chinh-sach",
+        permission: "Q000015"
     },
+
     {
         label: "Danh mục Voucher",
         group: "Chính sách",
-        url: "/chuong-trinh/voucher"
+        url: "/chuong-trinh/voucher",
+        permission: "Q000014"
     },
+
     {
         label: "Danh mục Tổng hợp địa chỉ",
         group: "Địa chỉ hành chính",
-        url: "/dia-chi/dia-chi-hanh-chinh"
+        url: "/dia-chi/dia-chi-hanh-chinh",
+        permission: "Q000005"
     },
+
     {
         label: "Danh mục Quốc gia",
         group: "Địa chỉ hành chính",
-        url: "/dia-chi/quoc-gia"
+        url: "/dia-chi/quoc-gia",
+        permission: "Q000006"
     },
+
     {
         label: "Danh mục Tỉnh thành",
         group: "Địa chỉ hành chính",
-        url: "/dia-chi/tinh-thanh"
+        url: "/dia-chi/tinh-thanh",
+        permission: "Q000007"
     },
+
     {
         label: "Danh mục Xã phường",
         group: "Địa chỉ hành chính",
-        url: "/dia-chi/xa-phuong"
+        url: "/dia-chi/xa-phuong",
+        permission: "Q000008"
     },
+
     {
         label: "Danh mục Nhóm tính năng",
         group: "Hệ thống",
-        url: "/he-thong/nhom-tinh-nang"
+        url: "/he-thong/nhom-tinh-nang",
+        permission: "Q000009"
     },
+
     {
         label: "Danh mục Nhóm món ăn",
         group: "Hệ thống",
-        url: "/he-thong/nhom-mon-an"
+        url: "/he-thong/nhom-mon-an",
+        permission: "Q000019"
     },
+
     {
         label: "Danh mục Báo cáo",
         group: "Hệ thống",
-        url: "/he-thong/bao-cao"
+        url: "/he-thong/bao-cao",
+        permission: "Q000024"
     },
+
     {
         label: "Thiết lập chung",
         group: "Hệ thống",
-        url: "/he-thong/thiet-lap"
+        url: "/he-thong/thiet-lap",
+        permission: "Q000013"
     }
+
 ];
+
+
+window.MCS.navigation = {
+
+    normalizePermission(value) {
+        return String(
+            value ||
+            ""
+        )
+            .trim()
+            .toUpperCase();
+    },
+
+    normalizePath(value) {
+        if (!value) {
+            return "/";
+        }
+
+        let path =
+            String(value)
+                .split("?")[0]
+                .split("#")[0];
+
+        if (
+            path.length > 1 &&
+            path.endsWith("/")
+        ) {
+            path =
+                path.slice(
+                    0,
+                    -1
+                );
+        }
+
+        return (
+            path ||
+            "/"
+        );
+    },
+
+    getPermissionSet(currentUser = null) {
+        const user =
+            currentUser ||
+            window.MCS.storage
+                ?.getCurrentUser?.() ||
+            null;
+
+        const values = [];
+
+        if (
+            Array.isArray(
+                user?.dsQuyen
+            )
+        ) {
+            user.dsQuyen.forEach(
+                item => {
+                    values.push(
+                        item?.maQuyen
+                    );
+                }
+            );
+        }
+
+        if (
+            Array.isArray(
+                user?.permissions
+            )
+        ) {
+            user.permissions.forEach(
+                item => {
+                    values.push(
+                        typeof item ===
+                        "string"
+                            ? item
+                            : item?.maQuyen
+                    );
+                }
+            );
+        }
+
+        return new Set(
+            values
+                .map(
+                    value =>
+                        this.normalizePermission(
+                            value
+                        )
+                )
+                .filter(Boolean)
+        );
+    },
+
+    hasPermission(
+        permission,
+        currentUser = null
+    ) {
+        const code =
+            this.normalizePermission(
+                permission
+            );
+
+        if (!code) {
+            return true;
+        }
+
+        return this
+            .getPermissionSet(
+                currentUser
+            )
+            .has(
+                code
+            );
+    },
+
+    canAccess(
+        item,
+        currentUser = null
+    ) {
+        if (!item) {
+            return false;
+        }
+
+        return this.hasPermission(
+            item.permission,
+            currentUser
+        );
+    },
+
+    getAllowedItems(
+        currentUser = null
+    ) {
+        return (
+            window.MCS
+                .navigationItems ||
+            []
+        ).filter(
+            item =>
+                this.canAccess(
+                    item,
+                    currentUser
+                )
+        );
+    },
+
+    findByUrl(url) {
+        const path =
+            this.normalizePath(
+                url
+            );
+
+        return (
+            window.MCS
+                .navigationItems ||
+            []
+        ).find(
+            item =>
+                this.normalizePath(
+                    item.url
+                ) ===
+                path
+        ) || null;
+    }
+};

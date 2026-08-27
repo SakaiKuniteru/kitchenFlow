@@ -110,31 +110,66 @@ class MCSForm {
         const readonly = mode === "view";
 
         this.form
-            ?.querySelectorAll("input, textarea, select")
+            ?.querySelectorAll("input, textarea, select, button")
             .forEach(field => {
+                if (field.type === "hidden") {
+                    return;
+                }
+
+                if (readonly) {
+                    if (field.dataset.catalogOriginalDisabled === undefined) {
+                        field.dataset
+                            .catalogOriginalDisabled = String(field.disabled);
+                    }
+
+                    if (
+                        "readOnly" in field &&
+                        field.dataset.catalogOriginalReadonly === undefined
+                    ) {
+                        field.dataset.catalogOriginalReadonly = String(field.readOnly);
+                    }
+
+                    field.disabled = true;
+
+                    if ("readOnly" in field) {
+                        field.readOnly = true;
+                    }
+
+                    return;
+                }
+
+                const originalDisabled =
+                    field.dataset
+                        .catalogOriginalDisabled;
+
                 if (
-                    field.type === "hidden" ||
-                    field.dataset.alwaysEnabled === "true"
+                    originalDisabled !==
+                    undefined
                 ) {
-                    return;
+                    field.disabled =
+                        originalDisabled ===
+                        "true";
+
+                    delete field.dataset
+                        .catalogOriginalDisabled;
                 }
+
+                const originalReadonly =
+                    field.dataset
+                        .catalogOriginalReadonly;
 
                 if (
-                    field.type === "checkbox" ||
-                    field.type === "radio"
+                    originalReadonly !==
+                    undefined &&
+                    "readOnly" in field
                 ) {
-                    field.disabled = readonly;
+                    field.readOnly =
+                        originalReadonly ===
+                        "true";
 
-                    return;
+                    delete field.dataset
+                        .catalogOriginalReadonly;
                 }
-
-                if (field.tagName === "SELECT") {
-                    field.disabled = readonly;
-
-                    return;
-                }
-
-                field.readOnly = readonly;
             });
 
         if (this.elements.submit) {

@@ -18,6 +18,12 @@ class MCSCatalog {
 
             columns: [],
             toolbarActions: [],
+            permissions: {
+                configured: false,
+                canView: true,
+                canCreate: true,
+                canUpdate: true
+            },
             rowKey: "id",
             pageSize: 20,
             clientPagination: true,
@@ -56,6 +62,35 @@ class MCSCatalog {
             ...options
         };
 
+        this.access = {
+            canView:
+                this.options.permissions?.canView ===
+                true,
+
+            canCreate:
+                this.options.permissions?.canCreate ===
+                true,
+
+            canUpdate:
+                this.options.permissions?.canUpdate ===
+                true
+        };
+
+        if (
+            !this.options.permissions?.configured
+        ) {
+            this.access = {
+                canView: true,
+                canCreate: true,
+                canUpdate: true
+            };
+        }
+
+        if (this.options.viewOnly) {
+            this.access.canCreate = false;
+            this.access.canUpdate = false;
+        }
+
         this.root =
             typeof this.options.root === "string"
                 ? document.querySelector(this.options.root)
@@ -86,6 +121,8 @@ class MCSCatalog {
         };
 
         this.elements = {
+            content: this.root.querySelector("[data-catalog-content]"),
+            noPermission: this.root.querySelector("[data-catalog-no-permission]"),
             search: this.root.querySelector("[data-catalog-search]"),
             clearSearch: this.root.querySelector("[data-catalog-clear-search]"),
             create: this.root.querySelector("[data-catalog-create]"),
@@ -129,13 +166,14 @@ class MCSCatalog {
                         return;
                     }
 
-                    if (this.options.viewOnly) {
-                        await this.openDetail(id);
+                    if (!this.canView()) {return;}
 
+                    if (this.canUpdate()) {
+                        await this.openUpdate(id);
                         return;
                     }
 
-                    await this.openUpdate(id);
+                    await this.openDetail(id);
                 },
 
                 onSort: sort => {
@@ -244,9 +282,53 @@ class MCSCatalog {
                 }
             );
 
+        this.syncPermissionUI();
+
         this.lastIsMobile = this.detailPanel.isMobile();
 
         this.bindEvents();
+    }
+
+    canView() {
+        return (
+            this.access.canView === true
+        );
+    }
+
+    canCreate() {
+        return (
+            this.access.canCreate === true &&
+            !this.options.viewOnly
+        );
+    }
+
+    canUpdate() {
+        return (
+            this.access.canUpdate === true &&
+            !this.options.viewOnly
+        );
+    }
+
+    syncPermissionUI() {
+        const allowed = this.canView();
+
+        this.root.hidden = false;
+
+        if (this.elements.content) {
+            this.elements.content.hidden = !allowed;
+        }
+
+        if (this.elements.noPermission) {
+            this.elements.noPermission.hidden = allowed;
+        }
+
+        if (!allowed) {
+            return;
+        }
+
+        if (this.elements.create) {
+            this.elements.create.hidden = !this.canCreate();
+        }
     }
 
     bindEvents() {
@@ -294,6 +376,7 @@ class MCSCatalog {
             event => {
                 event.preventDefault();
                 event.stopPropagation();
+                if (!this.canCreate()) {return;}
                 this.toolbar?.close();
                 this.openCreate();
             }
@@ -497,36 +580,58 @@ class MCSCatalog {
     }
 
     async initialize() {
+        this.syncPermissionUI();
+
+        if (!this.canView()) {
+            return this;
+        }
+
         await this.load();
 
         if (this.detailPanel.isMobile()) {
             this.detailPanel.close();
-        } else if (!this.options.viewOnly) {
-            this.openCreate();
+            return this;
         }
+
+        if (this.canCreate()) {
+            this.openCreate();
+            return this;
+        }
+
+        this.initializeDefaultDetail();
 
         return this;
     }
 
     initializeDefaultDetail() {
+        if (!this.canView()) {
+            this.table.clearSelection();
+            this.state.selectedId = null;
+
+            if (this.elements.detailRoot) {
+                this.elements.detailRoot.hidden = true;
+            }
+            return;
+        }
+
         if (this.detailPanel.isMobile()) {
             this.detailPanel.close();
             this.table.clearSelection();
             this.state.selectedId = null;
-
             return;
         }
 
-        if (this.options.viewOnly) {
-            this.table.clearSelection();
-            this.state.selectedId = null;
-            this.form.clear();
-            this.form.setMode("view");
-
+        if (this.canCreate()) {
+            this.openCreate();
             return;
         }
-
-        this.openCreate();
+        this.table.clearSelection();
+        this.state.selectedId = null;
+        this.form.clear();
+        this.form.setMode("view");
+        this.detailPanel.showDefault({
+            title: this.options.detailTitle || "Thông tin chi tiết"
+        });
     }
 
     syncResponsiveState() {
@@ -591,7 +696,7 @@ class MCSCatalog {
         );
 
         if (
-            !this.options.viewOnly &&
+            this.canCreate() &&
             this.detailPanel.mode === "view" &&
             this.state.selectedId === null
         ) {
@@ -637,6 +742,13 @@ class MCSCatalog {
     }
 
     async load() {
+        if (!this.canView()) {
+            this.state.allData = [];
+            this.state.filteredData = [];
+            this.state.visibleData = [];
+
+            return [];
+        }
         if (!this.options.endpoints.list) {
             throw new Error(
                 "Chưa cấu hình API danh sách."
@@ -898,18 +1010,17 @@ class MCSCatalog {
     }
 
     async openDetail(id) {
+        if (!this.canView()) {
+            return null;
+        }
         const record = await this.getDetail(id);
 
         if (!record) {
             return;
         }
-
         this.state.selectedId = id;
-
         this.table.selectRow(id);
-
         this.form.setMode("view");
-
         this.form.setData(
             this.mapRecordToForm(record)
         );
@@ -934,18 +1045,14 @@ class MCSCatalog {
     }
 
     openCreate() {
-        if (this.options.viewOnly) {
+        if (!this.canCreate()) {
             return;
         }
 
         this.state.selectedId = null;
-
         this.table.clearSelection();
-
         this.form.clear();
-
         this.form.setMode("create");
-
         this.form.setData(
             this.options.defaultValues ||
             {
@@ -972,22 +1079,22 @@ class MCSCatalog {
     }
 
     async openUpdate(id) {
-        if (this.options.viewOnly) {
-            return;
-        }
+        if (!this.canUpdate()) {
+                if (this.canView()) {
+                    return this.openDetail(id);
+                }
+
+                return null;
+            }
 
         const record = await this.getDetail(id);
 
         if (!record) {
             return;
         }
-
         this.state.selectedId = id;
-
         this.table.selectRow(id);
-
         this.form.setMode("update");
-
         this.form.setData(
             this.mapRecordToForm(record)
         );
@@ -1012,6 +1119,9 @@ class MCSCatalog {
     }
 
     async getDetail(id) {
+        if (!this.canView()) {
+            return null;
+        }
         const local = this.state.allData.find(
             item =>
                 String(
@@ -1139,7 +1249,14 @@ class MCSCatalog {
 
         const isCreate =
             mode === "create";
+        if (isCreate && !this.canCreate()) {
+            return null;
+        }
 
+        if (!isCreate && !this.canUpdate()
+        ) {
+            return null;
+        }
         const id = this.state.selectedId;
 
         let url;
@@ -1318,6 +1435,9 @@ class MCSCatalog {
         id,
         active
     ) {
+        if (!this.canUpdate()) {
+            return;
+        }
         window.MCS.confirm?.show({
             title:
                 active

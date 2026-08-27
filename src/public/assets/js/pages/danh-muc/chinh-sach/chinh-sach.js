@@ -76,6 +76,11 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             catalog = await window.MCS.pages.createCatalogPage({
                 moduleName: "chinh-sach",
+                permissionCodes: {
+                    view: "Q000538",
+                    create: "Q000539",
+                    update: "Q000540"
+                },
                 detailTitle: "Thông tin chính sách",
                 createTitle: "Thêm chính sách",
                 updateTitle: "Cập nhật chính sách",

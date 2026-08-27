@@ -35,6 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
     async function initializeCatalog() {
         catalog = await window.MCS.pages.createCatalogPage({
             moduleName: "tai-khoan",
+            permissionCodes: {
+                view: "Q000529",
+                create: "Q000530",
+                update: "Q000531"
+            },
             detailTitle: "Thông tin tài khoản",
             createTitle: "Thêm tài khoản",
             updateTitle: "Cập nhật tài khoản",

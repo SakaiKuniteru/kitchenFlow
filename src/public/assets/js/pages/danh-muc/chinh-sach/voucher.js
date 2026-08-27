@@ -53,6 +53,11 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             catalog = await window.MCS.pages.createCatalogPage({
                 moduleName: "voucher",
+                permissionCodes: {
+                    view: "Q000535",
+                    create: "Q000536",
+                    update: "Q000537"
+                },
                 detailTitle: "Thông tin voucher",
                 createTitle: "Thêm voucher",
                 updateTitle: "Cập nhật voucher",
