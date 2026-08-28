@@ -30,6 +30,85 @@ document.addEventListener("DOMContentLoaded", () => {
     initializePasswordToggles();
     initializeValidation();
 
+    async function requestChangePassword(payload) {
+        if (
+            window.MCS?.api &&
+            typeof window.MCS.api.request === "function"
+        ) {
+            return await window.MCS.api.request(
+                CHANGE_PASSWORD_ENDPOINT,
+                {
+                    method: "PATCH",
+                    body: JSON.stringify(payload)
+                }
+            );
+        }
+
+        const accessToken =
+            localStorage.getItem(
+                "accessToken"
+            );
+
+        const response = await fetch(
+            CHANGE_PASSWORD_ENDPOINT,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    ...(accessToken
+                        ? {
+                            Authorization:
+                                `Bearer ${accessToken}`
+                        }
+                        : {})
+                },
+                credentials: "include",
+                body: JSON.stringify(
+                    payload
+                )
+            }
+        );
+
+        const contentType =
+            response.headers.get(
+                "content-type"
+            ) || "";
+
+        let result = null;
+
+        if (
+            contentType.includes(
+                "application/json"
+            )
+        ) {
+            result =
+                await response.json();
+        }
+
+        if (
+            !response.ok ||
+            result?.success === false
+        ) {
+            const error =
+                new Error(
+                    result?.message ||
+                    result?.data?.message ||
+                    "Không thể đổi mật khẩu."
+                );
+
+            error.statusCode =
+                response.status;
+
+            error.data =
+                result?.data;
+
+            throw error;
+        }
+
+        return result || {};
+    }
+
     function initializePasswordToggles() {
         form
             .querySelectorAll("[data-password-toggle]")
@@ -101,21 +180,29 @@ document.addEventListener("DOMContentLoaded", () => {
             setSubmitting(true);
 
             try {
-                const result = await window.MCS.api.request(
-                    CHANGE_PASSWORD_ENDPOINT,
-                    {
-                        method: "PATCH",
-                        body: JSON.stringify({
-                            matKhauCu: fields.matKhauCu.value,
-                            matKhauMoi: fields.matKhauMoi.value,
-                            xacNhanMatKhau: fields.xacNhanMatKhauMoi.value
-                        })
-                    }
-                );
+            const result =
+                await requestChangePassword({
+                    matKhauCu: fields.matKhauCu.value,
+
+                    matKhauMoi: fields.matKhauMoi.value,
+
+                    xacNhanMatKhau: fields.xacNhanMatKhauMoi.value
+                });
 
                 window.MCS?.toast?.success(
                     result?.message ||
                     "Đổi mật khẩu thành công."
+                );
+
+                window.dispatchEvent(
+                    new CustomEvent(
+                        "mcs:password-changed",
+                        {
+                            detail: {
+                                result
+                            }
+                        }
+                    )
                 );
 
                 form.reset();
@@ -142,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             "/auth/login"
                         );
                     },
-                    900
+                    1000
                 );
             } catch (error) {
                 console.error(

@@ -3,7 +3,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const CONFIG = {
         loginEndpoint: "/api/mcs/v1/auth/login",
-        changePasswordEndpoint: "/api/mcs/v1/auth/doi-mat-khau",
         systemNameEndpoint: "/api/mcs/v1/thiet-lap/gia-tri-public?ma=TEN_HE_THONG",
         systemLogoEndpoint: "/api/mcs/v1/thiet-lap/gia-tri-public?ma=LOGO_CO_SO_MAC_DINH",
         defaultSystemName: "MCS KITCHENFLOW",
@@ -12,7 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
         rememberedAccountKey: "mcsKitchenFlowRememberedAccount",
         accessTokenKey: "accessToken",
         refreshTokenKey: "refreshToken",
-        userKey: "currentUser"
+        userKey: "currentUser",
+        firstLoginRequiredKey: "mcsKitchenFlowFirstLoginRequired"
     };
 
     const elements = {
@@ -32,25 +32,97 @@ document.addEventListener("DOMContentLoaded", () => {
         passwordHideIcon: document.querySelector("[data-password-hide-icon]"),
         changePasswordModal: document.getElementById("changePasswordModal"),
         changePasswordForm: document.getElementById("changePasswordForm"),
-        changePasswordMessage: document.querySelector("[data-change-password-message]")
     };
 
     let isSubmittingLogin = false;
-    let isChangingPassword = false;
     let mustChangePassword = false;
 
-    function initialize() {
-        bindAuthenticationSync();
+    function getStoredUser() {
+        const raw =
+            localStorage.getItem(
+                CONFIG.userKey
+            );
 
-        if (hasAuthentication()) {
-            redirectToHome();
+        if (!raw) {
+            return null;
+        }
+
+        try {
+            return JSON.parse(raw);
+        } catch (error) {
+            return null;
+        }
+
+    }
+
+    function isFirstLoginRequired() {
+
+        const required =
+            localStorage.getItem(
+                CONFIG.firstLoginRequiredKey
+            );
+
+        if (required === "true") {
+            return true;
+        }
+
+        const user =
+            getStoredUser();
+
+        return user?.firstLogin === true;
+    }
+
+    function setFirstLoginRequired(required) {
+
+        const value =
+            required === true;
+
+        if (value) {
+
+            localStorage.setItem(
+                CONFIG.firstLoginRequiredKey,
+                "true"
+            );
+
+        } else {
+
+            localStorage.removeItem(
+                CONFIG.firstLoginRequiredKey
+            );
+
+        }
+
+        const user =
+            getStoredUser();
+
+        if (!user) {
             return;
         }
 
+        user.firstLogin =
+            value;
+
+        localStorage.setItem(
+            CONFIG.userKey,
+            JSON.stringify(user)
+        );
+    }
+
+    function initialize() {
+        bindAuthenticationSync();
+        bindFirstLoginEvents();
         loadSystemBranding();
         restoreRememberedAccount();
         bindLoginEvents();
-        bindChangePasswordEvents();
+        if (!hasAuthentication()) {
+            return;
+        }
+        if (isFirstLoginRequired()) {
+            clearFirstLoginAuthentication();
+            hideLoginMessage();
+            return;
+        }
+        redirectToHome();
     }
 
     function hasAuthentication() {
@@ -60,8 +132,32 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
+    function clearFirstLoginAuthentication() {
+        localStorage.removeItem(
+            CONFIG.accessTokenKey
+        );
+
+        localStorage.removeItem(
+            CONFIG.refreshTokenKey
+        );
+
+        localStorage.removeItem(
+            CONFIG.userKey
+        );
+
+        window.MCS.authSession
+            ?.clearRefreshTimer?.();
+
+        mustChangePassword =
+            false;
+    }
+
     function handleAuthenticationChanged() {
         if (!hasAuthentication()) {
+            return;
+        }
+
+        if (isFirstLoginRequired()) {
             return;
         }
 
@@ -247,22 +343,41 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
-    function bindChangePasswordEvents() {
-        if (elements.changePasswordForm) {
-            elements.changePasswordForm.addEventListener(
-                "submit",
-                handleChangePasswordSubmit
-            );
-        }
+    function bindFirstLoginEvents() {
+        window.addEventListener(
+            "mcs:password-changed",
+            () => {
+                if (
+                    !isFirstLoginRequired() &&
+                    !mustChangePassword
+                ) {
+                    return;
+                }
 
-        document.addEventListener("keydown", event => {
-            if (
-                event.key === "Escape" &&
-                mustChangePassword
-            ) {
-                event.preventDefault();
+                setFirstLoginRequired(
+                    false
+                );
+
+                mustChangePassword =
+                    false;
             }
-        });
+        );
+
+        document.addEventListener(
+            "keydown",
+            event => {
+                if (
+                    event.key !== "Escape" ||
+                    !mustChangePassword
+                ) {
+                    return;
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+            },
+            true
+        );
     }
 
     function restoreRememberedAccount() {
@@ -397,10 +512,12 @@ document.addEventListener("DOMContentLoaded", () => {
             saveAuthenticationData(loginData);
 
             if (loginData.firstLogin === true) {
+                setFirstLoginRequired(true);
                 openRequiredChangePasswordModal();
                 return;
             }
-
+            setFirstLoginRequired(false);
+            window.MCS.authSync?.notifyLogin();
             redirectToHome();
         } catch (error) {
             handleLoginError(error);
@@ -467,6 +584,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function saveAuthenticationData(loginData) {
+        const firstLogin = loginData.firstLogin === true;
         const userData = {
             id: loginData.id,
             nhanVienId: loginData.nhanVienId,
@@ -485,7 +603,8 @@ document.addEventListener("DOMContentLoaded", () => {
             dsVaiTroId: loginData.dsVaiTroId || [],
             dsVaiTro: loginData.dsVaiTro || [],
             dsQuyenId: loginData.dsQuyenId || [],
-            dsQuyen: loginData.dsQuyen || []
+            dsQuyen: loginData.dsQuyen || [],
+            firstLogin
         };
 
         localStorage.setItem(
@@ -506,7 +625,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 loginData.refreshToken
             );
         }
-        window.MCS.authSync?.notifyLogin();
+        if (firstLogin) {
+            localStorage.setItem(
+                CONFIG.firstLoginRequiredKey,
+                "true"
+            );
+        } else {
+            localStorage.removeItem(
+                CONFIG.firstLoginRequiredKey
+            );
+        }
     }
 
     function openRequiredChangePasswordModal() {
@@ -520,218 +648,35 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         mustChangePassword = true;
-        elements.changePasswordModal.hidden = false;
 
-        elements.changePasswordModal.classList.add(
-            "is-open",
-            "is-required"
-        );
+        elements.changePasswordModal
+            .classList.add(
+                "is-required"
+            );
+
+        if (
+            window.MCS?.modal &&
+            typeof window.MCS.modal.open ===
+                "function"
+        ) {
+            window.MCS.modal.open(
+                "changePasswordModal"
+            );
+
+            return;
+        }
+
+        elements.changePasswordModal.hidden =
+            false;
+
+        elements.changePasswordModal
+            .classList.add(
+                "is-open"
+            );
 
         document.body.classList.add(
             "modal-open"
         );
-
-        resetChangePasswordForm();
-
-        const firstInput = getChangePasswordInput([
-            "oldMatKhau",
-            "currentPassword"
-        ]);
-
-        window.setTimeout(
-            () => {
-                firstInput?.focus();
-            },
-            50
-        );
-    }
-
-    function closeChangePasswordModal() {
-        if (!elements.changePasswordModal) {
-            return;
-        }
-
-        elements.changePasswordModal.hidden = true;
-
-        elements.changePasswordModal.classList.remove(
-            "is-open",
-            "is-required"
-        );
-
-        document.body.classList.remove(
-            "modal-open"
-        );
-
-        mustChangePassword = false;
-    }
-
-    async function handleChangePasswordSubmit(event) {
-        event.preventDefault();
-
-        if (isChangingPassword) {
-            return;
-        }
-
-        clearChangePasswordMessage();
-
-        const oldMatKhauInput = getChangePasswordInput([
-            "oldMatKhau",
-            "currentPassword"
-        ]);
-
-        const newMatKhauInput = getChangePasswordInput([
-            "newMatKhau",
-            "newPassword"
-        ]);
-
-        const confirmMatKhauInput = getChangePasswordInput([
-            "confirmMatKhau",
-            "confirmPassword"
-        ]);
-
-        const oldMatKhau = oldMatKhauInput?.value || "";
-        const newMatKhau = newMatKhauInput?.value || "";
-        const confirmMatKhau = confirmMatKhauInput?.value || "";
-
-        const validationMessage = validateChangePassword(
-            oldMatKhau,
-            newMatKhau,
-            confirmMatKhau
-        );
-
-        if (validationMessage) {
-            showChangePasswordMessage(
-                validationMessage
-            );
-
-            return;
-        }
-
-        setChangePasswordSubmitting(true);
-
-        try {
-            const accessToken = localStorage.getItem(
-                CONFIG.accessTokenKey
-            );
-
-            const response = await fetch(
-                CONFIG.changePasswordEndpoint,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Accept: "application/json",
-                        Authorization: `Bearer ${accessToken}`
-                    },
-                    credentials: "include",
-                    body: JSON.stringify({
-                        oldMatKhau,
-                        newMatKhau
-                    })
-                }
-            );
-
-            const result = await parseJsonResponse(response);
-
-            if (
-                !response.ok ||
-                result.success === false
-            ) {
-                throw createRequestError(
-                    result,
-                    response.status
-                );
-            }
-
-            closeChangePasswordModal();
-
-            showLoginMessage(
-                result.message ||
-                "Đổi mật khẩu thành công. Đang chuyển vào hệ thống...",
-                "success"
-            );
-
-            window.setTimeout(
-                redirectToHome,
-                700
-            );
-        } catch (error) {
-            showChangePasswordMessage(
-                error.message ||
-                "Không thể đổi mật khẩu."
-            );
-        } finally {
-            setChangePasswordSubmitting(false);
-        }
-    }
-
-    function validateChangePassword(
-        oldMatKhau,
-        newMatKhau,
-        confirmMatKhau
-    ) {
-        if (
-            !oldMatKhau ||
-            !newMatKhau ||
-            !confirmMatKhau
-        ) {
-            return "Vui lòng nhập đầy đủ thông tin đổi mật khẩu.";
-        }
-
-        if (oldMatKhau === newMatKhau) {
-            return "Mật khẩu mới phải khác mật khẩu hiện tại.";
-        }
-
-        if (newMatKhau !== confirmMatKhau) {
-            return "Mật khẩu nhập lại không khớp.";
-        }
-
-        if (newMatKhau.length < 8) {
-            return "Mật khẩu mới phải có ít nhất 8 ký tự.";
-        }
-
-        return null;
-    }
-
-    function getChangePasswordInput(names) {
-        if (!elements.changePasswordForm) {
-            return null;
-        }
-
-        for (const name of names) {
-            const input = elements.changePasswordForm.querySelector(
-                `[name="${name}"]`
-            );
-
-            if (input) {
-                return input;
-            }
-        }
-
-        return null;
-    }
-
-    function resetChangePasswordForm() {
-        elements.changePasswordForm?.reset();
-        clearChangePasswordMessage();
-    }
-
-    function showChangePasswordMessage(message) {
-        if (!elements.changePasswordMessage) {
-            return;
-        }
-
-        elements.changePasswordMessage.textContent = message;
-        elements.changePasswordMessage.hidden = false;
-    }
-
-    function clearChangePasswordMessage() {
-        if (!elements.changePasswordMessage) {
-            return;
-        }
-
-        elements.changePasswordMessage.textContent = "";
-        elements.changePasswordMessage.hidden = true;
     }
 
     function setLoginSubmitting(submitting) {
@@ -763,27 +708,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (elements.matKhau) {
             elements.matKhau.disabled = submitting;
         }
-    }
-
-    function setChangePasswordSubmitting(submitting) {
-        isChangingPassword = submitting;
-
-        const submitButton = elements.changePasswordForm?.querySelector(
-            '[type="submit"]'
-        );
-
-        if (submitButton) {
-            submitButton.disabled = submitting;
-            submitButton.textContent = submitting
-                ? "Đang cập nhật..."
-                : "Đổi mật khẩu";
-        }
-
-        elements.changePasswordForm
-            ?.querySelectorAll("input")
-            .forEach(input => {
-                input.disabled = submitting;
-            });
     }
 
     function showFieldError(
@@ -940,14 +864,15 @@ document.addEventListener("DOMContentLoaded", () => {
         result,
         statusCode
     ) {
-        const error = new Error(
-            result.message ||
-            "Yêu cầu không thành công."
-        );
+        const message = String(
+                result?.message ||
+                result?.data?.message ||
+                ""
+            ).trim();
 
+        const error = new Error(message);
         error.statusCode = statusCode;
-        error.data = result.data;
-
+        error.data = result?.data;
         return error;
     }
 
