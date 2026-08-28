@@ -15,6 +15,59 @@ document.addEventListener(
             return;
         }
 
+        const permission =
+            window.ThucDon
+                .permission;
+
+
+        let permissions;
+
+
+        try {
+
+            permissions =
+                await permission
+                    .load();
+
+        }
+        catch (
+            error
+        ) {
+
+            console.error(
+                "Không thể tải quyền thực đơn:",
+                error
+            );
+
+
+            permission.showNoPermission(
+                root
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+        * Không có Q001003 hoặc Q001004
+        * thì tuyệt đối không gọi API detail.
+        */
+        if (
+            !permission.canUpdate(
+                permissions
+            )
+        ) {
+
+            permission.showNoPermission(
+                root
+            );
+
+
+            return;
+
+        }
 
         const id =
             root.dataset.thucDonId;
@@ -47,6 +100,21 @@ document.addEventListener(
             const data =
                 response?.data ??
                 response;
+            if (
+                !permission.canUpdateRecord(
+                    permissions,
+                    data
+                )
+            ) {
+
+                permission.showNoPermission(
+                    root
+                );
+
+
+                return;
+
+            }
 
             originalData =
                 structuredClone(
@@ -155,22 +223,20 @@ document.addEventListener(
                             status
                         );
 
-                const errors =
+                form.clearErrors();
+
+                const generalErrors =
                     window.ThucDon
                         .payload
-                        .validate(
+                        .validateGeneral(
                             payload
                         );
 
-
-                form.clearErrors();
-
-
                 if (
-                    errors.length
+                    generalErrors.length
                 ) {
 
-                    errors.forEach(
+                    generalErrors.forEach(
                         ([
                             fieldName,
                             message
@@ -186,6 +252,32 @@ document.addEventListener(
 
 
                     form.focusFirstError();
+
+
+                    return;
+
+                }
+
+                const contentErrors =
+                    window.ThucDon
+                        .payload
+                        .validateContent(
+                            payload,
+                            root._tdOptions
+                                ?.settings ||
+                            {}
+                        );
+
+                if (
+                    contentErrors.length
+                ) {
+
+                    window.MCS
+                        ?.toast
+                        ?.error
+                        ?.(
+                            contentErrors[0]
+                        );
 
 
                     return;
@@ -323,18 +415,35 @@ document.addEventListener(
                         cancelButton
                     );
 
+                    if (
+                        permission.canUpdateRecord(
+                            permissions,
+                            {
+                                trangThai
+                            }
+                        )
+                    ) {
 
-                    showAction(
-                        saveButton
-                    );
+                        showAction(
+                            saveButton
+                        );
+
+                    }
 
 
-                    showAction(
-                        saveApproveButton
-                    );
+                    if (
+                        permission.canApprove(
+                            permissions
+                        )
+                    ) {
+
+                        showAction(
+                            saveApproveButton
+                        );
+
+                    }
 
                     break;
-
                 case 60:
 
                     showAction(
@@ -342,9 +451,18 @@ document.addEventListener(
                     );
 
 
-                    showAction(
-                        saveButton
-                    );
+                    if (
+                        permission.canUpdateExpired(
+                            permissions
+                        )
+                    ) {
+
+                        showAction(
+                            saveButton
+                        );
+
+                    }
+
 
                     break;
 

@@ -24,7 +24,8 @@
 
             <a
                 href="{{createUrl}}"
-                class="module-list-page__create">
+                class="module-list-page__create"
+                data-list-create>
 
                 <i class="fa-solid fa-plus"></i>
 
@@ -121,5 +122,9 @@
     {{> catalog/pagination
         paginationId=paginationId
     }}
+
+    {{#if showNoPermission}}
+        {{> catalog/no-permission}}
+    {{/if}}
 
 </section>

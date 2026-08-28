@@ -11,13 +11,24 @@
     --td-warning: #d97706;
 }
 
+.page-content:has(> .td-page) {
+    display: flex;
+    flex-direction: column;
+
+    min-height: 0;
+}
 
 .td-page {
     display: flex;
+    flex: 1 1 auto;
     flex-direction: column;
+
     gap: 16px;
 
-    min-height: 100vh;
+    width: 100%;
+    min-width: 0;
+
+    min-height: 0;
 
     padding: 18px 20px 28px;
 
@@ -25,7 +36,6 @@
 
     background: var(--td-bg);
 }
-
 
 .td-topline {
     min-height: 24px;

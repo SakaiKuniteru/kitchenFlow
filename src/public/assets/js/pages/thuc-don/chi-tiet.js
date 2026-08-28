@@ -19,6 +19,55 @@ document.addEventListener(
 
         if (!id) return;
 
+        const permission =
+            window.ThucDon
+                .permission;
+
+
+        let permissions;
+
+
+        try {
+
+            permissions =
+                await permission
+                    .load();
+
+        }
+        catch (
+            error
+        ) {
+
+            console.error(
+                "Không thể tải quyền thực đơn:",
+                error
+            );
+
+
+            permission.showNoPermission(
+                root
+            );
+
+
+            return;
+
+        }
+
+
+        if (
+            !permission.canView(
+                permissions
+            )
+        ) {
+
+            permission.showNoPermission(
+                root
+            );
+
+
+            return;
+
+        }
 
         const form =
             window.ThucDon
@@ -109,7 +158,18 @@ document.addEventListener(
                 )
                 ?.addEventListener(
                     "click",
-                    () =>
+                    () => {
+
+                        if (
+                            !permission.canApprove(
+                                permissions
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
                         confirmAction(
                             "Xác nhận duyệt thực đơn",
                             "Bạn có chắc chắn muốn duyệt thực đơn này?",
@@ -124,9 +184,10 @@ document.addEventListener(
                                                 id
                                             )
                                 )
-                        )
-                );
+                        );
 
+                    }
+                );
 
             root
                 .querySelector(
@@ -134,7 +195,15 @@ document.addEventListener(
                 )
                 ?.addEventListener(
                     "click",
-                    () =>
+                    () =>{
+                        if (
+                            !permission.canUnapprove(
+                                permissions
+                            )
+                        ) {
+                            return;
+                        }
+
                         confirmAction(
                             "Xác nhận hủy duyệt",
                             "Bạn có chắc chắn muốn hủy duyệt thực đơn này?",
@@ -150,6 +219,7 @@ document.addEventListener(
                                             )
                                 )
                         )
+                    }
                 );
 
 
@@ -159,7 +229,15 @@ document.addEventListener(
                 )
                 ?.addEventListener(
                     "click",
-                    () =>
+                    () =>{
+                        if (
+                            !permission.canCancel(
+                                permissions
+                            )
+                        ) {
+                            return;
+                        }
+
                         confirmAction(
                             "Xác nhận hủy thực đơn",
                             "Bạn có chắc chắn muốn hủy thực đơn này?",
@@ -175,8 +253,8 @@ document.addEventListener(
                                             )
                                 )
                         )
+                    }  
                 );
-
 
             root
                 .querySelector(
@@ -184,7 +262,15 @@ document.addEventListener(
                 )
                 ?.addEventListener(
                     "click",
-                    () =>
+                    () => {
+                        if (
+                            !permission.canRestore(
+                                permissions
+                            )
+                        ) {
+                            return;
+                        }
+
                         confirmAction(
                             "Xác nhận hoàn hủy",
                             "Bạn có chắc chắn muốn hoàn lại thao tác hủy?",
@@ -200,8 +286,8 @@ document.addEventListener(
                                             )
                                 )
                         )
+                    }  
                 );
-
         }
 
 
@@ -344,41 +430,103 @@ document.addEventListener(
                 case 20:
                 case 40:
 
-                    showAction(
-                        actions.edit
-                    );
+                    if (
+                        permission.canUpdateRecord(
+                            permissions,
+                            data
+                        )
+                    ) {
 
-                    showAction(
-                        actions.approve
-                    );
+                        showAction(
+                            actions.edit
+                        );
 
-                    showAction(
-                        actions.cancel
-                    );
+                    }
+
+
+                    if (
+                        permission.canApprove(
+                            permissions
+                        )
+                    ) {
+
+                        showAction(
+                            actions.approve
+                        );
+
+                    }
+
+
+                    if (
+                        permission.canCancel(
+                            permissions
+                        )
+                    ) {
+
+                        showAction(
+                            actions.cancel
+                        );
+
+                    }
+
 
                     break;
+
 
                 case 30:
 
-                    showAction(
-                        actions.unapprove
-                    );
+                    if (
+                        permission.canUnapprove(
+                            permissions
+                        )
+                    ) {
+
+                        showAction(
+                            actions.unapprove
+                        );
+
+                    }
+
 
                     break;
+
 
                 case 50:
 
-                    showAction(
-                        actions.restore
-                    );
+                    if (
+                        permission.canRestore(
+                            permissions
+                        )
+                    ) {
+
+                        showAction(
+                            actions.restore
+                        );
+
+                    }
+
 
                     break;
 
+
                 case 60:
 
-                    showAction(
-                        actions.edit
-                    );
+                    /*
+                    * Thực đơn hết hạn:
+                    * chỉ Q001004 mới được cập nhật.
+                    */
+                    if (
+                        permission.canUpdateExpired(
+                            permissions
+                        )
+                    ) {
+
+                        showAction(
+                            actions.edit
+                        );
+
+                    }
+
 
                     break;
 
@@ -389,6 +537,7 @@ document.addEventListener(
                         "Trạng thái thực đơn không hợp lệ:",
                         data?.trangThai
                     );
+
 
                     break;
 

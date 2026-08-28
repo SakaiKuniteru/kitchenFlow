@@ -12,6 +12,55 @@ document.addEventListener(
 
         if (!root) return;
 
+        let permissions;
+
+        try {
+
+            permissions =
+                await window.ThucDon
+                    .permission
+                    .load();
+
+        }
+        catch (
+            error
+        ) {
+
+            console.error(
+                "Không thể tải quyền thực đơn:",
+                error
+            );
+
+
+            window.ThucDon
+                .permission
+                .showNoPermission(
+                    root
+                );
+
+
+            return;
+
+        }
+
+        if (
+            !window.ThucDon
+                .permission
+                .canCreate(
+                    permissions
+                )
+        ) {
+
+            window.ThucDon
+                .permission
+                .showNoPermission(
+                    root
+                );
+
+
+            return;
+
+        }
 
         const initial =  createInitialData();
 
@@ -120,22 +169,21 @@ document.addEventListener(
                         status
                     );
 
-            const errors =
+            form.clearErrors();
+
+            const generalErrors =
                 window.ThucDon
                     .payload
-                    .validate(
+                    .validateGeneral(
                         payload
                     );
 
 
-            form.clearErrors();
-
-
             if (
-                errors.length
+                generalErrors.length
             ) {
 
-                errors.forEach(
+                generalErrors.forEach(
                     ([
                         fieldName,
                         message
@@ -151,6 +199,33 @@ document.addEventListener(
 
 
                 form.focusFirstError();
+
+
+                return;
+
+            }
+
+            const contentErrors =
+                window.ThucDon
+                    .payload
+                    .validateContent(
+                        payload,
+                        root._tdOptions
+                            ?.settings ||
+                        {}
+                    );
+
+
+            if (
+                contentErrors.length
+            ) {
+
+                window.MCS
+                    ?.toast
+                    ?.error
+                    ?.(
+                        contentErrors[0]
+                    );
 
 
                 return;

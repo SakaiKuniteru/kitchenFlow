@@ -95,21 +95,17 @@
 
     </header>
 
-
     <div
         class="td-form"
         data-thuc-don-form
         data-form-mode="detail">
-
         {{> thuc-don/form-thong-tin-chung}}
-
         {{> thuc-don/form-noi-dung}}
-
     </div>
-
+    {{> catalog/no-permission}}
 </main>
 
-
+<script src="/assets/js/pages/thuc-don/permission.js"></script>
 <script src="/assets/js/pages/thuc-don/form.js"></script>
 <script src="/assets/js/pages/thuc-don/api.js"></script>
 <script src="/assets/js/pages/thuc-don/options.js"></script>

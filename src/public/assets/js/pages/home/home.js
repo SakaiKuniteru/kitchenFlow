@@ -28,6 +28,24 @@ document.addEventListener(
 
         };
 
+        const HOME_PERMISSION =
+            "Q000001";
+
+        const root =
+            document.querySelector(
+                "[data-home-page]"
+            );
+
+        const homeContent =
+            root?.querySelector(
+                "[data-home-content]"
+            );
+
+        const noPermission =
+            root?.querySelector(
+                "[data-catalog-no-permission]"
+            );
+
         const elements = {
 
             currentDate:
@@ -107,12 +125,162 @@ document.addEventListener(
 
         };
 
-        function initialize() {
+        async function checkHomePermission() {
+
+            if (
+                !window.MCS?.api?.request
+            ) {
+                showNoPermission();
+
+                return false;
+            }
+
+            try {
+
+                const result =
+                    await window.MCS.api.request(
+                        "/api/mcs/v1/auth/nhan-vien-hien-tai"
+                    );
+
+                const dsQuyen =
+                    Array.isArray(
+                        result?.data?.dsQuyen
+                    )
+                        ? result.data.dsQuyen
+                        : [];
+
+                const permissions =
+                    new Set(
+                        dsQuyen
+                            .map(item =>
+                                String(
+                                    item?.maQuyen ||
+                                    ""
+                                )
+                                    .trim()
+                                    .toUpperCase()
+                            )
+                            .filter(Boolean)
+                    );
+
+                return permissions.has(
+                    HOME_PERMISSION
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Không thể kiểm tra quyền Trang chủ.",
+                    error
+                );
+
+                return false;
+
+            }
+
+        }
+
+        function showNoPermission() {
+
+            if (!root) {
+                return;
+            }
+
+            const pageContent =
+                root.closest(
+                    ".page-content"
+                ) ||
+                document.querySelector(
+                    ".page-content"
+                );
+
+            /*
+             * Ẩn toàn bộ Home.
+             */
+            if (homeContent) {
+                homeContent.hidden = true;
+            }
+
+            root.classList.add(
+                "is-permission-hidden"
+            );
+
+            /*
+             * Đưa màn báo quyền ra ngoài Home
+             * và trực tiếp vào page-content.
+             */
+            if (
+                noPermission &&
+                pageContent
+            ) {
+
+                pageContent.appendChild(
+                    noPermission
+                );
+
+                noPermission.hidden =
+                    false;
+
+            }
+
+            document.documentElement
+                .classList
+                .add(
+                    "catalog-permission-denied"
+                );
+
+            document.body
+                .classList
+                .add(
+                    "catalog-permission-denied"
+                );
+
+        }
+
+        function showHome() {
+
+            if (!root) {
+                return;
+            }
+
+            root.classList.remove(
+                "is-permission-hidden"
+            );
+
+            if (homeContent) {
+                homeContent.hidden = false;
+            }
+
+            if (noPermission) {
+                noPermission.hidden = true;
+            }
+
+            document.documentElement
+                .classList
+                .remove(
+                    "catalog-permission-denied"
+                );
+
+            document.body
+                .classList
+                .remove(
+                    "catalog-permission-denied"
+                );
+
+        }
+
+        async function initialize() {
+            const allowed = await checkHomePermission();
+            if (!allowed) {
+                showNoPermission();
+                return;
+            }
+            showHome();
             renderCurrentDateTime();
             initializeClock();
             renderCurrentUser();
             bindEvents();
-            loadSummary();
+            await loadSummary();
         }
 
         function bindEvents() {

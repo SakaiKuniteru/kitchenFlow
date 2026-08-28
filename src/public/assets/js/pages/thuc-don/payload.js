@@ -299,7 +299,7 @@ window.ThucDon.payload =
 
         }
 
-        function validate(
+        function validateGeneral(
             d
         ) {
 
@@ -440,13 +440,8 @@ window.ThucDon.payload =
                     break;
 
 
-                case 30: {
+                case 30:
 
-                    /*
-                    * Payload chỉ có tuNgay/denNgay.
-                    * Khi chưa tạo được khoảng tháng,
-                    * báo vào phần chọn tháng.
-                    */
                     if (
                         !from ||
                         !to
@@ -460,8 +455,6 @@ window.ThucDon.payload =
                     }
 
                     break;
-
-                }
 
 
                 case 40:
@@ -498,7 +491,7 @@ window.ThucDon.payload =
 
                         errors.push([
                             "denNgayKhoang",
-                            "Đến ngày phải lớn hơn hoặc bằng từ ngày."
+                            "Từ ngày không được lớn hơn đến ngày."
                         ]);
 
                     }
@@ -510,6 +503,316 @@ window.ThucDon.payload =
 
             return errors;
 
+        }
+
+        function validateContent(
+            d,
+            settings = {}
+        ) {
+
+            const errors =
+                [];
+
+
+            const from =
+                date(
+                    d.tuNgay
+                );
+
+
+            const to =
+                date(
+                    d.denNgay
+                );
+
+            if (
+                !from ||
+                !to ||
+                from > to
+            ) {
+
+                return errors;
+
+            }
+
+
+            const actualDates =
+                new Set(
+                    (
+                        Array.isArray(
+                            d.dsNgay
+                        )
+                            ? d.dsNgay
+                            : []
+                    )
+                        .map(
+                            day =>
+                                date(
+                                    day?.ngay ||
+                                    day?.ngayApDung
+                                )
+                        )
+                        .filter(Boolean)
+                );
+
+            const outsideDates =
+                [...actualDates]
+                    .filter(
+                        value =>
+                            value < from ||
+                            value > to
+                    );
+
+
+            if (
+                outsideDates.length > 0
+            ) {
+
+                errors.push(
+                    "Có ngày trong nội dung thực đơn nằm ngoài thời gian áp dụng. Vui lòng cập nhật lại danh sách ngày."
+                );
+
+
+                return errors;
+
+            }
+
+            const required =
+                settings
+                    ?.batBuocDuSoNgay ===
+                true;
+
+
+            if (
+                !required
+            ) {
+
+                return errors;
+
+            }
+
+
+            const requiredDates =
+                buildDateRange(
+                    from,
+                    to
+                );
+
+
+            const missingDates =
+                requiredDates
+                    .filter(
+                        value =>
+                            !actualDates.has(
+                                value
+                            )
+                    );
+
+
+            if (
+                missingDates.length === 0
+            ) {
+
+                return errors;
+
+            }
+
+
+            const preview =
+                missingDates
+                    .slice(
+                        0,
+                        5
+                    )
+                    .map(
+                        formatDate
+                    )
+                    .join(
+                        ", "
+                    );
+
+
+            const remaining =
+                missingDates.length -
+                Math.min(
+                    missingDates.length,
+                    5
+                );
+
+
+            let message =
+                `Thực đơn bắt buộc phải có đầy đủ ${requiredDates.length} ngày trong thời gian áp dụng. ` +
+                `Hiện còn thiếu ${missingDates.length} ngày`;
+
+
+            if (
+                preview
+            ) {
+
+                message +=
+                    `: ${preview}`;
+
+            }
+
+
+            if (
+                remaining > 0
+            ) {
+
+                message +=
+                    ` và ${remaining} ngày khác`;
+
+            }
+
+
+            message +=
+                ".";
+
+
+            errors.push(
+                message
+            );
+
+
+            return errors;
+
+        }
+
+        function validate(
+            d,
+            settings = {}
+        ) {
+
+            const generalErrors =
+                validateGeneral(
+                    d
+                );
+
+
+            if (
+                generalErrors.length
+            ) {
+
+                return generalErrors;
+
+            }
+
+
+            return validateContent(
+                d,
+                settings
+            )
+                .map(
+                    message => [
+                        null,
+                        message
+                    ]
+                );
+
+        }
+
+        function buildDateRange(
+            from,
+            to
+        ) {
+            const [
+                fromYear,
+                fromMonth,
+                fromDay
+            ] =
+                String(from)
+                    .split("-")
+                    .map(Number);
+
+            const [
+                toYear,
+                toMonth,
+                toDay
+            ] =
+                String(to)
+                    .split("-")
+                    .map(Number);
+
+            let current =
+                Date.UTC(
+                    fromYear,
+                    fromMonth - 1,
+                    fromDay
+                );
+
+            const end =
+                Date.UTC(
+                    toYear,
+                    toMonth - 1,
+                    toDay
+                );
+
+            const result = [];
+
+            while (
+                current <= end
+            ) {
+                const dateValue =
+                    new Date(
+                        current
+                    );
+
+                result.push(
+                    [
+                        dateValue
+                            .getUTCFullYear(),
+
+                        String(
+                            dateValue
+                                .getUTCMonth() +
+                            1
+                        ).padStart(
+                            2,
+                            "0"
+                        ),
+
+                        String(
+                            dateValue
+                                .getUTCDate()
+                        ).padStart(
+                            2,
+                            "0"
+                        )
+                    ].join("-")
+                );
+
+                current +=
+                    24 *
+                    60 *
+                    60 *
+                    1000;
+            }
+
+            return result;
+        }
+
+        function formatDate(
+            value
+        ) {
+            const normalized =
+                date(
+                    value
+                );
+
+            if (!normalized) {
+                return "";
+            }
+
+            const [
+                year,
+                month,
+                day
+            ] =
+                normalized.split("-");
+
+            return (
+                `${day}/${month}/${year}`
+            );
         }
 
         function persisted(
@@ -570,6 +873,8 @@ window.ThucDon.payload =
         return {
             build,
             validate,
+            validateGeneral,
+            validateContent,
             resolveTrangThai
         };
 

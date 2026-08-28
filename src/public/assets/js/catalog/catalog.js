@@ -314,20 +314,95 @@ class MCSCatalog {
 
         this.root.hidden = false;
 
-        if (this.elements.content) {
-            this.elements.content.hidden = !allowed;
-        }
+        const noPermission =
+            this.elements.noPermission;
 
-        if (this.elements.noPermission) {
-            this.elements.noPermission.hidden = allowed;
-        }
+        const pageContent =
+            this.root.closest(
+                ".page-content"
+            );
 
         if (!allowed) {
+            this.root.classList.add(
+                "is-permission-hidden"
+            );
+
+            if (
+                noPermission &&
+                !noPermission._mcsOriginalParent
+            ) {
+                noPermission._mcsOriginalParent =
+                    noPermission.parentElement;
+            }
+            if (
+                noPermission &&
+                pageContent &&
+                noPermission.parentElement !== pageContent
+            ) {
+                pageContent.appendChild(
+                    noPermission
+                );
+            }
+
+            if (noPermission) {
+                noPermission.hidden = false;
+            }
+
+            document.documentElement
+                .classList
+                .add(
+                    "catalog-permission-denied"
+                );
+
+            document.body
+                .classList
+                .add(
+                    "catalog-permission-denied"
+                );
+
             return;
         }
 
+        this.root.classList.remove(
+            "is-permission-hidden"
+        );
+
+        if (noPermission) {
+            noPermission.hidden = true;
+
+            const originalParent =
+                noPermission._mcsOriginalParent;
+
+            if (
+                originalParent &&
+                originalParent.isConnected &&
+                noPermission.parentElement !== originalParent
+            ) {
+                originalParent.appendChild(
+                    noPermission
+                );
+            }
+        }
+
+        document.documentElement
+            .classList
+            .remove(
+                "catalog-permission-denied"
+            );
+
+        document.body
+            .classList
+            .remove(
+                "catalog-permission-denied"
+            );
+
+        if (this.elements.content) {
+            this.elements.content.hidden = false;
+        }
+
         if (this.elements.create) {
-            this.elements.create.hidden = !this.canCreate();
+            this.elements.create.hidden =
+                !this.canCreate();
         }
     }
 

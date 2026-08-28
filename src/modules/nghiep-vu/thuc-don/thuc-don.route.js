@@ -34,14 +34,14 @@ router.post(
 router.get(
     "/:id",
     authenticate,
-    authorize("Q001001", "Q001002", "Q001003"),
+    authorize("Q001001", "Q001002", "Q001003", "Q001004"),
     controller.getChiTiet
 );
 
 router.post(
     "/them-moi",
     authenticate,
-    authorize("Q001002", "Q001003"),
+    authorize("Q001002", "Q001003", "Q001004"),
     validate(createSchema),
     controller.create
 );
@@ -49,14 +49,14 @@ router.post(
 router.patch(
     "/cap-nhat/:id",
     authenticate,
-    authorize("Q001003"),
+    authorize("Q001003", "Q001004"),
     validate(updateSchema),
     controller.update
 );
 
 router.delete(
     "/xoa/:id",
-    authorize("Q001004"),
+    authorize("Q001005"),
     authenticate,
     controller.xoa
 );
@@ -64,28 +64,28 @@ router.delete(
 router.patch(
     "/duyet/:id",
     authenticate,
-    authorize("Q001005"),
+    authorize("Q001006"),
     controller.duyet
 );
 
 router.patch(
     "/huy-duyet/:id",
     authenticate,
-    authorize("Q001006"),
+    authorize("Q001007"),
     controller.huyDuyet
 );
 
 router.patch(
     "/huy/:id",
     authenticate,
-    authorize("Q001007"),
+    authorize("Q001008"),
     controller.huy
 );
 
 router.patch(
     "/hoan-huy/:id",
     authenticate,
-    authorize("Q001008"),
+    authorize("Q001009"),
     controller.hoanHuy
 );
 

@@ -18,6 +18,7 @@ window.ThucDon.options =
 
         const DEFAULT_SETTINGS = {
             ngayBatDauTuan: 0,
+            batBuocDuSoNgay: false,
             soTuanHienThi: 5,
             soNamHienThiThang: 5
         };
@@ -36,6 +37,7 @@ window.ThucDon.options =
                 monAn,
                 donViTinh,
                 ngayBatDauTuan,
+                batBuocDuSoNgay,
                 soTuanHienThi,
                 soNamHienThiThang
             ] =
@@ -75,6 +77,10 @@ window.ThucDon.options =
                     getSetting(
                         "NGAY_BAT_DAU_TUAN_THUC_DON",
                         DEFAULT_SETTINGS.ngayBatDauTuan
+                    ),
+                    getSetting(
+                        "THUC_DON_BAT_BUOC_DU_SO_NGAY",
+                        DEFAULT_SETTINGS.batBuocDuSoNgay
                     ),
 
                     getSetting(
@@ -117,6 +123,13 @@ window.ThucDon.options =
                         normalizeWeekStart(
                             ngayBatDauTuan
                         ),
+
+                    batBuocDuSoNgay:
+                        normalizeBoolean(
+                            batBuocDuSoNgay,
+                            DEFAULT_SETTINGS.batBuocDuSoNgay
+                        ),
+
 
                     soTuanHienThi:
                         positiveInteger(
@@ -1237,9 +1250,7 @@ window.ThucDon.options =
             ma,
             fallback
         ) {
-
             try {
-
                 const response =
                     await window.ThucDon
                         .api
@@ -1247,24 +1258,42 @@ window.ThucDon.options =
                             ma
                         );
 
-
                 const data =
                     response?.data ??
                     response;
 
+                if (
+                    data &&
+                    typeof data === "object" &&
+                    data.active === false
+                ) {
+                    return fallback;
+                }
 
-                return (
-                    data?.giaTri ??
-                    fallback
-                );
+                const rawValue =
+                    data &&
+                    typeof data === "object"
+                        ? (
+                            data.giaTri ??
+                            data.value
+                        )
+                        : data;
 
-            }
-            catch {
+                if (
+                    rawValue === null ||
+                    rawValue === undefined ||
+                    String(
+                        rawValue
+                    ).trim() === ""
+                ) {
+                    return fallback;
+                }
 
+                return rawValue;
+
+            } catch {
                 return fallback;
-
             }
-
         }
 
         function normalizeWeekStart(
@@ -1278,6 +1307,26 @@ window.ThucDon.options =
                 ? 1
                 : 0;
 
+        }
+
+        function normalizeBoolean(
+            value,
+            fallback = false
+        ) {
+            if (
+                value === null ||
+                value === undefined ||
+                String(value).trim() === ""
+            ) {
+                return fallback;
+            }
+
+            return (
+                String(value)
+                    .trim()
+                    .toLowerCase() ===
+                "true"
+            );
         }
 
         function positiveInteger(
@@ -2021,8 +2070,7 @@ window.ThucDon.options =
                     data?.tuNgay
                 );
 
-
-            const selectedYear =
+            const selectedYearCandidate =
                 selectedDate
                     ? selectedDate.slice(
                         0,
@@ -2030,28 +2078,14 @@ window.ThucDon.options =
                     )
                     : "";
 
-
-            if (
-                selectedYear &&
-                !list.some(
+            const selectedYear =
+                list.some(
                     item =>
                         item.value ===
-                        selectedYear
+                        selectedYearCandidate
                 )
-            ) {
-
-                list.unshift({
-
-                    value:
-                        selectedYear,
-
-                    label:
-                        selectedYear
-
-                });
-
-            }
-
+                    ? selectedYearCandidate
+                    : "";
 
             fillSimpleOptions(
                 select,
@@ -2176,8 +2210,7 @@ window.ThucDon.options =
 
             }
 
-
-            const selected =
+            const selectedCandidate =
                 selectedMonth
                     ? String(
                         selectedMonth
@@ -2187,28 +2220,14 @@ window.ThucDon.options =
                     )
                     : "";
 
-
-            if (
-                selected &&
-                !list.some(
+            const selected =
+                list.some(
                     item =>
                         item.value ===
-                        selected
+                        selectedCandidate
                 )
-            ) {
-
-                list.unshift({
-
-                    value:
-                        selected,
-
-                    label:
-                        `${selected}/${year}`
-
-                });
-
-            }
-
+                    ? selectedCandidate
+                    : "";
 
             fillSimpleOptions(
                 select,

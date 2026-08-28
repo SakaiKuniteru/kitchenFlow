@@ -87,23 +87,18 @@
         class="td-form"
         data-thuc-don-form
         data-form-mode="update">
-
         {{> thuc-don/form-thong-tin-chung}}
-
         {{> thuc-don/form-noi-dung}}
-
     </div>
-
-
     {{> thuc-don/modal-ngay}}
-
     {{> thuc-don/modal-nhom}}
-
     {{> thuc-don/modal-mon}}
+    {{> catalog/no-permission}}
 
 </main>
 
 <script src="/assets/js/components/checkbox.js"></script>
+<script src="/assets/js/pages/thuc-don/permission.js"></script>
 <script src="/assets/js/pages/thuc-don/api.js"></script>
 <script src="/assets/js/pages/thuc-don/options.js"></script>
 <script src="/assets/js/pages/thuc-don/form.js"></script>

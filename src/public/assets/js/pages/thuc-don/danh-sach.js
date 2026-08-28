@@ -2,6 +2,19 @@
 
 document.addEventListener( "DOMContentLoaded", () => {
         const API_BASE = "/api/mcs/v1/thuc-don";
+        const pageRoot =
+            document.querySelector(
+                '[data-module-list-page="thuc-don"]'
+            );
+
+
+        const permission =
+            window.ThucDon
+                .permission;
+
+
+        let permissions =
+            new Set();
         const TRANG_THAI_THUC_DON = Object.freeze({
                 TAO_MOI: 10, 
                 CHO_DUYET: 20, 
@@ -58,12 +71,74 @@ document.addEventListener( "DOMContentLoaded", () => {
         initialize();
 
         async function initialize() {
+
+            try {
+
+                permissions =
+                    await permission
+                        .load();
+
+            }
+            catch (
+                error
+            ) {
+
+                console.error(
+                    "Không thể tải quyền thực đơn:",
+                    error
+                );
+
+
+                permission
+                    .showNoPermission(
+                        pageRoot
+                    );
+
+
+                return;
+
+            }
+
+            if (
+                !permission.canView(
+                    permissions
+                )
+            ) {
+                permission
+                    .showNoPermission(
+                        pageRoot
+                    );
+                return;
+            }
+
+            applyPermissionUI();
             initializePagination();
             bindEvents();
             await loadFilterOptions();
             initializeFilterClearButtons();
             initializeFilterSearchBehavior();
             await loadData();
+        }
+
+        function applyPermissionUI() {
+
+            const createButton =
+                document.querySelector(
+                    "[data-list-create]"
+                );
+
+
+            if (
+                createButton
+            ) {
+
+                createButton.hidden =
+                    !permission.canCreate(
+                        permissions
+                    );
+
+            }
+
         }
 
         function initializeFilterClearButtons() {
@@ -212,8 +287,24 @@ document.addEventListener( "DOMContentLoaded", () => {
             bindFilterDependencies();
         }
 
-        function openDetail( id ) {
-            window.location.href = `/thuc-don/thong-tin-chi-tiet-thuc-don/${id}`;
+        function openDetail(
+            id
+        ) {
+
+            if (
+                !permission.canView(
+                    permissions
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            window.location.href =
+                `/thuc-don/thong-tin-chi-tiet-thuc-don/${id}`;
+
         }
 
         function bindFilter() {
@@ -355,10 +446,14 @@ document.addEventListener( "DOMContentLoaded", () => {
 
                         const id = Number( row.dataset.recordId );
 
-                        if (!id) {
+                        if (
+                            !id ||
+                            !permission.canView(
+                                permissions
+                            )
+                        ) {
                             return;
                         }
-
                         openDetail( id );
                     } );
         }
@@ -518,6 +613,30 @@ document.addEventListener( "DOMContentLoaded", () => {
         }
 
         function renderAction( action, id ) {
+            if (
+                action ===
+                    "view" &&
+                !permission.canView(
+                    permissions
+                )
+            ) {
+
+                return "";
+
+            }
+
+
+            if (
+                action ===
+                    "delete" &&
+                !permission.canDelete(
+                    permissions
+                )
+            ) {
+
+                return "";
+
+            }
             const config = ACTIONS[action];
 
             if (!config) {
@@ -707,6 +826,15 @@ document.addEventListener( "DOMContentLoaded", () => {
         }
 
         async function deleteRecord( id ) {
+            if (
+                !permission.canDelete(
+                    permissions
+                )
+            ) {
+
+                return;
+
+            }
             const executeDelete = async () => {
                     try {
                         setLoading( true );
