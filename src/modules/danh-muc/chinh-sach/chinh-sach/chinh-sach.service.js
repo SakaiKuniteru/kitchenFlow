@@ -2,7 +2,7 @@ const pool = require("../../../../config/database");
 const ApiError = require("../../../../utils/api-error");
 
 const {
-    loaiChinhSach: danhSachLoaiChinhSach
+    loaiDoiTuong: danhSachLoaiDoiTuong
 } = require("../../../../constants/enums");
 
 const chinhSachRepository = require("./chinh-sach.repository");
@@ -17,7 +17,7 @@ class ChinhSachService {
             );
 
         const loaiChinhSach =
-            danhSachLoaiChinhSach.find(
+            danhSachLoaiDoiTuong.find(
                 item =>
                     Number(item.value) ===
                     giaTriSo
@@ -66,7 +66,7 @@ class ChinhSachService {
             );
 
         const hopLe =
-            danhSachLoaiChinhSach.some(
+            danhSachLoaiDoiTuong.some(
                 item =>
                     Number(item.value) ===
                     giaTriSo
@@ -416,7 +416,7 @@ class ChinhSachService {
     }
 
     getLoaiChinhSach() {
-        return danhSachLoaiChinhSach
+        return danhSachLoaiDoiTuong
             .map(
                 item => ({
                     value:

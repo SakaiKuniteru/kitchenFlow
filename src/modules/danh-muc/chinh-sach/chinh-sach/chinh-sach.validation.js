@@ -1,11 +1,11 @@
 const Joi = require("joi");
 
 const {
-    loaiChinhSach: danhSachLoaiChinhSach
+    loaiDoiTuong: danhSachLoaiDoiTuong
 } = require("../../../../constants/enums");
 
 const danhSachGiaTriLoaiChinhSach =
-    danhSachLoaiChinhSach.map(
+    danhSachLoaiDoiTuong.map(
         item => Number(item.value)
     );
 

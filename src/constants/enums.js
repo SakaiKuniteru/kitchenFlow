@@ -31,7 +31,7 @@ const LOAI_MIEN_GIAM = [
 
 ];
 
-const LOAI_CHINH_SACH = [
+const LOAI_DOI_TUONG = [
 
     {
         value: 10,
@@ -253,7 +253,7 @@ const LOAI_BINH_CHON = [
 module.exports = {
     "gioiTinh": GIOI_TINH,
     "loaiMienGiam": LOAI_MIEN_GIAM,
-    "loaiChinhSach": LOAI_CHINH_SACH,
+    "loaiDoiTuong": LOAI_DOI_TUONG,
     "loaiDonVi": LOAI_DON_VI,
     "loaiBaoQuan": LOAI_BAO_QUAN,
     "loaiKho": LOAI_KHO,

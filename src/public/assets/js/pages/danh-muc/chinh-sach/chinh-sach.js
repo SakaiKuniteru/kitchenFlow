@@ -1,7 +1,7 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", () => {
-    const API_LOAI_CHINH_SACH = "/api/mcs/v1/enums?name=loaiChinhSach";
+    const API_LOAI_CHINH_SACH = "/api/mcs/v1/enums?name=loaiDoiTuong";
     const API_VOUCHER = "/api/mcs/v1/dm-voucher/tong-hop?active=true";
     const API_VAI_TRO = "/api/mcs/v1/dm-vai-tro/tong-hop?active=true";
     const API_CHUC_VU = "/api/mcs/v1/dm-chuc-vu/tong-hop?active=true";

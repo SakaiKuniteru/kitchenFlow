@@ -10,152 +10,6 @@ BEGIN
 END;
 $$;
 
-CREATE TABLE ct_binh_chon_suat_an (
-    binh_chon_id INTEGER NOT NULL,
-    mon_an_id INTEGER NOT NULL,
-    active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP DEFAULT now() NOT NULL,
-    updated_at TIMESTAMP DEFAULT now() NOT NULL
-);
-
-CREATE TABLE ct_chinh_sach_chuc_vu (
-    id BIGSERIAL NOT NULL,
-    chinh_sach_id BIGINT NOT NULL,
-    chuc_vu_id BIGINT NOT NULL,
-    active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-CREATE TABLE ct_chinh_sach_tai_khoan (
-    id BIGSERIAL NOT NULL,
-    chinh_sach_id BIGINT NOT NULL,
-    tai_khoan_id BIGINT NOT NULL,
-    active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-CREATE TABLE ct_chinh_sach_vai_tro (
-    id BIGSERIAL NOT NULL,
-    chinh_sach_id BIGINT NOT NULL,
-    vai_tro_id BIGINT NOT NULL,
-    active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-CREATE TABLE ct_chinh_sach_voucher (
-    chinh_sach_id BIGINT NOT NULL,
-    voucher_id INTEGER NOT NULL
-);
-
-CREATE TABLE ct_dot_binh_chon_chinh_sach (
-    dot_binh_chon_id INTEGER NOT NULL,
-    chinh_sach_id INTEGER CONSTRAINT ct_dot_binh_chon_chinh_sach_chinh_sach_ho_tro_id_not_null NOT NULL,
-    active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP DEFAULT now() NOT NULL,
-    updated_at TIMESTAMP DEFAULT now() NOT NULL
-);
-
-CREATE TABLE ct_dot_binh_chon_chuc_vu (
-    dot_binh_chon_id INTEGER NOT NULL,
-    chuc_vu_id INTEGER NOT NULL,
-    active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP DEFAULT now() NOT NULL,
-    updated_at TIMESTAMP DEFAULT now() NOT NULL
-);
-
-CREATE TABLE ct_dot_binh_chon_mon_an (
-    dot_binh_chon_id INTEGER NOT NULL,
-    mon_an_id INTEGER NOT NULL,
-    so_luong_du_kien INTEGER,
-    active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP DEFAULT now() NOT NULL,
-    updated_at TIMESTAMP DEFAULT now() NOT NULL
-);
-
-CREATE TABLE ct_dot_binh_chon_nhom_mon (
-    dot_binh_chon_id INTEGER NOT NULL,
-    nhom_mon_an_id INTEGER NOT NULL,
-    so_luong_duoc_chon INTEGER NOT NULL,
-    bat_buoc BOOLEAN DEFAULT false NOT NULL,
-    active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP DEFAULT now() NOT NULL,
-    updated_at TIMESTAMP DEFAULT now() NOT NULL
-);
-
-CREATE TABLE ct_kho_nhan_vien_quan_ly (
-    id SERIAL NOT NULL,
-    kho_id INTEGER NOT NULL,
-    nhan_vien_id INTEGER NOT NULL,
-    active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP DEFAULT now() NOT NULL,
-    updated_at TIMESTAMP DEFAULT now() NOT NULL
-);
-
-CREATE TABLE ct_mon_an_thuc_pham (
-    id SERIAL PRIMARY KEY,
-    mon_an_id INTEGER NOT NULL,
-    thuc_pham_id INTEGER NOT NULL,
-    dinh_luong NUMERIC(12, 3) NOT NULL,
-    ghi_chu VARCHAR(500),
-    active BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    CONSTRAINT fk_ct_mon_an_thuc_pham_mon_an
-        FOREIGN KEY (mon_an_id)
-        REFERENCES dm_mon_an(id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_ct_mon_an_thuc_pham_thuc_pham
-        FOREIGN KEY (thuc_pham_id)
-        REFERENCES dm_thuc_pham(id),
-    CONSTRAINT chk_ct_mon_an_thuc_pham_dinh_luong
-        CHECK (dinh_luong > 0),
-    CONSTRAINT uq_ct_mon_an_thuc_pham
-        UNIQUE (
-            mon_an_id,
-            thuc_pham_id
-        )
-);
-
-CREATE TABLE ct_nha_an_nhan_vien (
-    id BIGSERIAL NOT NULL,
-    nha_an_id INTEGER NOT NULL,
-    nhan_vien_id INTEGER NOT NULL,
-    active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP DEFAULT now() NOT NULL,
-    updated_at TIMESTAMP DEFAULT now() NOT NULL
-);
-
-CREATE TABLE ct_phieu_nhap (
-    id SERIAL NOT NULL,
-    phieu_nhap_id INTEGER NOT NULL,
-    thuc_pham_id INTEGER NOT NULL,
-    so_luong_nhap NUMERIC(18, 3) NOT NULL,
-    don_gia NUMERIC(18, 2) NOT NULL,
-    thanh_tien NUMERIC(18, 2) NOT NULL,
-    han_su_dung DATE,
-    so_lo VARCHAR(100),
-    ghi_chu TEXT,
-    created_at TIMESTAMP DEFAULT now() NOT NULL,
-    updated_at TIMESTAMP DEFAULT now() NOT NULL,
-    don_vi_so_cap_id INTEGER,
-    he_so_quy_doi NUMERIC(18, 3)
-);
-
-CREATE TABLE ct_phieu_xuat (
-    id SERIAL NOT NULL,
-    phieu_xuat_id INTEGER NOT NULL,
-    thuc_pham_id INTEGER NOT NULL,
-    so_luong_xuat NUMERIC(18, 3) NOT NULL,
-    ghi_chu TEXT,
-    created_at TIMESTAMP DEFAULT now() NOT NULL,
-    updated_at TIMESTAMP DEFAULT now() NOT NULL,
-    don_vi_so_cap_id INTEGER,
-    he_so_quy_doi NUMERIC(18, 3)
-);
-
 CREATE TABLE dm_bao_cao (
     id BIGSERIAL PRIMARY KEY,
     ma_bao_cao VARCHAR(100) NOT NULL,
@@ -317,15 +171,6 @@ CREATE TABLE dm_nhan_vien (
     tinh_thanh_id INTEGER,
     xa_phuong_id INTEGER,
     quoc_gia_id INTEGER
-);
-
-CREATE TABLE dm_nhan_vien_vai_tro (
-    id SERIAL NOT NULL,
-    nhan_vien_id INTEGER NOT NULL,
-    vai_tro_id INTEGER NOT NULL,
-    active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP DEFAULT now() NOT NULL,
-    updated_at TIMESTAMP DEFAULT now() NOT NULL
 );
 
 CREATE TABLE dm_nhom_mon_an (
@@ -607,6 +452,25 @@ CREATE TABLE nv_refresh_token (
     updated_at TIMESTAMP DEFAULT now()
 );
 
+CREATE TABLE nv_thong_bao (
+    id SERIAL NOT NULL,
+    tieu_de VARCHAR(255) NOT NULL,
+    noi_dung TEXT NOT NULL,
+    gui_tat_ca BOOLEAN NOT NULL DEFAULT FALSE,
+    tu_dong BOOLEAN NOT NULL DEFAULT FALSE,
+    ma_su_kien VARCHAR(100),
+    loai_tham_chieu VARCHAR(100),
+    tham_chieu_id INTEGER,
+    duong_dan VARCHAR(500),
+    trang_thai SMALLINT NOT NULL DEFAULT 10,
+    nguoi_tao_id INTEGER,
+    thoi_gian_gui TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT chk_nv_thong_bao_trang_thai CHECK (
+        trang_thai IN (10, 20, 30)
+    )
+);
 
 CREATE TABLE nv_thuc_don (
     id BIGSERIAL NOT NULL,
@@ -637,6 +501,162 @@ CREATE TABLE nv_thuc_don (
         CHECK (trang_thai_truoc_ket_thuc IS NULL OR trang_thai_truoc_ket_thuc IN ( 10, 20, 30, 40))
 );
 
+CREATE TABLE ct_binh_chon_suat_an (
+    binh_chon_id INTEGER NOT NULL,
+    mon_an_id INTEGER NOT NULL,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL
+);
+
+CREATE TABLE ct_chinh_sach_chuc_vu (
+    id BIGSERIAL NOT NULL,
+    chinh_sach_id BIGINT NOT NULL,
+    chuc_vu_id BIGINT NOT NULL,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE ct_chinh_sach_tai_khoan (
+    id BIGSERIAL NOT NULL,
+    chinh_sach_id BIGINT NOT NULL,
+    tai_khoan_id BIGINT NOT NULL,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE ct_chinh_sach_vai_tro (
+    id BIGSERIAL NOT NULL,
+    chinh_sach_id BIGINT NOT NULL,
+    vai_tro_id BIGINT NOT NULL,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE ct_chinh_sach_voucher (
+    chinh_sach_id BIGINT NOT NULL,
+    voucher_id INTEGER NOT NULL
+);
+
+CREATE TABLE ct_dot_binh_chon_chinh_sach (
+    dot_binh_chon_id INTEGER NOT NULL,
+    chinh_sach_id INTEGER CONSTRAINT ct_dot_binh_chon_chinh_sach_chinh_sach_ho_tro_id_not_null NOT NULL,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL
+);
+
+CREATE TABLE ct_dot_binh_chon_chuc_vu (
+    dot_binh_chon_id INTEGER NOT NULL,
+    chuc_vu_id INTEGER NOT NULL,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL
+);
+
+CREATE TABLE ct_dot_binh_chon_mon_an (
+    dot_binh_chon_id INTEGER NOT NULL,
+    mon_an_id INTEGER NOT NULL,
+    so_luong_du_kien INTEGER,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL
+);
+
+CREATE TABLE ct_dot_binh_chon_nhom_mon (
+    dot_binh_chon_id INTEGER NOT NULL,
+    nhom_mon_an_id INTEGER NOT NULL,
+    so_luong_duoc_chon INTEGER NOT NULL,
+    bat_buoc BOOLEAN DEFAULT false NOT NULL,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL
+);
+
+CREATE TABLE ct_kho_nhan_vien_quan_ly (
+    id SERIAL NOT NULL,
+    kho_id INTEGER NOT NULL,
+    nhan_vien_id INTEGER NOT NULL,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL
+);
+
+CREATE TABLE ct_mon_an_thuc_pham (
+    id SERIAL NOT NULL,
+    mon_an_id INTEGER NOT NULL,
+    thuc_pham_id INTEGER NOT NULL,
+    dinh_luong NUMERIC(12, 3) NOT NULL,
+    ghi_chu VARCHAR(500),
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    CONSTRAINT chk_ct_mon_an_thuc_pham_dinh_luong
+        CHECK (dinh_luong > 0)
+);
+
+CREATE TABLE ct_nha_an_nhan_vien (
+    id BIGSERIAL NOT NULL,
+    nha_an_id INTEGER NOT NULL,
+    nhan_vien_id INTEGER NOT NULL,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL
+);
+
+CREATE TABLE ct_phieu_nhap (
+    id SERIAL NOT NULL,
+    phieu_nhap_id INTEGER NOT NULL,
+    thuc_pham_id INTEGER NOT NULL,
+    so_luong_nhap NUMERIC(18, 3) NOT NULL,
+    don_gia NUMERIC(18, 2) NOT NULL,
+    thanh_tien NUMERIC(18, 2) NOT NULL,
+    han_su_dung DATE,
+    so_lo VARCHAR(100),
+    ghi_chu TEXT,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL,
+    don_vi_so_cap_id INTEGER,
+    he_so_quy_doi NUMERIC(18, 3)
+);
+
+CREATE TABLE ct_phieu_xuat (
+    id SERIAL NOT NULL,
+    phieu_xuat_id INTEGER NOT NULL,
+    thuc_pham_id INTEGER NOT NULL,
+    so_luong_xuat NUMERIC(18, 3) NOT NULL,
+    ghi_chu TEXT,
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL,
+    don_vi_so_cap_id INTEGER,
+    he_so_quy_doi NUMERIC(18, 3)
+);
+
+CREATE TABLE ct_thong_bao_doi_tuong (
+    thong_bao_id INTEGER NOT NULL,
+    loai_doi_tuong SMALLINT NOT NULL,
+    doi_tuong_id INTEGER NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT chk_ct_thong_bao_loai_doi_tuong CHECK (
+        loai_doi_tuong IN (10, 20, 30)
+    )
+);
+
+CREATE TABLE ct_thong_bao_nguoi_nhan (
+    thong_bao_id INTEGER NOT NULL,
+    tai_khoan_id INTEGER NOT NULL,
+    da_doc BOOLEAN NOT NULL DEFAULT FALSE,
+    thoi_gian_doc TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT chk_ct_thong_bao_thoi_gian_doc CHECK (
+        (da_doc = FALSE AND thoi_gian_doc IS NULL) 
+        OR da_doc = TRUE
+    )
+);
+
 CREATE TABLE ct_thuc_don_ngay (
     id BIGSERIAL NOT NULL,
     thuc_don_id BIGINT NOT NULL,
@@ -650,7 +670,7 @@ CREATE TABLE ct_thuc_don_ngay (
 CREATE TABLE ct_thuc_don_nhom_mon_an (
     id BIGSERIAL NOT NULL,
     thuc_don_ngay_id BIGINT NOT NULL,
-    nhom_mon_an_id BIGINT NOT NULL
+    nhom_mon_an_id BIGINT NOT NULL,
     thu_tu_hien_thi INTEGER,
     ghi_chu VARCHAR(500),
     active BOOLEAN DEFAULT true NOT NULL,
@@ -665,9 +685,9 @@ CREATE TABLE ct_thuc_don_mon_an (
     id BIGSERIAL NOT NULL,
     thuc_don_nhom_mon_an_id BIGINT NOT NULL,
     mon_an_id BIGINT NOT NULL,
-    don_vi_tinh_id BIGINT,
+    thu_tu_hien_thi INTEGER,
     dinh_luong NUMERIC(12, 3),
-    don_vi_tinh_id INTEGER,
+    don_vi_tinh_id BIGINT,
     ghi_chu VARCHAR(500),
     active BOOLEAN DEFAULT true NOT NULL,
     created_at TIMESTAMP DEFAULT now() NOT NULL,
@@ -717,6 +737,8 @@ ALTER TABLE ct_dot_binh_chon_nhom_mon
     ADD CONSTRAINT ct_dot_binh_chon_nhom_mon_pkey PRIMARY KEY (dot_binh_chon_id, nhom_mon_an_id);
 ALTER TABLE ct_kho_nhan_vien_quan_ly
     ADD CONSTRAINT ct_kho_nhan_vien_quan_ly_pkey PRIMARY KEY (id);
+ALTER TABLE ct_mon_an_thuc_pham
+    ADD CONSTRAINT ct_mon_an_thuc_pham_pkey PRIMARY KEY (id);
 ALTER TABLE ct_nha_an_nhan_vien
     ADD CONSTRAINT ct_nha_an_nhan_vien_pkey PRIMARY KEY (id);
 ALTER TABLE ct_phieu_nhap
@@ -741,8 +763,6 @@ ALTER TABLE dm_nha_an
     ADD CONSTRAINT dm_nha_an_pkey PRIMARY KEY (id);
 ALTER TABLE dm_nhan_vien
     ADD CONSTRAINT dm_nhan_vien_pkey PRIMARY KEY (id);
-ALTER TABLE dm_nhan_vien_vai_tro
-    ADD CONSTRAINT dm_nhan_vien_vai_tro_pkey PRIMARY KEY (id);
 ALTER TABLE dm_nhom_mon_an
     ADD CONSTRAINT dm_nhom_mon_an_pkey PRIMARY KEY (id);
 ALTER TABLE dm_nhom_tinh_nang
@@ -788,6 +808,13 @@ ALTER TABLE nv_phieu_xuat
 ALTER TABLE nv_refresh_token
     ADD CONSTRAINT nv_refresh_token_pkey PRIMARY KEY (id);
 
+ALTER TABLE nv_thong_bao
+    ADD CONSTRAINT nv_thong_bao_pkey PRIMARY KEY (id);
+ALTER TABLE ct_thong_bao_doi_tuong
+    ADD CONSTRAINT pk_ct_thong_bao_doi_tuong PRIMARY KEY (thong_bao_id, loai_doi_tuong, doi_tuong_id);
+ALTER TABLE ct_thong_bao_nguoi_nhan
+    ADD CONSTRAINT pk_ct_thong_bao_nguoi_nhan PRIMARY KEY (thong_bao_id, tai_khoan_id);
+
 ALTER TABLE nv_thuc_don
     ADD CONSTRAINT nv_thuc_don_pkey PRIMARY KEY (id);
 ALTER TABLE ct_thuc_don_ngay
@@ -811,6 +838,8 @@ ALTER TABLE ct_dot_binh_chon_chinh_sach
     ADD CONSTRAINT uq_ct_dot_binh_chon_chinh_sach UNIQUE (dot_binh_chon_id, chinh_sach_id);
 ALTER TABLE ct_kho_nhan_vien_quan_ly
     ADD CONSTRAINT uq_ct_kho_nhan_vien_quan_ly UNIQUE (kho_id, nhan_vien_id);
+ALTER TABLE ct_mon_an_thuc_pham
+    ADD CONSTRAINT uq_ct_mon_an_thuc_pham UNIQUE (mon_an_id, thuc_pham_id);
 ALTER TABLE ct_nha_an_nhan_vien
     ADD CONSTRAINT uq_ct_nha_an_nhan_vien UNIQUE (nha_an_id, nhan_vien_id);
 ALTER TABLE dm_ca_an
@@ -839,8 +868,6 @@ ALTER TABLE dm_nhan_vien
     ADD CONSTRAINT uq_dm_nhan_vien_ma_qr UNIQUE (ma_qr);
 ALTER TABLE dm_nhan_vien
     ADD CONSTRAINT uq_dm_nhan_vien_ma_barcode UNIQUE (ma_barcode);
-ALTER TABLE dm_nhan_vien_vai_tro
-    ADD CONSTRAINT uq_nv_vai_tro UNIQUE (nhan_vien_id, vai_tro_id);
 ALTER TABLE dm_nhom_mon_an
     ADD CONSTRAINT dm_nhom_mon_an_ma_nhom_mon_an_key UNIQUE (ma_nhom_mon_an);
 ALTER TABLE dm_nhom_tinh_nang
@@ -988,6 +1015,15 @@ ALTER TABLE ct_kho_nhan_vien_quan_ly
     REFERENCES dm_nhan_vien (id)
     ON UPDATE CASCADE
     ON DELETE RESTRICT;
+ALTER TABLE ct_mon_an_thuc_pham
+    ADD CONSTRAINT fk_ct_mon_an_thuc_pham_mon_an
+    FOREIGN KEY (mon_an_id)
+    REFERENCES dm_mon_an (id)
+    ON DELETE CASCADE;
+ALTER TABLE ct_mon_an_thuc_pham
+    ADD CONSTRAINT fk_ct_mon_an_thuc_pham_thuc_pham
+    FOREIGN KEY (thuc_pham_id)
+    REFERENCES dm_thuc_pham (id);
 ALTER TABLE ct_nha_an_nhan_vien
     ADD CONSTRAINT fk_ct_nanv_nha_an
     FOREIGN KEY (nha_an_id)
@@ -1086,16 +1122,6 @@ ALTER TABLE dm_nhan_vien
     ADD CONSTRAINT fk_nv_quoc_gia
     FOREIGN KEY (quoc_gia_id)
     REFERENCES dm_quoc_gia (id);
-ALTER TABLE dm_nhan_vien_vai_tro
-    ADD CONSTRAINT fk_nv_vai_tro_nhan_vien
-    FOREIGN KEY (nhan_vien_id)
-    REFERENCES dm_nhan_vien (id)
-    ON DELETE CASCADE;
-ALTER TABLE dm_nhan_vien_vai_tro
-    ADD CONSTRAINT fk_nv_vai_tro_vai_tro
-    FOREIGN KEY (vai_tro_id)
-    REFERENCES dm_vai_tro (id)
-    ON DELETE CASCADE;
 ALTER TABLE dm_phong_ban
     ADD CONSTRAINT fk_dm_phong_ban_co_so
     FOREIGN KEY (co_so_id)
@@ -1207,6 +1233,34 @@ ALTER TABLE nv_refresh_token
     ADD CONSTRAINT fk_refresh_token_tai_khoan
     FOREIGN KEY (tai_khoan_id)
     REFERENCES dm_tai_khoan (id);
+
+ALTER TABLE nv_thong_bao
+    ADD CONSTRAINT fk_nv_thong_bao_nguoi_tao
+    FOREIGN KEY (nguoi_tao_id)
+    REFERENCES dm_tai_khoan (id)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL;
+
+ALTER TABLE ct_thong_bao_doi_tuong
+    ADD CONSTRAINT fk_ct_thong_bao_doi_tuong_thong_bao
+    FOREIGN KEY (thong_bao_id)
+    REFERENCES nv_thong_bao (id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE;
+
+ALTER TABLE ct_thong_bao_nguoi_nhan
+    ADD CONSTRAINT fk_ct_thong_bao_nguoi_nhan_thong_bao
+    FOREIGN KEY (thong_bao_id)
+    REFERENCES nv_thong_bao (id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE;
+
+ALTER TABLE ct_thong_bao_nguoi_nhan
+    ADD CONSTRAINT fk_ct_thong_bao_nguoi_nhan_tai_khoan
+    FOREIGN KEY (tai_khoan_id)
+    REFERENCES dm_tai_khoan (id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE;
 
 ALTER TABLE nv_thuc_don
     ADD CONSTRAINT fk_nv_thuc_don_co_so
@@ -1375,6 +1429,15 @@ CREATE INDEX idx_dm_thiet_lap_nhom_tinh_nang_thiet_lap_id
 CREATE INDEX idx_dm_thiet_lap_nhom_tinh_nang_nhom_tinh_nang_id
     ON dm_thiet_lap_nhom_tinh_nang (nhom_tinh_nang_id);
 
+CREATE INDEX idx_ct_thong_bao_doi_tuong_lookup
+    ON ct_thong_bao_doi_tuong (loai_doi_tuong, doi_tuong_id);
+CREATE INDEX idx_ct_thong_bao_nguoi_nhan_tai_khoan
+    ON ct_thong_bao_nguoi_nhan (tai_khoan_id);
+CREATE INDEX idx_ct_thong_bao_nguoi_nhan_chua_doc
+    ON ct_thong_bao_nguoi_nhan (tai_khoan_id)
+    WHERE da_doc = FALSE;
+CREATE INDEX idx_nv_thong_bao_thoi_gian_gui
+    ON nv_thong_bao (thoi_gian_gui DESC);
 -- Trigger tự động cập nhật updated_at
 
 CREATE TRIGGER trg_nv_thuc_don_updated_at
@@ -1404,11 +1467,6 @@ EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER trg_ct_phieu_xuat_updated_at
 BEFORE UPDATE ON ct_phieu_xuat
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER trg_dm_nhan_vien_vai_tro_updated_at
-BEFORE UPDATE ON dm_nhan_vien_vai_tro
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
