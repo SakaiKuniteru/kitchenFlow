@@ -2,16 +2,11 @@
 
 (function initializeSidebar() {
     const sidebar = document.querySelector("[data-app-sidebar]");
-
-    if (!sidebar) {
-        return;
-    }
-
+    if (!sidebar) {return;}
     const mainToggle = document.querySelector("[data-sidebar-main-toggle]");
     const overlay = document.querySelector("[data-sidebar-overlay]");
-    const searchInput = sidebar.querySelector("[data-sidebar-search]");
-    const searchShortcut = sidebar.querySelector("[data-sidebar-search-shortcut]");
-    const searchClear = sidebar.querySelector("[data-sidebar-search-clear]");
+    const searchInput = sidebar.querySelector("[data-list-search]");
+    const searchClear = sidebar.querySelector("[data-list-clear-search]");
     const expandToggleButton = sidebar.querySelector("[data-sidebar-expand-toggle]");
     const expandToggleLabel = sidebar.querySelector("[data-sidebar-expand-label]");
     const expandToggleIcon = sidebar.querySelector("[data-sidebar-expand-icon]");
@@ -20,17 +15,7 @@
     const sortSaveButton = sidebar.querySelector("[data-sidebar-sort-save]");
     const sortResetButton = sidebar.querySelector("[data-sidebar-sort-reset]");
     const sortCancelButton = sidebar.querySelector("[data-sidebar-sort-cancel]");
-
-    if (searchShortcut) {
-        const isMac = /Mac|iPhone|iPad|iPod/i.test(navigator.platform);
-
-        searchShortcut.textContent = isMac
-            ? "⌘K"
-            : "Ctrl K";
-    }
-
     const SIDEBAR_ORDER_KEY = "kitchenflow.sidebar.order";
-
     let sortMode = false;
     let sortSnapshot = null;
     let systemOrder = null;
@@ -512,47 +497,76 @@
             .trim();
     }
 
+    function getSidebarSearchScore(value, query) {
+        const searchPicker = window.MCS?.searchPicker;
+        if (searchPicker && typeof searchPicker.getSearchScore === "function") {
+            return searchPicker.getSearchScore(
+                {
+                    label: String(value || "").trim()
+                },
+                query
+            );
+        }
+        const normalizedValue = normalizeSearchText(value);
+        const normalizedQuery = normalizeSearchText(query);
+        if (!normalizedQuery) {return 1;}
+        return normalizedValue.includes(normalizedQuery)
+            ? 1
+            : 0;
+    }
+
     function searchSidebar(value) {
-        const keyword = normalizeSearchText(value);
+        const keyword =
+            String(
+                value || ""
+            ).trim();
 
         if (searchClear) {
-            searchClear.hidden = !keyword;
+            searchClear.hidden =
+                !keyword;
         }
 
-        const rootItem = sidebar.querySelector(
-            ".app-sidebar__menu > " +
-            ".app-sidebar__menu-item"
-        );
-
-        if (rootItem) {
-            const rootLink = rootItem.querySelector(
-                "[data-sidebar-link]"
+        const rootItem =
+            sidebar.querySelector(
+                ".app-sidebar__menu > " +
+                ".app-sidebar__menu-item"
             );
 
-            const matched =
-                !keyword ||
-                normalizeSearchText(
-                    rootLink?.textContent
-                ).includes(keyword);
+        if (rootItem) {
+            const rootLink =
+                rootItem.querySelector(
+                    "[data-sidebar-link]"
+                );
+
+            const score =
+                getSidebarSearchScore(
+                    rootLink?.textContent,
+                    keyword
+                );
 
             rootItem.classList.toggle(
                 "is-search-hidden",
-                !matched
+                Boolean(keyword) &&
+                    score <= 0
             );
         }
 
         sidebar
-            .querySelectorAll("[data-sidebar-group-item]")
+            .querySelectorAll(
+                "[data-sidebar-group-item]"
+            )
             .forEach(group => {
-                const button = group.querySelector(
-                    ":scope > " +
-                    "[data-sidebar-toggle]"
-                );
+                const button =
+                    group.querySelector(
+                        ":scope > " +
+                        "[data-sidebar-toggle]"
+                    );
 
-                const submenu = group.querySelector(
-                    ":scope > " +
-                    "[data-sidebar-submenu]"
-                );
+                const submenu =
+                    group.querySelector(
+                        ":scope > " +
+                        "[data-sidebar-submenu]"
+                    );
 
                 if (
                     !button ||
@@ -561,26 +575,41 @@
                     return;
                 }
 
-                const groupMatched = normalizeSearchText(
-                    button.textContent
-                ).includes(keyword);
+                const groupScore =
+                    getSidebarSearchScore(
+                        button.textContent,
+                        keyword
+                    );
 
-                let childMatched = false;
+                const groupMatched =
+                    !keyword ||
+                    groupScore > 0;
 
-                Array.from(submenu.children).forEach(item => {
+                let childMatched =
+                    false;
+
+                Array.from(
+                    submenu.children
+                ).forEach(item => {
                     if (item.hidden) {
                         return;
                     }
-                    const link = item.querySelector(
-                        "[data-sidebar-link]"
-                    );
+
+                    const link =
+                        item.querySelector(
+                            "[data-sidebar-link]"
+                        );
+
+                    const childScore =
+                        getSidebarSearchScore(
+                            link?.textContent,
+                            keyword
+                        );
 
                     const matched =
                         !keyword ||
                         groupMatched ||
-                        normalizeSearchText(
-                            link?.textContent
-                        ).includes(keyword);
+                        childScore > 0;
 
                     item.classList.toggle(
                         "is-search-hidden",
@@ -588,10 +617,11 @@
                     );
 
                     if (
-                        matched &&
-                        keyword
+                        keyword &&
+                        childScore > 0
                     ) {
-                        childMatched = true;
+                        childMatched =
+                            true;
                     }
                 });
 
@@ -610,7 +640,8 @@
                     visible
                 ) {
                     setGroupOpen(
-                        button.dataset.sidebarToggle,
+                        button.dataset
+                            .sidebarToggle,
                         true
                     );
                 }
@@ -639,40 +670,26 @@
         searchSidebar("");
     });
 
-    document.addEventListener("keydown", event => {
-        const isSearchShortcut =
-            (
-                event.metaKey ||
-                event.ctrlKey
-            ) &&
-            event.key.toLowerCase() === "k";
-
-        if (isSearchShortcut) {
-            event.preventDefault();
-
-            if (isMobile()) {
-                openMobileSidebar();
+    document.addEventListener(
+        "keydown",
+        event => {
+            if (
+                event.key !== "Escape" ||
+                document.activeElement !==
+                    searchInput
+            ) {
+                return;
             }
 
-            searchInput?.focus();
-            searchInput?.select();
-
-            return;
-        }
-
-        if (
-            event.key === "Escape" &&
-            document.activeElement === searchInput
-        ) {
             if (searchInput.value) {
                 searchInput.value = "";
-
                 searchSidebar("");
-            } else {
-                searchInput.blur();
+                return;
             }
+
+            searchInput.blur();
         }
-    });
+    );
 
     function getSortableContainers() {
         return [

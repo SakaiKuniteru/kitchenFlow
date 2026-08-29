@@ -52,7 +52,8 @@ window.MCS.smartSelect = {
 
         const state = {
             opened: false,
-            searching: false
+            searching: false,
+            activeIndex: -1
         };
 
         bindEvents();
@@ -85,6 +86,134 @@ window.MCS.smartSelect = {
             return getOptions().find(
                 option => option.value === "__ALL__"
             ) || null;
+        }
+
+        function getRenderedOptionButtons() {
+            return Array
+                .from(
+                    elements.options.querySelectorAll(
+                        ".smart-select__option:not(:disabled)"
+                    )
+                );
+        }
+
+        function setActiveIndex(
+            index
+        ) {
+            const buttons =
+                getRenderedOptionButtons();
+
+            if (!buttons.length) {
+                state.activeIndex = -1;
+
+                return;
+            }
+
+            let nextIndex =
+                Number(index);
+
+            if (
+                !Number.isInteger(
+                    nextIndex
+                )
+            ) {
+                nextIndex = 0;
+            }
+
+            if (nextIndex < 0) {
+                nextIndex =
+                    buttons.length - 1;
+            }
+
+            if (
+                nextIndex >=
+                buttons.length
+            ) {
+                nextIndex = 0;
+            }
+
+            state.activeIndex =
+                nextIndex;
+
+            buttons.forEach(
+                (
+                    button,
+                    buttonIndex
+                ) => {
+
+                    button.classList.toggle(
+                        "is-highlighted",
+                        buttonIndex ===
+                            nextIndex
+                    );
+
+                }
+            );
+
+            buttons[
+                nextIndex
+            ]?.scrollIntoView({
+                block:
+                    "nearest"
+            });
+        }
+
+        function setActiveValue(
+            value
+        ) {
+            const buttons =
+                getRenderedOptionButtons();
+
+            if (!buttons.length) {
+                state.activeIndex = -1;
+
+                return;
+            }
+
+            const index =
+                buttons.findIndex(
+                    button =>
+                        String(
+                            button.dataset
+                                .optionValue
+                        ) ===
+                        String(
+                            value
+                        )
+                );
+
+            setActiveIndex(
+                index >= 0
+                    ? index
+                    : 0
+            );
+        }
+
+        function getActiveOption() {
+            const buttons =
+                getRenderedOptionButtons();
+
+            const button =
+                buttons[
+                    state.activeIndex
+                ];
+
+            if (!button) {
+                return null;
+            }
+
+            return getOptions()
+                .find(
+                    option =>
+                        String(
+                            option.value
+                        ) ===
+                        String(
+                            button.dataset
+                                .optionValue
+                        )
+                ) ||
+                null;
         }
 
         function isAllSelected() {
@@ -162,24 +291,130 @@ window.MCS.smartSelect = {
                 }
             });
 
-            elements.search.addEventListener("keydown", event => {
-                if (event.key === "Escape") {
-                    event.preventDefault();
+            elements.search.addEventListener(
+                "keydown",
+                event => {
 
-                    close();
-                    elements.search.blur();
+                    if (
+                        event.key ===
+                        "ArrowDown"
+                    ) {
 
-                    return;
+                        event.preventDefault();
+
+                        if (!state.opened) {
+
+                            open(
+                                false
+                            );
+
+                            return;
+
+                        }
+
+                        setActiveIndex(
+                            state.activeIndex + 1
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        event.key ===
+                        "ArrowUp"
+                    ) {
+
+                        event.preventDefault();
+
+                        if (!state.opened) {
+
+                            open(
+                                false
+                            );
+
+                            return;
+
+                        }
+
+                        setActiveIndex(
+                            state.activeIndex - 1
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        event.key ===
+                        "Enter"
+                    ) {
+
+                        if (!state.opened) {
+
+                            event.preventDefault();
+
+                            open(
+                                false
+                            );
+
+                            return;
+
+                        }
+
+
+                        const option =
+                            getActiveOption();
+
+
+                        if (!option) {
+                            return;
+                        }
+
+
+                        event.preventDefault();
+
+                        selectOption(
+                            option
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        event.key ===
+                        "Escape"
+                    ) {
+
+                        event.preventDefault();
+
+                        close();
+
+                        elements.search.blur();
+
+                        return;
+
+                    }
+
+
+                    if (
+                        event.key ===
+                            "Backspace" &&
+                        !elements.search.value &&
+                        mode ===
+                            "multiple"
+                    ) {
+
+                        removeLastValue();
+
+                    }
+
                 }
-
-                if (
-                    event.key === "Backspace" &&
-                    !elements.search.value &&
-                    mode === "multiple"
-                ) {
-                    removeLastValue();
-                }
-            });
+            );
 
             root.addEventListener("click", event => {
                 event.stopPropagation();
@@ -233,6 +468,7 @@ window.MCS.smartSelect = {
         function close() {
             state.opened = false;
             state.searching = false;
+            state.activeIndex = -1;
 
             elements.dropdown.hidden = true;
 
@@ -300,7 +536,7 @@ window.MCS.smartSelect = {
             open(true);
         }
 
-        function renderOptions(keyword = "") {
+        function renderOptions(keyword = "", preferredValue = null) {
             const normalizedKeyword = normalizeSearchText(keyword);
 
             elements.options.innerHTML = "";
@@ -324,6 +560,31 @@ window.MCS.smartSelect = {
                 button.type = "button";
                 button.className = "smart-select__option";
                 button.dataset.optionValue = option.value;
+
+                button.addEventListener(
+                    "mouseenter",
+                    () => {
+
+                        if (button.disabled) {
+                            return;
+                        }
+
+                        const buttons = getRenderedOptionButtons();
+
+                        const index = buttons.indexOf(
+                                button
+                            );
+
+                        if (index < 0) {
+                            return;
+                        }
+
+                        setActiveIndex(
+                            index
+                        );
+
+                    }
+                );
 
                 if (option.value === "__ALL__") {
                     button.dataset.optionAll = "true";
@@ -401,23 +662,28 @@ window.MCS.smartSelect = {
                         ? false
                         : true;
             }
-        }
 
-        function selectOption(option) {
-            if (option.disabled) {
+            if (!state.opened) {
+                state.activeIndex = -1;
                 return;
             }
 
+            if (preferredValue !== null && preferredValue !== undefined) {
+                setActiveValue(preferredValue);
+                return;
+            }
+            setActiveIndex(0);
+        }
+
+        function selectOption(option) {
             if (mode === "multiple") {
+                const activeValue = option.value;
                 selectMultiple(option);
-
                 emitChange();
-                renderOptions();
-                renderSelection();
-
                 elements.search.value = "";
+                renderOptions("", activeValue);
+                renderSelection();
                 elements.search.focus();
-
                 return;
             }
 
@@ -950,9 +1216,23 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function normalizeSearchText(value) {
+    if (
+        window.MCS?.searchPicker && typeof window.MCS
+            .searchPicker
+            .normalizeText === "function"
+    ) {
+
+        return window.MCS
+            .searchPicker
+            .normalizeText(value);
+
+    }
+
     return String(value || "")
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/g, "d")
+        .replace(/Đ/g, "D")
         .toLowerCase()
         .trim();
 }

@@ -22,26 +22,22 @@
             {{#if filterable}}
 
                 {{#if filterOptions}}
-
-                    <select
+                    <div
                         class="catalog-table__filter-select"
-                        data-filter-key="{{key}}"
-                        aria-label="Lọc theo {{label}}">
-
-                        <option value="">
-                            Tất cả
-                        </option>
-
-                        {{#each filterOptions}}
-
-                            <option value="{{value}}">
-                                {{label}}
-                            </option>
-
-                        {{/each}}
-
-                    </select>
-
+                        data-catalog-filter-select
+                        data-filter-key="{{key}}">
+                            {{> forms/select
+                                id=filterId
+                                name=filterName
+                                label=""
+                                mode="single"
+                                placeholder="Tất cả"
+                                options=filterOptions
+                                allowAll=true
+                                description=""
+                                required=false
+                            }}
+                    </div>
                 {{else}}
 
                     <input

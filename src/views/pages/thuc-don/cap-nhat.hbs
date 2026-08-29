@@ -40,41 +40,69 @@
 
     <div class="td-page-actions">
 
-        <button
-            class="td-btn"
+        <button class="td-btn td-responsive-action"
             type="button"
             data-form-cancel
+            title="Hủy bỏ"
+            aria-label="Hủy bỏ"
             hidden>
 
-            <i class="fa-solid fa-xmark"></i>
+            <i
+                class="fa-solid fa-xmark"
+                aria-hidden="true">
+            </i>
 
-            Hủy bỏ
+            <span class="td-responsive-action__label">
+                Hủy bỏ
+            </span>
 
         </button>
 
 
         <button
-            class="td-btn td-btn--primary"
+            class="
+                td-btn
+                td-btn--primary
+                td-responsive-action
+            "
             type="button"
             data-form-save
+            title="Lưu"
+            aria-label="Lưu"
             hidden>
 
-            <i class="fa-regular fa-floppy-disk"></i>
+            <i
+                class="fa-regular fa-floppy-disk"
+                aria-hidden="true">
+            </i>
 
-            Lưu
+            <span class="td-responsive-action__label">
+                Lưu
+            </span>
 
         </button>
 
 
         <button
-            class="td-btn td-btn--success"
+            class="
+                td-btn
+                td-btn--success
+                td-responsive-action
+            "
             type="button"
             data-form-save-approve
+            title="Lưu & duyệt"
+            aria-label="Lưu & duyệt"
             hidden>
 
-            <i class="fa-solid fa-check"></i>
+            <i
+                class="fa-solid fa-check-double"
+                aria-hidden="true">
+            </i>
 
-            Lưu & duyệt
+            <span class="td-responsive-action__label">
+                Lưu & duyệt
+            </span>
 
         </button>
 

@@ -1881,17 +1881,20 @@ window.ThucDon.form =
             state
         ) {
 
-            const input =
+            const searchRoot =
                 root.querySelector(
-                    "[data-day-search-input]"
+                    "[data-day-search]"
                 );
 
+            const input =
+                searchRoot?.querySelector(
+                    "[data-list-search]"
+                );
 
             const clearButton =
-                root.querySelector(
-                    "[data-day-search-clear]"
+                searchRoot?.querySelector(
+                    "[data-list-clear-search]"
                 );
-
 
             if (!input) {
                 return;
@@ -2374,6 +2377,23 @@ window.ThucDon.form =
         function normalizeSearchText(
             value
         ) {
+
+            if (
+                window.MCS?.searchPicker &&
+                typeof window.MCS
+                    .searchPicker
+                    .normalizeText ===
+                    "function"
+            ) {
+
+                return window.MCS
+                    .searchPicker
+                    .normalizeText(
+                        value
+                    );
+
+            }
+
 
             return String(
                 value ||

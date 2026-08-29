@@ -25,6 +25,8 @@ function booleanColumn(key = "active", label = "Hiệu lực", options = {}) {
         type: "boolean",
         trueLabel: options.trueLabel || "TRUE",
         falseLabel: options.falseLabel || "FALSE",
+        filterId: `catalogFilter_${key}`,
+        filterName: `catalogFilter_${key}`,
         filterOptions: [
             {
                 value: "true",

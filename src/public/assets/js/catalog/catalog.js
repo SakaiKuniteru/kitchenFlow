@@ -584,8 +584,8 @@ class MCSCatalog {
             "input",
             event => {
                 const filter = event.target.closest(
-                    "[data-filter-key]"
-                );
+                        "input[data-filter-key]"
+                    );
 
                 if (!filter) {
                     return;
@@ -604,17 +604,30 @@ class MCSCatalog {
         this.root.addEventListener(
             "change",
             event => {
-                const filter = event.target.closest(
-                    "[data-filter-key]"
-                );
+                const nativeSelect = event.target.closest(
+                        "[data-smart-select-native]"
+                    );
 
-                if (!filter) {
+                const smartFilter = nativeSelect?.closest(
+                        "[data-catalog-filter-select]" +
+                        "[data-filter-key]"
+                    );
+
+                if (!smartFilter) {
                     return;
                 }
 
+                let value = nativeSelect.value;
+
+                if (
+                    value === "__ALL__"
+                ) {
+                    value = "";
+                }
+
                 this.state.filters[
-                    filter.dataset.filterKey
-                ] = filter.value;
+                    smartFilter.dataset.filterKey
+                ] = value;
 
                 this.state.page = 1;
 
@@ -1571,10 +1584,33 @@ class MCSCatalog {
     clearFilters() {
         this.state.filters = {};
 
-        this.root
-            .querySelectorAll("[data-filter-key]")
+        this.root.querySelectorAll("input[data-filter-key]")
             .forEach(field => {
                 field.value = "";
+            });
+
+        this.root
+            .querySelectorAll(
+                "[data-catalog-filter-select]"
+            )
+            .forEach(filter => {
+                const select = filter.querySelector(
+                        "[data-smart-select-native]"
+                    );
+
+                if (!select) {
+                    return;
+                }
+
+                select.value = "";
+
+                const root = select.closest(
+                        "[data-smart-select]"
+                    );
+
+                root?.smartSelect
+                    ?.setValue?.("", false
+                    );
             });
 
         this.state.page = 1;
@@ -1668,15 +1704,20 @@ class MCSCatalog {
     }
 
     normalizeText(value) {
-        return String(
-            value ?? ""
-        )
+        if (
+            window.MCS?.searchPicker && typeof window.MCS.searchPicker.normalizeText === "function"
+        ) {
+            return window.MCS.searchPicker.normalizeText(value);
+        }
+
+        return String(value ?? "")
             .normalize("NFD")
-            .replace(
-                /[\u0300-\u036f]/g,
-                ""
-            )
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d")
+            .replace(/Đ/g, "D")
             .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, " ")
+            .replace(/\s+/g, " ")
             .trim();
     }
 

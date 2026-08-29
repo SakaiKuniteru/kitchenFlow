@@ -1206,27 +1206,25 @@
     .td-content-search {
         width: 100%;
     }
-
-    .td-content-search > input {
-        width: 100%;
-    }
-
 }
 
 .td-checkbox-list {
     display: flex;
     flex-direction: column;
 
+    width: 100%;
+    height: 280px;
+    min-height: 280px;
     max-height: 280px;
 
     overflow-y: auto;
+    overflow-x: hidden;
 
     border: 1px solid #d5dfec;
     border-radius: 8px;
 
     background: #fff;
 }
-
 
 .td-checkbox-list__item {
     margin: 0;
@@ -1317,186 +1315,36 @@
 }
 
 .td-checkbox-search {
-    position: relative;
-
+    width: 100%;
+    min-width: 0;
     margin-bottom: 10px;
 }
 
-
-.td-checkbox-search > i {
-    position: absolute;
-    top: 50%;
-    left: 12px;
-
-    z-index: 1;
-
-    color: #8a97aa;
-
-    font-size: 12px;
-
-    transform: translateY(-50%);
-
-    pointer-events: none;
-}
-
-
-.td-checkbox-search > input {
-    display: block;
-
+.td-checkbox-search .search-picker {
     width: 100%;
-    height: 38px;
-
-    padding: 0 12px 0 34px;
-
-    color: #28364d;
-
-    font: inherit;
-    font-size: 12px;
-
-    background: #fff;
-
-    border: 1px solid #d5dfec;
-    border-radius: 7px;
-
-    outline: none;
-
-    transition:
-        border-color .15s ease,
-        box-shadow .15s ease;
-}
-
-
-.td-checkbox-search > input::placeholder {
-    color: #9aa7b9;
-}
-
-
-.td-checkbox-search > input:focus {
-    border-color: #7aa7ff;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(
-            37,
-            99,
-            235,
-            .08
-        );
+    min-width: 100%;
+    max-width: 100%;
 }
 
 .td-content-search {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-
     width: 230px;
-    height: 40px;
-
-    background: #fff;
-
-    border: 1px solid #d7e1ed;
-    border-radius: 8px;
-
-    transition:
-        border-color .15s ease,
-        box-shadow .15s ease,
-        background .15s ease;
+    min-width: 0;
 }
 
-
-.td-content-search:focus-within {
-    background: #fff;
-
-    border-color: #8eb5ff;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(
-            37,
-            99,
-            235,
-            .08
-        );
-}
-
-
-.td-content-search > i {
-    position: absolute;
-    left: 12px;
-
-    color: #8997aa;
-
-    font-size: 12px;
-
-    pointer-events: none;
-}
-
-
-.td-content-search > input {
+.td-checkbox-search .search-picker {
     width: 100%;
-    height: 100%;
-
-    padding:
-        0
-        34px
-        0
-        34px;
-
-    color: #344056;
-
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 500;
-
-    background: transparent;
-
-    border: 0;
-
-    outline: 0;
+    min-width: 100%;
+    max-width: 100%;
 }
 
-
-.td-content-search > input::placeholder {
-    color: #9aa7b9;
+.td-content-search .search-picker {
+    width: 100%;
+    min-width: 0;
 }
 
-
-.td-content-search__clear {
-    position: absolute;
-    right: 7px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 26px;
-    height: 26px;
-
-    padding: 0;
-
-    color: #8190a5;
-
-    background: transparent;
-
-    border: 0;
-    border-radius: 6px;
-
-    cursor: pointer;
+.td-modal__body:has(.td-checkbox-list) {
+    min-height: 380px;
 }
-
-
-.td-content-search__clear:hover {
-    color: #475569;
-
-    background: #f1f5f9;
-}
-
-
-.td-content-search__clear[hidden] {
-    display: none;
-}
-
 
 .td-day-search-empty {
     display: flex;
@@ -1547,4 +1395,69 @@
 
 .td-day-search-empty > span {
     font-size: 11px;
+}
+
+.td-page-actions
+.td-responsive-action {
+    flex: 0 0 auto;
+}
+
+.td-responsive-action__label {
+    display: inline;
+}
+
+@media (
+    min-width: 761px
+) and (
+    max-width: 1100px
+) {
+
+    .td-page-actions
+    > .td-responsive-action:not([hidden])
+    ~ .td-responsive-action:not([hidden])
+    ~ .td-responsive-action:not([hidden]) {
+        width: 38px;
+        min-width: 38px;
+        max-width: 38px;
+        height: 38px;
+        min-height: 38px;
+
+        gap: 0;
+
+        padding: 0;
+    }
+
+    .td-page-actions
+    > .td-responsive-action:not([hidden])
+    ~ .td-responsive-action:not([hidden])
+    ~ .td-responsive-action:not([hidden])
+    .td-responsive-action__label {
+        display: none;
+    }
+
+}
+
+@media (
+    max-width: 760px
+) {
+
+    .td-page-actions
+    > .td-responsive-action:not([hidden]) {
+        width: 38px;
+        min-width: 38px;
+        max-width: 38px;
+        height: 38px;
+        min-height: 38px;
+
+        gap: 0;
+
+        padding: 0;
+    }
+
+    .td-page-actions
+    > .td-responsive-action:not([hidden])
+    .td-responsive-action__label {
+        display: none;
+    }
+
 }

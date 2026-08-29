@@ -4,45 +4,16 @@
     data-app-sidebar
     aria-label="Thanh điều hướng chính">
 
-
     <div class="app-sidebar__tools">
-
-        <div class="app-sidebar__search">
-
-            <i
-                class="fa-solid fa-magnifying-glass app-sidebar__search-icon"
-                aria-hidden="true">
-            </i>
-
-
-            <input
-                type="search"
-                class="app-sidebar__search-input"
-                placeholder="Tìm kiếm menu..."
-                autocomplete="off"
-                data-sidebar-search>
-
-            <span
-                class="app-sidebar__search-shortcut"
-                data-sidebar-search-shortcut>
-                ⌘K
-            </span>
-
-            <button
-                type="button"
-                class="app-sidebar__search-clear"
-                data-sidebar-search-clear
-                aria-label="Xóa tìm kiếm"
-                hidden>
-
-                <i class="fa-solid fa-xmark"></i>
-
-            </button>
-
-        </div>
-
+        {{> forms/search
+            inputId="sidebarMenuSearch"
+            className="search-picker--sidebar"
+            placeholder="Tìm kiếm menu..."
+            listSearch=true
+            showClear=true
+            hideDropdown=true
+        }}
     </div>
-
 
     <nav
         class="app-sidebar__navigation"

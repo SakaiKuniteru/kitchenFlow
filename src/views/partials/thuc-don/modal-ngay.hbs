@@ -47,21 +47,21 @@
                     Danh sách ngày
                 </label>
 
-                <div class="td-checkbox-search">
+                <div
+                    class="td-checkbox-search"
+                    data-checkbox-search-target="day">
 
-                    <i class="fa-solid fa-magnifying-glass"></i>
-
-                    <input
-                        type="text"
+                    {{> forms/search
+                        inputId="tdDaySearch"
+                        className="search-picker--thuc-don-modal"
                         placeholder="Tìm theo ngày hoặc thứ..."
-                        autocomplete="off"
-                        data-checkbox-search
-                        data-checkbox-search-target="day">
+                        listSearch=true
+                        showClear=true
+                        hideDropdown=true
+                    }}
 
                 </div>
-
-
-
+                
                 <div
                     class="td-checkbox-list"
                     data-checkbox-list-type="day"

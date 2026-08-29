@@ -13,33 +13,19 @@
 
 
         <div class="td-content__header-actions">
-
             <div
                 class="td-content-search"
                 data-day-search>
-
-                <i class="fa-solid fa-magnifying-glass"></i>
-
-                <input
-                    type="text"
+                {{> forms/search
+                    inputId="thucDonDaySearch"
+                    className="search-picker--thuc-don-content"
                     placeholder="Tìm ngày..."
-                    autocomplete="off"
-                    data-day-search-input>
-
-                <button
-                    type="button"
-                    class="td-content-search__clear"
-                    data-day-search-clear
-                    title="Xóa tìm kiếm"
-                    hidden>
-
-                    <i class="fa-solid fa-xmark"></i>
-
-                </button>
-
+                    listSearch=true
+                    showClear=true
+                    hideDropdown=true
+                }}
             </div>
-
-
+            
             <div
                 class="td-view-switcher"
                 data-content-view-switcher>

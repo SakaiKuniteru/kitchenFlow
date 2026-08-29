@@ -50,105 +50,6 @@
     padding: 16px 14px 10px;
 }
 
-
-.app-sidebar__search {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-}
-
-
-.app-sidebar__search-icon {
-    position: absolute;
-    left: 12px;
-
-    color: #7d8ca3;
-
-    font-size: 12px;
-
-    pointer-events: none;
-}
-
-
-.app-sidebar__search-input {
-    width: 100%;
-    height: 40px;
-
-    padding:
-        0
-        48px
-        0
-        35px;
-
-    color: #334155;
-
-    font-family: inherit;
-    font-size: 12px;
-
-    background: #fff;
-
-    border: 1px solid #dce4ef;
-    border-radius: 8px;
-
-    outline: none;
-
-    transition:
-        border-color .15s ease,
-        box-shadow .15s ease;
-}
-
-
-.app-sidebar__search-input::placeholder {
-    color: #95a2b5;
-}
-
-
-.app-sidebar__search-input:focus {
-    border-color: #8db2ff;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(37, 99, 235, .08);
-}
-
-
-.app-sidebar__search-shortcut {
-    position: absolute;
-    right: 10px;
-
-    color: #9aa6b8;
-
-    font-size: 10px;
-    font-weight: 700;
-}
-
-
-.app-sidebar__search-clear {
-    position: absolute;
-    right: 8px;
-
-    width: 25px;
-    height: 25px;
-
-    padding: 0;
-
-    color: #7b889c;
-
-    background: #fff;
-
-    border: 0;
-    border-radius: 5px;
-
-    cursor: pointer;
-}
-
-
-.app-sidebar__search-clear:not([hidden])
-~ .app-sidebar__search-shortcut {
-    display: none;
-}
-
 .app-sidebar__navigation {
     flex: 1;
 
@@ -162,7 +63,6 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
-
 
 .app-sidebar__navigation::-webkit-scrollbar {
     width: 5px;

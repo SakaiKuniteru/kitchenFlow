@@ -53,16 +53,18 @@
 
                 </label>
 
-                <div class="td-checkbox-search">
+                <div
+                    class="td-checkbox-search"
+                    data-checkbox-search-target="group">
 
-                    <i class="fa-solid fa-magnifying-glass"></i>
-
-                    <input
-                        type="text"
+                    {{> forms/search
+                        inputId="tdGroupSearch"
+                        className="search-picker--thuc-don-modal"
                         placeholder="Tìm mã hoặc tên nhóm món..."
-                        autocomplete="off"
-                        data-checkbox-search
-                        data-checkbox-search-target="group">
+                        listSearch=true
+                        showClear=true
+                        hideDropdown=true
+                    }}
 
                 </div>
 

@@ -335,27 +335,236 @@ window.ThucDon.contentEditor =
             type
         ) {
 
-            const input =
+            const searchRoot =
                 root.querySelector(
                     `[data-checkbox-search-target="${type}"]`
                 );
 
 
+            const input =
+                searchRoot?.querySelector(
+                    "[data-list-search]"
+                );
+
+
+            const clearButton =
+                searchRoot?.querySelector(
+                    "[data-list-clear-search]"
+                );
+
+
+            const list =
+                root.querySelector(
+                    `[data-checkbox-list-type="${type}"]`
+                );
+
+
             if (
-                input
+                !input ||
+                !list
             ) {
 
-                input.value =
-                    "";
+                return;
 
             }
 
 
-            window.MCS
-                ?.checkboxList
-                ?.bindSearch(
-                    root
+            input.value =
+                "";
+
+
+            if (
+                clearButton
+            ) {
+
+                clearButton.hidden =
+                    true;
+
+            }
+
+
+            filterCheckboxList(
+                list,
+                ""
+            );
+
+
+            if (
+                input.dataset
+                    .tdSearchBound ===
+                "true"
+            ) {
+
+                return;
+
+            }
+
+
+            input.dataset
+                .tdSearchBound =
+                "true";
+
+
+            input.addEventListener(
+                "input",
+                () => {
+
+                    const keyword =
+                        input.value
+                            .trim();
+
+
+                    if (
+                        clearButton
+                    ) {
+
+                        clearButton.hidden =
+                            !keyword;
+
+                    }
+
+
+                    filterCheckboxList(
+                        list,
+                        keyword
+                    );
+
+                }
+            );
+
+
+            clearButton
+                ?.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+
+
+                        input.value =
+                            "";
+
+
+                        clearButton.hidden =
+                            true;
+
+
+                        filterCheckboxList(
+                            list,
+                            ""
+                        );
+
+
+                        input.focus();
+
+                    }
                 );
+
+        }
+
+        function filterCheckboxList(
+            list,
+            value
+        ) {
+
+            if (!list) {
+                return;
+            }
+
+
+            const keyword =
+                normalizeSearchText(
+                    value
+                );
+
+
+            list
+                .querySelectorAll(
+                    ".td-checkbox-list__item"
+                )
+                .forEach(
+                    item => {
+
+                        /*
+                        * Chọn tất cả luôn giữ lại.
+                        */
+                        if (
+                            item.classList
+                                .contains(
+                                    "is-select-all"
+                                )
+                        ) {
+
+                            item.hidden =
+                                false;
+
+
+                            return;
+
+                        }
+
+
+                        const text =
+                            normalizeSearchText(
+                                item.textContent
+                            );
+
+
+                        item.hidden =
+                            Boolean(
+                                keyword
+                            ) &&
+                            !text.includes(
+                                keyword
+                            );
+
+                    }
+                );
+
+        }
+
+        function normalizeSearchText(
+            value
+        ) {
+
+            if (
+                window.MCS?.searchPicker &&
+                typeof window.MCS
+                    .searchPicker
+                    .normalizeText ===
+                    "function"
+            ) {
+
+                return window.MCS
+                    .searchPicker
+                    .normalizeText(
+                        value
+                    );
+
+            }
+
+
+            return String(
+                value ||
+                ""
+            )
+                .normalize(
+                    "NFD"
+                )
+                .replace(
+                    /[\u0300-\u036f]/g,
+                    ""
+                )
+                .replace(
+                    /đ/g,
+                    "d"
+                )
+                .replace(
+                    /Đ/g,
+                    "D"
+                )
+                .toLowerCase()
+                .trim();
 
         }
 
