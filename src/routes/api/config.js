@@ -193,6 +193,13 @@ const routes = [
         )
     ],
 
+    [
+        "/thong-bap",
+        require(
+            "../../modules/nghiep-vu/thong-bao/thong-bao.route"
+        )
+    ],
+
 ];
 
 module.exports = routes;

@@ -4,12 +4,12 @@ const {
     loaiDoiTuong: danhSachLoaiDoiTuong
 } = require("../../../../constants/enums");
 
-const danhSachGiaTriLoaiChinhSach =
+const danhSachGiaTriLoaiDoiTuong =
     danhSachLoaiDoiTuong.map(
         item => Number(item.value)
     );
 
-const LOAI_CHINH_SACH = {
+const LOAI_DOI_TUONG = {
     VAI_TRO: 10,
     CHUC_VU: 20,
     TAI_KHOAN: 30
@@ -81,7 +81,7 @@ function validatePhamVi(
             : [];
 
     switch (loai) {
-        case LOAI_CHINH_SACH.VAI_TRO:
+        case LOAI_DOI_TUONG.VAI_TRO:
             if (
                 dsVaiTroId.length === 0
             ) {
@@ -103,7 +103,7 @@ function validatePhamVi(
 
             break;
 
-        case LOAI_CHINH_SACH.CHUC_VU:
+        case LOAI_DOI_TUONG.CHUC_VU:
             if (
                 dsChucVuId.length === 0
             ) {
@@ -125,7 +125,7 @@ function validatePhamVi(
 
             break;
 
-        case LOAI_CHINH_SACH.TAI_KHOAN:
+        case LOAI_DOI_TUONG.TAI_KHOAN:
             if (
                 dsTaiKhoanId.length === 0
             ) {
@@ -195,7 +195,7 @@ const createSchema =
             Joi.number()
                 .integer()
                 .valid(
-                    ...danhSachGiaTriLoaiChinhSach
+                    ...danhSachGiaTriLoaiDoiTuong
                 )
                 .required()
                 .messages({
@@ -206,7 +206,7 @@ const createSchema =
                         "Loại chính sách phải là số nguyên.",
 
                     "any.only":
-                        `Loại chính sách chỉ được là ${danhSachGiaTriLoaiChinhSach.join(", ")}.`,
+                        `Loại chính sách chỉ được là ${danhSachGiaTriLoaiDoiTuong.join(", ")}.`,
 
                     "any.required":
                         "Loại chính sách là bắt buộc."
@@ -330,7 +330,7 @@ const updateSchema =
             Joi.number()
                 .integer()
                 .valid(
-                    ...danhSachGiaTriLoaiChinhSach
+                    ...danhSachGiaTriLoaiDoiTuong
                 )
                 .optional()
                 .messages({
@@ -341,7 +341,7 @@ const updateSchema =
                         "Loại chính sách phải là số nguyên.",
 
                     "any.only":
-                        `Loại chính sách chỉ được là ${danhSachGiaTriLoaiChinhSach.join(", ")}.`
+                        `Loại chính sách chỉ được là ${danhSachGiaTriLoaiDoiTuong.join(", ")}.`
                 }),
 
         dsVoucherId:

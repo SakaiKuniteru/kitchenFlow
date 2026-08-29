@@ -17,6 +17,25 @@ const GIOI_TINH = [
 
 ];
 
+const TRANG_THAI_THONG_BAO = [
+
+    {
+        value: 10,
+        name: "Tạo mới"
+    },
+
+    {
+        value: 20,
+        name: "Đã gửi"
+    },
+
+    {
+        value: 30,
+        name: "Đã huỷ"
+    }
+
+];
+
 const LOAI_MIEN_GIAM = [
 
     {
@@ -252,6 +271,7 @@ const LOAI_BINH_CHON = [
 
 module.exports = {
     "gioiTinh": GIOI_TINH,
+    "trangThaiThongBao": TRANG_THAI_THONG_BAO,
     "loaiMienGiam": LOAI_MIEN_GIAM,
     "loaiDoiTuong": LOAI_DOI_TUONG,
     "loaiDonVi": LOAI_DON_VI,
