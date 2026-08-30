@@ -194,7 +194,7 @@ const routes = [
     ],
 
     [
-        "/thong-bap",
+        "/thong-bao",
         require(
             "../../modules/nghiep-vu/thong-bao/thong-bao.route"
         )

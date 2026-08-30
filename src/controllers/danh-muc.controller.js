@@ -630,6 +630,27 @@ class DanhMucWebController {
             next(error);
         }
     }
+
+    async thongBao(req, res, next) {
+        try {
+            return renderDanhMuc(req, res, {
+                view: "pages/danh-muc/he-thong/thong-bao/index",
+                title: "Quản lý thông báo",
+                description: "Quản lý các thông báo trong hệ thống.",
+                page: "Thông báo",
+                activeSubmenu: "thong-bao",
+                columns: [
+                    textColumn("maBaoCao", "Mã báo cáo", { width: "200px", className: "catalog-table__cell--center" }),
+                    textColumn("tenBaoCao", "Tên báo cáo", { width: "240px", className: "catalog-table__cell--center" }),
+                    textColumn("loaiXuatFileText", "Loại xuất file", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("moTa", "Mô tả", { width: "280px", className: "catalog-table__cell--center" }),
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
+                ]
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 module.exports = new DanhMucWebController();

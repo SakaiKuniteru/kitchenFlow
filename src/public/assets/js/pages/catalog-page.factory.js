@@ -54,28 +54,54 @@ function normalizePermissionCode(value) {
         .toUpperCase();
 }
 
+function normalizePermissionCodes(
+    value
+) {
+    const values =
+        Array.isArray(
+            value
+        )
+            ? value
+            : [
+                value
+            ];
+
+    return [
+        ...new Set(
+            values
+                .map(
+                    normalizePermissionCode
+                )
+                .filter(Boolean)
+        )
+    ];
+}
+
 function resolveCatalogPermissionState(
     permissionCodes,
     currentPermissions = []
 ) {
     const codes = {
-        view: normalizePermissionCode(
-            permissionCodes?.view
-        ),
-        create: normalizePermissionCode(
-            permissionCodes?.create
-        ),
-        update: normalizePermissionCode(
-            permissionCodes?.update
-        )
+        required: normalizePermissionCodes(permissionCodes?.required),
+
+        view: normalizePermissionCodes(permissionCodes?.view),
+
+        create: normalizePermissionCodes(permissionCodes?.create),
+
+        update: normalizePermissionCodes(
+                permissionCodes?.update
+            )
     };
 
     const configured =
-        Boolean(
-            codes.view ||
-            codes.create ||
-            codes.update
-        );
+        Object
+            .values(
+                codes
+            )
+            .some(
+                items =>
+                    items.length > 0
+            );
 
     if (!configured) {
         return {
@@ -96,28 +122,36 @@ function resolveCatalogPermissionState(
                 .filter(Boolean)
         );
 
+    const hasRequired =
+        codes.required.every(
+            code =>
+                permissionSet.has(
+                    code
+                )
+        );
+
     const hasView =
-        Boolean(
-            codes.view &&
-            permissionSet.has(
-                codes.view
-            )
+        codes.view.some(
+            code =>
+                permissionSet.has(
+                    code
+                )
         );
 
     const hasCreate =
-        Boolean(
-            codes.create &&
-            permissionSet.has(
-                codes.create
-            )
+        codes.create.some(
+            code =>
+                permissionSet.has(
+                    code
+                )
         );
 
     const hasUpdate =
-        Boolean(
-            codes.update &&
-            permissionSet.has(
-                codes.update
-            )
+        codes.update.some(
+            code =>
+                permissionSet.has(
+                    code
+                )
         );
 
     return {
@@ -125,15 +159,22 @@ function resolveCatalogPermissionState(
         codes,
 
         canView:
-            hasView ||
-            hasCreate ||
-            hasUpdate,
+            hasRequired &&
+            (
+                hasView ||
+                hasCreate ||
+                hasUpdate
+            ),
 
         canCreate:
-            hasCreate ||
-            hasUpdate,
+            hasRequired &&
+            (
+                hasCreate ||
+                hasUpdate
+            ),
 
         canUpdate:
+            hasRequired &&
             hasUpdate
     };
 }
@@ -155,7 +196,7 @@ window.MCS.pages.createCatalogPage = async function createCatalogPage(options = 
         validate,
         onSubmitError,
         getRecordSubtitle,
-        headerAction,
+        headerActions = [],
         onHeaderAction,
         mapListResponse,
         mapDetailResponse,
@@ -435,11 +476,12 @@ window.MCS.pages.createCatalogPage = async function createCatalogPage(options = 
         endpoints,
         columns,
         permissions: permissionState,
+        currentPermissionCodes: currentPermissions,
         toolbarActions,
         detailTitle,
         createTitle,
         updateTitle,
-        headerAction,
+        headerActions,
         onHeaderAction,
         defaultValues,
         mapRecordToForm,

@@ -235,7 +235,8 @@ class ThongBaoController {
                 await thongBaoService
                     .update(
                         id,
-                        req.body
+                        req.body,
+                        req.authorizationPermissions
                     );
 
             return successResponse(

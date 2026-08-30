@@ -45,94 +45,161 @@ class MCSForm {
             return;
         }
 
-        this.form.addEventListener("submit", event => {
-            event.preventDefault();
+        this.form.noValidate = true;
 
-            this.submit();
-        });
+        if (this.elements.submit) {
+            this.elements.submit.type =
+                "button";
 
-        this.form.addEventListener("input", event => {
-            this.clearFieldError(
-                event.target.name
+            this.elements.submit.addEventListener(
+                "click",
+                event => {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    this.submit();
+                }
+            );
+        }
+
+        this.form.addEventListener(
+            "submit",
+            event => {
+                event.preventDefault();
+
+                this.submit();
+            }
+        );
+
+        this.form.addEventListener(
+            "input",
+            event => {
+                this.clearFieldError(
+                    event.target.name
+                );
+
+                this.updateDirtyState();
+            }
+        );
+
+        this.form.addEventListener(
+            "change",
+            event => {
+                this.clearFieldError(
+                    event.target.name
+                );
+
+                this.updateDirtyState();
+            }
+        );
+
+        this.elements.cancel
+            ?.addEventListener(
+                "click",
+                () => {
+                    this.options.onCancel?.(
+                        this
+                    );
+                }
             );
 
-            this.updateDirtyState();
-        });
-
-        this.form.addEventListener("change", event => {
-            this.clearFieldError(
-                event.target.name
+        this.elements.reset
+            ?.addEventListener(
+                "click",
+                () => {
+                    this.setData(
+                        this.initialData
+                    );
+                }
             );
-
-            this.updateDirtyState();
-        });
-
-        this.elements.cancel?.addEventListener("click", () => {
-            this.options.onCancel?.(
-                this
-            );
-        });
-
-        this.elements.reset?.addEventListener("click", () => {
-            this.setData(
-                this.initialData
-            );
-        });
 
         this.form
-            .querySelectorAll("textarea[maxlength]")
-            .forEach(textarea => {
-                textarea.addEventListener(
-                    "input",
-                    () =>
-                        this.updateCounter(
-                            textarea
-                        )
-                );
+            .querySelectorAll(
+                "textarea[maxlength]"
+            )
+            .forEach(
+                textarea => {
+                    textarea.addEventListener(
+                        "input",
+                        () =>
+                            this.updateCounter(
+                                textarea
+                            )
+                    );
 
-                this.updateCounter(
-                    textarea
-                );
-            });
+                    this.updateCounter(
+                        textarea
+                    );
+                }
+            );
     }
 
     setMode(mode) {
         this.options.mode = mode;
 
-        const panel = this.form?.closest(
-            "[data-detail-panel]"
-        );
+        const panel =
+            this.form?.closest(
+                "[data-detail-panel]"
+            );
 
         if (panel) {
-            panel.dataset.mode = mode;
+            panel.dataset.mode =
+                mode;
         }
 
-        const readonly = mode === "view";
+        const readonly =
+            mode === "view";
 
         this.form
-            ?.querySelectorAll("input, textarea, select, button")
+            ?.querySelectorAll(
+                "input, textarea, select"
+            )
             .forEach(field => {
-                if (field.type === "hidden") {
+
+                if (
+                    field.type === "hidden" ||
+                    field.closest(
+                        "[data-rich-text]"
+                    )
+                ) {
                     return;
                 }
 
                 if (readonly) {
-                    if (field.dataset.catalogOriginalDisabled === undefined) {
+
+                    if (
                         field.dataset
-                            .catalogOriginalDisabled = String(field.disabled);
+                            .catalogOriginalDisabled ===
+                        undefined
+                    ) {
+                        field.dataset
+                            .catalogOriginalDisabled =
+                            String(
+                                field.disabled
+                            );
                     }
 
                     if (
                         "readOnly" in field &&
-                        field.dataset.catalogOriginalReadonly === undefined
+                        field.dataset
+                            .catalogOriginalReadonly ===
+                        undefined
                     ) {
-                        field.dataset.catalogOriginalReadonly = String(field.readOnly);
+                        field.dataset
+                            .catalogOriginalReadonly =
+                            String(
+                                field.readOnly
+                            );
                     }
 
-                    field.disabled = true;
+                    field.disabled =
+                        true;
 
-                    if ("readOnly" in field) {
-                        field.readOnly = true;
+                    if (
+                        "readOnly" in field
+                    ) {
+                        field.readOnly =
+                            true;
                     }
 
                     return;
@@ -160,7 +227,7 @@ class MCSForm {
 
                 if (
                     originalReadonly !==
-                    undefined &&
+                        undefined &&
                     "readOnly" in field
                 ) {
                     field.readOnly =
@@ -172,19 +239,53 @@ class MCSForm {
                 }
             });
 
-        if (this.elements.submit) {
-            this.elements.submit.hidden = readonly;
+        if (
+            this.elements.submit
+        ) {
+            this.elements.submit.hidden =
+                readonly;
+
+            if (
+                !readonly &&
+                !this.isSubmitting
+            ) {
+                this.elements.submit.disabled =
+                    false;
+            }
         }
 
-        if (this.elements.cancel) {
-            this.elements.cancel.hidden = readonly;
+
+        if (
+            this.elements.cancel
+        ) {
+            this.elements.cancel.hidden =
+                readonly;
+
+            if (
+                !readonly &&
+                !this.isSubmitting
+            ) {
+                this.elements.cancel.disabled =
+                    false;
+            }
         }
 
-        if (this.elements.reset) {
-            this.elements.reset.hidden = readonly;
+
+        if (
+            this.elements.reset
+        ) {
+            this.elements.reset.hidden =
+                readonly;
         }
+
 
         this.updateSubmitLabel();
+
+        window.MCS
+            ?.richTextEditor
+            ?.refresh?.(
+                this.form
+            );
     }
 
     updateSubmitLabel() {
@@ -231,6 +332,12 @@ class MCSForm {
                     textarea
                 )
             );
+
+        window.MCS
+            ?.richTextEditor
+            ?.refresh?.(
+                this.form
+            );
     }
 
     reset() {
@@ -254,58 +361,131 @@ class MCSForm {
         this.isDirty = false;
 
         this.updateUnsavedIndicator();
+        window.MCS
+            ?.richTextEditor
+            ?.refresh?.(
+                this.form
+            );
+    }
+
+    syncRichTextFields() {
+        this.form
+            ?.querySelectorAll(
+                "[data-rich-text]"
+            )
+            .forEach(
+                root => {
+                    const editor =
+                        root.richTextEditor ||
+                        window.MCS
+                            ?.richTextEditor
+                            ?.initialize?.(
+                                root
+                            );
+
+                    if (!editor) {
+                        return;
+                    }
+
+                    const input =
+                        root.querySelector(
+                            "[data-rich-text-input]"
+                        );
+
+                    const value =
+                        editor.getValue?.() ??
+                        input?.value ??
+                        "";
+
+                    if (input) {
+                        input.value =
+                            String(
+                                value ||
+                                ""
+                            );
+                    }
+                }
+            );
     }
 
     getData() {
+        this.syncRichTextFields();
+
         const result = {};
-        const fields = this.form?.elements || [];
+        const fields =
+            this.form?.elements ||
+            [];
 
-        Array.from(fields).forEach(field => {
-            if (
-                !field.name ||
-                field.disabled
-            ) {
-                return;
+        Array.from(
+            fields
+        ).forEach(
+            field => {
+                if (
+                    !field.name ||
+                    field.disabled
+                ) {
+                    return;
+                }
+
+                let value;
+
+                if (
+                    field.type ===
+                    "checkbox"
+                ) {
+                    value =
+                        field.checked;
+
+                } else if (
+                    field.type ===
+                    "number"
+                ) {
+                    value =
+                        field.value ===
+                        ""
+                            ? null
+                            : Number(
+                                field.value
+                            );
+
+                } else if (
+                    field.type ===
+                    "file"
+                ) {
+                    value =
+                        field.multiple
+                            ? Array.from(
+                                field.files ||
+                                []
+                            )
+                            : (
+                                field.files?.[0] ||
+                                null
+                            );
+
+                } else {
+                    value =
+                        field.value;
+                }
+
+                this.assignValue(
+                    result,
+                    field.name,
+                    value
+                );
             }
-
-            let value;
-
-            if (field.type === "checkbox") {
-                value = field.checked;
-            } else if (field.type === "number") {
-                value = field.value === ""
-                    ? null
-                    : Number(
-                        field.value
-                    );
-            } else if (field.type === "file") {
-                value = field.multiple
-                    ? Array.from(
-                        field.files ||
-                        []
-                    )
-                    : (
-                        field.files?.[0] ||
-                        null
-                    );
-            } else {
-                value = field.value;
-            }
-
-            this.assignValue(
-                result,
-                field.name,
-                value
-            );
-        });
+        );
 
         if (
-            typeof this.options.transformPayload === "function"
+            typeof this.options
+                .transformPayload ===
+            "function"
         ) {
-            return this.options.transformPayload(
-                result,
-                this
-            );
+            return this.options
+                .transformPayload(
+                    result,
+                    this
+                );
         }
 
         return result;
@@ -314,31 +494,45 @@ class MCSForm {
     async submit() {
         if (
             this.isSubmitting ||
-            this.options.mode === "view"
+            this.options.mode ===
+                "view"
         ) {
             return;
         }
 
         this.clearErrors();
 
-        const nativeValid = this.validateNative();
-        const data = this.getData();
+        const data =
+            this.getData();
 
-        let customValid = true;
+        const nativeValid =
+            this.validateNative();
+
+        let customValid =
+            true;
 
         if (
-            typeof this.options.validate === "function"
+            typeof this.options
+                .validate ===
+            "function"
         ) {
-            const result = await this.options.validate(
-                data,
-                this
-            );
+            const result =
+                await this.options
+                    .validate(
+                        data,
+                        this
+                    );
 
-            if (result === false) {
-                customValid = false;
+            if (
+                result === false
+            ) {
+                customValid =
+                    false;
+
             } else if (
                 result &&
-                typeof result === "object"
+                typeof result ===
+                    "object"
             ) {
                 const errors =
                     result.errors ||
@@ -353,7 +547,8 @@ class MCSForm {
                         errors
                     );
 
-                    customValid = false;
+                    customValid =
+                        false;
                 }
             }
         }
@@ -372,20 +567,27 @@ class MCSForm {
         );
 
         try {
-            await this.options.onSubmit?.(
-                data,
-                this
-            );
+            await this.options
+                .onSubmit?.(
+                    data,
+                    this
+                );
 
-            this.initialData = structuredCloneSafe(
-                data
-            );
+            this.initialData =
+                structuredCloneSafe(
+                    data
+                );
 
-            this.isDirty = false;
+            this.isDirty =
+                false;
 
             this.updateUnsavedIndicator();
+
         } catch (error) {
-            if (error?.data?.errors) {
+
+            if (
+                error?.data?.errors
+            ) {
                 this.setErrors(
                     error.data.errors
                 );
@@ -394,7 +596,9 @@ class MCSForm {
             }
 
             throw error;
+
         } finally {
+
             this.setSubmitting(
                 false
             );
@@ -402,29 +606,47 @@ class MCSForm {
     }
 
     validateNative() {
-        const invalidFields = Array.from(
-            this.form.querySelectorAll(
-                ":invalid"
+        const invalidFields =
+            Array.from(
+                this.form
+                    ?.querySelectorAll(
+                        ":invalid"
+                    ) ||
+                []
             )
-        );
+                .filter(
+                    field =>
+                        Boolean(
+                            field.name
+                        ) &&
+                        !field.disabled &&
+                        !field.closest(
+                            "[data-rich-text-toolbar]"
+                        ) &&
+                        !field.closest(
+                            "[data-rich-text-link-popup]"
+                        )
+                );
 
-        if (invalidFields.length === 0) {
+        if (
+            invalidFields.length ===
+            0
+        ) {
             return true;
         }
 
-        invalidFields.forEach(field => {
-            if (!field.name) {
-                return;
+        invalidFields.forEach(
+            field => {
+                this.setFieldError(
+                    field.name,
+                    field.validationMessage ||
+                    "Dữ liệu không hợp lệ."
+                );
             }
+        );
 
-            this.setFieldError(
-                field.name,
-                field.validationMessage ||
-                "Dữ liệu không hợp lệ."
-            );
-        });
-
-        invalidFields[0]?.focus();
+        invalidFields[0]
+            ?.focus();
 
         return false;
     }

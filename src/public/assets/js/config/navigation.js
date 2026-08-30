@@ -177,6 +177,13 @@ window.MCS.navigationItems = [
         group: "Hệ thống",
         url: "/he-thong/thiet-lap",
         permission: "Q000013"
+    },
+
+    {
+        label: "Quản lý thông báo",
+        group: "Hệ thống",
+        url: "/he-thong/thong-bao",
+        permission: "Q000026"
     }
 
 ];

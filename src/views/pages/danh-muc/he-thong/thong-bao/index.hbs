@@ -1,0 +1,29 @@
+
+<link rel="stylesheet" href="/assets/css/pages/danh-muc/he-thong/thong-bao.css" >
+
+{{> catalog/module-page
+    moduleName="thong-bao"
+    apiBase="/api/mcs/v1/thong-bao"
+    title="Quản lý thông báo"
+    searchPlaceholder="Tìm theo tiêu đề hoặc nội dung..."
+    createButtonLabel="Thêm thông báo"
+    createButtonId="btnCreateThongBao"
+    searchInputId="searchThongBao"
+    tableId="thongBaoTable"
+    tableBodyId="thongBaoTableBody"
+    paginationId="thongBaoPagination"
+    detailPanelId="thongBaoDetailPanel"
+    detailContentId="thongBaoDetailContent"
+    formId="thongBaoForm"
+    formPartial="catalog/forms/he-thong/thong-bao-form"
+    detailTitle="Thông tin thông báo"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="thongBaoMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    folder="thong-bao"
+    page="thong-bao"
+}}

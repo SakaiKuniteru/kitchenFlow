@@ -1,0 +1,136 @@
+<div class="detail-panel__section">
+    <h3 class="detail-panel__section-title">
+        Nội dung thông báo
+    </h3>
+
+    <div class="catalog-form-grid">
+        <div class="catalog-form-grid__full">
+            {{> forms/input
+                id="tieuDe"
+                name="tieuDe"
+                label="Tiêu đề"
+                placeholder="Nhập tiêu đề thông báo"
+                maxlength=255
+                required=true
+            }}
+            
+            {{> forms/rich-text
+                id="noiDung"
+                name="noiDung"
+                label="Nội dung"
+                placeholder="Nhập nội dung thông báo"
+                editorHeight=300
+                required=true
+            }}
+        </div>
+
+        
+    </div>
+</div>
+
+
+<div class="detail-panel__section">
+    <h3 class="detail-panel__section-title">
+        Cấu hình gửi
+    </h3>
+
+    <div class="catalog-form-grid">
+        {{> forms/checkbox
+            id="tuDong"
+            name="tuDong"
+            label="Tự động gửi"
+            checked=false
+            disabled=true
+        }}
+
+        {{> forms/checkbox
+            id="guiTatCa"
+            name="guiTatCa"
+            label="Gửi cho tất cả"
+            checked=true
+        }}
+
+        <div data-thong-bao-doi-tuong hidden>
+            {{> forms/select
+                id="loaiDoiTuong"
+                name="loaiDoiTuong"
+                label="Loại đối tượng"
+                mode="single"
+                placeholder="Chọn loại đối tượng"
+            }}
+        </div>
+
+        <div data-thong-bao-doi-tuong hidden>
+            {{> forms/select
+                id="doiTuongIds"
+                name="doiTuongIds"
+                label="Đối tượng"
+                mode="multiple"
+                placeholder="Chọn loại đối tượng trước"
+                multiple=true
+                allowAll=false
+                disabled=true
+            }}
+        </div>
+    </div>
+</div>
+
+
+<div class="detail-panel__section">
+    <h3 class="detail-panel__section-title">
+        Liên kết
+    </h3>
+
+    <div class="catalog-form-grid">
+        {{> forms/input
+            id="loaiThamChieu"
+            name="loaiThamChieu"
+            label="Loại tham chiếu"
+            placeholder="Ví dụ: THUC_DON"
+            maxlength=100
+        }}
+
+        {{> forms/input
+            id="duongDan"
+            name="duongDan"
+            label="Đường dẫn"
+            placeholder="Ví dụ: /thuc-don/125"
+            maxlength=500
+        }}
+    </div>
+</div>
+
+
+<div class="detail-panel__section">
+    <h3 class="detail-panel__section-title">
+        Thông tin hệ thống
+    </h3>
+
+    <div class="catalog-form-grid">
+        {{> forms/input
+            id="nguoiTao"
+            name="nguoiTao"
+            label="Người tạo"
+            placeholder="Người tạo"
+            disabled=true
+        }}
+        
+        {{> forms/input
+            id="thoiGianGui"
+            name="thoiGianGui"
+            label="Thời gian gửi"
+            placeholder="Chưa gửi"
+            disabled=true
+        }}
+
+        <div class="catalog-form-grid__full">
+            {{> forms/input
+                id="trangThai"
+                name="trangThai"
+                label="Trạng thái"
+                placeholder="Tạo mới"
+                disabled=true
+            }}
+        </div>
+    </div>
+</div>

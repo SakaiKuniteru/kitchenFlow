@@ -15,9 +15,11 @@ class MCSCatalog {
                 create: "",
                 update: ""
             },
-
             columns: [],
             toolbarActions: [],
+            headerActions: [],
+            currentPermissionCodes: [],
+            onHeaderAction: null,
             permissions: {
                 configured: false,
                 canView: true,
@@ -200,50 +202,65 @@ class MCSCatalog {
             }
         );
 
-        this.detailPanel = new window.MCS.catalog.DetailPanel(
-            this.elements.detailRoot,
-            {
-                defaultTitle:
-                    this.options.detailTitle ||
-                    "Thông tin chi tiết",
+        this.detailPanel =
+            new window.MCS.catalog.DetailPanel(
+                this.elements.detailRoot,
+                {
+                    defaultTitle:
+                        this.options.detailTitle ||
+                        "Thông tin chi tiết",
 
-                headerAction:
-                    this.options.headerAction ||
-                    null,
+                    headerActions:
+                        this.options.headerActions ||
+                        [],
 
-                onHeaderAction:
-                    context => {
-                        this.options.onHeaderAction?.(context, this);
+                    currentPermissions:
+                        this.options
+                            .currentPermissionCodes ||
+                        [],
+
+                    onHeaderAction:
+                        context => {
+                            this.options
+                                .onHeaderAction?.(
+                                    context,
+                                    this
+                                );
+                        },
+
+                    onEdit: record => {
+                        if (!record) {
+                            return;
+                        }
+
+                        const id =
+                            record[
+                                this.options.rowKey
+                            ];
+
+                        if (
+                            id === null ||
+                            id === undefined
+                        ) {
+                            return;
+                        }
+
+                        this.openUpdate(
+                            id
+                        );
                     },
 
-                onEdit: record => {
-                    if (!record) {
-                        return;
+                    onClose: () => {
+                        this.table
+                            .clearSelection();
+
+                        this.state.selectedId =
+                            null;
+
+                        this.initializeDefaultDetail();
                     }
-
-                    const id = record[
-                        this.options.rowKey
-                    ];
-
-                    if (
-                        id === null ||
-                        id === undefined
-                    ) {
-                        return;
-                    }
-
-                    this.openUpdate(id);
-                },
-
-                onClose: () => {
-                    this.table.clearSelection();
-
-                    this.state.selectedId = null;
-
-                    this.initializeDefaultDetail();
                 }
-            }
-        );
+            );
 
         this.form = new window.MCS.catalog.Form(
             this.elements.form,

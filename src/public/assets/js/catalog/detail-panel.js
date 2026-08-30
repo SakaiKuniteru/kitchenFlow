@@ -15,7 +15,8 @@ class MCSDetailPanel {
             defaultTitle: "Thông tin chi tiết",
             onEdit: null,
             onClose: null,
-            headerAction: null,
+            headerActions: [],
+            currentPermissions: [],
             onHeaderAction: null,
             ...options
         };
@@ -25,11 +26,22 @@ class MCSDetailPanel {
         this.title = this.panel?.querySelector("[data-detail-title]");
         this.subtitle = this.panel?.querySelector("[data-detail-subtitle]");
         this.editButton = this.panel?.querySelector("[data-detail-edit]");
-        this.headerAction = this.panel?.querySelector("[data-detail-header-action]");
+        this.headerActions = this.panel?.querySelector("[data-detail-header-actions]");
+        this.currentHeaderActions =[];
+        this.permissionSet = new Set(
+            (
+                Array.isArray(this.options.currentPermissions)
+                    ? this.options.currentPermissions: []
+            )
+                .map(item => String(item || "")
+                    .trim()
+                    .toUpperCase()
+                )
+                .filter(Boolean)
+            );
 
         this.closeButtons = this.panel?.querySelectorAll(
             [
-                "[data-detail-close]",
                 "[data-detail-back]"
             ].join(",")
         );
@@ -68,90 +80,405 @@ class MCSDetailPanel {
             });
         });
 
-        this.headerAction?.addEventListener("click", event => {
-                event.preventDefault();
-                event.stopPropagation();
-                this.options.onHeaderAction?.(
-                    {
-                        mode: this.mode,
-                        record: this.record,
-                        panel: this,
-                        action: this.options.headerAction
+        this.headerActions
+            ?.addEventListener(
+                "click",
+                event => {
+
+                    const button =
+                        event.target.closest(
+                            "[data-detail-header-action]"
+                        );
+
+
+                    if (
+                        !button ||
+                        button.disabled
+                    ) {
+                        return;
                     }
+
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+
+                    const actionName =
+                        button.dataset.action;
+
+
+                    const action =
+                        this.currentHeaderActions
+                            .find(
+                                item =>
+                                    item.action ===
+                                    actionName
+                            );
+
+
+                    if (!action) {
+                        return;
+                    }
+
+
+                    this.options
+                        .onHeaderAction?.({
+                            action:
+                                actionName,
+
+                            config:
+                                action,
+
+                            mode:
+                                this.mode,
+
+                            record:
+                                this.record,
+
+                            panel:
+                                this
+                        });
+
+                }
+            );
+    }
+
+    getHeaderActions() {
+
+        const source =
+            typeof this.options
+                .headerActions ===
+            "function"
+
+                ? this.options
+                    .headerActions({
+                        mode:
+                            this.mode,
+
+                        record:
+                            this.record,
+
+                        panel:
+                            this,
+
+                        permissions:
+                            this.permissionSet
+                    })
+
+                : this.options
+                    .headerActions;
+
+
+        return Array.isArray(
+            source
+        )
+            ? source
+            : [];
+    }
+
+    hasHeaderActionPermission(
+        action
+    ) {
+
+        const permissions =
+            action.permission
+                ? [
+                    action.permission
+                ]
+                : (
+                    Array.isArray(
+                        action.permissions
+                    )
+                        ? action.permissions
+                        : []
                 );
+
+
+        if (
+            permissions.length ===
+            0
+        ) {
+            return true;
+        }
+
+
+        const normalized =
+            permissions
+                .map(
+                    item =>
+                        String(
+                            item ||
+                            ""
+                        )
+                            .trim()
+                            .toUpperCase()
+                )
+                .filter(Boolean);
+
+
+        if (
+            action.permissionMode ===
+            "all"
+        ) {
+
+            return normalized.every(
+                code =>
+                    this.permissionSet.has(
+                        code
+                    )
+            );
+        }
+
+
+        return normalized.some(
+            code =>
+                this.permissionSet.has(
+                    code
+                )
+        );
+    }
+
+    isHeaderActionVisible(
+        action
+    ) {
+
+        if (
+            !action ||
+            !action.action
+        ) {
+            return false;
+        }
+
+
+        if (
+            Array.isArray(
+                action.modes
+            ) &&
+            !action.modes.includes(
+                this.mode
+            )
+        ) {
+            return false;
+        }
+
+
+        if (
+            !this
+                .hasHeaderActionPermission(
+                    action
+                )
+        ) {
+            return false;
+        }
+
+
+        if (
+            typeof action.when ===
+            "function"
+        ) {
+
+            return (
+                action.when({
+                    mode:
+                        this.mode,
+
+                    record:
+                        this.record,
+
+                    panel:
+                        this,
+
+                    permissions:
+                        this.permissionSet
+                }) ===
+                true
+            );
+        }
+
+
+        return true;
+    }
+
+    isHeaderActionDisabled(
+        action
+    ) {
+
+        if (
+            typeof action.disabled ===
+            "function"
+        ) {
+
+            return (
+                action.disabled({
+                    mode:
+                        this.mode,
+
+                    record:
+                        this.record,
+
+                    panel:
+                        this,
+
+                    permissions:
+                        this.permissionSet
+                }) ===
+                true
+            );
+        }
+
+
+        return (
+            action.disabled ===
+            true
+        );
+    }
+
+    syncHeaderActions() {
+
+        if (
+            !this.headerActions
+        ) {
+            return;
+        }
+
+
+        const actions =
+            this.getHeaderActions()
+                .filter(
+                    action =>
+                        this
+                            .isHeaderActionVisible(
+                                action
+                            )
+                );
+
+
+        this.currentHeaderActions =
+            actions;
+
+
+        this.headerActions
+            .replaceChildren();
+
+
+        this.headerActions.hidden =
+            actions.length ===
+            0;
+
+
+        actions.forEach(
+            action => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                button.type =
+                    "button";
+
+
+                button.className =
+                    [
+                        "detail-panel__header-action",
+
+                        `detail-panel__header-action--${
+                            action.variant ||
+                            "secondary"
+                        }`
+                    ].join(" ");
+
+
+                button.dataset
+                    .detailHeaderAction =
+                    "";
+
+
+                button.dataset.action =
+                    action.action;
+
+
+                button.disabled =
+                    this
+                        .isHeaderActionDisabled(
+                            action
+                        );
+
+
+                if (
+                    action.title
+                ) {
+                    button.title =
+                        action.title;
+                }
+
+
+                if (
+                    action.icon
+                ) {
+
+                    const icon =
+                        document.createElement(
+                            "i"
+                        );
+
+
+                    icon.className =
+                        action.icon;
+
+
+                    icon.setAttribute(
+                        "aria-hidden",
+                        "true"
+                    );
+
+
+                    button.appendChild(
+                        icon
+                    );
+                }
+
+
+                if (
+                    action.label
+                ) {
+
+                    const label =
+                        document.createElement(
+                            "span"
+                        );
+
+
+                    label.textContent =
+                        action.label;
+
+
+                    button.appendChild(
+                        label
+                    );
+                }
+
+
+                this.headerActions
+                    .appendChild(
+                        button
+                    );
 
             }
         );
     }
 
-    syncHeaderAction() {
+    setHeaderActions(
+        actions
+    ) {
 
-        if (
-            !this.headerAction
-        ) {
-            return;
-        }
-
-
-        const action =
-            this.options.headerAction;
+        this.options.headerActions =
+            actions ||
+            [];
 
 
-        if (
-            !action
-        ) {
-
-            this.headerAction.hidden =
-                true;
-
-            return;
-
-        }
-
-
-        const modes =
-            Array.isArray(
-                action.modes
-            )
-                ? action.modes
-                : null;
-
-
-        const visible =
-            !modes ||
-            modes.includes(
-                this.mode
-            );
-
-
-        this.headerAction.hidden =
-            !visible;
-
-
-        if (
-            !visible
-        ) {
-            return;
-        }
-
-
-        this.headerAction.innerHTML = `
-            ${
-                action.icon
-                    ? `<i class="${action.icon}" aria-hidden="true"></i>`
-                    : ""
-            }
-
-            <span>
-                ${action.label || ""}
-            </span>
-        `;
-
-
-        this.headerAction.dataset.action =
-            action.action ||
-            "";
-
+        this.syncHeaderActions();
     }
 
     showDefault({
@@ -182,7 +509,7 @@ class MCSDetailPanel {
             this.editButton.hidden = true;
         }
 
-        this.syncHeaderAction();
+        this.syncHeaderActions();
         this.close();
     }
 
@@ -225,24 +552,8 @@ class MCSDetailPanel {
             );
         }
 
-        this.syncHeaderAction();
+        this.syncHeaderActions();
         this.open();
-    }
-
-    setMode(mode) {
-        this.mode = mode;
-
-        if (this.panel) {
-            this.panel.dataset.mode = mode;
-        }
-
-        if (this.editButton) {
-            this.editButton.hidden = (
-                mode !== "view" ||
-                !this.record
-            );
-        }
-        this.syncHeaderAction();
     }
 
     getModeTitle(mode) {

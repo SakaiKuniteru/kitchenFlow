@@ -118,6 +118,11 @@ const danhMucRoutes = [
         method: "get",
         path: "/he-thong/bao-cao",
         handler: danhMucWebController.baoCao
+    },
+    {
+        method: "get",
+        path: "/he-thong/thong-bao",
+        handler: danhMucWebController.thongBao
     }
 ];
 

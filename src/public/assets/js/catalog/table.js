@@ -400,10 +400,16 @@ class MCSTable {
                 }
 
                 return new Intl
-                    .NumberFormat("vi-VN",
+                    .NumberFormat(
+                        "vi-VN",
                         {
-                            minimumFractionDigits: column.minimumFractionDigits ?? 0,
-                            maximumFractionDigits: column.maximumFractionDigits ?? 20
+                            minimumFractionDigits:
+                                column.minimumFractionDigits ??
+                                0,
+
+                            maximumFractionDigits:
+                                column.maximumFractionDigits ??
+                                20
                         }
                     )
                     .format(number);
@@ -414,10 +420,13 @@ class MCSTable {
                     .NumberFormat(
                         "vi-VN",
                         {
-                            style: "currency",
+                            style:
+                                "currency",
+
                             currency:
                                 column.currency ||
                                 "VND",
+
                             maximumFractionDigits:
                                 column.maximumFractionDigits ??
                                 0
@@ -450,9 +459,132 @@ class MCSTable {
                         "Không"
                     );
 
+            case "richtext":
+            case "html":
+                return this.formatRichText(
+                    value
+                );
+
             default:
+                if (
+                    this.containsRichTextHtml(
+                        value
+                    )
+                ) {
+                    return this.formatRichText(
+                        value
+                    );
+                }
+
                 return String(value);
         }
+    }
+
+    containsRichTextHtml(value) {
+        const text =
+            String(
+                value ??
+                ""
+            );
+
+        if (!text) {
+            return false;
+        }
+
+        return /<\/?(?:div|p|br|span|strong|b|em|i|u|a|ul|ol|li|blockquote)\b[^>]*>/i
+            .test(text);
+    }
+
+    formatRichText(value) {
+        let html =
+            String(
+                value ??
+                ""
+            ).trim();
+
+        if (!html) {
+            return "";
+        }
+
+        if (
+            !this.containsRichTextHtml(html) &&
+            /&lt;|&gt;/i.test(html)
+        ) {
+            const decoder =
+                document.createElement(
+                    "textarea"
+                );
+
+            decoder.innerHTML =
+                html;
+
+            const decoded =
+                decoder.value;
+
+            if (
+                this.containsRichTextHtml(
+                    decoded
+                )
+            ) {
+                html =
+                    decoded;
+            }
+        }
+
+        const template =
+            document.createElement(
+                "template"
+            );
+
+        template.innerHTML =
+            html;
+
+        template.content
+            .querySelectorAll(
+                "br"
+            )
+            .forEach(
+                element => {
+
+                    element.replaceWith(
+                        document.createTextNode(
+                            " "
+                        )
+                    );
+
+                }
+            );
+
+        template.content
+            .querySelectorAll(
+                "div, p, li, blockquote"
+            )
+            .forEach(
+                element => {
+
+                    element.appendChild(
+                        document.createTextNode(
+                            " "
+                        )
+                    );
+
+                }
+            );
+
+        return (
+            template.content
+                .textContent ||
+            ""
+        )
+            .replace(
+                /\u00A0/g,
+                " "
+            )
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
     }
 
     formatDate(value, includeTime) {

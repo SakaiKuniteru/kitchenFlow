@@ -609,6 +609,25 @@ class ThongBaoRepository {
         );
     }
 
+    async deleteNguoiNhan(
+        thongBaoId,
+        client = pool
+    ) {
+
+        await client.query(
+            `
+                DELETE FROM
+                    ct_thong_bao_nguoi_nhan
+
+                WHERE
+                    thong_bao_id = $1
+            `,
+            [
+                thongBaoId
+            ]
+        );
+    }
+
     async existsDoiTuongIds(
         loaiDoiTuong,
         ids,

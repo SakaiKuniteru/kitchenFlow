@@ -323,6 +323,59 @@ class ThongBaoService {
         }
     }
 
+    validateQuyenCapNhat(
+        thongBao,
+        permissions
+    ) {
+
+        const danhSachQuyen =
+            permissions instanceof Set
+                ? permissions
+                : new Set(
+                    permissions || []
+                );
+
+
+        if (
+            thongBao.tuDong ===
+            true
+        ) {
+
+            if (
+                !danhSachQuyen.has(
+                    "Q001013"
+                )
+            ) {
+
+                throw new ApiError(
+                    403,
+                    "Bạn không có quyền cập nhật thông báo tự động."
+                );
+            }
+
+
+            return;
+        }
+
+
+        const coQuyenCapNhat =
+            danhSachQuyen.has(
+                "Q001012"
+            ) ||
+            danhSachQuyen.has(
+                "Q001013"
+            );
+
+
+        if (!coQuyenCapNhat) {
+
+            throw new ApiError(
+                403,
+                "Bạn không có quyền cập nhật thông báo."
+            );
+        }
+    }
+
     async validateDoiTuong(
         doiTuong,
         client = pool
@@ -504,19 +557,6 @@ class ThongBaoService {
 
         const filters = {};
 
-
-        if (
-            query.trangThai !==
-            undefined &&
-            query.trangThai !==
-            ""
-        ) {
-
-            const trangThai =
-                Number(
-                    query.trangThai
-                );
-
         if (
             query.trangThai !==
             undefined &&
@@ -529,11 +569,6 @@ class ThongBaoService {
                     query.trangThai
                 );
         }
-
-            filters.trangThai =
-                trangThai;
-        }
-
 
         if (
             query.tuDong !==
@@ -904,7 +939,8 @@ class ThongBaoService {
 
     async update(
         id,
-        data
+        data,
+        permissions
     ) {
 
         const thongBaoId =
@@ -916,6 +952,12 @@ class ThongBaoService {
                 thongBaoId
             );
 
+
+        this.validateQuyenCapNhat(
+            thongBao,
+            permissions
+        );
+
         const giaTriTrangThaiHienTai =
             typeof thongBao.trangThai ===
             "object"
@@ -925,29 +967,26 @@ class ThongBaoService {
                 : thongBao
                     .trangThai;
 
-            if (
+            const trangThaiHienTai =
                 Number(
                     giaTriTrangThaiHienTai
-                ) !== 10
+                );
+
+
+            if (
+                ![
+                    10,
+                    30
+                ].includes(
+                    trangThaiHienTai
+                )
             ) {
 
                 throw new ApiError(
                     409,
-                    "Chỉ được cập nhật thông báo ở trạng thái Tạo mới."
+                    "Chỉ được cập nhật thông báo ở trạng thái Tạo mới hoặc Đã huỷ."
                 );
             }
-
-        if (
-            thongBao.tuDong ===
-            true
-        ) {
-
-            throw new ApiError(
-                409,
-                "Không được cập nhật thông báo tự động."
-            );
-        }
-
 
         const guiTatCa =
             data.guiTatCa !==
@@ -1145,15 +1184,24 @@ class ThongBaoService {
                 );
             }
 
-            if (
+            const trangThai =
                 Number(
                     thongBao.trang_thai
-                ) !== 10
+                );
+
+
+            if (
+                ![
+                    10,
+                    30
+                ].includes(
+                    trangThai
+                )
             ) {
 
                 throw new ApiError(
                     409,
-                    "Chỉ được gửi thông báo ở trạng thái Tạo mới."
+                    "Chỉ được gửi thông báo ở trạng thái Tạo mới hoặc Đã huỷ."
                 );
             }
 
@@ -1263,18 +1311,156 @@ class ThongBaoService {
             if (
                 Number(
                     thongBao.trang_thai
-                ) !== 10
+                ) !== 20
             ) {
 
                 throw new ApiError(
                     409,
-                    "Chỉ được hủy thông báo ở trạng thái Tạo mới."
+                    "Chỉ được huỷ gửi thông báo ở trạng thái Đã gửi."
                 );
             }
 
             await thongBaoRepository
+                .deleteNguoiNhan(
+                    thongBaoId,
+                    client
+                );
+
+            await thongBaoRepository
                 .danhDauDaHuy(
                     thongBaoId,
+                    client
+                );
+
+            await client.query(
+                "COMMIT"
+            );
+
+
+            return await this
+                .getChiTiet(
+                    thongBaoId
+                );
+
+        } catch (error) {
+
+            await client.query(
+                "ROLLBACK"
+            );
+
+
+            throw error;
+
+        } finally {
+
+            client.release();
+
+        }
+    }
+
+    async createTuDong(
+        data
+    ) {
+
+        const guiTatCa =
+            data.guiTatCa ===
+            true;
+
+
+        const doiTuong =
+            this.chuanHoaDoiTuong(
+                data.doiTuong ||
+                []
+            );
+
+
+        this.validatePhamVi(
+            guiTatCa,
+            doiTuong
+        );
+
+
+        if (
+            !data.maSuKien
+        ) {
+
+            throw new ApiError(
+                400,
+                "Mã sự kiện thông báo tự động không được để trống."
+            );
+        }
+
+
+        const client =
+            await pool.connect();
+
+
+        try {
+
+            await client.query(
+                "BEGIN"
+            );
+
+
+            if (
+                !guiTatCa
+            ) {
+
+                await this.validateDoiTuong(
+                    doiTuong,
+                    client
+                );
+            }
+
+
+            const thongBao =
+                await thongBaoRepository
+                    .create(
+                        {
+                            tieuDe:
+                                data.tieuDe,
+
+                            noiDung:
+                                data.noiDung,
+
+                            guiTatCa,
+
+                            tuDong:
+                                true,
+
+                            maSuKien:
+                                data.maSuKien,
+
+                            loaiThamChieu:
+                                data.loaiThamChieu ||
+                                null,
+
+                            thamChieuId:
+                                data.thamChieuId ||
+                                null,
+
+                            duongDan:
+                                data.duongDan ||
+                                null,
+
+                            trangThai:
+                                10,
+
+                            nguoiTaoId:
+                                data.nguoiTaoId ||
+                                null,
+
+                            thoiGianGui:
+                                null
+                        },
+                        client
+                    );
+
+
+            await thongBaoRepository
+                .saveDoiTuong(
+                    thongBao.id,
+                    doiTuong,
                     client
                 );
 
@@ -1286,7 +1472,7 @@ class ThongBaoService {
 
             return await this
                 .getChiTiet(
-                    thongBaoId
+                    thongBao.id
                 );
 
         } catch (error) {

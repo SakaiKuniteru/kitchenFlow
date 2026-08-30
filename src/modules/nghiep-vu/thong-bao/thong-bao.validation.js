@@ -93,18 +93,6 @@ function validatePhamVi(
         });
     }
 
-
-    if (
-        value.loaiThamChieu &&
-        !value.thamChieuId
-    ) {
-        return helpers.message({
-            custom:
-                "ID tham chiếu không được để trống khi có loại tham chiếu."
-        });
-    }
-
-
     if (
         value.thamChieuId &&
         !value.loaiThamChieu
@@ -395,25 +383,6 @@ function validatePhamViUpdate(
                 "Vui lòng chọn ít nhất một đối tượng nhận thông báo."
         });
     }
-
-
-    if (
-        value.loaiThamChieu !==
-        undefined &&
-        value.loaiThamChieu !==
-        null &&
-        value.loaiThamChieu !==
-        "" &&
-        value.thamChieuId ===
-        null
-    ) {
-
-        return helpers.message({
-            custom:
-                "ID tham chiếu không được để trống khi có loại tham chiếu."
-        });
-    }
-
 
     if (
         value.thamChieuId !==
