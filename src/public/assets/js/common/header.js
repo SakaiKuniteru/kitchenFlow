@@ -11,6 +11,14 @@ document.addEventListener("DOMContentLoaded", () => {
         currentUserEndpoint: "/api/mcs/v1/auth/nhan-vien-hien-tai",
         systemNameEndpoint: "/api/mcs/v1/thiet-lap/gia-tri?ma=TEN_HE_THONG",
         systemLogoEndpoint: "/api/mcs/v1/thiet-lap/gia-tri?ma=LOGO_CO_SO_MAC_DINH",
+        notificationListEndpoint: "/api/mcs/v1/thong-bao/cua-toi",
+        notificationUnreadEndpoint: "/api/mcs/v1/thong-bao/cua-toi/so-chua-doc",
+        notificationMarkAllEndpoint: "/api/mcs/v1/thong-bao/cua-toi/da-doc-tat-ca",
+        notificationPageUrl: "/thong-bao",
+        notificationAllLimit: 20,
+        notificationUnreadLimit: 10,
+        notificationVisibleRows: 5,
+        notificationRefreshInterval: 60000,
         currentUserKey: "currentUser",
         accessTokenKey: "accessToken",
         refreshTokenKey: "refreshToken",
@@ -33,6 +41,17 @@ document.addEventListener("DOMContentLoaded", () => {
         logoutButton: document.querySelector("[data-header-logout]"),
         notificationButton: document.querySelector("[data-header-notification-button]"),
         notificationMenu: document.querySelector("[data-header-notification-menu]"),
+        notificationRoot: document.querySelector("[data-header-notification]"),
+        notificationCount: document.querySelector("[data-header-notification-count]"),
+        notificationList: document.querySelector("[data-header-notification-list]"),
+        notificationContent: document.querySelector(".app-header__notification-content"),
+        notificationEmpty: document.querySelector("[data-header-notification-empty]"),
+        notificationLoading: document.querySelector("[data-header-notification-loading]"),
+        notificationMarkAll: document.querySelector("[data-header-notification-mark-all]"),
+        notificationViewAll: document.querySelector("[data-header-notification-view-all]"),
+        notificationFilters: document.querySelectorAll("[data-header-notification-filter]"),
+        notificationTotal: document.querySelector("[data-header-notification-total]"),
+        notificationUnreadTotal: document.querySelector("[data-header-notification-unread-total]"),
         profileOpenButton: document.querySelector("[data-header-profile-open]"),
         profileModal: document.getElementById("employeeProfileModal"),
         profileForm: document.getElementById("employeeProfileForm"),
@@ -70,16 +89,28 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     let avatarPreviewUrl = null;
+    const notificationState = {
+        items: [],
+        filter: "all",
+        unreadCount: 0,
+        loaded: false,
+        loading: false,
+        refreshTimer: null,
+        countInitialized: false
+    };
 
     function initialize() {
         initializeAddressSmartSelects();
         initializeProfileFieldValidation();
         bindEvents();
         renderStoredCurrentUser();
+        initializeNotifications();
         Promise.allSettled([
             loadCurrentUser(),
             loadSystemInformation()
-        ]);
+        ]).then(() => {
+            initializeNotifications();
+        });
     }
 
     function initializeHeaderSearch(
@@ -1164,20 +1195,945 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function getCurrentPermissionSet(
+        currentUser = getStoredCurrentUser()
+    ) {
+        const permissions = Array.isArray(
+            currentUser?.dsQuyen
+        )
+            ? currentUser.dsQuyen
+            : [];
+
+        return new Set(
+            permissions
+                .map(item => {
+                    if (
+                        typeof item ===
+                        "string"
+                    ) {
+                        return item;
+                    }
+
+                    return (
+                        item?.maQuyen ||
+                        item?.ma_quyen ||
+                        item?.code ||
+                        ""
+                    );
+                })
+                .map(item =>
+                    String(item)
+                        .trim()
+                        .toUpperCase()
+                )
+                .filter(Boolean)
+        );
+    }
+
+    function hasNotificationPermission(
+        code
+    ) {
+        return getCurrentPermissionSet()
+            .has(
+                String(code)
+                    .trim()
+                    .toUpperCase()
+            );
+    }
+
+    function canViewNotifications() {
+        return hasNotificationPermission(
+            "Q001016"
+        );
+    }
+
+    function canMarkAllNotificationsRead() {
+        return hasNotificationPermission(
+            "Q001017"
+        );
+    }
+
+    function initializeNotifications() {
+        if (
+            !elements.notificationRoot
+        ) {
+            return;
+        }
+
+        const currentUser =
+            getStoredCurrentUser();
+
+        if (!currentUser) {
+            return;
+        }
+
+        const canView =
+            canViewNotifications();
+
+        elements.notificationRoot.hidden =
+            !canView;
+
+        if (!canView) {
+            stopNotificationPolling();
+            updateNotificationBadge(0);
+            return;
+        }
+
+        if (
+            elements.notificationMarkAll
+        ) {
+            elements.notificationMarkAll.hidden =
+                !canMarkAllNotificationsRead();
+        }
+
+        loadNotificationCount();
+        startNotificationPolling();
+    }
+
+    async function loadNotificationCount() {
+        if (
+            !canViewNotifications()
+        ) {
+            updateNotificationBadge(0);
+            return;
+        }
+
+        try {
+            const result =
+                await authenticatedRequest(
+                    CONFIG
+                        .notificationUnreadEndpoint,
+                    {
+                        method: "GET"
+                    }
+                );
+
+            const data =
+                result?.data ??
+                result ??
+                {};
+
+            const count =
+                Math.max(
+                    0,
+                    Number(
+                        data?.soChuaDoc ??
+                        0
+                    ) || 0
+                );
+
+            const previousCount =
+                notificationState.unreadCount;
+
+            const countChanged =
+                notificationState.countInitialized &&
+                count !== previousCount;
+
+            if (
+                count !==
+                previousCount
+            ) {
+                notificationState.loaded =
+                    false;
+            }
+
+            notificationState.unreadCount =
+                count;
+
+            notificationState.countInitialized =
+                true;
+
+            updateNotificationBadge(
+                count
+            );
+
+            if (countChanged) {
+
+                window.dispatchEvent(
+                    new CustomEvent(
+                        "mcs:notification-count-changed",
+                        {
+                            detail: {
+                                previousCount,
+                                count
+                            }
+                        }
+                    )
+                );
+
+            }
+
+            if (
+                elements.notificationUnreadTotal
+            ) {
+                elements.notificationUnreadTotal
+                    .textContent =
+                    String(count);
+            }
+
+        } catch (error) {
+
+            if (
+                error?.status === 403 ||
+                error?.statusCode === 403
+            ) {
+                elements.notificationRoot.hidden =
+                    true;
+
+                stopNotificationPolling();
+
+                return;
+            }
+
+            console.warn(
+                "Không thể lấy số thông báo chưa đọc:",
+                error
+            );
+        }
+    }
+
+    function updateNotificationBadge(
+        count
+    ) {
+        if (
+            !elements.notificationCount
+        ) {
+            return;
+        }
+
+        const value =
+            Math.max(
+                0,
+                Number(count) || 0
+            );
+
+        elements.notificationCount.hidden =
+            value <= 0;
+
+        elements.notificationCount.textContent =
+            value > 99
+                ? "99+"
+                : String(value);
+
+        elements.notificationButton
+            ?.classList
+            .toggle(
+                "has-unread",
+                value > 0
+            );
+    }
+
+    function startNotificationPolling() {
+        stopNotificationPolling();
+
+        notificationState.refreshTimer =
+            window.setInterval(
+                () => {
+                    if (
+                        document.visibilityState ===
+                        "visible"
+                    ) {
+                        loadNotificationCount();
+                    }
+                },
+                CONFIG
+                    .notificationRefreshInterval
+            );
+    }
+
+    function stopNotificationPolling() {
+        if (
+            notificationState.refreshTimer
+        ) {
+            clearInterval(
+                notificationState.refreshTimer
+            );
+
+            notificationState.refreshTimer =
+                null;
+        }
+    }
+
+    async function loadHeaderNotifications(
+        force = false
+    ) {
+        if (
+            notificationState.loading ||
+            !canViewNotifications()
+        ) {
+            return;
+        }
+
+        if (
+            notificationState.loaded &&
+            !force
+        ) {
+            renderHeaderNotifications();
+            return;
+        }
+
+        notificationState.loading =
+            true;
+
+        setHeaderNotificationLoading(
+            true
+        );
+
+        try {
+            const result =
+                await authenticatedRequest(
+                    CONFIG
+                        .notificationListEndpoint,
+                    {
+                        method: "GET"
+                    }
+                );
+
+            const data =
+                result?.data ??
+                result;
+
+            notificationState.items =
+                Array.isArray(data)
+                    ? data
+                    : [];
+
+            notificationState.loaded =
+                true;
+
+            notificationState.unreadCount =
+                notificationState.items.filter(
+                    item =>
+                        item?.daDoc !== true
+                ).length;
+
+            updateNotificationBadge(
+                notificationState
+                    .unreadCount
+            );
+
+            renderHeaderNotifications();
+
+        } catch (error) {
+
+            console.error(
+                "Không thể tải thông báo:",
+                error
+            );
+
+            if (
+                elements.notificationEmpty
+            ) {
+                elements.notificationEmpty.hidden =
+                    false;
+
+                elements.notificationEmpty.innerHTML = `
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    <strong>
+                        Không thể tải thông báo
+                    </strong>
+
+                    <span>
+                        Vui lòng thử lại sau.
+                    </span>
+                `;
+            }
+
+        } finally {
+
+            notificationState.loading =
+                false;
+
+            setHeaderNotificationLoading(
+                false
+            );
+        }
+    }
+
+    function setHeaderNotificationLoading(
+        loading
+    ) {
+        if (
+            elements.notificationLoading
+        ) {
+            elements.notificationLoading.hidden =
+                !loading;
+        }
+
+        if (
+            loading &&
+            elements.notificationEmpty
+        ) {
+            elements.notificationEmpty.hidden =
+                true;
+        }
+    }
+
+    function renderHeaderNotifications() {
+        if (
+            !elements.notificationList
+        ) {
+            return;
+        }
+
+        const sortedItems =
+            [
+                ...notificationState.items
+            ]
+                .sort(
+                    (
+                        a,
+                        b
+                    ) =>
+                        getNotificationTime(
+                            b
+                        ) -
+                        getNotificationTime(
+                            a
+                        )
+                );
+
+
+        const allUnreadItems =
+            sortedItems.filter(
+                item =>
+                    item?.daDoc !==
+                    true
+            );
+
+        const recentAll =
+            sortedItems.slice(
+                0,
+                CONFIG
+                    .notificationAllLimit
+            );
+
+        const recentUnread =
+            allUnreadItems.slice(
+                0,
+                CONFIG
+                    .notificationUnreadLimit
+            );
+
+
+        if (
+            elements.notificationTotal
+        ) {
+            elements.notificationTotal
+                .textContent =
+                String(
+                    recentAll.length
+                );
+        }
+
+
+        if (
+            elements.notificationUnreadTotal
+        ) {
+            elements.notificationUnreadTotal
+                .textContent =
+                String(
+                    recentUnread.length
+                );
+        }
+
+
+        notificationState.unreadCount =
+            allUnreadItems.length;
+
+
+        updateNotificationBadge(
+            allUnreadItems.length
+        );
+
+
+        const visibleItems =
+            notificationState.filter ===
+                "unread"
+                ? recentUnread
+                : recentAll;
+
+
+        elements.notificationList
+            .innerHTML =
+            visibleItems
+                .map(
+                    renderHeaderNotificationItem
+                )
+                .join("");
+
+
+        if (
+            elements.notificationEmpty
+        ) {
+            elements.notificationEmpty.hidden =
+                visibleItems.length >
+                0;
+        }
+
+
+        elements.notificationFilters
+            .forEach(
+                button => {
+
+                    button.classList.toggle(
+                        "is-active",
+                        button.dataset
+                            .headerNotificationFilter ===
+                            notificationState.filter
+                    );
+
+                }
+            );
+
+
+        if (
+            elements.notificationMarkAll
+        ) {
+            elements.notificationMarkAll.hidden =
+                !canMarkAllNotificationsRead();
+
+            elements.notificationMarkAll.disabled =
+                allUnreadItems.length ===
+                0;
+        }
+    }
+
+    function getNotificationTime(
+        item
+    ) {
+        const value =
+            item?.thoiGianGui ||
+            item?.createdAt ||
+            null;
+
+
+        if (!value) {
+            return 0;
+        }
+
+
+        const time =
+            new Date(
+                value
+            ).getTime();
+
+
+        return Number.isFinite(
+            time
+        )
+            ? time
+            : 0;
+    }
+
+    function renderHeaderNotificationItem(
+        item
+    ) {
+        const unread =
+            item?.daDoc !== true;
+
+        const icon =
+            getNotificationIcon(
+                item
+            );
+
+        const content =
+            stripNotificationHtml(
+                item?.noiDung ||
+                ""
+            );
+
+        return `
+            <button
+                type="button"
+                class="
+                    app-header__notification-item
+                    ${
+                        unread
+                            ? "is-unread"
+                            : ""
+                    }
+                "
+                data-header-notification-id="${
+                    Number(item?.id) || ""
+                }">
+
+                <span
+                    class="
+                        app-header__notification-icon
+                        ${icon.className}
+                    "
+                    aria-hidden="true">
+
+                    <i class="${icon.icon}">
+                    </i>
+
+                </span>
+
+                <span
+                    class="
+                        app-header__notification-main
+                    ">
+
+                    <strong
+                        class="
+                            app-header__notification-item-title
+                        ">
+                        ${escapeNotificationHtml(
+                            item?.tieuDe ||
+                            "Thông báo"
+                        )}
+                    </strong>
+
+                    <span
+                        class="
+                            app-header__notification-preview
+                        ">
+                        ${escapeNotificationHtml(
+                            content
+                        )}
+                    </span>
+
+                </span>
+
+                <span
+                    class="
+                        app-header__notification-meta
+                    ">
+
+                    <span
+                        class="
+                            app-header__notification-time
+                        ">
+                        ${escapeNotificationHtml(
+                            formatNotificationRelativeTime(
+                                item?.thoiGianGui ||
+                                item?.createdAt
+                            )
+                        )}
+                    </span>
+
+                    ${
+                        unread
+                            ? `
+                                <span
+                                    class="
+                                        app-header__notification-unread-dot
+                                    "
+                                    aria-label="Chưa đọc">
+                                </span>
+                            `
+                            : ""
+                    }
+
+                </span>
+
+            </button>
+        `;
+    }
+
+    function getNotificationIcon(
+        item
+    ) {
+        const text =
+            String(
+                item?.maSuKien ||
+                item?.loaiThamChieu ||
+                ""
+            )
+                .toUpperCase();
+
+        if (
+            text.includes("VOUCHER")
+        ) {
+            return {
+                icon:
+                    "fa-solid fa-ticket",
+                className:
+                    "app-header__notification-icon--success"
+            };
+        }
+
+        if (
+            text.includes("NHAN_VIEN") ||
+            text.includes("TAI_KHOAN") ||
+            text.includes("USER")
+        ) {
+            return {
+                icon:
+                    "fa-regular fa-user",
+                className:
+                    "app-header__notification-icon--purple"
+            };
+        }
+
+        if (
+            text.includes("BAO_CAO") ||
+            text.includes("REPORT")
+        ) {
+            return {
+                icon:
+                    "fa-solid fa-chart-column",
+                className:
+                    "app-header__notification-icon--warning"
+            };
+        }
+
+        return {
+            icon:
+                "fa-regular fa-bell",
+            className:
+                ""
+        };
+    }
+
+    async function markHeaderNotificationRead(
+        id
+    ) {
+        const notification =
+            notificationState.items.find(
+                item =>
+                    Number(item?.id) ===
+                    Number(id)
+            );
+
+        if (!notification) {
+            return null;
+        }
+
+        if (
+            notification.daDoc !== true
+        ) {
+            await authenticatedRequest(
+                `${CONFIG.notificationListEndpoint}/${id}/da-doc`,
+                {
+                    method: "PATCH"
+                }
+            );
+
+            notification.daDoc =
+                true;
+
+            notificationState.unreadCount =
+                Math.max(
+                    0,
+                    notificationState
+                        .unreadCount -
+                    1
+                );
+
+            updateNotificationBadge(
+                notificationState
+                    .unreadCount
+            );
+
+            renderHeaderNotifications();
+
+            window.dispatchEvent(
+                new CustomEvent(
+                    "mcs:notifications-changed"
+                )
+            );
+        }
+
+        return notification;
+    }
+
+    async function markAllHeaderNotificationsRead() {
+        if (
+            !canMarkAllNotificationsRead()
+        ) {
+            return;
+        }
+
+        const button =
+            elements.notificationMarkAll;
+
+        if (button) {
+            button.disabled =
+                true;
+        }
+
+        try {
+            await authenticatedRequest(
+                CONFIG
+                    .notificationMarkAllEndpoint,
+                {
+                    method: "PATCH"
+                }
+            );
+
+            notificationState.items
+                .forEach(item => {
+                    item.daDoc =
+                        true;
+                });
+
+            notificationState.unreadCount =
+                0;
+
+            updateNotificationBadge(0);
+            renderHeaderNotifications();
+
+            window.dispatchEvent(
+                new CustomEvent(
+                    "mcs:notifications-changed"
+                )
+            );
+
+            window.MCS?.toast?.success?.(
+                "Đã đánh dấu tất cả thông báo là đã đọc."
+            );
+
+        } catch (error) {
+
+            window.MCS?.toast?.error?.(
+                error?.message ||
+                "Không thể đánh dấu tất cả thông báo là đã đọc."
+            );
+
+        } finally {
+
+            if (button) {
+                button.disabled =
+                    false;
+            }
+        }
+    }
+
+    function stripNotificationHtml(
+        value
+    ) {
+        const element =
+            document.createElement(
+                "div"
+            );
+
+        element.innerHTML =
+            String(value || "");
+
+        return (
+            element.textContent ||
+            element.innerText ||
+            ""
+        )
+            .replace(/\s+/g, " ")
+            .trim();
+    }
+
+    function escapeNotificationHtml(
+        value
+    ) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function formatNotificationRelativeTime(
+        value
+    ) {
+        if (!value) {
+            return "";
+        }
+
+        const date =
+            new Date(value);
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+            return "";
+        }
+
+        const diff =
+            Math.max(
+                0,
+                Date.now() -
+                date.getTime()
+            );
+
+        const seconds =
+            Math.floor(
+                diff / 1000
+            );
+
+        if (seconds < 60) {
+            return "Vừa xong";
+        }
+
+        const minutes =
+            Math.floor(
+                seconds / 60
+            );
+
+        if (minutes < 60) {
+            return `${minutes} phút trước`;
+        }
+
+        const hours =
+            Math.floor(
+                minutes / 60
+            );
+
+        if (hours < 24) {
+            return `${hours} giờ trước`;
+        }
+
+        const days =
+            Math.floor(
+                hours / 24
+            );
+
+        if (days === 1) {
+            return "Hôm qua";
+        }
+
+        if (days < 7) {
+            return `${days} ngày trước`;
+        }
+
+        return date.toLocaleDateString(
+            "vi-VN"
+        );
+    }
+
     function openNotificationMenu() {
         if (
             !elements.notificationMenu ||
-            !elements.notificationButton
+            !elements.notificationButton ||
+            !canViewNotifications()
         ) {
             return;
         }
 
         closeUserMenu();
 
-        elements.notificationMenu.hidden = false;
-        elements.notificationMenu.classList.add("is-open");
-        elements.notificationButton.classList.add("is-open");
-        elements.notificationButton.setAttribute("aria-expanded", "true");
+        elements.notificationMenu.hidden =
+            false;
+
+        elements.notificationMenu
+            .classList.add(
+                "is-open"
+            );
+
+        elements.notificationButton
+            .classList.add(
+                "is-open"
+            );
+
+        elements.notificationButton
+            .setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+        loadHeaderNotifications();
     }
 
     function closeNotificationMenu() {
@@ -1399,8 +2355,85 @@ document.addEventListener("DOMContentLoaded", () => {
 
         elements.notificationMenu?.addEventListener(
             "click",
-            event => {
+            async event => {
                 event.stopPropagation();
+
+                const filterButton =
+                    event.target.closest(
+                        "[data-header-notification-filter]"
+                    );
+
+                if (filterButton) {
+                    notificationState.filter =
+                        filterButton.dataset
+                            .headerNotificationFilter ||
+                        "all";
+
+
+                    renderHeaderNotifications();
+
+
+                    if (
+                        elements.notificationContent
+                    ) {
+                        elements.notificationContent
+                            .scrollTop =
+                            0;
+                    }
+
+
+                    return;
+                }
+
+                const markAllButton =
+                    event.target.closest(
+                        "[data-header-notification-mark-all]"
+                    );
+
+                if (markAllButton) {
+                    await markAllHeaderNotificationsRead();
+                    return;
+                }
+
+                const itemButton =
+                    event.target.closest(
+                        "[data-header-notification-id]"
+                    );
+
+                if (!itemButton) {
+                    return;
+                }
+
+                const id =
+                    Number(
+                        itemButton.dataset
+                            .headerNotificationId
+                    );
+
+                if (!id) {
+                    return;
+                }
+
+                try {
+                    const notification =
+                        await markHeaderNotificationRead(
+                            id
+                        );
+
+                    if (
+                        notification?.duongDan
+                    ) {
+                        window.location.href =
+                            notification.duongDan;
+                    }
+
+                } catch (error) {
+
+                    window.MCS?.toast?.error?.(
+                        error?.message ||
+                        "Không thể mở thông báo."
+                    );
+                }
             }
         );
 
@@ -1474,6 +2507,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 closeUserMenu();
                 closeNotificationMenu();
+            }
+        );
+
+        window.addEventListener(
+            "mcs:notifications-changed",
+            () => {
+                loadNotificationCount();
+
+                if (
+                    isNotificationMenuOpen()
+                ) {
+                    loadHeaderNotifications(
+                        true
+                    );
+                }
+            }
+        );
+
+        document.addEventListener(
+            "visibilitychange",
+            () => {
+                if (
+                    document.visibilityState ===
+                    "visible"
+                ) {
+                    loadNotificationCount();
+                }
             }
         );
     }

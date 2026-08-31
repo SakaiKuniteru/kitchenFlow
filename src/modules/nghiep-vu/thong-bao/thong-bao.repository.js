@@ -108,18 +108,13 @@ class ThongBaoRepository {
     }
 
     mapThongBaoCuaToi(row) {
-
         if (!row) {
             return null;
         }
 
-
         return {
-
             id:
-                Number(
-                    row.id
-                ),
+                Number(row.id),
 
             tieuDe:
                 row.tieu_de,
@@ -134,7 +129,8 @@ class ThongBaoRepository {
                 row.loai_tham_chieu,
 
             thamChieuId:
-                row.tham_chieu_id !== null
+                row.tham_chieu_id !==
+                null
                     ? Number(
                         row.tham_chieu_id
                     )
@@ -151,6 +147,35 @@ class ThongBaoRepository {
 
             thoiGianDoc:
                 row.thoi_gian_doc,
+
+            nguoiTao:
+                row.nguoi_tao_id
+                    ? {
+                        id:
+                            Number(
+                                row.nguoi_tao_id
+                            ),
+
+                        tenDangNhap:
+                            row.ten_dang_nhap,
+
+                        nhanVien:
+                            row.nhan_vien_id
+                                ? {
+                                    id:
+                                        Number(
+                                            row.nhan_vien_id
+                                        ),
+
+                                    maNhanVien:
+                                        row.ma_nhan_vien,
+
+                                    hoTen:
+                                        row.ho_ten
+                                }
+                                : null
+                    }
+                    : null,
 
             createdAt:
                 row.created_at
@@ -955,7 +980,6 @@ class ThongBaoRepository {
         filters = {},
         client = pool
     ) {
-
         const conditions = [
             `
                 nn.tai_khoan_id = $1
@@ -971,12 +995,10 @@ class ThongBaoRepository {
 
         let paramIndex = 2;
 
-
         if (
             filters.daDoc !==
             undefined
         ) {
-
             conditions.push(
                 `nn.da_doc = $${paramIndex}`
             );
@@ -988,7 +1010,6 @@ class ThongBaoRepository {
             paramIndex++;
         }
 
-
         const sql = `
             SELECT
                 tb.id,
@@ -998,7 +1019,14 @@ class ThongBaoRepository {
                 tb.loai_tham_chieu,
                 tb.tham_chieu_id,
                 tb.duong_dan,
+                tb.nguoi_tao_id,
                 tb.thoi_gian_gui,
+
+                tk.ten_dang_nhap,
+                tk.nhan_vien_id,
+
+                nv.ma_nhan_vien,
+                nv.ho_ten,
 
                 nn.da_doc,
                 nn.thoi_gian_doc,
@@ -1009,6 +1037,14 @@ class ThongBaoRepository {
             INNER JOIN nv_thong_bao tb
                 ON tb.id =
                     nn.thong_bao_id
+
+            LEFT JOIN dm_tai_khoan tk
+                ON tk.id =
+                    tb.nguoi_tao_id
+
+            LEFT JOIN dm_nhan_vien nv
+                ON nv.id =
+                    tk.nhan_vien_id
 
             WHERE
                 ${conditions.join(
@@ -1021,13 +1057,11 @@ class ThongBaoRepository {
                 tb.id DESC
         `;
 
-
         const result =
             await client.query(
                 sql,
                 values
             );
-
 
         return result.rows.map(
             row =>

@@ -60,26 +60,28 @@
 
     <div class="app-header__right">
 
-        <div class="app-header__notification">
+        <div
+            class="app-header__notification"
+            data-header-notification>
 
             <button
                 type="button"
-                class="app-header__action"
+                class="app-header__action app-header__notification-button"
                 data-header-notification-button
                 aria-label="Thông báo"
                 aria-expanded="false">
 
-                <span aria-hidden="true">
-                    🔔
+                <i
+                    class="fa-regular fa-bell"
+                    aria-hidden="true">
+                </i>
+
+                <span
+                    class="app-header__notification-count"
+                    data-header-notification-count
+                    hidden>
+                    0
                 </span>
-
-                {{#if notificationCount}}
-
-                    <span class="app-header__notification-count">
-                        {{notificationCount}}
-                    </span>
-
-                {{/if}}
 
             </button>
 
@@ -88,24 +90,118 @@
                 data-header-notification-menu
                 hidden>
 
-                <div class="app-header__dropdown-header">
+                <div class="app-header__notification-header">
 
-                    <strong>
+                    <strong class="app-header__notification-title">
                         Thông báo
                     </strong>
 
+                    <button
+                        type="button"
+                        class="app-header__notification-mark-all"
+                        data-header-notification-mark-all
+                        hidden>
+
+                        <i class="fa-regular fa-circle-check"></i>
+
+                        <span>
+                            Đánh dấu tất cả đã đọc
+                        </span>
+
+                    </button>
+
                 </div>
 
-                <div class="app-header__dropdown-empty">
+                <div class="app-header__notification-tabs">
 
-                    Chưa có thông báo mới.
+                    <button
+                        type="button"
+                        class="app-header__notification-tab is-active"
+                        data-header-notification-filter="all">
+
+                        Tất cả
+
+                        <span>
+                            (
+                            <span data-header-notification-total>
+                                0
+                            </span>
+                            )
+                        </span>
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="app-header__notification-tab"
+                        data-header-notification-filter="unread">
+
+                        Chưa đọc
+
+                        <span>
+                            (
+                            <span data-header-notification-unread-total>
+                                0
+                            </span>
+                            )
+                        </span>
+
+                    </button>
 
                 </div>
+
+                <div class="app-header__notification-content">
+
+                    <div
+                        class="app-header__notification-loading"
+                        data-header-notification-loading
+                        hidden>
+
+                        <span class="app-header__notification-spinner">
+                        </span>
+
+                        <span>
+                            Đang tải thông báo...
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="app-header__notification-list"
+                        data-header-notification-list>
+                    </div>
+
+                    <div
+                        class="app-header__notification-empty"
+                        data-header-notification-empty
+                        hidden>
+
+                        <i class="fa-regular fa-bell-slash"></i>
+
+                        <strong>
+                            Chưa có thông báo
+                        </strong>
+
+                        <span>
+                            Các thông báo mới sẽ xuất hiện tại đây.
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <a
+                    href="/thong-bao"
+                    class="app-header__notification-footer"
+                    data-header-notification-view-all>
+
+                    Xem tất cả thông báo
+
+                </a>
 
             </div>
 
         </div>
-
 
         <div class="app-header__user">
 

@@ -2,6 +2,7 @@
 
 const danhMucWebController = require("../../controllers/danh-muc.controller");
 const thucDonWebController = require("../../controllers/thuc-don.controller");
+const thongBaoWebController = require("../../controllers/thong-bao.controller");
 
 const danhMucRoutes = [
     {
@@ -149,7 +150,16 @@ const thucDonRoutes = [
     }
 ];
 
+const thongBaoRoutes = [
+    {
+        method: "get",
+        path: "/thong-bao",
+        handler: thongBaoWebController.cuaToi
+    }
+];
+
 module.exports = [
     ...danhMucRoutes,
-    ...thucDonRoutes
+    ...thucDonRoutes,
+    ...thongBaoRoutes
 ];
