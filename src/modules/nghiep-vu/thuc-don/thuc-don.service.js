@@ -358,55 +358,119 @@ class ThucDonService {
         return duLieu;
     }
 
-    chuanHoaNgay(value) {
+    chuanHoaNgay(
+        value
+    ) {
+
         if (
             value === null ||
             value === undefined ||
             value === ""
         ) {
+
             return null;
+
         }
 
-        if (value instanceof Date) {
-            return value
-                .toISOString()
-                .slice(0, 10);
+
+        /*
+        * KHÔNG dùng:
+        *
+        * new Date(value)
+        * toISOString()
+        *
+        * Ngày thực đơn là ngày nghiệp vụ
+        * theo múi giờ Việt Nam.
+        */
+        const text =
+            String(
+                value
+            ).trim();
+
+
+        const match =
+            text.match(
+                /^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/
+            );
+
+
+        if (!match) {
+
+            return null;
+
         }
 
-        const giaTri = String(value).trim();
+
+        const year =
+            Number(
+                match[1]
+            );
+
+        const month =
+            Number(
+                match[2]
+            );
+
+        const day =
+            Number(
+                match[3]
+            );
+
+
+        const check =
+            new Date(
+                Date.UTC(
+                    year,
+                    month - 1,
+                    day
+                )
+            );
+
 
         if (
-            /^\d{4}-\d{2}-\d{2}$/.test(
-                giaTri
-            )
+            check.getUTCFullYear() !==
+                year ||
+            check.getUTCMonth() !==
+                month - 1 ||
+            check.getUTCDate() !==
+                day
         ) {
-            return giaTri;
-        }
 
-        const date = new Date(giaTri);
-
-        if (Number.isNaN(date.getTime())) {
             return null;
+
         }
 
-        return date
-            .toISOString()
-            .slice(0, 10);
+
+        return (
+            `${match[1]}-` +
+            `${match[2]}-` +
+            `${match[3]}`
+        );
+
     }
 
     chuanHoaThoiGianNgay(
         value,
         laDenNgay = false
     ) {
-        const ngay = this.chuanHoaNgay(value);
+
+        const ngay =
+            this.chuanHoaNgay(
+                value
+            );
+
 
         if (!ngay) {
+
             return null;
+
         }
 
+
         return laDenNgay
-            ? `${ngay} 23:59:39`
-            : `${ngay} 00:00:00`;
+            ? `${ngay}T23:59:59+07:00`
+            : `${ngay}T00:00:00+07:00`;
+
     }
 
     validateLoaiThucDon(loaiThucDon) {
@@ -479,8 +543,8 @@ class ThucDonService {
             );
         }
 
-        data.tuNgay = `${tuNgay} 00:00:00`;
-        data.denNgay = `${denNgay} 23:59:39`;
+        data.tuNgay = `${tuNgay} 00:00:00+07:00`;
+        data.denNgay = `${denNgay} 23:59:59+07:00`;
     }
 
     async validateTrungDuLieu(
@@ -736,6 +800,30 @@ class ThucDonService {
             );
         }
 
+        const tuNgay =
+            this.chuanHoaNgay(
+                data.tuNgay
+            );
+
+
+        const denNgay =
+            this.chuanHoaNgay(
+                data.denNgay
+            );
+
+
+        if (
+            !tuNgay ||
+            !denNgay
+        ) {
+
+            throw new ApiError(
+                400,
+                "Khoảng thời gian thực đơn không hợp lệ."
+            );
+
+        }
+
         const dsNgayDaCo = new Set();
 
         for (
@@ -757,8 +845,8 @@ class ThucDonService {
             }
 
             if (
-                ngay < data.tuNgay ||
-                ngay > data.denNgay
+                ngay < tuNgay ||
+                ngay > denNgay
             ) {
                 throw new ApiError(
                     400,
@@ -775,7 +863,7 @@ class ThucDonService {
 
             dsNgayDaCo.add(ngay);
 
-            itemNgay.ngay = ngay;
+            itemNgay.ngay = `${ngay}T00:00:00+07:00`;;
 
             if (
                 itemNgay.dsNhomMonAn ===

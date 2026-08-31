@@ -1,10 +1,87 @@
-const Joi =
-    require("joi");
+const Joi = require("joi");
+
+const REGEX_BAT_DAU_NGAY_VN =
+    /^\d{4}-\d{2}-\d{2}T00:00:00\+07:00$/;
 
 
-/* =========================================================
-   MÓN ĂN TRONG THỰC ĐƠN
-   ========================================================= */
+const REGEX_KET_THUC_NGAY_VN =
+    /^\d{4}-\d{2}-\d{2}T23:59:59\+07:00$/;
+
+
+function tachNgayVN(
+    value
+) {
+
+    if (
+        typeof value !==
+        "string"
+    ) {
+        return null;
+    }
+
+
+    const text =
+        value.trim();
+
+
+    const match =
+        text.match(
+            /^(\d{4})-(\d{2})-(\d{2})T(?:00:00:00|23:59:59)\+07:00$/
+        );
+
+
+    if (!match) {
+        return null;
+    }
+
+
+    const year =
+        Number(
+            match[1]
+        );
+
+    const month =
+        Number(
+            match[2]
+        );
+
+    const day =
+        Number(
+            match[3]
+        );
+
+
+    const check =
+        new Date(
+            Date.UTC(
+                year,
+                month - 1,
+                day
+            )
+        );
+
+
+    if (
+        check.getUTCFullYear() !==
+            year ||
+        check.getUTCMonth() !==
+            month - 1 ||
+        check.getUTCDate() !==
+            day
+    ) {
+
+        return null;
+
+    }
+
+
+    return (
+        `${match[1]}-` +
+        `${match[2]}-` +
+        `${match[3]}`
+    );
+
+}
 
 const monAnSchema =
     Joi.object({
@@ -262,29 +339,52 @@ const nhomMonAnSchema =
 
         });
 
-
-/* =========================================================
-   NGÀY THỰC ĐƠN
-   ========================================================= */
-
 const ngaySchema =
     Joi.object({
 
-        ngay: Joi.date()
-            .iso()
-            .required()
-            .messages({
+        ngay:
+            Joi.string()
+                .trim()
+                .pattern(
+                    REGEX_BAT_DAU_NGAY_VN
+                )
+                .custom(
+                    (
+                        value,
+                        helpers
+                    ) => {
 
-                "date.base":
-                    "Ngày thực đơn không hợp lệ.",
+                        if (
+                            !tachNgayVN(
+                                value
+                            )
+                        ) {
 
-                "date.format":
-                    "Ngày thực đơn phải có định dạng YYYY-MM-DD.",
+                            return helpers.message({
+                                custom:
+                                    "Ngày thực đơn không hợp lệ."
+                            });
 
-                "any.required":
-                    "Ngày thực đơn là bắt buộc."
+                        }
 
-            }),
+
+                        return value;
+
+                    }
+                )
+                .required()
+                .messages({
+
+                    "string.base":
+                        "Ngày thực đơn phải là chuỗi.",
+
+                    "string.pattern.base":
+                        "Ngày thực đơn phải có định dạng YYYY-MM-DDT00:00:00+07:00.",
+
+                    "any.required":
+                        "Ngày thực đơn là bắt buộc."
+
+                }),
 
         ghiChu: Joi.string()
             .trim()
@@ -400,50 +500,94 @@ const createSchema =
 
             }),
 
-        tuNgay: Joi.date()
-            .iso()
-            .required()
-            .messages({
-
-                "date.base":
-                    "Từ ngày không hợp lệ.",
-
-                "date.format":
-                    "Từ ngày phải có định dạng YYYY-MM-DD.",
-
-                "any.required":
-                    "Từ ngày là bắt buộc."
-
-            }),
-
-        denNgay: Joi.date()
-            .iso()
-            .min(
-                Joi.ref(
-                    "tuNgay"
+        tuNgay:
+            Joi.string()
+                .trim()
+                .pattern(
+                    REGEX_BAT_DAU_NGAY_VN
                 )
-            )
-            .required()
-            .messages({
+                .custom(
+                    (
+                        value,
+                        helpers
+                    ) => {
 
-                "date.base":
-                    "Đến ngày không hợp lệ.",
+                        if (
+                            !tachNgayVN(
+                                value
+                            )
+                        ) {
 
-                "date.format":
-                    "Đến ngày phải có định dạng YYYY-MM-DD.",
+                            return helpers.message({
+                                custom:
+                                    "Từ ngày không hợp lệ."
+                            });
 
-                "date.min":
-                    "Đến ngày phải lớn hơn hoặc bằng từ ngày.",
-
-                "any.required":
-                    "Đến ngày là bắt buộc."
-
-            }),
+                        }
 
 
-        /* =====================================================
-           CƠ SỞ
-           ===================================================== */
+                        return value;
+
+                    }
+                )
+                .required()
+                .messages({
+
+                    "string.base":
+                        "Từ ngày phải là chuỗi.",
+
+                    "string.pattern.base":
+                        "Từ ngày phải có định dạng YYYY-MM-DDT00:00:00+07:00.",
+
+                    "any.required":
+                        "Từ ngày là bắt buộc."
+
+                }),
+
+
+        denNgay:
+            Joi.string()
+                .trim()
+                .pattern(
+                    REGEX_KET_THUC_NGAY_VN
+                )
+                .custom(
+                    (
+                        value,
+                        helpers
+                    ) => {
+
+                        if (
+                            !tachNgayVN(
+                                value
+                            )
+                        ) {
+
+                            return helpers.message({
+                                custom:
+                                    "Đến ngày không hợp lệ."
+                            });
+
+                        }
+
+
+                        return value;
+
+                    }
+                )
+                .required()
+                .messages({
+
+                    "string.base":
+                        "Đến ngày phải là chuỗi.",
+
+                    "string.pattern.base":
+                        "Đến ngày phải có định dạng YYYY-MM-DDT23:59:59+07:00.",
+
+                    "any.required":
+                        "Đến ngày là bắt buộc."
+
+                }),
 
         coSoId: Joi.number()
             .integer()
@@ -646,85 +790,72 @@ const createSchema =
                 helpers
             ) => {
 
-                /*
-                 * Loại 10 = Theo ngày.
-                 */
+                const tuNgay =
+                    tachNgayVN(
+                        value.tuNgay
+                    );
+
+                const denNgay =
+                    tachNgayVN(
+                        value.denNgay
+                    );
+
 
                 if (
-                    Number(
-                        value.loaiThucDon
-                    ) === 10
+                    !tuNgay ||
+                    !denNgay
                 ) {
 
-                    const tuNgay =
-                        new Date(
-                            value.tuNgay
-                        )
-                            .toISOString()
-                            .slice(
-                                0,
-                                10
-                            );
-
-                    const denNgay =
-                        new Date(
-                            value.denNgay
-                        )
-                            .toISOString()
-                            .slice(
-                                0,
-                                10
-                            );
-
-                    if (
-                        tuNgay !==
-                        denNgay
-                    ) {
-
-                        return helpers.error(
-                            "thucDon.ngayKhongHopLe"
-                        );
-
-                    }
+                    return value;
 
                 }
 
 
-                const tuNgay =
-                    new Date(
-                        value.tuNgay
-                    )
-                        .toISOString()
-                        .slice(
-                            0,
-                            10
-                        );
+                /*
+                * Loại 10 = Theo ngày.
+                */
+                if (
+                    Number(
+                        value.loaiThucDon
+                    ) === 10 &&
+                    tuNgay !==
+                        denNgay
+                ) {
 
-                const denNgay =
-                    new Date(
-                        value.denNgay
-                    )
-                        .toISOString()
-                        .slice(
-                            0,
-                            10
-                        );
+                    return helpers.error(
+                        "thucDon.ngayKhongHopLe"
+                    );
+
+                }
+
+
+                if (
+                    tuNgay >
+                    denNgay
+                ) {
+
+                    return helpers.error(
+                        "thucDon.khoangNgayKhongHopLe"
+                    );
+
+                }
 
 
                 for (
                     const itemNgay of
-                    value.dsNgay || []
+                    value.dsNgay ||
+                    []
                 ) {
 
                     const ngay =
-                        new Date(
+                        tachNgayVN(
                             itemNgay.ngay
-                        )
-                            .toISOString()
-                            .slice(
-                                0,
-                                10
-                            );
+                        );
+
+
+                    if (!ngay) {
+                        continue;
+                    }
 
 
                     if (
@@ -755,15 +886,14 @@ const createSchema =
             "thucDon.ngayKhongHopLe":
                 "Thực đơn theo ngày phải có từ ngày và đến ngày giống nhau.",
 
+            "thucDon.khoangNgayKhongHopLe":
+                "Đến ngày phải lớn hơn hoặc bằng từ ngày.",
+
             "thucDon.ngayNgoaiKhoang":
                 "Ngày trong danh sách thực đơn phải nằm trong khoảng từ ngày đến ngày."
 
         });
 
-
-/* =========================================================
-   UPDATE
-   ========================================================= */
 
 const updateSchema =
     Joi.object({
@@ -824,36 +954,88 @@ const updateSchema =
 
             }),
 
-        tuNgay: Joi.date()
-            .iso()
-            .optional()
-            .messages({
+        tuNgay:
+            Joi.string()
+                .trim()
+                .pattern(
+                    REGEX_BAT_DAU_NGAY_VN
+                )
+                .custom(
+                    (
+                        value,
+                        helpers
+                    ) => {
 
-                "date.base":
-                    "Từ ngày không hợp lệ.",
+                        if (
+                            !tachNgayVN(
+                                value
+                            )
+                        ) {
 
-                "date.format":
-                    "Từ ngày phải có định dạng YYYY-MM-DD."
+                            return helpers.message({
+                                custom:
+                                    "Từ ngày không hợp lệ."
+                            });
 
-            }),
-
-        denNgay: Joi.date()
-            .iso()
-            .optional()
-            .messages({
-
-                "date.base":
-                    "Đến ngày không hợp lệ.",
-
-                "date.format":
-                    "Đến ngày phải có định dạng YYYY-MM-DD."
-
-            }),
+                        }
 
 
-        /* =====================================================
-           CƠ SỞ
-           ===================================================== */
+                        return value;
+
+                    }
+                )
+                .optional()
+                .messages({
+
+                    "string.base":
+                        "Từ ngày phải là chuỗi.",
+
+                    "string.pattern.base":
+                        "Từ ngày phải có định dạng YYYY-MM-DDT00:00:00+07:00."
+
+                }),
+
+
+        denNgay:
+            Joi.string()
+                .trim()
+                .pattern(
+                    REGEX_KET_THUC_NGAY_VN
+                )
+                .custom(
+                    (
+                        value,
+                        helpers
+                    ) => {
+
+                        if (
+                            !tachNgayVN(
+                                value
+                            )
+                        ) {
+
+                            return helpers.message({
+                                custom:
+                                    "Đến ngày không hợp lệ."
+                            });
+
+                        }
+
+
+                        return value;
+
+                    }
+                )
+                .optional()
+                .messages({
+
+                    "string.base":
+                        "Đến ngày phải là chuỗi.",
+
+                    "string.pattern.base":
+                        "Đến ngày phải có định dạng YYYY-MM-DDT23:59:59+07:00."
+
+                }),
 
         coSoId: Joi.number()
             .integer()

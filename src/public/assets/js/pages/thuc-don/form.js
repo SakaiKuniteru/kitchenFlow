@@ -2703,90 +2703,148 @@ window.ThucDon.form =
         }
 
         function normalizeDate(
-            v
+            value
         ) {
 
             if (
-                !v
+                value === null ||
+                value === undefined ||
+                value === ""
             ) {
-
                 return "";
-
             }
 
 
-            const s =
+            const text =
                 String(
-                    v
+                    value
                 ).trim();
 
 
-            if (
-                /^\d{4}-\d{2}-\d{2}$/.test(
-                    s
-                )
-            ) {
-
-                return s;
-
-            }
-
-
-            const d =
-                new Date(
-                    s
+            /*
+            * YYYY-MM-DD
+            * hoặc YYYY-MM-DD + phần thời gian.
+            */
+            let match =
+                text.match(
+                    /^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/
                 );
 
 
             if (
-                !Number.isNaN(
-                    d.getTime()
-                )
+                match
             ) {
 
-                const parts =
-                    new Intl.DateTimeFormat(
-                        "en-CA",
-                        {
-                            timeZone:
-                                "Asia/Ho_Chi_Minh",
-
-                            year:
-                                "numeric",
-
-                            month:
-                                "2-digit",
-
-                            day:
-                                "2-digit"
-                        }
+                return createIsoDate(
+                    Number(
+                        match[1]
+                    ),
+                    Number(
+                        match[2]
+                    ),
+                    Number(
+                        match[3]
                     )
-                        .formatToParts(
-                            d
-                        );
-
-
-                const m =
-                    Object.fromEntries(
-                        parts.map(
-                            p => [
-                                p.type,
-                                p.value
-                            ]
-                        )
-                    );
-
-
-                return `${m.year}-${m.month}-${m.day}`;
+                );
 
             }
 
 
-            return s.substring(
-                0,
-                10
-            );
+            /*
+            * DD/MM/YYYY
+            */
+            match =
+                text.match(
+                    /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
+                );
 
+
+            if (
+                match
+            ) {
+
+                return createIsoDate(
+                    Number(
+                        match[3]
+                    ),
+                    Number(
+                        match[2]
+                    ),
+                    Number(
+                        match[1]
+                    )
+                );
+
+            }
+
+
+            return "";
+        }
+
+        function createIsoDate(
+            year,
+            month,
+            day
+        ) {
+
+            if (
+                !Number.isInteger(
+                    year
+                ) ||
+                !Number.isInteger(
+                    month
+                ) ||
+                !Number.isInteger(
+                    day
+                )
+            ) {
+                return "";
+            }
+
+
+            if (
+                month < 1 ||
+                month > 12 ||
+                day < 1 ||
+                day > 31
+            ) {
+                return "";
+            }
+
+
+            const check =
+                new Date(
+                    Date.UTC(
+                        year,
+                        month - 1,
+                        day
+                    )
+                );
+
+
+            if (
+                check.getUTCFullYear() !==
+                    year ||
+                check.getUTCMonth() !==
+                    month - 1 ||
+                check.getUTCDate() !==
+                    day
+            ) {
+                return "";
+            }
+
+
+            return (
+                `${year}-` +
+                `${String(month).padStart(
+                    2,
+                    "0"
+                )}-` +
+                `${String(day).padStart(
+                    2,
+                    "0"
+                )}`
+            );
         }
 
         function formatDate(

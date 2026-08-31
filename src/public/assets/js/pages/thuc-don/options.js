@@ -698,10 +698,6 @@ window.ThucDon.options =
             to
         ) {
 
-            const result =
-                [];
-
-
             const [
                 fromYear,
                 fromMonth,
@@ -722,8 +718,8 @@ window.ThucDon.options =
                     .map(Number);
 
 
-            const current =
-                new Date(
+            let current =
+                Date.UTC(
                     fromYear,
                     fromMonth - 1,
                     fromDay
@@ -731,11 +727,15 @@ window.ThucDon.options =
 
 
             const end =
-                new Date(
+                Date.UTC(
                     toYear,
                     toMonth - 1,
                     toDay
                 );
+
+
+            const result =
+                [];
 
 
             while (
@@ -743,13 +743,20 @@ window.ThucDon.options =
                 end
             ) {
 
+                const date =
+                    new Date(
+                        current
+                    );
+
+
                 const year =
-                    current.getFullYear();
+                    date.getUTCFullYear();
 
 
                 const month =
                     String(
-                        current.getMonth() + 1
+                        date.getUTCMonth() +
+                        1
                     )
                         .padStart(
                             2,
@@ -759,7 +766,7 @@ window.ThucDon.options =
 
                 const day =
                     String(
-                        current.getDate()
+                        date.getUTCDate()
                     )
                         .padStart(
                             2,
@@ -772,7 +779,6 @@ window.ThucDon.options =
 
 
                 result.push({
-
                     value,
 
                     label:
@@ -788,20 +794,21 @@ window.ThucDon.options =
                             "Thứ sáu",
                             "Thứ bảy"
                         ][
-                            current.getDay()
+                            date.getUTCDay()
                         ]
-
                 });
 
 
-                current.setDate(
-                    current.getDate() + 1
-                );
+                current +=
+                    24 *
+                    60 *
+                    60 *
+                    1000;
 
             }
 
-            return result;
 
+            return result;
         }
 
         function formatMoney(
@@ -2429,10 +2436,22 @@ window.ThucDon.options =
 
             }
 
+            const datePickerRoot =
+                fieldContainer.matches(
+                    "[data-date-picker]"
+                )
+                    ? fieldContainer
+                    : fieldContainer.querySelector(
+                        "[data-date-picker]"
+                    );
 
-            fieldContainer
-                .datePicker
-                ?.setValue(
+
+            (
+                datePickerRoot?.datePicker ||
+                fieldContainer.datePicker
+            )
+                ?.setValue
+                ?.(
                     "",
                     false
                 );
@@ -2484,6 +2503,62 @@ window.ThucDon.options =
                 "denNgayKhoang"
             );
 
+        }
+
+        function dateFieldValue(
+            root,
+            fieldName
+        ) {
+
+            const fieldContainer =
+                root.querySelector(
+                    `[data-form-field="${fieldName}"]`
+                );
+
+
+            if (!fieldContainer) {
+                return "";
+            }
+
+
+            const displayInput =
+                fieldContainer.querySelector(
+                    "[data-date-input]"
+                );
+
+
+            const hiddenInput =
+                fieldContainer.querySelector(
+                    "[data-date-value]"
+                );
+
+            const displayValue =
+                normalizeDate(
+                    displayInput?.value ||
+                    ""
+                );
+
+
+            if (
+                displayValue
+            ) {
+
+                if (
+                    hiddenInput
+                ) {
+                    hiddenInput.value =
+                        displayValue;
+                }
+
+
+                return displayValue;
+            }
+
+
+            return normalizeDate(
+                hiddenInput?.value ||
+                ""
+            );
         }
 
         function syncTimeValue(
@@ -2619,21 +2694,18 @@ window.ThucDon.options =
                 case LOAI_THUC_DON.KHOANG_NGAY:
 
                     from =
-                        normalizeDate(
-                            fieldValue(
-                                root,
-                                "tuNgayKhoang"
-                            )
+                        dateFieldValue(
+                            root,
+                            "tuNgayKhoang"
                         );
 
 
                     to =
-                        normalizeDate(
-                            fieldValue(
-                                root,
-                                "denNgayKhoang"
-                            )
+                        dateFieldValue(
+                            root,
+                            "denNgayKhoang"
                         );
+
 
                     break;
 
@@ -2703,38 +2775,40 @@ window.ThucDon.options =
             if (
                 hiddenInput
             ) {
-
                 hiddenInput.value =
                     databaseValue;
-
             }
 
 
             if (
                 displayInput
             ) {
-
                 displayInput.value =
                     displayValue;
-
             }
+
+
+            const datePickerRoot =
+                fieldContainer.matches(
+                    "[data-date-picker]"
+                )
+                    ? fieldContainer
+                    : fieldContainer.querySelector(
+                        "[data-date-picker]"
+                    );
 
 
             const datePickerApi =
+                datePickerRoot?.datePicker ||
                 fieldContainer.datePicker;
 
 
-            if (
-                datePickerApi?.setValue
-            ) {
-
-                datePickerApi.setValue(
+            datePickerApi
+                ?.setValue
+                ?.(
                     databaseValue,
                     false
                 );
-
-            }
-
         }
 
         function disableMonthSelect(

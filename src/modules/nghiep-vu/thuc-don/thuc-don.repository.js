@@ -147,8 +147,21 @@ class ThucDonRepository {
                 td.ma_thuc_don,
                 td.ten_thuc_don,
                 td.loai_thuc_don,
-                td.tu_ngay,
-                td.den_ngay,
+                (
+                    TO_CHAR(
+                        td.tu_ngay,
+                        'YYYY-MM-DD"T"HH24:MI:SS'
+                    ) ||
+                    '+07:00'
+                ) AS tu_ngay,
+
+                (
+                    TO_CHAR(
+                        td.den_ngay,
+                        'YYYY-MM-DD"T"HH24:MI:SS'
+                    ) ||
+                    '+07:00'
+                ) AS den_ngay,
                 td.co_so_id,
                 td.nha_an_id,
                 td.ca_an_id,
@@ -376,7 +389,13 @@ class ThucDonRepository {
             SELECT
                 id,
                 thuc_don_id,
-                ngay,
+                (
+                    TO_CHAR(
+                        ngay,
+                        'YYYY-MM-DD'
+                    ) ||
+                    'T00:00:00+07:00'
+                ) AS ngay,
                 ghi_chu,
                 active,
                 created_at,
@@ -1041,8 +1060,17 @@ class ThucDonRepository {
                 $1,
                 $2,
                 $3,
-                $4,
-                $5,
+                (
+                    $4::timestamptz
+                    AT TIME ZONE
+                    'Asia/Ho_Chi_Minh'
+                ),
+
+                (
+                    $5::timestamptz
+                    AT TIME ZONE
+                    'Asia/Ho_Chi_Minh'
+                ),
                 $6,
                 $7,
                 $8,
@@ -1097,7 +1125,13 @@ class ThucDonRepository {
             )
             VALUES (
                 $1,
-                $2,
+                (
+                    (
+                        $2::timestamptz
+                        AT TIME ZONE
+                        'Asia/Ho_Chi_Minh'
+                    )::date
+                ),
                 $3,
                 $4,
                 NOW(),
@@ -1288,8 +1322,17 @@ class ThucDonRepository {
                 ma_thuc_don = $1,
                 ten_thuc_don = $2,
                 loai_thuc_don = $3,
-                tu_ngay = $4,
-                den_ngay = $5,
+                tu_ngay = (
+                    $4::timestamptz
+                    AT TIME ZONE
+                    'Asia/Ho_Chi_Minh'
+                ),
+
+                den_ngay = (
+                    $5::timestamptz
+                    AT TIME ZONE
+                    'Asia/Ho_Chi_Minh'
+                ),
                 co_so_id = $6,
                 nha_an_id = $7,
                 ca_an_id = $8,
@@ -1580,7 +1623,11 @@ class ThucDonRepository {
                 trang_thai_truoc_ket_thuc = trang_thai,
                 trang_thai = 60,
                 updated_at = NOW()
-            WHERE den_ngay < NOW()
+                WHERE den_ngay < (
+                    CURRENT_TIMESTAMP
+                    AT TIME ZONE
+                    'Asia/Ho_Chi_Minh'
+                )
             AND trang_thai IN (10, 20, 30, 40)
             ${dieuKienId}
         `;
@@ -1600,7 +1647,11 @@ class ThucDonRepository {
                 updated_at = NOW()
             WHERE id = $1
             AND trang_thai = 60
-            AND den_ngay >= NOW()
+            AND den_ngay >= (
+                CURRENT_TIMESTAMP
+                AT TIME ZONE
+                'Asia/Ho_Chi_Minh'
+            )
             AND trang_thai_truoc_ket_thuc IN (10, 20, 30, 40)
             RETURNING id
         `;
