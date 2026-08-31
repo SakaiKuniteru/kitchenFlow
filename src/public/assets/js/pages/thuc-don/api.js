@@ -4,7 +4,6 @@ window.ThucDon =
     window.ThucDon ||
     {};
 
-
 window.ThucDon.api =
     (() => {
 
@@ -32,7 +31,6 @@ window.ThucDon.api =
             return t;
 
         }
-
 
         async function request(
             url,
@@ -103,7 +101,6 @@ window.ThucDon.api =
             return result;
 
         }
-
 
         return {
 

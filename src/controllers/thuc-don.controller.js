@@ -1,9 +1,7 @@
 "use strict";
 
-const {
-    trangThaiThucDon,
-    loaiThucDon
-} = require("../constants/enums");
+const { trangThaiThucDon, loaiThucDon } = require("../constants/enums");
+const { renderPage } = require("../utils/render-page.util");
 
 function getFormOptions() {
     return {
@@ -26,16 +24,15 @@ function getFormOptions() {
 class ThucDonWebController {
     async danhSach(req, res, next) {
         try {
-            return res.render(
+            return renderPage(
+                req,
+                res,
                 "pages/thuc-don/danh-sach",
                 {
-                    layout: "app",
                     title: "Danh sách thực đơn",
-                    pageTitle: "Danh sách thực đơn",
                     pageDescription: "Quản lý danh sách thực đơn.",
                     isModuleListPage: true,
                     activeMenu: "thuc-don",
-
                     columns: [
                         {
                             key: "maThucDon",
@@ -68,12 +65,6 @@ class ThucDonWebController {
                     ],
 
                     formOptions: getFormOptions(),
-
-                    breadcrumbs: [
-                        {
-                            label: "Danh sách thực đơn"
-                        }
-                    ]
                 }
             );
         } catch (error) {
@@ -83,12 +74,12 @@ class ThucDonWebController {
 
     async themMoi(req, res, next) {
         try {
-            return res.render(
+            return renderPage(
+                req,
+                res,
                 "pages/thuc-don/them-moi",
                 {
-                    layout: "app",
                     title: "Thêm mới thực đơn",
-                    pageTitle: "Thêm mới thực đơn",
                     activeMenu: "thuc-don",
                     formMode: "create",
                     formOptions: getFormOptions(),
@@ -113,12 +104,12 @@ class ThucDonWebController {
         try {
             const { id } = req.params;
 
-            return res.render(
+            return renderPage(
+                req,
+                res,
                 "pages/thuc-don/chi-tiet",
                 {
-                    layout: "app",
                     title: "Chi tiết thực đơn",
-                    pageTitle: "Chi tiết thực đơn",
                     thucDonId: id,
                     formMode: "detail",
                     activeMenu: "thuc-don",
@@ -144,12 +135,12 @@ class ThucDonWebController {
         try {
             const { id } = req.params;
 
-            return res.render(
+            return renderPage(
+                req,
+                res,
                 "pages/thuc-don/cap-nhat",
                 {
-                    layout: "app",
                     title: "Cập nhật thực đơn",
-                    pageTitle: "Cập nhật thực đơn",
                     thucDonId: id,
                     formMode: "update",
                     activeMenu: "thuc-don",

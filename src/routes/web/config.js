@@ -2,7 +2,7 @@
 
 const danhMucWebController = require("../../controllers/danh-muc.controller");
 const thucDonWebController = require("../../controllers/thuc-don.controller");
-const thongBaoWebController = require("../../controllers/thong-bao.controller");
+const chiTietWebController = require("../../controllers/chi-tiet.controller");
 
 const danhMucRoutes = [
     {
@@ -150,16 +150,21 @@ const thucDonRoutes = [
     }
 ];
 
-const thongBaoRoutes = [
+const chiTietRoutes = [
     {
         method: "get",
         path: "/thong-bao",
-        handler: thongBaoWebController.cuaToi
+        handler: chiTietWebController.cuaToi
+    },
+    {
+        method: "get",
+        path: "/thong-tin-chi-tiet-thuc-don/:id1/:id2",
+        handler: chiTietWebController.thucDon
     }
 ];
 
 module.exports = [
     ...danhMucRoutes,
     ...thucDonRoutes,
-    ...thongBaoRoutes
+    ...chiTietRoutes
 ];

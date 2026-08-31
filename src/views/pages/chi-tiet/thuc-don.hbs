@@ -1,0 +1,338 @@
+<link
+    rel="stylesheet"
+    href="/assets/css/pages/chi-tiet/thuc-don.css">
+
+
+<main
+    class="menu-detail-page"
+    data-menu-detail-page
+    data-thuc-don-id="{{thucDonId}}"
+    data-thuc-don-ngay-id="{{thucDonNgayId}}">
+
+
+    <div
+        class="menu-detail-page__content"
+        data-menu-detail-content>
+
+
+        <section
+            class="menu-detail-hero"
+            data-menu-detail-hero>
+
+            <div
+                class="menu-detail-hero__media"
+                data-menu-hero-media>
+
+                <img
+                    class="menu-detail-hero__image"
+                    data-menu-hero-image
+                    alt=""
+                    hidden>
+
+                <div
+                    class="menu-detail-image-placeholder"
+                    data-menu-hero-image-placeholder>
+
+                    <i
+                        class="fa-solid fa-utensils"
+                        aria-hidden="true">
+                    </i>
+
+                </div>
+
+            </div>
+
+
+            <div class="menu-detail-hero__information">
+
+                <div
+                    class="menu-detail-hero__category"
+                    data-menu-hero-category>
+                    —
+                </div>
+
+
+                <h1
+                    class="menu-detail-hero__title"
+                    data-menu-hero-title>
+                    Đang tải...
+                </h1>
+
+
+                <div class="menu-detail-hero__metadata">
+
+
+                    <div class="menu-detail-meta">
+
+                        <span class="menu-detail-meta__label">
+
+                            <i
+                                class="fa-solid fa-list"
+                                aria-hidden="true">
+                            </i>
+
+                            Mã món
+
+                        </span>
+
+                        <strong
+                            class="menu-detail-meta__value"
+                            data-menu-hero-code>
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="menu-detail-meta">
+
+                        <span class="menu-detail-meta__label">
+
+                            <i
+                                class="fa-solid fa-shapes"
+                                aria-hidden="true">
+                            </i>
+
+                            Nhóm món
+
+                        </span>
+
+                        <strong
+                            class="menu-detail-meta__value"
+                            data-menu-hero-group>
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="menu-detail-meta">
+
+                        <span class="menu-detail-meta__label">
+
+                            <i
+                                class="fa-solid fa-scale-balanced"
+                                aria-hidden="true">
+                            </i>
+
+                            Đơn vị tính
+
+                        </span>
+
+                        <strong
+                            class="menu-detail-meta__value"
+                            data-menu-hero-unit>
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="menu-detail-meta">
+
+                        <span class="menu-detail-meta__label">
+
+                            <i
+                                class="fa-regular fa-circle-check"
+                                aria-hidden="true">
+                            </i>
+
+                            Trạng thái
+
+                        </span>
+
+                        <span
+                            class="menu-detail-status"
+                            data-menu-hero-status>
+                            —
+                        </span>
+
+                    </div>
+
+
+                    <div class="menu-detail-meta">
+
+                        <span class="menu-detail-meta__label">
+
+                            <i
+                                class="fa-regular fa-calendar"
+                                aria-hidden="true">
+                            </i>
+
+                            Thực đơn áp dụng
+
+                        </span>
+
+                        <strong
+                            class="menu-detail-meta__value"
+                            data-menu-hero-menu>
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="menu-detail-hero__description">
+
+                    <span class="menu-detail-hero__description-label">
+                        Mô tả
+                    </span>
+
+                    <p data-menu-hero-description>
+                        —
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="menu-detail-section">
+
+            <div class="menu-detail-section__header">
+
+                <div>
+
+                    <h2>
+                        Các món trong thực đơn này
+                    </h2>
+
+                    <p
+                        class="menu-detail-section__subtitle"
+                        data-current-menu-label>
+                        —
+                    </p>
+
+                </div>
+
+
+                <div class="menu-detail-carousel-actions">
+
+                    <button
+                        type="button"
+                        class="menu-detail-carousel-button"
+                        data-food-scroll="prev"
+                        aria-label="Món trước">
+
+                        <i
+                            class="fa-solid fa-chevron-left"
+                            aria-hidden="true">
+                        </i>
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="menu-detail-carousel-button"
+                        data-food-scroll="next"
+                        aria-label="Món tiếp theo">
+
+                        <i
+                            class="fa-solid fa-chevron-right"
+                            aria-hidden="true">
+                        </i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="menu-detail-food-track"
+                data-menu-food-track>
+            </div>
+
+
+            <div
+                class="menu-detail-empty"
+                data-menu-food-empty
+                hidden>
+
+                <i
+                    class="fa-solid fa-utensils"
+                    aria-hidden="true">
+                </i>
+
+                <strong>
+                    Chưa có món ăn
+                </strong>
+
+                <span>
+                    Ngày thực đơn này chưa có món ăn.
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <section class="menu-detail-other">
+
+            <div class="menu-detail-other__header">
+
+                <h2>
+                    Các thực đơn khác
+                </h2>
+
+            </div>
+
+
+            <div
+                class="menu-detail-day-grid"
+                data-menu-day-grid>
+            </div>
+
+
+            <div
+                class="menu-detail-empty"
+                data-menu-day-empty
+                hidden>
+
+                <i
+                    class="fa-regular fa-calendar"
+                    aria-hidden="true">
+                </i>
+
+                <strong>
+                    Không có thực đơn khác
+                </strong>
+
+                <span>
+                    Thực đơn này hiện chỉ có một ngày áp dụng.
+                </span>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <div
+        class="menu-detail-loading"
+        data-menu-detail-loading>
+
+        <span class="menu-detail-loading__spinner">
+        </span>
+
+        <span>
+            Đang tải chi tiết thực đơn...
+        </span>
+
+    </div>
+
+
+    {{> catalog/no-permission}}
+
+</main>
+
+
+<script src="/assets/js/pages/thuc-don/api.js"></script>
+
+<script src="/assets/js/pages/chi-tiet/thuc-don.js"></script>

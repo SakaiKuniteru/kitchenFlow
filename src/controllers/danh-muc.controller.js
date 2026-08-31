@@ -1,5 +1,7 @@
 "use strict";
 
+const { renderPage } = require("../utils/render-page.util");
+
 function textColumn(key, label, options = {}) {
     return {
         key,
@@ -57,38 +59,32 @@ function numberColumn(key, label, options = {}) {
 }
 
 function renderDanhMuc(req, res, config) {
-    const currentYear = new Date().getFullYear();
-    const currentUser = req.user || null;
-
-    return res.render(config.view, {
-        layout: "app",
-        title: config.title,
-        pageTitle: config.title,
-        pageDescription: config.description || "",
-        currentYear,
-        appVersion: process.env.APP_VERSION || "1.0.0",
-        currentUser,
-        isCatalogPage: true,
-        activeMenu: config.activeMenu || "danh-muc",
-        activeSubmenu: config.activeSubmenu,
-        breadcrumbs: config.breadcrumbs || [
-            {
-                label: config.page
+    return renderPage(req, res, config.view, 
+        {
+            title: config.title,
+            pageDescription: config.description || "",
+            isCatalogPage: true,
+            activeMenu: config.activeMenu || "danh-muc",
+            activeSubmenu: config.activeSubmenu,
+            breadcrumbs: config.breadcrumbs || [
+                {
+                    label: config.page
+                }
+            ],
+            columns: config.columns || [],
+            showActions: config.showActions !== false,
+            showIndex: config.showIndex !== false,
+            showFilterRow: config.showFilterRow !== false,
+            selectable: config.selectable === true,
+            searchPlaceholder: config.searchPlaceholder || "Tìm theo mã hoặc tên...",
+            hideCreateButton: config.hideCreateButton === true,
+            showExportButton: config.showExportButton === true,
+            formOptions: {
+                ...(res.locals.formOptions || {}),
+                ...(config.formOptions || {})
             }
-        ],
-        columns: config.columns || [],
-        showActions: config.showActions !== false,
-        showIndex: config.showIndex !== false,
-        showFilterRow: config.showFilterRow !== false,
-        selectable: config.selectable === true,
-        searchPlaceholder: config.searchPlaceholder || "Tìm theo mã hoặc tên...",
-        hideCreateButton: config.hideCreateButton === true,
-        showExportButton: config.showExportButton === true,
-        formOptions: {
-            ...(res.locals.formOptions || {}),
-            ...(config.formOptions || {})
         }
-    });
+    );
 }
 
 class DanhMucWebController {
@@ -640,11 +636,14 @@ class DanhMucWebController {
                 page: "Thông báo",
                 activeSubmenu: "thong-bao",
                 columns: [
-                    textColumn("maBaoCao", "Mã báo cáo", { width: "200px", className: "catalog-table__cell--center" }),
-                    textColumn("tenBaoCao", "Tên báo cáo", { width: "240px", className: "catalog-table__cell--center" }),
-                    textColumn("loaiXuatFileText", "Loại xuất file", { width: "160px", className: "catalog-table__cell--center" }),
-                    textColumn("moTa", "Mô tả", { width: "280px", className: "catalog-table__cell--center" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
+                    textColumn("tieuDe", "Tiêu đề", { width: "200px", className: "catalog-table__cell--center" }),
+                    textColumn("noiDung", "Nội dung", { width: "350px", className: "catalog-table__cell--center" }),
+                    textColumn("nguonThongBao", "Nguồn", { width: "150px", className: "catalog-table__cell--center" }),
+                    textColumn("phamViGui", "Phạm vi", { width: "200px", className: "catalog-table__cell--center" }),
+                    textColumn("trangThaiHienThi", "Trạng thái", { width: "150px", className: "catalog-table__cell--center" }),
+                    textColumn("soLuongNguoiNhan", "Người nhận", { width: "150px", className: "catalog-table__cell--center" }),
+                    textColumn("soLuongDaDoc", "Đã đọc", { width: "150px", className: "catalog-table__cell--center" }),
+                    textColumn("thoiGianGui", "Thời gian", { width: "150px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {

@@ -1,20 +1,9 @@
 "use strict";
 
-
-const express =
-    require(
-        "express"
-    );
-
-
-const router =
-    express.Router();
-
-
-const webRoutes =
-    require(
-        "./config"
-    );
+const express = require("express");
+const router = express.Router();
+const webRoutes = require("./config");
+const { renderPage } = require("../../utils/render-page.util");
 
 router.use(
     (
@@ -22,9 +11,7 @@ router.use(
         res,
         next
     ) => {
-
         res.locals.formOptions = {
-
             gioiTinh: [
                 {
                     value: "0",
@@ -39,11 +26,9 @@ router.use(
                     label: "Khác"
                 }
             ]
-
         };
 
         next();
-
     }
 );
 
@@ -51,50 +36,28 @@ router.get(
     "/",
     (
         req,
-        res, 
+        res,
         next
     ) => {
-
         try {
-
-            return res.render(
+            return renderPage(
+                req,
+                res,
                 "pages/home/index",
                 {
-
-                    layout:
-                        "app",
-
-                    title:
-                        "Trang chủ",
-
-                    currentYear:
-                        new Date()
-                            .getFullYear(),
-
-                    currentUser:
-                        req.user ||
-                        null,
-
-                    appVersion:
-                        process.env
-                            .APP_VERSION ||
-                        "1.0.0"
+                    title: "Trang chủ",
+                    breadcrumbs: []
                 }
             );
-
         } catch (
             error
         ) {
-
             next(
                 error
             );
-
         }
-
     }
 );
-
 
 router.get(
     "/auth/login",
@@ -103,48 +66,29 @@ router.get(
         res,
         next
     ) => {
-
         try {
-
-            return res.render(
+            return renderPage(
+                req,
+                res,
                 "pages/auth/login",
                 {
-
-                    layout:
-                        "auth",
-
-                    title:
-                        "Đăng nhập",
-
-                    currentYear:
-                        new Date()
-                            .getFullYear(),
-
-                    appVersion:
-                        process.env
-                            .APP_VERSION ||
-                        "1.0.0"
-
+                    layout: "auth",
+                    title: "Đăng nhập",
+                    breadcrumbs: []
                 }
             );
-
         } catch (
             error
         ) {
-
             next(
                 error
             );
-
         }
-
     }
 );
 
-
 webRoutes.forEach(
     route => {
-
         const method =
             String(
                 route.method ||
@@ -152,19 +96,15 @@ webRoutes.forEach(
             )
                 .toLowerCase();
 
-
         if (
             typeof router[
                 method
             ] !== "function"
         ) {
-
             throw new Error(
                 `HTTP method không hợp lệ: ${method}`
             );
-
         }
-
 
         router[
             method
@@ -172,10 +112,8 @@ webRoutes.forEach(
             route.path,
             route.handler
         );
-
     }
 );
-
 
 module.exports =
     router;

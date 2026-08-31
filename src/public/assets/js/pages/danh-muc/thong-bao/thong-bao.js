@@ -310,7 +310,10 @@ document.addEventListener("DOMContentLoaded", () => {
                                 true,
 
                             type:
-                                "date"
+                                "date",
+                                
+                            className:
+                                "catalog-table__cell--center"
                         }
                     ],
 
