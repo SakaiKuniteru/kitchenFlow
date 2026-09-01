@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const md5 = require("../../../../utils/md5");
 const jwt = require("../../../../utils/jwt");
 const ApiError = require("../../../../utils/api-error");
@@ -241,15 +242,27 @@ class XacThucService {
         const refreshTokenMinutes = await cauHinhService
             .getSoPhutRefreshToken();
 
-        const accessToken = jwt.generateAccessToken(
-            payload,
-            accessTokenMinutes
-        );
+        const accessToken =
+            jwt.generateAccessToken(
+                {
+                    ...payload,
 
-        const refreshToken = jwt.generateRefreshToken(
-            payload,
-            refreshTokenMinutes
-        );
+                    tokenId:
+                        crypto.randomUUID()
+                },
+                accessTokenMinutes
+            );
+
+        const refreshToken =
+            jwt.generateRefreshToken(
+                {
+                    ...payload,
+
+                    tokenId:
+                        crypto.randomUUID()
+                },
+                refreshTokenMinutes
+            );
 
         const refreshExpiresAt = new Date();
 
@@ -382,19 +395,28 @@ class XacThucService {
         const refreshTokenMinutes = await cauHinhService
             .getSoPhutRefreshToken();
 
-        const newAccessToken = jwt.generateAccessToken(
-            newPayload,
-            accessTokenMinutes
-        );
+        const newAccessToken =
+            jwt.generateAccessToken(
+                {
+                    ...newPayload,
 
-        const newRefreshToken = jwt.generateRefreshToken(
-            newPayload,
-            refreshTokenMinutes
-        );
+                    tokenId:
+                        crypto.randomUUID()
+                },
+                accessTokenMinutes
+            );
 
-        await authRepository.revokeRefreshToken(
-            refreshToken
-        );
+
+        const newRefreshToken =
+            jwt.generateRefreshToken(
+                {
+                    ...newPayload,
+
+                    tokenId:
+                        crypto.randomUUID()
+                },
+                refreshTokenMinutes
+            );
 
         const expiresAt = new Date();
 
@@ -415,34 +437,50 @@ class XacThucService {
         };
     }
 
-    async logout(refreshToken) {
+    async logout(
+        refreshToken
+    ) {
+
         if (!refreshToken) {
+
             throw new ApiError(
                 400,
                 "Refresh Token không được để trống."
             );
+
         }
 
-        const tokenInDb = await authRepository.findRefreshToken(
-            refreshToken
-        );
 
+        const tokenInDb =
+            await authRepository
+                .findRefreshToken(
+                    refreshToken
+                );
+
+
+        /*
+        * Logout idempotent.
+        */
         if (!tokenInDb) {
-            throw new ApiError(
-                401,
-                "Refresh Token không hợp lệ."
-            );
+
+            return;
+
         }
 
-        jwt.verifyRefreshToken(
-            refreshToken
-        );
 
-        await authRepository.revokeRefreshToken(
-            refreshToken
-        );
+        /*
+        * Manual logout hoặc timeout:
+        * thu hồi TOÀN BỘ Refresh Token
+        * còn sống của phiên tài khoản.
+        */
+        await authRepository
+            .revokeAllRefreshToken(
+                tokenInDb.tai_khoan_id
+            );
+
 
         return;
+
     }
 
     async changeMatKhau(

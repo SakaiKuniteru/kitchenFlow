@@ -12,7 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
         accessTokenKey: "accessToken",
         refreshTokenKey: "refreshToken",
         userKey: "currentUser",
-        firstLoginRequiredKey: "mcsKitchenFlowFirstLoginRequired"
+        firstLoginRequiredKey: "mcsKitchenFlowFirstLoginRequired",
+        lastActivityKey: "mcsLastActivityAt",
     };
 
     const elements = {
@@ -610,6 +611,12 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem(
             CONFIG.userKey,
             JSON.stringify(userData)
+        );
+        localStorage.setItem(
+            CONFIG.lastActivityKey,
+            String(
+                Date.now()
+            )
         );
 
         if (loginData.accessToken) {

@@ -68,6 +68,7 @@ window.MCS.storage = {
         localStorage.removeItem(window.MCS.config.accessTokenKey);
         localStorage.removeItem(window.MCS.config.refreshTokenKey);
         localStorage.removeItem(window.MCS.config.currentUserKey);
+        localStorage.removeItem("mcsLastActivityAt");
     }
 };
 
@@ -368,88 +369,205 @@ window.MCS.authSession = {
         }
     },
 
-    scheduleAccessTokenRefresh() {
+    scheduleRefreshRetry() {
+
         this.clearRefreshTimer();
 
-        const accessToken = window.MCS.storage.getAccessToken();
-        const refreshToken = window.MCS.storage.getRefreshToken();
+
+        if (
+            !window.MCS.storage
+                .getAccessToken() ||
+            !window.MCS.storage
+                .getRefreshToken()
+        ) {
+
+            return;
+
+        }
+
+
+        this.refreshTimer =
+            window.setTimeout(
+                () => {
+
+                    this.refreshAccessTokenNow();
+
+                },
+                15000
+            );
+
+    },
+
+    scheduleAccessTokenRefresh() {
+
+        this.clearRefreshTimer();
+
+
+        const accessToken =
+            window.MCS.storage
+                .getAccessToken();
+
+
+        const refreshToken =
+            window.MCS.storage
+                .getRefreshToken();
+
 
         if (
             !accessToken ||
             !refreshToken
         ) {
+
             return;
+
         }
 
-        const payload = this.decodeAccessToken(accessToken);
 
-        if (!payload?.exp) {
+        const accessPayload =
+            this.decodeAccessToken(
+                accessToken
+            );
+
+
+        const refreshPayload =
+            this.decodeAccessToken(
+                refreshToken
+            );
+
+
+        const expirations =
+            [
+                Number(
+                    accessPayload?.exp
+                ),
+
+                Number(
+                    refreshPayload?.exp
+                )
+            ]
+                .filter(
+                    value =>
+                        Number.isFinite(
+                            value
+                        ) &&
+                        value > 0
+                )
+                .map(
+                    value =>
+                        value * 1000
+                );
+
+
+        if (
+            expirations.length ===
+            0
+        ) {
+
             return;
+
         }
 
-        const expiresAt = Number(payload.exp) * 1000;
+
+        /*
+        * Token nào hết trước
+        * thì refresh theo token đó.
+        */
+        const expiresAt =
+            Math.min(
+                ...expirations
+            );
+
 
         const refreshBefore =
-            window.MCS.config.accessTokenRefreshBeforeSeconds *
+            window.MCS.config
+                .accessTokenRefreshBeforeSeconds *
             1000;
 
-        const now = Date.now();
 
         const delay =
             expiresAt -
-            now -
+            Date.now() -
             refreshBefore;
 
-        if (delay <= 0) {
+
+        if (
+            delay <=
+            0
+        ) {
+
             this.refreshAccessTokenNow();
+
             return;
+
         }
 
-        this.refreshTimer = setTimeout(
-            () => {
-                this.refreshAccessTokenNow();
-            },
-            delay
-        );
+
+        this.refreshTimer =
+            window.setTimeout(
+                () => {
+
+                    this.refreshAccessTokenNow();
+
+                },
+                delay
+            );
+
     },
 
     async refreshAccessTokenNow() {
+
         if (
             window.location.pathname ===
             window.MCS.config.loginPath
         ) {
+
             return;
+
         }
 
-        const refreshToken = window.MCS.storage.getRefreshToken();
+
+        const refreshToken =
+            window.MCS.storage
+                .getRefreshToken();
+
 
         if (!refreshToken) {
+
             return;
+
         }
+
 
         try {
-            const refreshed = await window.MCS.api.refreshAuthentication();
+
+            const refreshed =
+                await window.MCS.api
+                    .refreshAuthentication();
+
 
             if (!refreshed) {
-                window.MCS.storage.clearAuthentication();
-                window.MCS.authSession?.clearRefreshTimer();
 
-                if (window.MCS.authSync?.redirectToLogin) {
-                    window.MCS.authSync.redirectToLogin();
-                } else {
-                    window.MCS.authSync?.redirectToLogin();
-                }
+                this.scheduleRefreshRetry();
 
                 return;
+
             }
 
+
             this.scheduleAccessTokenRefresh();
+
         } catch (error) {
+
             console.warn(
-                "[Auth] Làm mới Access Token tự động thất bại:",
+                "[Auth] Làm mới token tự động thất bại:",
                 error
             );
+
+
+            this.scheduleRefreshRetry();
+
         }
+
     }
 };
 
@@ -466,34 +584,32 @@ window.MCS.api = {
         );
 
         if (
-            result.response.status === 401 &&
-            options.allowRefresh !== false
+            result.response.status ===
+                401 &&
+            options.allowRefresh !==
+                false
         ) {
-            const refreshed = await this.refreshAuthentication();
+
+            const refreshed =
+                await this
+                    .refreshAuthentication();
+
 
             if (refreshed) {
-                result = await this.send(
-                    url,
-                    {
-                        ...options,
-                        allowRefresh: false
-                    }
-                );
-            } else {
-                window.MCS.authSync?.saveRedirect();
-                window.MCS.storage.clearAuthentication();
-                window.MCS.authSession?.clearRefreshTimer();
-                window.MCS.authSync?.notifyLogout();
-                window.MCS.authSync?.redirectToLogin();
 
-                const error = new Error(
-                    "Phiên đăng nhập đã hết hạn."
-                );
+                result =
+                    await this.send(
+                        url,
+                        {
+                            ...options,
 
-                error.statusCode = 401;
+                            allowRefresh:
+                                false
+                        }
+                    );
 
-                throw error;
             }
+
         }
 
         if (!result.response.ok) {
@@ -579,34 +695,32 @@ window.MCS.api = {
         );
 
         if (
-            result.response.status === 401 &&
-            options.allowRefresh !== false
+            result.response.status ===
+                401 &&
+            options.allowRefresh !==
+                false
         ) {
-            const refreshed = await this.refreshAuthentication();
+
+            const refreshed =
+                await this
+                    .refreshAuthentication();
+
 
             if (refreshed) {
-                result = await this.sendFile(
-                    url,
-                    {
-                        ...options,
-                        allowRefresh: false
-                    }
-                );
-            } else {
-                window.MCS.authSync?.saveRedirect();
-                window.MCS.storage.clearAuthentication();
-                window.MCS.authSession?.clearRefreshTimer();
-                window.MCS.authSync?.notifyLogout();
-                window.MCS.authSync?.redirectToLogin();
 
-                const error = new Error(
-                    "Phiên đăng nhập đã hết hạn."
-                );
+                result =
+                    await this.sendFile(
+                        url,
+                        {
+                            ...options,
 
-                error.statusCode = 401;
+                            allowRefresh:
+                                false
+                        }
+                    );
 
-                throw error;
             }
+
         }
 
         if (!result.response.ok) {
@@ -873,12 +987,42 @@ window.MCS.escapeHtml = value => {
     return element.innerHTML;
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-    window.MCS.authSync?.initialize();
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
 
-    window.MCS.authSession.scheduleAccessTokenRefresh();
+        window.MCS.authSync
+            ?.initialize();
 
-    const currentUser = window.MCS.storage.getCurrentUser();
+
+        const authenticated =
+            window.MCS.authSync
+                ?.hasAuthentication?.() ===
+            true;
+
+
+        const loginPage =
+            window.MCS.authSync
+                ?.isLoginPage?.() ===
+            true;
+
+        if (
+            authenticated &&
+            !loginPage
+        ) {
+
+            await window.MCS.api
+                .refreshAuthentication();
+
+        }
+
+        window.MCS.authSession
+            .scheduleAccessTokenRefresh();
+
+
+        const currentUser =
+            window.MCS.storage
+                .getCurrentUser();
 
     document
         .querySelectorAll("[data-current-user-name]")
