@@ -1,0 +1,32 @@
+<link
+    rel="stylesheet"
+    href="/assets/css/pages/danh-muc/binh-chon/binh-chon.css"
+>
+
+{{> catalog/module-page
+    moduleName="binh-chon"
+    apiBase="/api/mcs/v1/binh-chon"
+    title="Quản lý đợt bình chọn"
+    searchPlaceholder="Tìm theo thực đơn, nhà ăn, ca ăn..."
+    createButtonLabel="Thêm đợt bình chọn"
+    createButtonId="btnCreateBinhChon"
+    searchInputId="searchBinhChon"
+    tableId="binhChonTable"
+    tableBodyId="binhChonTableBody"
+    paginationId="binhChonPagination"
+    detailPanelId="binhChonDetailPanel"
+    detailContentId="binhChonDetailContent"
+    formId="binhChonForm"
+    formPartial="catalog/forms/thuc-don/binh-chon"
+    detailTitle="Thông tin đợt bình chọn"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="binhChonMobilePanel"
+    columns=columns
+}}
+
+
+{{> scripts/catalog-page
+    folder="binh-chon"
+    page="binh-chon"
+}}

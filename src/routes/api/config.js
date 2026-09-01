@@ -200,6 +200,13 @@ const routes = [
         )
     ],
 
+    [
+        "/binh-chon",
+        require(
+            "../../modules/nghiep-vu/binh-chon/binh-chon.route"
+        )
+    ],
+
 ];
 
 module.exports = routes;

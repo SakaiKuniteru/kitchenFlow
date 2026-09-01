@@ -650,6 +650,27 @@ class DanhMucWebController {
             next(error);
         }
     }
+
+     async binhChon(req, res, next) {
+        try {
+            return renderDanhMuc(req, res, {
+                view: "pages/danh-muc/binh-chon/binh-chon",
+                title: "Quản lý bình chọn",
+                description: "Quản lý các bình chọn trong hệ thống.",
+                page: "Bình chọn",
+                activeSubmenu: "binh-chon",
+                columns: [
+                    textColumn("maBaoCao", "Mã báo cáo", { width: "200px", className: "catalog-table__cell--center" }),
+                    textColumn("tenBaoCao", "Tên báo cáo", { width: "240px", className: "catalog-table__cell--center" }),
+                    textColumn("loaiXuatFileText", "Loại xuất file", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("moTa", "Mô tả", { width: "280px", className: "catalog-table__cell--center" }),
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
+                ]
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 module.exports = new DanhMucWebController();

@@ -1,0 +1,153 @@
+.binh-chon-form__thuc-don-info {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(
+                0,
+                1fr
+            )
+        );
+    gap: 12px 18px;
+    margin-top: 14px;
+    padding: 16px;
+    border: 1px solid
+        var(--color-border-light);
+    border-radius: 10px;
+    background:
+        var(--color-surface-secondary);
+}
+
+
+.binh-chon-form__thuc-don-info[hidden] {
+    display: none !important;
+}
+
+
+.binh-chon-form__info-item {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+
+
+.binh-chon-form__info-label {
+    color:
+        var(--color-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+.binh-chon-form__info-value {
+    overflow: hidden;
+    color:
+        var(--color-text-primary);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+
+.binh-chon-statistics {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(
+                0,
+                1fr
+            )
+        );
+    gap: 14px;
+}
+
+
+.binh-chon-statistics__item {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid
+        var(--color-border-light);
+    border-radius: 10px;
+    background:
+        var(--color-surface-secondary);
+}
+
+
+.binh-chon-statistics__label {
+    color:
+        var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+.binh-chon-statistics__value {
+    color:
+        var(--color-text-primary);
+    font-size: 22px;
+    font-weight: 800;
+}
+
+
+
+.binh-chon-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 26px;
+    padding: 0 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+
+.binh-chon-status--draft {
+    color: var(--color-text-secondary);
+    background:
+        var(--color-surface-secondary);
+}
+
+
+.binh-chon-status--sent {
+    color: var(--color-primary);
+    background: var(--color-primary-soft);
+}
+
+
+.binh-chon-status--cancelled {
+    color: #dc2626;
+    background: #fee2e2;
+}
+
+
+
+@media (
+    max-width: 720px
+) {
+
+    .binh-chon-form__thuc-don-info {
+        grid-template-columns:
+            minmax(
+                0,
+                1fr
+            );
+    }
+
+
+    .binh-chon-statistics {
+        grid-template-columns:
+            minmax(
+                0,
+                1fr
+            );
+    }
+
+}

@@ -1,0 +1,312 @@
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin thực đơn
+    </h3>
+
+
+    <div class="catalog-form-grid">
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/select
+                id="thucDonNgayId"
+                name="thucDonNgayId"
+                label="Ngày thực đơn"
+                mode="single"
+                multiple=false
+                allowAll=false
+                placeholder="Chọn ngày thực đơn"
+                required=true
+            }}
+
+            <div
+                class="binh-chon-form__thuc-don-info"
+                data-binh-chon-thuc-don-info
+                hidden
+            >
+
+                <div class="binh-chon-form__info-item">
+
+                    <span class="binh-chon-form__info-label">
+                        Thực đơn
+                    </span>
+
+                    <span
+                        class="binh-chon-form__info-value"
+                        data-binh-chon-ten-thuc-don
+                    >
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="binh-chon-form__info-item">
+
+                    <span class="binh-chon-form__info-label">
+                        Nhà ăn
+                    </span>
+
+                    <span
+                        class="binh-chon-form__info-value"
+                        data-binh-chon-nha-an
+                    >
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="binh-chon-form__info-item">
+
+                    <span class="binh-chon-form__info-label">
+                        Ca ăn
+                    </span>
+
+                    <span
+                        class="binh-chon-form__info-value"
+                        data-binh-chon-ca-an
+                    >
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="binh-chon-form__info-item">
+
+                    <span class="binh-chon-form__info-label">
+                        Ngày
+                    </span>
+
+                    <span
+                        class="binh-chon-form__info-value"
+                        data-binh-chon-ngay
+                    >
+                        -
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thời gian bình chọn
+    </h3>
+
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="batDauBinhChon"
+            name="batDauBinhChon"
+            type="datetime-local"
+            label="Bắt đầu bình chọn"
+            required=true
+        }}
+
+
+        {{> forms/input
+            id="hanBinhChon"
+            name="hanBinhChon"
+            type="datetime-local"
+            label="Hạn bình chọn"
+            required=true
+        }}
+
+    </div>
+
+</div>
+
+
+
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Cấu hình bình chọn
+    </h3>
+
+
+    <div class="catalog-form-grid">
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/checkbox
+                id="choPhepThayDoi"
+                name="choPhepThayDoi"
+                label="Cho phép người dùng thay đổi lựa chọn"
+                checked=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<div class="detail-panel__section">
+
+    <h3 class="detail-panel__section-title">
+        Thông tin hệ thống
+    </h3>
+
+
+    <div class="catalog-form-grid">
+
+        {{> forms/input
+            id="trangThai"
+            name="trangThai"
+            label="Trạng thái"
+            placeholder="Tạo mới"
+            disabled=true
+        }}
+
+
+        {{> forms/input
+            id="trangThaiThoiGian"
+            name="trangThaiThoiGian"
+            label="Tình trạng thời gian"
+            placeholder="Sắp diễn ra"
+            disabled=true
+        }}
+
+
+        {{> forms/input
+            id="nguoiTao"
+            name="nguoiTao"
+            label="Người tạo"
+            placeholder="Người tạo"
+            disabled=true
+        }}
+
+
+        {{> forms/input
+            id="nguoiGui"
+            name="nguoiGui"
+            label="Người gửi"
+            placeholder="Chưa gửi"
+            disabled=true
+        }}
+
+
+        {{> forms/input
+            id="thoiGianGui"
+            name="thoiGianGui"
+            label="Thời gian gửi"
+            placeholder="Chưa gửi"
+            disabled=true
+        }}
+
+
+        {{> forms/input
+            id="nguoiHuy"
+            name="nguoiHuy"
+            label="Người hủy"
+            placeholder="Chưa hủy"
+            disabled=true
+        }}
+
+
+        {{> forms/input
+            id="thoiGianHuy"
+            name="thoiGianHuy"
+            label="Thời gian hủy"
+            placeholder="Chưa hủy"
+            disabled=true
+        }}
+
+
+        <div class="catalog-form-grid__full">
+
+            {{> forms/input
+                id="lyDoHuy"
+                name="lyDoHuy"
+                label="Lý do hủy"
+                placeholder="Chưa hủy"
+                disabled=true
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<div
+    class="detail-panel__section"
+    data-binh-chon-thong-ke
+    hidden
+>
+
+    <h3 class="detail-panel__section-title">
+        Kết quả bình chọn
+    </h3>
+
+
+    <div class="binh-chon-statistics">
+
+        <div class="binh-chon-statistics__item">
+
+            <span class="binh-chon-statistics__label">
+                Tổng bình chọn
+            </span>
+
+            <strong
+                class="binh-chon-statistics__value"
+                data-binh-chon-tong
+            >
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="binh-chon-statistics__item">
+
+            <span class="binh-chon-statistics__label">
+                Có tham gia
+            </span>
+
+            <strong
+                class="binh-chon-statistics__value"
+                data-binh-chon-co
+            >
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="binh-chon-statistics__item">
+
+            <span class="binh-chon-statistics__label">
+                Không tham gia
+            </span>
+
+            <strong
+                class="binh-chon-statistics__value"
+                data-binh-chon-khong
+            >
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+</div>
