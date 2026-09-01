@@ -143,29 +143,82 @@ window.MCS.confirm = {
         type = "primary",
         onConfirm = null
     } = {}) {
-        const modal = document.getElementById("confirmModal");
+
+        const modal =
+            document.getElementById(
+                "confirmModal"
+            );
 
         if (!modal) {
             return;
         }
 
-        modal.querySelector("[data-confirm-title]").textContent = title;
-        modal.querySelector("[data-confirm-message]").textContent = message;
 
-        const button = modal.querySelector("[data-confirm-submit]");
+        const confirmType =
+            type === "danger"
+                ? "danger"
+                : "primary";
 
-        button.textContent = confirmLabel;
-        button.className = "confirm-modal__button";
 
-        if (type === "danger") {
-            button.classList.add("confirm-modal__button--danger");
+        modal.dataset.confirmType =
+            confirmType;
+
+
+        modal
+            .querySelector(
+                "[data-confirm-title]"
+            )
+            .textContent =
+            title;
+
+
+        modal
+            .querySelector(
+                "[data-confirm-message]"
+            )
+            .textContent =
+            message;
+
+
+        const button =
+            modal.querySelector(
+                "[data-confirm-submit]"
+            );
+
+
+        button.textContent =
+            confirmLabel;
+
+
+        button.className =
+            "confirm-modal__button";
+
+
+        if (
+            confirmType ===
+            "danger"
+        ) {
+
+            button.classList.add(
+                "confirm-modal__button--danger"
+            );
+
         } else {
-            button.classList.add("confirm-modal__button--primary");
+
+            button.classList.add(
+                "confirm-modal__button--primary"
+            );
+
         }
 
-        this.callback = onConfirm;
 
-        window.MCS.modal.open(modal);
+        this.callback =
+            onConfirm;
+
+
+        window.MCS.modal.open(
+            modal
+        );
     }
 };
 
