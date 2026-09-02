@@ -1,0 +1,332 @@
+<link
+    rel="stylesheet"
+    href="/assets/css/pages/chi-tiet/danh-sach-binh-chon.css">
+
+<main
+    class="vote-list-page"
+    data-vote-list-page>
+
+    <div class="vote-list-page__content">
+        <header class="vote-list-header">
+            <h1>
+                Danh sách bình chọn
+            </h1>
+
+            <p>
+                Theo dõi các đợt bình chọn tham gia ăn và trạng thái lựa chọn của bạn.
+            </p>
+        </header>
+
+        <section class="vote-list-toolbar">
+            <div
+                class="vote-list-tabs"
+                data-vote-list-tabs>
+
+                <button
+                    type="button"
+                    class="vote-list-tab is-active"
+                    data-vote-tab="all">
+                    Tất cả
+                </button>
+
+                <button
+                    type="button"
+                    class="vote-list-tab"
+                    data-vote-tab="active">
+                    Đang diễn ra
+                </button>
+
+                <button
+                    type="button"
+                    class="vote-list-tab"
+                    data-vote-tab="upcoming">
+                    Sắp diễn ra
+                </button>
+
+                <button
+                    type="button"
+                    class="vote-list-tab"
+                    data-vote-tab="participated">
+                    Đã tham gia
+                </button>
+
+                <button
+                    type="button"
+                    class="vote-list-tab"
+                    data-vote-tab="ended">
+                    Đã kết thúc
+                </button>
+            </div>
+
+            <div class="vote-list-toolbar__right">
+                <div class="vote-list-search">
+                    {{> forms/search
+                        inputId="binhChonSearch"
+                        className="search-picker--vote-list"
+                        placeholder="Tìm theo ngày, thực đơn, nhà ăn, ca ăn..."
+                        listSearch=true
+                        showClear=true
+                        hideDropdown=true
+                    }}
+                </div>
+
+                <div
+                    class="vote-list-filter"
+                    data-vote-filter>
+
+                    <button
+                        type="button"
+                        class="vote-list-filter__toggle"
+                        data-vote-filter-toggle
+                        aria-expanded="false">
+
+                        <i
+                            class="fa-solid fa-filter"
+                            aria-hidden="true">
+                        </i>
+
+                        <span>
+                            Bộ lọc
+                        </span>
+                    </button>
+
+                    <div
+                        class="vote-list-filter__dropdown"
+                        data-vote-filter-dropdown
+                        hidden>
+
+                        <div class="vote-list-filter__header">
+                            <strong>
+                                Bộ lọc
+                            </strong>
+
+                            <button
+                                type="button"
+                                class="vote-list-filter__close"
+                                data-vote-filter-close
+                                aria-label="Đóng">
+
+                                <i
+                                    class="fa-solid fa-xmark"
+                                    aria-hidden="true">
+                                </i>
+                            </button>
+                        </div>
+
+                        <div class="vote-list-filter__body">
+                            <div class="vote-list-filter__dates">
+                                {{> forms/date
+                                    id="tuNgay"
+                                    name="tuNgay"
+                                    label="Từ ngày"
+                                    placeholder="dd/mm/yyyy hh:mm:ss"
+                                    showTime=true
+                                    defaultTime="00:00:00"
+                                }}
+
+                                {{> forms/date
+                                    id="denNgay"
+                                    name="denNgay"
+                                    label="Đến ngày"
+                                    placeholder="dd/mm/yyyy hh:mm:ss"
+                                    showTime=true
+                                    defaultTime="23:59:59"
+                                }}
+                            </div>
+
+                            {{> forms/select
+                                id="nhaAnIds"
+                                name="nhaAnIds"
+                                label="Nhà ăn"
+                                mode="multiple"
+                                multiple=true
+                                allowAll=true
+                                placeholder="Tất cả"
+                                description=""
+                            }}
+
+                            {{> forms/select
+                                id="caAnIds"
+                                name="caAnIds"
+                                label="Ca ăn"
+                                mode="multiple"
+                                multiple=true
+                                allowAll=true
+                                placeholder="Tất cả"
+                                description=""
+                            }}
+                        </div>
+
+                        <div class="vote-list-filter__footer">
+                            <button
+                                type="button"
+                                class="
+                                    vote-list-filter__button
+                                    vote-list-filter__button--reset
+                                "
+                                data-vote-filter-reset>
+                                Đặt lại
+                            </button>
+
+                            <button
+                                type="button"
+                                class="
+                                    vote-list-filter__button
+                                    vote-list-filter__button--apply
+                                "
+                                data-vote-filter-apply>
+                                Áp dụng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="vote-list-summary">
+            <article class="vote-summary-card">
+                <span
+                    class="
+                        vote-summary-card__icon
+                        vote-summary-card__icon--total
+                    ">
+
+                    <i
+                        class="fa-regular fa-calendar"
+                        aria-hidden="true">
+                    </i>
+                </span>
+
+                <div class="vote-summary-card__content">
+                    <span>
+                        Tổng bình chọn
+                    </span>
+
+                    <strong data-summary-total>
+                        0
+                    </strong>
+                </div>
+            </article>
+
+            <article class="vote-summary-card">
+                <span
+                    class="
+                        vote-summary-card__icon
+                        vote-summary-card__icon--required
+                    ">
+
+                    <i
+                        class="fa-solid fa-exclamation"
+                        aria-hidden="true">
+                    </i>
+                </span>
+
+                <div class="vote-summary-card__content">
+                    <span>
+                        Cần bình chọn
+                    </span>
+
+                    <strong data-summary-required>
+                        0
+                    </strong>
+                </div>
+            </article>
+
+            <article class="vote-summary-card">
+                <span
+                    class="
+                        vote-summary-card__icon
+                        vote-summary-card__icon--upcoming
+                    ">
+
+                    <i
+                        class="fa-regular fa-clock"
+                        aria-hidden="true">
+                    </i>
+                </span>
+
+                <div class="vote-summary-card__content">
+                    <span>
+                        Sắp diễn ra
+                    </span>
+
+                    <strong data-summary-upcoming>
+                        0
+                    </strong>
+                </div>
+            </article>
+
+            <article class="vote-summary-card">
+                <span
+                    class="
+                        vote-summary-card__icon
+                        vote-summary-card__icon--participated
+                    ">
+
+                    <i
+                        class="fa-regular fa-user"
+                        aria-hidden="true">
+                    </i>
+                </span>
+
+                <div class="vote-summary-card__content">
+                    <span>
+                        Đã tham gia
+                    </span>
+
+                    <strong data-summary-participated>
+                        0
+                    </strong>
+                </div>
+            </article>
+        </section>
+
+        <section
+            class="vote-list-loading"
+            data-vote-list-loading>
+
+            <span class="vote-list-loading__spinner">
+            </span>
+
+            <span>
+                Đang tải danh sách...
+            </span>
+        </section>
+
+        <section
+            class="vote-list-items"
+            data-vote-list-items
+            hidden>
+        </section>
+
+        <section
+            class="vote-list-empty"
+            data-vote-list-empty
+            hidden>
+
+            <i
+                class="fa-regular fa-calendar-xmark"
+                aria-hidden="true">
+            </i>
+
+            <strong>
+                Không có đợt bình chọn phù hợp
+            </strong>
+
+            <span>
+                Thử thay đổi trạng thái tìm kiếm hoặc bộ lọc.
+            </span>
+        </section>
+
+        <div
+            class="vote-list-pagination"
+            data-vote-list-pagination>
+
+            {{> catalog/pagination
+                paginationId=paginationId
+            }}
+        </div>
+    </div>
+</main>
+
+<script src="/assets/js/pages/chi-tiet/danh-sach-binh-chon.js"></script>

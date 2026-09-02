@@ -168,6 +168,11 @@ const chiTietRoutes = [
     },
     {
         method: "get",
+        path: "/binh-chon/danh-sach-binh-chon",
+        handler: chiTietWebController.danhSachBinhChon
+    },
+    {
+        method: "get",
         path: "/binh-chon/chi-tiet-binh-chon",
         handler: chiTietWebController.binhChon
     },

@@ -54,6 +54,27 @@ class ChiTietWebController {
 
     }
 
+    async danhSachBinhChon(
+        req,
+        res,
+        next
+    ) {
+        try {
+            return renderPage(
+                req,
+                res,
+                "pages/chi-tiet/danh-sach-binh-chon",
+                {
+                    title: "Danh sách bình chọn",
+                    pageDescription: "Bình chọn của tài khoản.",
+                }
+            );
+
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async binhChon(
         req,
         res,
@@ -67,6 +88,15 @@ class ChiTietWebController {
                 {
                     title: "Bình chọn",
                     pageDescription: "Danh sách bình chọn của tài khoản.",
+                    breadcrumbs: [
+                        {
+                            label: "Danh sách bình chọn",
+                            path: "/binh-chon/danh-sach-binh-chon"
+                        },
+                        {
+                            label: "Bình chọn"
+                        }
+                    ]
                 }
             );
 

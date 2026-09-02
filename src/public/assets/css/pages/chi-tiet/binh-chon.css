@@ -384,7 +384,6 @@
         );
 }
 
-
 .meal-vote-choice--no:hover:not(:disabled) i {
     color: #ef4444;
 }

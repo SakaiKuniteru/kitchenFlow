@@ -72,7 +72,7 @@ window.MCS.navigationItems = [
     {
         label: "Danh sách bình chọn",
         group: "Bình chọn",
-        url: "/binh-chon/chi-tiet-binh-chon",
+        url: "/binh-chon/danh-sach-binh-chon",
         permission: [
             "Q001023",
             "Q001025"
