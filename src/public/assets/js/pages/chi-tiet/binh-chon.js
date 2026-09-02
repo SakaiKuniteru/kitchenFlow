@@ -1011,23 +1011,40 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function submitVote(
         luaChon
     ) {
+
         const record =
             state.current;
+
 
         if (
             !record?.id
         ) {
+
             return;
+
         }
+
+
+        if (
+            state.voting
+        ) {
+
+            return;
+
+        }
+
 
         state.voting =
             true;
+
 
         renderVoteSelection(
             record
         );
 
+
         try {
+
             const result =
                 await window.MCS.api
                     .request(
@@ -1038,14 +1055,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                             method:
                                 "PUT",
 
-                            body: {
-                                luaChon
-                            }
+                            body:
+                                JSON.stringify({
+                                    luaChon
+                                })
                         }
                     );
 
+
             state.changingVote =
                 false;
+
 
             window.MCS
                 ?.toast
@@ -1054,31 +1074,47 @@ document.addEventListener("DOMContentLoaded", async () => {
                     "Bình chọn thành công."
                 );
 
+
             await load({
                 silent:
                     true
             });
+
         } catch (
             error
         ) {
+
+            console.error(
+                "Không thể bình chọn:",
+                error
+            );
+
+
             window.MCS
                 ?.toast
                 ?.error?.(
                     error?.message ||
                     "Không thể thực hiện bình chọn."
                 );
+
         } finally {
+
             state.voting =
                 false;
+
 
             if (
                 state.current
             ) {
+
                 renderVoteSelection(
                     state.current
                 );
+
             }
+
         }
+
     }
 
     function startAutoRefresh() {

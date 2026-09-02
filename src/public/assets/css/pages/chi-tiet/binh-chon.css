@@ -317,8 +317,76 @@
         transform var(--transition-fast);
 }
 
-.meal-vote-choice:hover {
+.meal-vote-choice:hover:not(:disabled) {
     transform: translateY(-1px);
+}
+
+
+/*
+ * Có tham gia
+ */
+
+.meal-vote-choice--yes:hover:not(:disabled) {
+    color: #15803d;
+
+    border-color:
+        rgba(
+            22,
+            163,
+            74,
+            0.45
+        );
+
+    background:
+        #f0fdf4;
+
+    box-shadow:
+        0 4px 14px
+        rgba(
+            22,
+            163,
+            74,
+            0.08
+        );
+}
+
+
+.meal-vote-choice--yes:hover:not(:disabled) i {
+    color: #16a34a;
+}
+
+
+/*
+ * Không tham gia
+ */
+
+.meal-vote-choice--no:hover:not(:disabled) {
+    color: #dc2626;
+
+    border-color:
+        rgba(
+            239,
+            68,
+            68,
+            0.42
+        );
+
+    background:
+        #fef2f2;
+
+    box-shadow:
+        0 4px 14px
+        rgba(
+            239,
+            68,
+            68,
+            0.08
+        );
+}
+
+
+.meal-vote-choice--no:hover:not(:disabled) i {
+    color: #ef4444;
 }
 
 .meal-vote-choice i {

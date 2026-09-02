@@ -667,8 +667,9 @@ class DanhMucWebController {
                     textColumn("batDauThucDon", "Bắt đầu", { width: "200px", className: "catalog-table__cell--center" }),
                     textColumn("hanThucDon", "Kết thúc", { width: "200px", className: "catalog-table__cell--center" }),
                     textColumn("trangThai", "Trạng thái", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("tongBinhChon", "Tổng bình chọn", { width: "160px", className: "catalog-table__cell--center" }),
                     textColumn("daThamGia", "Đã tham gia", { width: "160px", className: "catalog-table__cell--center" }),
-                    textColumn("khongThamGia", "Không tham gia", { width: "160px", className: "catalog-table__cell--center" }),
+
                 ]
             });
         } catch (error) {
