@@ -165,19 +165,64 @@ class MCSForm {
                     return;
                 }
 
-                if (readonly) {
+
+                const editableInView =
+                    field.dataset
+                        .editableInView ===
+                    "true";
+
+
+                /*
+                * =========================================
+                * VIEW + FIELD ĐƯỢC PHÉP NHẬP
+                * =========================================
+                */
+                if (
+                    readonly &&
+                    editableInView
+                ) {
+
+                    field.disabled =
+                        false;
+
+
+                    if (
+                        "readOnly" in field
+                    ) {
+
+                        field.readOnly =
+                            false;
+
+                    }
+
+
+                    return;
+                }
+
+
+                /*
+                * =========================================
+                * VIEW BÌNH THƯỜNG
+                * =========================================
+                */
+                if (
+                    readonly
+                ) {
 
                     if (
                         field.dataset
                             .catalogOriginalDisabled ===
                         undefined
                     ) {
+
                         field.dataset
                             .catalogOriginalDisabled =
                             String(
                                 field.disabled
                             );
+
                     }
+
 
                     if (
                         "readOnly" in field &&
@@ -185,58 +230,81 @@ class MCSForm {
                             .catalogOriginalReadonly ===
                         undefined
                     ) {
+
                         field.dataset
                             .catalogOriginalReadonly =
                             String(
                                 field.readOnly
                             );
+
                     }
+
 
                     field.disabled =
                         true;
 
+
                     if (
                         "readOnly" in field
                     ) {
+
                         field.readOnly =
                             true;
+
                     }
+
 
                     return;
                 }
 
+
+                /*
+                * =========================================
+                * CREATE / UPDATE
+                * =========================================
+                */
                 const originalDisabled =
                     field.dataset
                         .catalogOriginalDisabled;
+
 
                 if (
                     originalDisabled !==
                     undefined
                 ) {
+
                     field.disabled =
                         originalDisabled ===
                         "true";
 
+
                     delete field.dataset
                         .catalogOriginalDisabled;
+
                 }
+
 
                 const originalReadonly =
                     field.dataset
                         .catalogOriginalReadonly;
+
 
                 if (
                     originalReadonly !==
                         undefined &&
                     "readOnly" in field
                 ) {
+
                     field.readOnly =
                         originalReadonly ===
                         "true";
 
+
                     delete field.dataset
                         .catalogOriginalReadonly;
+
                 }
+
             });
 
         if (

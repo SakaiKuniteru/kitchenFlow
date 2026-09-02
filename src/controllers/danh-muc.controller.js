@@ -660,11 +660,15 @@ class DanhMucWebController {
                 page: "Bình chọn",
                 activeSubmenu: "binh-chon",
                 columns: [
-                    textColumn("maBaoCao", "Mã báo cáo", { width: "200px", className: "catalog-table__cell--center" }),
-                    textColumn("tenBaoCao", "Tên báo cáo", { width: "240px", className: "catalog-table__cell--center" }),
-                    textColumn("loaiXuatFileText", "Loại xuất file", { width: "160px", className: "catalog-table__cell--center" }),
-                    textColumn("moTa", "Mô tả", { width: "280px", className: "catalog-table__cell--center" }),
-                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
+                    textColumn("ngayThucDon", "Ngày thực đơn", { width: "200px", className: "catalog-table__cell--center" }),
+                    textColumn("tenThucDon", "Tên thực đơn", { width: "240px", className: "catalog-table__cell--center" }),
+                    textColumn("Nhà ăn", "Nhà ăn", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("caAn", "Ca ăn", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("batDauThucDon", "Bắt đầu", { width: "200px", className: "catalog-table__cell--center" }),
+                    textColumn("hanThucDon", "Kết thúc", { width: "200px", className: "catalog-table__cell--center" }),
+                    textColumn("trangThai", "Trạng thái", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("daThamGia", "Đã tham gia", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("khongThamGia", "Không tham gia", { width: "160px", className: "catalog-table__cell--center" }),
                 ]
             });
         } catch (error) {

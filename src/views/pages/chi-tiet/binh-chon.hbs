@@ -1,0 +1,462 @@
+<link
+    rel="stylesheet"
+    href="/assets/css/pages/chi-tiet/binh-chon.css">
+
+<main
+    class="meal-vote-page"
+    data-meal-vote-page>
+
+    <div
+        class="meal-vote-page__content"
+        data-meal-vote-content>
+
+        <header class="meal-vote-header">
+            <div class="meal-vote-header__main">
+                <h1>
+                    Bình chọn tham gia ăn
+                </h1>
+
+                <p>
+                    Vui lòng bình chọn để nhà ăn chuẩn bị số lượng suất phù hợp.
+                </p>
+            </div>
+
+            <a
+                href="/binh-chon/lich-su-binh-chon"
+                class="meal-vote-history"
+                data-meal-vote-history>
+
+                <i
+                    class="fa-solid fa-clock-rotate-left"
+                    aria-hidden="true">
+                </i>
+
+                <span>
+                    Lịch sử bình chọn
+                </span>
+            </a>
+        </header>
+
+        <section
+            class="meal-vote-current"
+            data-meal-vote-current
+            hidden>
+
+            <div class="meal-vote-current__header">
+                <div class="meal-vote-current__heading">
+                    <span
+                        class="meal-vote-status
+                               meal-vote-status--active"
+                        data-current-status>
+
+                        Đang diễn ra
+                    </span>
+
+                    <div class="meal-vote-current__date-line">
+                        <h2 data-current-date>
+                            —
+                        </h2>
+
+                        <span class="meal-vote-current__meal">
+                            <i
+                                class="fa-regular fa-calendar"
+                                aria-hidden="true">
+                            </i>
+
+                            <span data-current-meal>
+                                —
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="meal-vote-current__deadline">
+                    <i
+                        class="fa-regular fa-clock"
+                        aria-hidden="true">
+                    </i>
+
+                    <span>
+                        Hạn bình chọn:
+                    </span>
+
+                    <strong data-current-deadline>
+                        —
+                    </strong>
+                </div>
+            </div>
+
+            <div class="meal-vote-main-grid">
+                <section class="meal-vote-menu-card">
+                    <h3>
+                        THỰC ĐƠN
+                    </h3>
+
+                    <div
+                        class="meal-vote-food-list"
+                        data-current-food-list>
+                    </div>
+
+                    <a
+                        href="#"
+                        class="meal-vote-menu-link"
+                        data-current-menu-link>
+
+                        <span>
+                            Xem chi tiết thực đơn
+                        </span>
+
+                        <i
+                            class="fa-solid fa-arrow-right"
+                            aria-hidden="true">
+                        </i>
+                    </a>
+                </section>
+
+                <section class="meal-vote-choice-card">
+                    <h3>
+                        Bạn có tham gia ăn bữa này không?
+                    </h3>
+
+                    <div class="meal-vote-choice-grid">
+                        <button
+                            type="button"
+                            class="
+                                meal-vote-choice
+                                meal-vote-choice--yes
+                            "
+                            data-vote-choice="true">
+
+                            <i
+                                class="fa-solid fa-check"
+                                aria-hidden="true">
+                            </i>
+
+                            <span>
+                                Có tham gia
+                            </span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="
+                                meal-vote-choice
+                                meal-vote-choice--no
+                            "
+                            data-vote-choice="false">
+
+                            <i
+                                class="fa-solid fa-xmark"
+                                aria-hidden="true">
+                            </i>
+
+                            <span>
+                                Không tham gia
+                            </span>
+                        </button>
+                    </div>
+
+                    <div
+                        class="meal-vote-selected"
+                        data-vote-selected
+                        hidden>
+
+                        <div class="meal-vote-selected__value">
+                            <i
+                                class="fa-regular fa-circle-check"
+                                aria-hidden="true">
+                            </i>
+
+                            <span>
+                                Bạn đã chọn:
+                            </span>
+
+                            <strong data-vote-selected-label>
+                                —
+                            </strong>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="meal-vote-change"
+                            data-vote-change>
+
+                            <span>
+                                Thay đổi lựa chọn
+                            </span>
+
+                            <i
+                                class="fa-regular fa-pen-to-square"
+                                aria-hidden="true">
+                            </i>
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <section class="meal-vote-results">
+                <div class="meal-vote-results__title">
+                    <h3>
+                        KẾT QUẢ BÌNH CHỌN
+                    </h3>
+
+                    <span data-result-updated>
+                        Cập nhật theo thời gian thực
+                    </span>
+                </div>
+
+                <div class="meal-vote-stat-grid">
+                    <article class="meal-vote-stat-card">
+                        <span
+                            class="
+                                meal-vote-stat-card__icon
+                                meal-vote-stat-card__icon--total
+                            ">
+
+                            <i
+                                class="fa-solid fa-users"
+                                aria-hidden="true">
+                            </i>
+                        </span>
+
+                        <div>
+                            <span class="meal-vote-stat-card__label">
+                                Tổng lượt bình chọn
+                            </span>
+
+                            <strong data-result-total>
+                                0
+                            </strong>
+
+                            <small>
+                                người
+                            </small>
+                        </div>
+                    </article>
+
+                    <article class="meal-vote-stat-card">
+                        <span
+                            class="
+                                meal-vote-stat-card__icon
+                                meal-vote-stat-card__icon--yes
+                            ">
+
+                            <i
+                                class="fa-regular fa-user"
+                                aria-hidden="true">
+                            </i>
+                        </span>
+
+                        <div>
+                            <span class="meal-vote-stat-card__label">
+                                Có tham gia
+                            </span>
+
+                            <strong
+                                class="is-positive"
+                                data-result-yes>
+                                0
+                            </strong>
+
+                            <small>
+                                người
+                                (<span data-result-yes-percent>0</span>%)
+                            </small>
+                        </div>
+                    </article>
+
+                    <article class="meal-vote-stat-card">
+                        <span
+                            class="
+                                meal-vote-stat-card__icon
+                                meal-vote-stat-card__icon--no
+                            ">
+
+                            <i
+                                class="fa-regular fa-user"
+                                aria-hidden="true">
+                            </i>
+                        </span>
+
+                        <div>
+                            <span class="meal-vote-stat-card__label">
+                                Không tham gia
+                            </span>
+
+                            <strong
+                                class="is-negative"
+                                data-result-no>
+                                0
+                            </strong>
+
+                            <small>
+                                người
+                                (<span data-result-no-percent>0</span>%)
+                            </small>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="meal-vote-progress-list">
+                    <div class="meal-vote-progress-row">
+                        <strong
+                            class="
+                                meal-vote-progress-row__label
+                                is-positive
+                            ">
+                            Có tham gia
+                        </strong>
+
+                        <div class="meal-vote-progress">
+                            <span
+                                class="
+                                    meal-vote-progress__bar
+                                    meal-vote-progress__bar--yes
+                                "
+                                data-result-yes-bar>
+                            </span>
+                        </div>
+
+                        <span class="meal-vote-progress-row__count">
+                            <strong data-result-yes-count>
+                                0
+                            </strong>
+
+                            người
+                        </span>
+
+                        <strong
+                            class="
+                                meal-vote-progress-row__percent
+                                is-positive
+                            ">
+
+                            <span data-result-yes-percent-row>
+                                0
+                            </span>%
+                        </strong>
+                    </div>
+
+                    <div class="meal-vote-progress-row">
+                        <strong
+                            class="
+                                meal-vote-progress-row__label
+                                is-negative
+                            ">
+                            Không tham gia
+                        </strong>
+
+                        <div class="meal-vote-progress">
+                            <span
+                                class="
+                                    meal-vote-progress__bar
+                                    meal-vote-progress__bar--no
+                                "
+                                data-result-no-bar>
+                            </span>
+                        </div>
+
+                        <span class="meal-vote-progress-row__count">
+                            <strong data-result-no-count>
+                                0
+                            </strong>
+
+                            người
+                        </span>
+
+                        <strong
+                            class="
+                                meal-vote-progress-row__percent
+                                is-negative
+                            ">
+
+                            <span data-result-no-percent-row>
+                                0
+                            </span>%
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="meal-vote-results__note">
+                    <i
+                        class="fa-regular fa-circle-info"
+                        aria-hidden="true">
+                    </i>
+
+                    <span>
+                        Kết quả được cập nhật theo thời gian thực.
+                    </span>
+                </div>
+            </section>
+        </section>
+
+        <section
+            class="meal-vote-empty-current"
+            data-meal-vote-current-empty
+            hidden>
+
+            <i
+                class="fa-regular fa-calendar-check"
+                aria-hidden="true">
+            </i>
+
+            <strong>
+                Hiện không có bình chọn đang diễn ra
+            </strong>
+
+            <span>
+                Các đợt bình chọn sắp tới sẽ được hiển thị bên dưới.
+            </span>
+        </section>
+
+        <section class="meal-vote-upcoming">
+            <div class="meal-vote-upcoming__header">
+                <h2>
+                    Các bình chọn sắp tới
+                </h2>
+            </div>
+
+            <div
+                class="meal-vote-upcoming__list"
+                data-upcoming-list>
+            </div>
+
+            <div
+                class="meal-vote-upcoming__empty"
+                data-upcoming-empty
+                hidden>
+
+                <i
+                    class="fa-regular fa-calendar"
+                    aria-hidden="true">
+                </i>
+
+                <strong>
+                    Chưa có bình chọn sắp tới
+                </strong>
+
+                <span>
+                    Hiện chưa có đợt bình chọn nào được lên lịch.
+                </span>
+            </div>
+        </section>
+    </div>
+
+    <div
+        class="meal-vote-loading"
+        data-meal-vote-loading>
+
+        <span class="meal-vote-loading__spinner">
+        </span>
+
+        <span>
+            Đang tải thông tin bình chọn...
+        </span>
+    </div>
+
+    {{> catalog/no-permission}}
+</main>
+
+<script
+    src="/assets/js/pages/chi-tiet/binh-chon.js">
+</script>

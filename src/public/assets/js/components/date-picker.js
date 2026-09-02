@@ -21,9 +21,11 @@ function initializeDatePicker(root) {
         nextLarge: root.querySelector("[data-date-next-large]"),
         today: root.querySelector("[data-date-today]"),
         clear: root.querySelector("[data-date-clear]"),
-        hour: root.querySelector("[data-date-hour]"),
-        minute: root.querySelector("[data-date-minute]"),
-        second: root.querySelector("[data-date-second]"),
+        hourList: root.querySelector("[data-date-hour-list]"),
+        minuteList: root.querySelector("[data-date-minute-list]"),
+        secondList: root.querySelector("[data-date-second-list]"),
+        timeHeading: root.querySelector("[data-date-time-heading]"),
+        now: root.querySelector("[data-date-now]"),
         confirm: root.querySelector("[data-date-confirm]")
     };
 
@@ -60,12 +62,41 @@ function initializeDatePicker(root) {
     }
 
     const state = {
-        selectedDate: initialDate,
-        viewDate: initialDate
-            ? new Date(initialDate)
-            : new Date(today),
-        view: "day"
+        selectedDate:
+            initialDate,
+
+        viewDate:
+            initialDate
+                ? new Date(
+                    initialDate
+                )
+                : new Date(
+                    today
+                ),
+
+        view:
+            "day",
+
+        time: {
+            hour:
+                initialDate
+                    ? initialDate.getHours()
+                    : defaultTime.hour,
+
+            minute:
+                initialDate
+                    ? initialDate.getMinutes()
+                    : defaultTime.minute,
+
+            second:
+                initialDate
+                    ? initialDate.getSeconds()
+                    : defaultTime.second
+        }
     };
+
+    let shouldAlignTime =
+        true;
 
     if (
         initialDate &&
@@ -114,7 +145,6 @@ function initializeDatePicker(root) {
         elements.value?.addEventListener(
             "change",
             () => {
-
                 const value =
                     elements.value?.value ||
                     "";
@@ -136,12 +166,27 @@ function initializeDatePicker(root) {
                 if (
                     state.selectedDate
                 ) {
-
                     state.viewDate =
                         new Date(
                             state.selectedDate
                         );
+                }
 
+                if (
+                    showTime &&
+                    state.selectedDate
+                ) {
+                    state.time.hour =
+                        state.selectedDate
+                            .getHours();
+
+                    state.time.minute =
+                        state.selectedDate
+                            .getMinutes();
+
+                    state.time.second =
+                        state.selectedDate
+                            .getSeconds();
                 }
 
                 renderInput();
@@ -149,32 +194,25 @@ function initializeDatePicker(root) {
                 renderTimeInputs();
 
                 render();
-
             }
         );
 
-        elements.input?.addEventListener("blur",() => {
-                window.setTimeout(
-                    () => {
+        elements.input?.addEventListener("blur", () => {
+            window.setTimeout(
+                () => {
+                    if (
+                        root.contains(
+                            document.activeElement
+                        )
+                    ) {
+                        return;
+                    }
 
-                        if (
-                            root.contains(
-                                document.activeElement
-                            )
-                        ) {
-
-                            return;
-
-                        }
-
-                        normalizeTypedValue();
-
-                    },
-                    0
-                );
-
-            }
-        );
+                    normalizeTypedValue();
+                },
+                0
+            );
+        });
 
         elements.input?.addEventListener("keydown", event => {
             if (event.key === "Enter") {
@@ -257,36 +295,57 @@ function initializeDatePicker(root) {
             closeDropdown();
         });
 
-        [
-            elements.hour,
-            elements.minute,
-            elements.second
-        ].forEach(input => {
-            input?.addEventListener("input", event => {
-                event.target.value = event.target.value
-                    .replace(/\D/g, "")
-                    .slice(
-                        0,
-                        2
-                    );
-            });
+        elements.now
+            ?.addEventListener(
+                "click",
+                event => {
+                    event.preventDefault();
 
-            input?.addEventListener("blur", () => {
-                normalizeTimeInputs();
+                    const current =
+                        new Date();
 
-                applyTimeToSelectedDate();
+                    state.time.hour =
+                        current.getHours();
 
-                updateHiddenValue();
+                    state.time.minute =
+                        current.getMinutes();
 
-                renderInput();
+                    state.time.second =
+                        current.getSeconds();
 
-                dispatchChange();
-            });
-        });
+                    if (
+                        state.selectedDate
+                    ) {
+                        state.selectedDate
+                            .setHours(
+                                state.time.hour,
+                                state.time.minute,
+                                state.time.second,
+                                0
+                            );
+                    } else {
+                        state.selectedDate =
+                            new Date(
+                                current
+                            );
+
+                        state.viewDate =
+                            new Date(
+                                current
+                            );
+                    }
+
+                    updateHiddenValue();
+
+                    renderInput();
+
+                    render();
+
+                    dispatchChange();
+                }
+            );
 
         elements.confirm?.addEventListener("click", () => {
-            normalizeTimeInputs();
-
             applyTimeToSelectedDate();
 
             updateHiddenValue();
@@ -298,6 +357,35 @@ function initializeDatePicker(root) {
             closeDropdown();
         });
 
+        window.addEventListener(
+            "resize",
+            () => {
+                if (
+                    !elements.dropdown ||
+                    elements.dropdown.hidden
+                ) {
+                    return;
+                }
+
+                positionDropdown();
+            }
+        );
+
+        window.addEventListener(
+            "scroll",
+            () => {
+                if (
+                    !elements.dropdown ||
+                    elements.dropdown.hidden
+                ) {
+                    return;
+                }
+
+                positionDropdown();
+            },
+            true
+        );
+
         root.addEventListener("click", event => {
             event.stopPropagation();
         });
@@ -306,6 +394,106 @@ function initializeDatePicker(root) {
             "click",
             closeDropdown
         );
+    }
+
+    function positionDropdown() {
+        const dropdown =
+            elements.dropdown;
+
+        if (
+            !dropdown ||
+            dropdown.hidden
+        ) {
+            return;
+        }
+
+        const control =
+            root.querySelector(
+                ".date-picker__control"
+            );
+
+        if (!control) {
+            return;
+        }
+
+        const controlRect =
+            control.getBoundingClientRect();
+
+        const dropdownRect =
+            dropdown.getBoundingClientRect();
+
+        const viewportWidth =
+            window.innerWidth;
+
+        const viewportHeight =
+            window.innerHeight;
+
+        const margin =
+            10;
+
+        const gap =
+            6;
+
+        let left =
+            controlRect.left;
+
+        if (
+            left +
+            dropdownRect.width >
+            viewportWidth -
+            margin
+        ) {
+            left =
+                controlRect.right -
+                dropdownRect.width;
+        }
+
+        left =
+            Math.max(
+                margin,
+                left
+            );
+
+        left =
+            Math.min(
+                left,
+                viewportWidth -
+                dropdownRect.width -
+                margin
+            );
+
+        let top =
+            controlRect.bottom +
+            gap;
+
+        if (
+            top +
+            dropdownRect.height >
+            viewportHeight -
+            margin
+        ) {
+            const topAbove =
+                controlRect.top -
+                dropdownRect.height -
+                gap;
+
+            if (
+                topAbove >=
+                margin
+            ) {
+                top =
+                    topAbove;
+            }
+        }
+
+        dropdown.style.left =
+            `${Math.round(left)}px`;
+
+        dropdown.style.top =
+            `${Math.round(top)}px`;
+
+        dropdown.style.right =
+            "auto";
     }
 
     function openDropdown() {
@@ -319,16 +507,29 @@ function initializeDatePicker(root) {
 
         closeOtherPopups();
 
-        elements.dropdown.hidden = false;
+        shouldAlignTime =
+            true;
 
-        elements.toggle?.setAttribute(
-            "aria-expanded",
-            "true"
+        elements.dropdown.hidden =
+            false;
+
+        elements.toggle
+            ?.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+        root.classList.add(
+            "is-open"
         );
 
-        root.classList.add("is-open");
-
         render();
+
+        requestAnimationFrame(
+            () => {
+                positionDropdown();
+            }
+        );
     }
 
     function closeDropdown() {
@@ -715,13 +916,13 @@ function initializeDatePicker(root) {
     function selectDate(date) {
         const selected = new Date(date);
 
-        if (showTime) {
-            const currentTime = getCurrentTime();
-
+        if (
+            showTime
+        ) {
             selected.setHours(
-                currentTime.hour,
-                currentTime.minute,
-                currentTime.second,
+                state.time.hour,
+                state.time.minute,
+                state.time.second,
                 0
             );
         } else {
@@ -820,59 +1021,246 @@ function initializeDatePicker(root) {
             return;
         }
 
-        const time = state.selectedDate
-            ? {
-                hour: state.selectedDate.getHours(),
-                minute: state.selectedDate.getMinutes(),
-                second: state.selectedDate.getSeconds()
+        renderTimeColumn(
+            elements.hourList,
+            24,
+            state.time.hour,
+            value => {
+                state.time.hour =
+                    value;
+
+                onTimeChanged();
             }
-            : defaultTime;
+        );
 
-        if (elements.hour) {
-            elements.hour.value = String(time.hour)
+        renderTimeColumn(
+            elements.minuteList,
+            60,
+            state.time.minute,
+            value => {
+                state.time.minute =
+                    value;
+
+                onTimeChanged();
+            }
+        );
+
+        renderTimeColumn(
+            elements.secondList,
+            60,
+            state.time.second,
+            value => {
+                state.time.second =
+                    value;
+
+                onTimeChanged();
+            }
+        );
+
+        renderTimeHeading();
+
+        if (
+            shouldAlignTime
+        ) {
+            alignTimeColumns();
+
+            shouldAlignTime =
+                false;
+        }
+    }
+
+    function alignTimeColumns() {
+        [
+            elements.hourList,
+            elements.minuteList,
+            elements.secondList
+        ]
+            .forEach(
+                container => {
+                    if (!container) {
+                        return;
+                    }
+
+                    const selected =
+                        container.querySelector(
+                            ".date-picker__time-option.is-selected"
+                        );
+
+                    if (!selected) {
+                        container.scrollTop =
+                            0;
+
+                        return;
+                    }
+
+                    container.scrollTop =
+                        selected.offsetTop;
+                }
+            );
+    }
+
+    function renderTimeColumn(
+        container,
+        count,
+        selectedValue,
+        onSelect
+    ) {
+        if (!container) {
+            return;
+        }
+
+        container.innerHTML =
+            "";
+
+        for (
+            let value = 0;
+            value < count;
+            value += 1
+        ) {
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.type =
+                "button";
+
+            button.className =
+                "date-picker__time-option";
+
+            button.textContent =
+                String(
+                    value
+                )
+                    .padStart(
+                        2,
+                        "0"
+                    );
+
+            button.dataset.value =
+                String(
+                    value
+                );
+
+            if (
+                value ===
+                selectedValue
+            ) {
+                button.classList
+                    .add(
+                        "is-selected"
+                    );
+            }
+
+            button.addEventListener(
+                "click",
+                event => {
+                    event.preventDefault();
+
+                    onSelect(
+                        value
+                    );
+                }
+            );
+
+            container.appendChild(
+                button
+            );
+        }
+    }
+
+    function onTimeChanged() {
+        if (
+            state.selectedDate
+        ) {
+            applyTimeToSelectedDate();
+
+            updateHiddenValue();
+
+            renderInput();
+
+            dispatchChange();
+        }
+
+        renderTimeInputs();
+    }
+
+    function renderTimeHeading() {
+        if (
+            !elements.timeHeading
+        ) {
+            return;
+        }
+
+        const date =
+            state.selectedDate ||
+            state.viewDate;
+
+        const day =
+            String(
+                date.getDate()
+            )
                 .padStart(
                     2,
                     "0"
                 );
-        }
 
-        if (elements.minute) {
-            elements.minute.value = String(time.minute)
+        const month =
+            String(
+                date.getMonth() +
+                1
+            )
                 .padStart(
                     2,
                     "0"
                 );
-        }
 
-        if (elements.second) {
-            elements.second.value = String(time.second)
+        const year =
+            date.getFullYear();
+
+        const hour =
+            String(
+                state.time.hour
+            )
                 .padStart(
                     2,
                     "0"
                 );
-        }
+
+        const minute =
+            String(
+                state.time.minute
+            )
+                .padStart(
+                    2,
+                    "0"
+                );
+
+        const second =
+            String(
+                state.time.second
+            )
+                .padStart(
+                    2,
+                    "0"
+                );
+
+        elements.timeHeading
+            .textContent =
+                `${day}/${month}/${year} ` +
+                `${hour}:${minute}:${second}`;
     }
 
     function getCurrentTime() {
         return {
-            hour: clampNumber(
-                elements.hour?.value,
-                0,
-                23,
-                defaultTime.hour
-            ),
-            minute: clampNumber(
-                elements.minute?.value,
-                0,
-                59,
-                defaultTime.minute
-            ),
-            second: clampNumber(
-                elements.second?.value,
-                0,
-                59,
-                defaultTime.second
-            )
+            hour:
+                state.time.hour,
+
+            minute:
+                state.time.minute,
+
+            second:
+                state.time.second
         };
     }
 
@@ -916,14 +1304,13 @@ function initializeDatePicker(root) {
             return;
         }
 
-        const time = getCurrentTime();
-
-        state.selectedDate.setHours(
-            time.hour,
-            time.minute,
-            time.second,
-            0
-        );
+        state.selectedDate
+            .setHours(
+                state.time.hour,
+                state.time.minute,
+                state.time.second,
+                0
+            );
     }
 
     function updateHiddenValue() {
@@ -959,6 +1346,23 @@ function initializeDatePicker(root) {
 
             if (state.selectedDate) {
                 state.viewDate = new Date(state.selectedDate);
+            }
+
+            if (
+                showTime &&
+                state.selectedDate
+            ) {
+                state.time.hour =
+                    state.selectedDate
+                        .getHours();
+
+                state.time.minute =
+                    state.selectedDate
+                        .getMinutes();
+
+                state.time.second =
+                    state.selectedDate
+                        .getSeconds();
             }
 
             updateHiddenValue();
@@ -1184,10 +1588,12 @@ function parseTime(value) {
             23,
             Number(match[1])
         ),
+
         minute: Math.min(
             59,
             Number(match[2])
         ),
+
         second: Math.min(
             59,
             Number(match[3])

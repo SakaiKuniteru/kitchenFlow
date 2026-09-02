@@ -127,7 +127,7 @@ const danhMucRoutes = [
     },
     {
         method: "get",
-        path: "/thuc-don/binh-chon",
+        path: "/binh-chon/quan-ly-binh-chon",
         handler: danhMucWebController.binhChon
     }
 ];
@@ -165,6 +165,16 @@ const chiTietRoutes = [
         method: "get",
         path: "/thong-tin-chi-tiet-thuc-don/:id1/:id2",
         handler: chiTietWebController.thucDon
+    },
+    {
+        method: "get",
+        path: "/binh-chon/chi-tiet-binh-chon",
+        handler: chiTietWebController.binhChon
+    },
+    {
+        method: "get",
+        path: "/binh-chon/lich-su-binh-chon",
+        handler: chiTietWebController.lichSuBinhChon
     }
 ];
 

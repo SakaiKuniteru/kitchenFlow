@@ -7,7 +7,6 @@
     data-default-today="{{#if defaultToday}}true{{else}}false{{/if}}">
 
     {{#if label}}
-
         <label
             for="{{id}}Display"
             class="form-field__label">
@@ -17,26 +16,16 @@
             </span>
 
             {{#if required}}
-
                 <span
                     class="form-field__required"
                     aria-hidden="true">
                     *
                 </span>
-
             {{/if}}
-
         </label>
-
     {{/if}}
 
-
     <div class="date-picker">
-
-        {{!--
-            Giá trị thật gửi về backend:
-            YYYY-MM-DD
-        --}}
         <input
             type="hidden"
             id="{{id}}"
@@ -44,13 +33,7 @@
             value="{{value}}"
             data-date-value>
 
-
-        {{!--
-            Giá trị người dùng nhìn và nhập:
-            DD/MM/YYYY
-        --}}
         <div class="date-picker__control">
-
             <input
                 type="text"
                 id="{{id}}Display"
@@ -112,167 +95,138 @@
                     <path d="M16 3v4"></path>
                     <path d="M8 3v4"></path>
                     <path d="M3 11h18"></path>
-
                 </svg>
-
             </button>
-
         </div>
 
-
         <div
-            class="date-picker__dropdown"
+            class="
+                date-picker__dropdown
+                {{#if showTime}}date-picker__dropdown--datetime{{/if}}
+            "
             data-date-dropdown
             hidden>
 
-            <div class="date-picker__header">
+            <div class="date-picker__main">
+                <div class="date-picker__calendar">
+                    <div class="date-picker__header">
+                        <button
+                            type="button"
+                            class="date-picker__navigation"
+                            data-date-previous-large
+                            aria-label="Lùi nhanh">
+                            «
+                        </button>
 
-                <button
-                    type="button"
-                    class="date-picker__navigation"
-                    data-date-previous-large
-                    aria-label="Lùi nhanh">
+                        <button
+                            type="button"
+                            class="date-picker__navigation"
+                            data-date-previous
+                            aria-label="Lùi">
+                            ‹
+                        </button>
 
-                    «
+                        <button
+                            type="button"
+                            class="date-picker__period"
+                            data-date-period>
+                            Tháng và năm
+                        </button>
 
-                </button>
+                        <button
+                            type="button"
+                            class="date-picker__navigation"
+                            data-date-next
+                            aria-label="Tiến">
+                            ›
+                        </button>
 
-                <button
-                    type="button"
-                    class="date-picker__navigation"
-                    data-date-previous
-                    aria-label="Lùi">
-
-                    ‹
-
-                </button>
-
-                <button
-                    type="button"
-                    class="date-picker__period"
-                    data-date-period>
-
-                    Tháng và năm
-
-                </button>
-
-                <button
-                    type="button"
-                    class="date-picker__navigation"
-                    data-date-next
-                    aria-label="Tiến">
-
-                    ›
-
-                </button>
-
-                <button
-                    type="button"
-                    class="date-picker__navigation"
-                    data-date-next-large
-                    aria-label="Tiến nhanh">
-
-                    »
-
-                </button>
-
-            </div>
-
-
-            <div
-                class="date-picker__weekdays"
-                data-date-weekdays>
-
-                <span>T2</span>
-                <span>T3</span>
-                <span>T4</span>
-                <span>T5</span>
-                <span>T6</span>
-                <span>T7</span>
-                <span>CN</span>
-
-            </div>
-
-
-            <div
-                class="date-picker__body"
-                data-date-body>
-            </div>
-
-            {{#if showTime}}
-
-                <div
-                    class="date-picker__time"
-                    data-date-time>
-
-                    <div class="date-picker__time-title">
-                        Thời gian
+                        <button
+                            type="button"
+                            class="date-picker__navigation"
+                            data-date-next-large
+                            aria-label="Tiến nhanh">
+                            »
+                        </button>
                     </div>
 
-                    <div class="date-picker__time-fields">
+                    <div
+                        class="date-picker__weekdays"
+                        data-date-weekdays>
 
-                        <input
-                            type="text"
-                            inputmode="numeric"
-                            maxlength="2"
-                            class="date-picker__time-input"
-                            data-date-hour
-                            aria-label="Giờ">
-
-                        <span class="date-picker__time-separator">
-                            :
-                        </span>
-
-                        <input
-                            type="text"
-                            inputmode="numeric"
-                            maxlength="2"
-                            class="date-picker__time-input"
-                            data-date-minute
-                            aria-label="Phút">
-
-                        <span class="date-picker__time-separator">
-                            :
-                        </span>
-
-                        <input
-                            type="text"
-                            inputmode="numeric"
-                            maxlength="2"
-                            class="date-picker__time-input"
-                            data-date-second
-                            aria-label="Giây">
-
+                        <span>T2</span>
+                        <span>T3</span>
+                        <span>T4</span>
+                        <span>T5</span>
+                        <span>T6</span>
+                        <span>T7</span>
+                        <span>CN</span>
                     </div>
 
+                    <div
+                        class="date-picker__body"
+                        data-date-body>
+                    </div>
                 </div>
 
-            {{/if}}
+                {{#if showTime}}
+                    <div
+                        class="date-picker__time-panel"
+                        data-date-time>
+
+                        <div
+                            class="date-picker__time-heading"
+                            data-date-time-heading>
+                            --/--/---- 00:00:00
+                        </div>
+
+                        <div class="date-picker__time-columns">
+                            <div
+                                class="date-picker__time-column"
+                                data-date-hour-list
+                                aria-label="Giờ">
+                            </div>
+
+                            <div
+                                class="date-picker__time-column"
+                                data-date-minute-list
+                                aria-label="Phút">
+                            </div>
+
+                            <div
+                                class="date-picker__time-column"
+                                data-date-second-list
+                                aria-label="Giây">
+                            </div>
+                        </div>
+                    </div>
+                {{/if}}
+            </div>
 
             <div class="date-picker__footer">
-
                 <button
                     type="button"
                     class="date-picker__footer-button"
-                    data-date-clear>
+                    data-date-now>
 
-                    Xóa
-
+                    {{#if showTime}}
+                        Bây giờ
+                    {{else}}
+                        Hôm nay
+                    {{/if}}
                 </button>
 
                 <div class="date-picker__footer-actions">
-
-                    <button
-                        type="button"
-                        class="date-picker__footer-button"
-                        data-date-today>
-
-                        Hôm nay
-
-                    </button>
+                    {{#unless showTime}}
+                        <button
+                            type="button"
+                            class="date-picker__footer-button"
+                            data-date-clear>
+                            Xóa
+                        </button>
+                    {{/unless}}
 
                     {{#if showTime}}
-
                         <button
                             type="button"
                             class="
@@ -280,34 +234,22 @@
                                 is-primary
                             "
                             data-date-confirm>
-
-                            Xong
-
+                            OK
                         </button>
-
                     {{/if}}
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
-
     {{#if description}}
-
         <small
             id="{{id}}Description"
             class="form-field__description">
 
             {{description}}
-
         </small>
-
     {{/if}}
-
 
     <small
         id="{{id}}Error"
@@ -316,7 +258,5 @@
         {{#unless error}}hidden{{/unless}}>
 
         {{error}}
-
     </small>
-
 </div>

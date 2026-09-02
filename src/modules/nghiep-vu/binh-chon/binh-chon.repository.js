@@ -1496,6 +1496,8 @@ class BinhChonSuatAnRepository {
 
                 bc.thoi_gian_binh_chon,
 
+                tdn.id AS thuc_don_ngay_id,
+
                 tdn.ngay,
 
                 td.id
@@ -1606,6 +1608,8 @@ class BinhChonSuatAnRepository {
 
                 thucDonId:
                     row.thuc_don_id,
+                    
+                thucDonNgayId: row.thuc_don_ngay_id,
 
                 maThucDon:
                     row.ma_thuc_don,
@@ -2130,7 +2134,6 @@ class BinhChonSuatAnRepository {
 
     }
 
-
     async gui(
         id,
         nguoiGuiId
@@ -2153,7 +2156,10 @@ class BinhChonSuatAnRepository {
 
                     WHERE id = $2
 
-                      AND trang_thai = 10
+                    AND trang_thai IN (
+                        10,
+                        30
+                    )
 
                     RETURNING id
 
@@ -2168,8 +2174,6 @@ class BinhChonSuatAnRepository {
         return result.rows[0] || null;
 
     }
-
-
     async huy(
         id,
         nguoiHuyId,
@@ -2195,10 +2199,7 @@ class BinhChonSuatAnRepository {
 
                     WHERE id = $3
 
-                      AND trang_thai IN (
-                          10,
-                          20
-                      )
+                    AND trang_thai = 20
 
                     RETURNING id
 
@@ -2214,7 +2215,6 @@ class BinhChonSuatAnRepository {
         return result.rows[0] || null;
 
     }
-
 
     async upsertBinhChon(
         dotBinhChonId,

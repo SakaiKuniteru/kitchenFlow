@@ -1,0 +1,246 @@
+<link
+    rel="stylesheet"
+    href="/assets/css/pages/chi-tiet/lich-su-binh-chon.css">
+
+<main
+    class="vote-history-page"
+    data-vote-history-page>
+
+    <div
+        class="vote-history-page__content"
+        data-vote-history-content>
+
+        <header class="vote-history-header">
+            <div>
+                <h1>
+                    Lịch sử bình chọn
+                </h1>
+
+                <p>
+                    Theo dõi các lựa chọn tham gia ăn mà bạn đã thực hiện.
+                </p>
+            </div>
+
+        </header>
+
+        <section class="vote-history-summary">
+            <article class="vote-history-summary__card">
+                <span
+                    class="
+                        vote-history-summary__icon
+                        vote-history-summary__icon--total
+                    ">
+
+                    <i
+                        class="fa-solid fa-list-check"
+                        aria-hidden="true">
+                    </i>
+                </span>
+
+                <div>
+                    <span>
+                        Tổng bình chọn
+                    </span>
+
+                    <strong data-history-total>
+                        0
+                    </strong>
+                </div>
+            </article>
+
+            <article class="vote-history-summary__card">
+                <span
+                    class="
+                        vote-history-summary__icon
+                        vote-history-summary__icon--yes
+                    ">
+
+                    <i
+                        class="fa-solid fa-check"
+                        aria-hidden="true">
+                    </i>
+                </span>
+
+                <div>
+                    <span>
+                        Có tham gia
+                    </span>
+
+                    <strong
+                        class="is-positive"
+                        data-history-yes>
+                        0
+                    </strong>
+                </div>
+            </article>
+
+            <article class="vote-history-summary__card">
+                <span
+                    class="
+                        vote-history-summary__icon
+                        vote-history-summary__icon--no
+                    ">
+
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true">
+                    </i>
+                </span>
+
+                <div>
+                    <span>
+                        Không tham gia
+                    </span>
+
+                    <strong
+                        class="is-negative"
+                        data-history-no>
+                        0
+                    </strong>
+                </div>
+            </article>
+        </section>
+
+        <section class="vote-history-card">
+            <div class="vote-history-filter">
+                <div class="vote-history-filter__field">
+                    {{> forms/date
+                        id="historyFromDate"
+                        name="historyFromDate"
+                        label="Từ ngày"
+                        placeholder="Chọn từ ngày"
+                    }}
+                </div>
+
+                <div class="vote-history-filter__field">
+                    {{> forms/date
+                        id="historyToDate"
+                        name="historyToDate"
+                        label="Đến ngày"
+                        placeholder="Chọn đến ngày"
+                    }}
+                </div>
+
+                <div class="vote-history-filter__field">
+                    {{> forms/select
+                        id="historyChoice"
+                        name="historyChoice"
+                        label="Lựa chọn"
+                        mode="single"
+                        multiple=false
+                        allowAll=true
+                        allLabel="Tất cả"
+                        placeholder="Tất cả lựa chọn"
+                    }}
+                </div>
+
+                <div class="vote-history-filter__actions">
+                    <button
+                        type="button"
+                        class="
+                            vote-history-button
+                            vote-history-button--primary
+                        "
+                        data-history-search>
+
+                        <i
+                            class="fa-solid fa-magnifying-glass"
+                            aria-hidden="true">
+                        </i>
+
+                        Tìm kiếm
+                    </button>
+
+                    <button
+                        type="button"
+                        class="vote-history-button"
+                        data-history-reset>
+
+                        <i
+                            class="fa-solid fa-rotate-left"
+                            aria-hidden="true">
+                        </i>
+
+                        Đặt lại
+                    </button>
+                </div>
+            </div>
+
+            <div class="vote-history-table-wrapper">
+                <table class="vote-history-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Ngày ăn
+                            </th>
+
+                            <th>
+                                Thực đơn
+                            </th>
+
+                            <th>
+                                Nhà ăn
+                            </th>
+
+                            <th>
+                                Ca ăn
+                            </th>
+
+                            <th>
+                                Lựa chọn
+                            </th>
+
+                            <th>
+                                Thời gian bình chọn
+                            </th>
+
+                            <th>
+                                Thao tác
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody data-history-table-body>
+                    </tbody>
+                </table>
+            </div>
+
+            <div
+                class="vote-history-empty"
+                data-history-empty
+                hidden>
+
+                <i
+                    class="fa-regular fa-folder-open"
+                    aria-hidden="true">
+                </i>
+
+                <strong>
+                    Chưa có lịch sử bình chọn
+                </strong>
+
+                <span>
+                    Không có dữ liệu phù hợp với bộ lọc hiện tại.
+                </span>
+            </div>
+        </section>
+    </div>
+
+    <div
+        class="vote-history-loading"
+        data-history-loading>
+
+        <span class="vote-history-loading__spinner">
+        </span>
+
+        <span>
+            Đang tải lịch sử bình chọn...
+        </span>
+    </div>
+
+    {{> catalog/no-permission}}
+</main>
+
+<script
+    src="/assets/js/pages/chi-tiet/lich-su-binh-chon.js">
+</script>

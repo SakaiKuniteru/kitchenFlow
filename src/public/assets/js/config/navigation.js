@@ -61,6 +61,35 @@ window.MCS.navigationItems = [
     },
 
     {
+        label: "Quản lý bình chọn",
+        group: "Bình chọn",
+        url: "/binh-chon/quan-ly-binh-chon",
+        permission: [
+            "Q000027"
+        ]
+    },
+
+    {
+        label: "Danh sách bình chọn",
+        group: "Bình chọn",
+        url: "/binh-chon/chi-tiet-binh-chon",
+        permission: [
+            "Q001023",
+            "Q001025"
+        ]
+    },
+
+    {
+        label: "Lịch sử bình chọn",
+        group: "Bình chọn",
+        url: "/binh-chon/lich-su-binh-chon",
+        permission: [
+            "Q001027",
+            "Q001026"
+        ]
+    },
+
+    {
         label: "Danh mục Vai trò",
         group: "Phân quyền",
         url: "/phan-quyen/vai-tro",
@@ -283,14 +312,62 @@ window.MCS.navigation = {
         permission,
         currentUser = null
     ) {
+
+        if (
+            Array.isArray(
+                permission
+            )
+        ) {
+
+            if (
+                permission.length === 0
+            ) {
+
+                return true;
+
+            }
+
+
+            const permissionSet =
+                this.getPermissionSet(
+                    currentUser
+                );
+
+
+            return permission.some(
+                item => {
+
+                    const code =
+                        this.normalizePermission(
+                            item
+                        );
+
+
+                    return (
+                        code &&
+                        permissionSet.has(
+                            code
+                        )
+                    );
+
+                }
+            );
+
+        }
+
+
         const code =
             this.normalizePermission(
                 permission
             );
 
+
         if (!code) {
+
             return true;
+
         }
+
 
         return this
             .getPermissionSet(
@@ -299,6 +376,7 @@ window.MCS.navigation = {
             .has(
                 code
             );
+
     },
 
     canAccess(

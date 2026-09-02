@@ -738,16 +738,24 @@ class BinhChonSuatAnService {
         }
 
 
-        if (
+        const trangThai =
             Number(
                 dot.trangThai
-            ) !==
-            TRANG_THAI.TAO_MOI
+            );
+
+
+        if (
+            ![
+                TRANG_THAI.TAO_MOI,
+                TRANG_THAI.DA_HUY
+            ].includes(
+                trangThai
+            )
         ) {
 
             throw new ApiError(
                 400,
-                "Chỉ được cập nhật đợt bình chọn ở trạng thái Tạo mới."
+                "Chỉ được cập nhật đợt bình chọn ở trạng thái Tạo mới hoặc Đã hủy."
             );
 
         }
@@ -865,21 +873,27 @@ class BinhChonSuatAnService {
 
         }
 
-
-        if (
+        const trangThai =
             Number(
                 dot.trangThai
-            ) !==
-            TRANG_THAI.TAO_MOI
+            );
+
+
+        if (
+            ![
+                TRANG_THAI.TAO_MOI,
+                TRANG_THAI.DA_HUY
+            ].includes(
+                trangThai
+            )
         ) {
 
             throw new ApiError(
                 400,
-                "Chỉ được gửi đợt bình chọn ở trạng thái Tạo mới."
+                "Chỉ được gửi đợt bình chọn ở trạng thái Tạo mới hoặc Đã hủy."
             );
 
         }
-
 
         if (
             new Date(
@@ -914,6 +928,24 @@ class BinhChonSuatAnService {
 
         }
 
+        const daTonTai =
+            await binhChonRepository
+                .existsDotHieuLucTheoThucDonNgay(
+                    dot.thucDonNgayId,
+                    dotId
+                );
+
+
+        if (
+            daTonTai
+        ) {
+
+            throw new ApiError(
+                409,
+                "Ngày thực đơn đã có đợt bình chọn khác đang hiệu lực."
+            );
+
+        }
 
         const result =
             await binhChonRepository
@@ -978,25 +1010,19 @@ class BinhChonSuatAnService {
 
         }
 
-
         if (
-            ![
-                TRANG_THAI.TAO_MOI,
-                TRANG_THAI.DA_GUI
-            ].includes(
-                Number(
-                    dot.trangThai
-                )
-            )
+            Number(
+                dot.trangThai
+            ) !==
+            TRANG_THAI.DA_GUI
         ) {
 
             throw new ApiError(
                 400,
-                "Trạng thái hiện tại không cho phép hủy đợt bình chọn."
+                "Chỉ được hủy đợt bình chọn ở trạng thái Đã gửi."
             );
 
         }
-
 
         const lyDoHuy =
             data.lyDoHuy

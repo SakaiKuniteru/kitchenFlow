@@ -1,14 +1,10 @@
 <div class="detail-panel__section">
-
     <h3 class="detail-panel__section-title">
         Thông tin thực đơn
     </h3>
 
-
     <div class="catalog-form-grid">
-
         <div class="catalog-form-grid__full">
-
             {{> forms/select
                 id="thucDonNgayId"
                 name="thucDonNgayId"
@@ -25,9 +21,7 @@
                 data-binh-chon-thuc-don-info
                 hidden
             >
-
                 <div class="binh-chon-form__info-item">
-
                     <span class="binh-chon-form__info-label">
                         Thực đơn
                     </span>
@@ -38,12 +32,9 @@
                     >
                         -
                     </span>
-
                 </div>
 
-
                 <div class="binh-chon-form__info-item">
-
                     <span class="binh-chon-form__info-label">
                         Nhà ăn
                     </span>
@@ -54,12 +45,9 @@
                     >
                         -
                     </span>
-
                 </div>
 
-
                 <div class="binh-chon-form__info-item">
-
                     <span class="binh-chon-form__info-label">
                         Ca ăn
                     </span>
@@ -70,12 +58,9 @@
                     >
                         -
                     </span>
-
                 </div>
 
-
                 <div class="binh-chon-form__info-item">
-
                     <span class="binh-chon-form__info-label">
                         Ngày
                     </span>
@@ -86,86 +71,61 @@
                     >
                         -
                     </span>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
 
-
-
 <div class="detail-panel__section">
-
-    <h3 class="detail-panel__section-title">
-        Thời gian bình chọn
-    </h3>
-
+    <h3 class="detail-panel__section-title">Thời gian bình chọn</h3>
 
     <div class="catalog-form-grid">
-
-        {{> forms/input
+        {{> forms/date
             id="batDauBinhChon"
             name="batDauBinhChon"
-            type="datetime-local"
             label="Bắt đầu bình chọn"
+            placeholder="dd/mm/yyyy hh:mm:ss"
+            showTime=true
+            defaultTime="00:00:00"
             required=true
         }}
 
-
-        {{> forms/input
+        {{> forms/date
             id="hanBinhChon"
             name="hanBinhChon"
-            type="datetime-local"
             label="Hạn bình chọn"
+            placeholder="dd/mm/yyyy hh:mm:ss"
+            showTime=true
+            defaultTime="00:00:00"
             required=true
         }}
-
     </div>
-
 </div>
 
-
-
 <div class="detail-panel__section">
-
     <h3 class="detail-panel__section-title">
         Cấu hình bình chọn
     </h3>
 
-
     <div class="catalog-form-grid">
-
         <div class="catalog-form-grid__full">
-
             {{> forms/checkbox
                 id="choPhepThayDoi"
                 name="choPhepThayDoi"
                 label="Cho phép người dùng thay đổi lựa chọn"
                 checked=true
             }}
-
         </div>
-
     </div>
-
 </div>
 
-
-
 <div class="detail-panel__section">
-
     <h3 class="detail-panel__section-title">
         Thông tin hệ thống
     </h3>
 
-
     <div class="catalog-form-grid">
-
         {{> forms/input
             id="trangThai"
             name="trangThai"
@@ -173,7 +133,6 @@
             placeholder="Tạo mới"
             disabled=true
         }}
-
 
         {{> forms/input
             id="trangThaiThoiGian"
@@ -183,7 +142,6 @@
             disabled=true
         }}
 
-
         {{> forms/input
             id="nguoiTao"
             name="nguoiTao"
@@ -191,7 +149,6 @@
             placeholder="Người tạo"
             disabled=true
         }}
-
 
         {{> forms/input
             id="nguoiGui"
@@ -201,15 +158,15 @@
             disabled=true
         }}
 
-
-        {{> forms/input
+        {{> forms/date
             id="thoiGianGui"
             name="thoiGianGui"
             label="Thời gian gửi"
-            placeholder="Chưa gửi"
+            placeholder="dd/mm/yyyy hh:mm:ss"
+            showTime=true
+            defaultTime="00:00:00"
             disabled=true
         }}
-
 
         {{> forms/input
             id="nguoiHuy"
@@ -219,49 +176,45 @@
             disabled=true
         }}
 
-
-        {{> forms/input
+        {{> forms/date
             id="thoiGianHuy"
             name="thoiGianHuy"
-            label="Thời gian hủy"
-            placeholder="Chưa hủy"
+            label="Thời gian huỷ"
+            placeholder="dd/mm/yyyy hh:mm:ss"
+            showTime=true
+            defaultTime="00:00:00"
             disabled=true
         }}
 
-
-        <div class="catalog-form-grid__full">
-
-            {{> forms/input
+        <div
+            class="catalog-form-grid__full"
+            data-binh-chon-ly-do-huy
+            data-editable-in-view-field>
+            {{> forms/textarea
                 id="lyDoHuy"
                 name="lyDoHuy"
                 label="Lý do hủy"
-                placeholder="Chưa hủy"
-                disabled=true
+                placeholder="Nhập lý do hủy đợt bình chọn"
+                rows=1
+                maxlength=500
+                required=true
+                editableInView=true
             }}
-
         </div>
-
     </div>
-
 </div>
-
-
 
 <div
     class="detail-panel__section"
     data-binh-chon-thong-ke
     hidden
 >
-
     <h3 class="detail-panel__section-title">
         Kết quả bình chọn
     </h3>
 
-
     <div class="binh-chon-statistics">
-
         <div class="binh-chon-statistics__item">
-
             <span class="binh-chon-statistics__label">
                 Tổng bình chọn
             </span>
@@ -272,12 +225,9 @@
             >
                 0
             </strong>
-
         </div>
 
-
         <div class="binh-chon-statistics__item">
-
             <span class="binh-chon-statistics__label">
                 Có tham gia
             </span>
@@ -288,12 +238,9 @@
             >
                 0
             </strong>
-
         </div>
 
-
         <div class="binh-chon-statistics__item">
-
             <span class="binh-chon-statistics__label">
                 Không tham gia
             </span>
@@ -304,9 +251,6 @@
             >
                 0
             </strong>
-
         </div>
-
     </div>
-
 </div>
