@@ -153,7 +153,11 @@ document.addEventListener(
                                 current =>
                                     submit(
                                         current,
-                                        30
+                                        Number(
+                                            data.trangThai ||
+                                            10
+                                        ),
+                                        true
                                     ),
 
                             onCancel:
@@ -209,10 +213,10 @@ document.addEventListener(
                 data.trangThai
             );
 
-
             async function submit(
                 current,
-                status
+                status,
+                duyetSauKhiLuu = false
             ) {
 
                 const payload =
@@ -285,13 +289,7 @@ document.addEventListener(
                 }
 
                 try {
-
-                    root.classList.add(
-                        "is-loading"
-                    );
-
-
-                    const result =
+                    let result =
                         await window.ThucDon
                             .api
                             .update(
@@ -300,18 +298,38 @@ document.addEventListener(
                             );
 
 
+                    if (
+                        duyetSauKhiLuu
+                    ) {
+
+                        result =
+                            await window.ThucDon
+                                .api
+                                .approve(
+                                    id
+                                );
+
+                    }
+
+
                     window.MCS
                         ?.toast
                         ?.success
                         ?.(
-                            result?.message ||
-                            "Cập nhật thực đơn thành công."
+                            duyetSauKhiLuu
+                                ? (
+                                    result?.message ||
+                                    "Lưu và duyệt thực đơn thành công."
+                                )
+                                : (
+                                    result?.message ||
+                                    "Cập nhật thực đơn thành công."
+                                )
                         );
 
 
                     window.location.href =
                         `/thuc-don/thong-tin-chi-tiet-thuc-don/${id}`;
-
 
                 } catch (error) {
 

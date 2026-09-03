@@ -7,6 +7,18 @@ window.ThucDon =
 
 window.ThucDon.contentEditor =
     (() => {
+        function isBatBuocChonNhomMon(
+            root
+        ) {
+
+            return (
+                root?._tdOptions
+                    ?.settings
+                    ?.batBuocChonNhomMon !==
+                false
+            );
+
+        }
 
         function init(
             root,
@@ -80,10 +92,30 @@ window.ThucDon.contentEditor =
                                 "[data-day-item]"
                             );
 
-
                         ctx.dayId =
                             day?.dataset.dayId ||
                             null;
+
+                        ctx.groupId =
+                            null;
+
+
+                        if (
+                            !isBatBuocChonNhomMon(
+                                root
+                            )
+                        ) {
+
+                            openFood(
+                                root,
+                                form,
+                                ctx
+                            );
+
+
+                            return;
+
+                        }
 
 
                         openGroup(
@@ -711,9 +743,68 @@ window.ThucDon.contentEditor =
                     );
 
 
+            if (
+                !day
+            ) {
+
+                error(
+                    "Không xác định được ngày."
+                );
+
+
+                return;
+
+            }
+
+
+            if (
+                !isBatBuocChonNhomMon(
+                    root
+                )
+            ) {
+
+                const selectedFoods =
+                    (
+                        day.dsNhomMonAn ||
+                        []
+                    )
+                        .flatMap(
+                            group =>
+                                group.dsMonAn ||
+                                []
+                        );
+
+
+                window.ThucDon
+                    .options
+                    .refreshFoodOptions(
+                        root,
+                        null,
+                        selectedFoods
+                    );
+
+
+                prepareCheckboxSearch(
+                    root,
+                    "food"
+                );
+
+
+                open(
+                    root.querySelector(
+                        "[data-modal-food]"
+                    )
+                );
+
+
+                return;
+
+            }
+
+
             const group =
                 (
-                    day?.dsNhomMonAn ||
+                    day.dsNhomMonAn ||
                     []
                 )
                     .find(
@@ -727,11 +818,14 @@ window.ThucDon.contentEditor =
                     );
 
 
-            if (!group) {
+            if (
+                !group
+            ) {
 
                 error(
                     "Không xác định được nhóm món."
                 );
+
 
                 return;
 
@@ -752,10 +846,12 @@ window.ThucDon.contentEditor =
                     []
                 );
 
+
             prepareCheckboxSearch(
                 root,
                 "food"
             );
+
 
             open(
                 root.querySelector(
@@ -1093,7 +1189,6 @@ window.ThucDon.contentEditor =
                 root
             );
 
-
             if (
                 blockedDays.length
             ) {
@@ -1102,16 +1197,60 @@ window.ThucDon.contentEditor =
                     blockedDays[0];
 
 
-                window.MCS
-                    ?.toast
-                    ?.warning
-                    ?.(
-                        blockedDays.length === 1
-                            ?
-                                `Ngày ${formatDate(first.date)} đang tồn tại ${first.groupCount} nhóm món nên không thể bỏ chọn.`
-                            :
-                                `${blockedDays.length} ngày đang có nhóm món nên không thể bỏ chọn.`
-                    );
+                if (
+                    !isBatBuocChonNhomMon(
+                        root
+                    )
+                ) {
+
+                    const foodCount =
+                        (
+                            currentDays.find(
+                                day =>
+                                    normalizeDate(
+                                        day.ngay ||
+                                        day.ngayApDung
+                                    ) ===
+                                    first.date
+                            )
+                                ?.dsNhomMonAn ||
+                            []
+                        )
+                            .reduce(
+                                (
+                                    total,
+                                    group
+                                ) =>
+                                    total +
+                                    (
+                                        group.dsMonAn ||
+                                        []
+                                    ).length,
+                                0
+                            );
+
+
+                    window.MCS
+                        ?.toast
+                        ?.warning
+                        ?.(
+                            `Ngày ${formatDate(first.date)} đang tồn tại ${foodCount} món ăn nên không thể bỏ chọn.`
+                        );
+
+                }
+                else {
+
+                    window.MCS
+                        ?.toast
+                        ?.warning
+                        ?.(
+                            blockedDays.length ===
+                                1
+                                ? `Ngày ${formatDate(first.date)} đang tồn tại ${first.groupCount} nhóm món nên không thể bỏ chọn.`
+                                : `${blockedDays.length} ngày đang có nhóm món nên không thể bỏ chọn.`
+                        );
+
+                }
 
             }
             else {
@@ -1419,19 +1558,383 @@ window.ThucDon.contentEditor =
 
         }
 
+        function saveFoodTheoNgay(
+            root,
+            form,
+            ctx,
+            data,
+            day,
+            selectedIds,
+            {
+                dinhLuong,
+                donViTinhId,
+                unit,
+                khauPhan,
+                ghiChu
+            }
+        ) {
+
+            const oldGroups =
+                day.dsNhomMonAn ||
+                [];
+
+
+            const oldGroupMap =
+                new Map(
+                    oldGroups.map(
+                        group => [
+                            String(
+                                group.nhomMonAnId ??
+                                group.nhomMonAn?.id
+                            ),
+                            group
+                        ]
+                    )
+                );
+
+
+            const oldFoodMap =
+                new Map();
+
+
+            oldGroups.forEach(
+                group => {
+
+                    (
+                        group.dsMonAn ||
+                        []
+                    ).forEach(
+                        food => {
+
+                            oldFoodMap.set(
+                                String(
+                                    food.monAnId ??
+                                    food.monAn?.id
+                                ),
+                                food
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+            const nextGroupMap =
+                new Map();
+
+
+            let loi =
+                null;
+
+
+            selectedIds.forEach(
+                monAnId => {
+
+                    if (
+                        loi
+                    ) {
+                        return;
+                    }
+
+
+                    const mon =
+                        root._tdOptions
+                            ?.monAn
+                            ?.find(
+                                item =>
+                                    String(
+                                        item.id
+                                    ) ===
+                                    String(
+                                        monAnId
+                                    )
+                            );
+
+
+                    if (
+                        !mon
+                    ) {
+                        return;
+                    }
+
+
+                    const nhomMonAnId =
+                        Number(
+                            mon.nhomMonAnId ??
+                            mon.nhomMonAn?.id
+                        );
+
+
+                    if (
+                        !Number.isInteger(
+                            nhomMonAnId
+                        ) ||
+                        nhomMonAnId <= 0
+                    ) {
+
+                        loi =
+                            `Món "${mon.tenMonAn || mon.maMonAn || mon.id}" chưa được gán nhóm món ăn.`;
+
+
+                        return;
+
+                    }
+
+
+                    const nhomOption =
+                        root._tdOptions
+                            ?.nhomMonAn
+                            ?.find(
+                                item =>
+                                    Number(
+                                        item.id
+                                    ) ===
+                                    nhomMonAnId
+                            );
+
+
+                    if (
+                        !nhomOption
+                    ) {
+
+                        loi =
+                            `Nhóm món của "${mon.tenMonAn || mon.maMonAn || mon.id}" không tồn tại hoặc đã bị khóa.`;
+
+
+                        return;
+
+                    }
+
+
+                    const groupKey =
+                        String(
+                            nhomMonAnId
+                        );
+
+
+                    let group =
+                        nextGroupMap.get(
+                            groupKey
+                        );
+
+
+                    if (
+                        !group
+                    ) {
+
+                        const oldGroup =
+                            oldGroupMap.get(
+                                groupKey
+                            );
+
+
+                        group =
+                            oldGroup
+                                ? {
+                                    ...oldGroup,
+
+                                    nhomMonAnId,
+
+                                    nhomMonAn: {
+                                        ...nhomOption
+                                    },
+
+                                    maNhomMonAn:
+                                        nhomOption.maNhomMonAn ||
+                                        oldGroup.maNhomMonAn ||
+                                        null,
+
+                                    tenNhomMonAn:
+                                        nhomOption.tenNhomMonAn ||
+                                        oldGroup.tenNhomMonAn ||
+                                        "-",
+
+                                    dsMonAn:
+                                        []
+                                }
+                                : {
+                                    id:
+                                        tempId(
+                                            "group"
+                                        ),
+
+                                    nhomMonAnId,
+
+                                    nhomMonAn: {
+                                        ...nhomOption
+                                    },
+
+                                    maNhomMonAn:
+                                        nhomOption.maNhomMonAn ||
+                                        null,
+
+                                    tenNhomMonAn:
+                                        nhomOption.tenNhomMonAn ||
+                                        "-",
+
+                                    dsMonAn:
+                                        []
+                                };
+
+
+                        nextGroupMap.set(
+                            groupKey,
+                            group
+                        );
+
+                    }
+
+
+                    const oldFood =
+                        oldFoodMap.get(
+                            String(
+                                monAnId
+                            )
+                        );
+
+
+                    group.dsMonAn.push(
+                        oldFood ||
+                        {
+                            id:
+                                tempId(
+                                    "food"
+                                ),
+
+                            monAnId:
+                                Number(
+                                    mon.id
+                                ),
+
+                            monAn: {
+                                ...mon
+                            },
+
+                            dinhLuong,
+
+                            donViTinhId,
+
+                            donViTinh:
+                                unit
+                                    ? {
+                                        ...unit
+                                    }
+                                    : null,
+
+                            khauPhan,
+
+                            ghiChu
+                        }
+                    );
+
+                }
+            );
+
+
+            if (
+                loi
+            ) {
+
+                error(
+                    loi
+                );
+
+
+                return;
+
+            }
+
+
+            day.dsNhomMonAn =
+                Array.from(
+                    nextGroupMap.values()
+                )
+                    .map(
+                        (
+                            group,
+                            groupIndex
+                        ) => ({
+
+                            ...group,
+
+                            thuTuHienThi:
+                                groupIndex + 1,
+
+                            dsMonAn:
+                                (
+                                    group.dsMonAn ||
+                                    []
+                                )
+                                    .map(
+                                        (
+                                            food,
+                                            foodIndex
+                                        ) => ({
+
+                                            ...food,
+
+                                            thuTuHienThi:
+                                                foodIndex + 1
+
+                                        })
+                                    )
+
+                        })
+                    );
+
+
+            form.selectDay(
+                ctx.dayId
+            );
+
+
+            form.selectGroup(
+                null
+            );
+
+
+            form.setWorkingData(
+                data
+            );
+
+
+            closeAll(
+                root
+            );
+
+
+            success(
+                `Đã cập nhật ${selectedIds.size} món ăn.`
+            );
+
+        }
+
         function saveFood(
             root,
             form,
             ctx
         ) {
 
+            const batBuocChonNhom =
+                isBatBuocChonNhomMon(
+                    root
+                );
+
+
             if (
                 !ctx.dayId ||
-                !ctx.groupId
+                (
+                    batBuocChonNhom &&
+                    !ctx.groupId
+                )
             ) {
 
                 error(
-                    "Không xác định được nhóm món."
+                    batBuocChonNhom
+                        ? "Không xác định được nhóm món."
+                        : "Không xác định được ngày."
                 );
 
 
@@ -1509,6 +2012,59 @@ window.ThucDon.contentEditor =
                             )
                     );
 
+if (
+    !day
+) {
+
+    error(
+        "Không xác định được ngày."
+    );
+
+
+    return;
+
+}
+
+
+const unit =
+    root
+        ._tdOptions
+        ?.donViTinh
+        ?.find(
+            item =>
+                Number(
+                    item.id
+                ) ===
+                Number(
+                    donViTinhId
+                )
+        );
+
+
+            if (
+                !batBuocChonNhom
+            ) {
+
+                saveFoodTheoNgay(
+                    root,
+                    form,
+                    ctx,
+                    data,
+                    day,
+                    selectedIds,
+                    {
+                        dinhLuong,
+                        donViTinhId,
+                        unit,
+                        khauPhan,
+                        ghiChu
+                    }
+                );
+
+
+                return;
+
+            }
 
             const group =
                 (
@@ -1551,22 +2107,6 @@ window.ThucDon.contentEditor =
                         ]
                     )
                 );
-
-
-            const unit =
-                root
-                    ._tdOptions
-                    ?.donViTinh
-                    ?.find(
-                        item =>
-                            Number(
-                                item.id
-                            ) ===
-                            Number(
-                                donViTinhId
-                            )
-                    );
-
 
             const nextFoods =
                 [];
@@ -1947,6 +2487,31 @@ window.ThucDon.contentEditor =
                                         foodId
                                     )
                             );
+
+                        if (
+                            !isBatBuocChonNhomMon(
+                                root
+                            ) &&
+                            group.dsMonAn.length ===
+                                0
+                        ) {
+
+                            day.dsNhomMonAn =
+                                (
+                                    day.dsNhomMonAn ||
+                                    []
+                                )
+                                    .filter(
+                                        item =>
+                                            String(
+                                                item.id
+                                            ) !==
+                                            String(
+                                                groupId
+                                            )
+                                    );
+
+                        }
 
 
                         form.setWorkingData(

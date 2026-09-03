@@ -29,6 +29,36 @@ window.ThucDon.editor =
                 return null;
             }
 
+            const settings =
+                root._tdOptions
+                    ?.settings ||
+                {};
+
+
+            const directFoodMode =
+                mode !==
+                    "detail" &&
+                settings
+                    .batBuocChonNhomMon ===
+                    false;
+
+
+            /*
+            * Khi không bắt buộc chọn nhóm,
+            * loại luôn modal chọn nhóm khỏi DOM.
+            */
+            if (
+                directFoodMode
+            ) {
+
+                root
+                    .querySelector(
+                        "[data-modal-group]"
+                    )
+                    ?.remove();
+
+            }
+
 
             const form =
                 window.ThucDon
@@ -36,10 +66,10 @@ window.ThucDon.editor =
                     .init(
                         formRoot,
                         {
-                            mode
+                            mode,
+                            settings
                         }
                     );
-
 
             window.ThucDon
                 .contentEditor
@@ -145,7 +175,6 @@ window.ThucDon.editor =
 
         }
 
-
         function confirmCancel(
             onConfirm
         ) {
@@ -193,7 +222,6 @@ window.ThucDon.editor =
             }
 
         }
-
 
         return {
             init

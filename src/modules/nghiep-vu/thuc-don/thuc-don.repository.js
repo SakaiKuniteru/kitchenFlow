@@ -1515,29 +1515,97 @@ class ThucDonRepository {
         );
     }
 
-    async huyDuyet(id) {
+    async existsBinhChonHieuLucTheoThucDon(
+        thucDonId
+    ) {
+
+        const result =
+            await pool.query(
+                `
+                    SELECT 1
+
+                    FROM ct_thuc_don_ngay tdn
+
+                    INNER JOIN nv_dot_binh_chon dbc
+                        ON dbc.thuc_don_ngay_id =
+                        tdn.id
+
+                    WHERE tdn.thuc_don_id = $1
+
+                    AND dbc.trang_thai <> 30
+
+                    LIMIT 1
+                `,
+                [
+                    thucDonId
+                ]
+            );
+
+
+        return (
+            result.rowCount >
+            0
+        );
+
+    }
+
+    async huyDuyet(
+        id
+    ) {
+
         const sql = `
-            UPDATE nv_thuc_don
+            UPDATE nv_thuc_don td
+
             SET
                 trang_thai = 40,
                 updated_at = NOW()
-            WHERE id = $1
-            AND trang_thai = 30
-            RETURNING id
+
+            WHERE td.id = $1
+
+            AND td.trang_thai = 30
+
+            AND NOT EXISTS (
+
+                SELECT 1
+
+                FROM ct_thuc_don_ngay tdn
+
+                INNER JOIN nv_dot_binh_chon dbc
+                    ON dbc.thuc_don_ngay_id =
+                        tdn.id
+
+                WHERE tdn.thuc_don_id =
+                        td.id
+
+                    AND dbc.trang_thai <> 30
+
+            )
+
+            RETURNING td.id
         `;
 
-        const result = await pool.query(
-            sql,
-            [id]
-        );
 
-        if (result.rows.length === 0) {
+        const result =
+            await pool.query(
+                sql,
+                [
+                    id
+                ]
+            );
+
+
+        if (
+            result.rows.length ===
+            0
+        ) {
             return null;
         }
+
 
         return await this.getChiTiet(
             result.rows[0].id
         );
+
     }
 
     async huy(id) {

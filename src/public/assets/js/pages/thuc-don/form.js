@@ -93,33 +93,44 @@ window.ThucDon.form =
         function init(
             root,
             {
-                mode = "detail"
+                mode = "detail",
+                settings = {}
             } = {}
         ) {
 
             if (!root) return null;
 
+            const directFoodMode =
+                mode !==
+                    "detail" &&
+                settings
+                    ?.batBuocChonNhomMon ===
+                    false;
 
-            const state = {
+                const state = {
 
-                mode,
+                    mode,
 
-                contentView:
-                    "detail",
+                    directFoodMode,
 
-                daySearch:
-                    "",
+                    contentView:
+                        directFoodMode
+                            ? "food"
+                            : "detail",
 
-                data:
-                    null,
+                    daySearch:
+                        "",
 
-                selectedDayId:
-                    null,
+                    data:
+                        null,
 
-                selectedGroupId:
-                    null
+                    selectedDayId:
+                        null,
 
-            };
+                    selectedGroupId:
+                        null
+
+                };
 
             const contentSection =
                 root.querySelector(
@@ -438,6 +449,17 @@ window.ThucDon.form =
             state
         ) {
 
+            const directFoodMode =
+                state.directFoodMode ===
+                true;
+
+
+            /*
+            * Nút cấp ngày:
+            *
+            * TRUE  -> Thêm nhóm
+            * FALSE -> Thêm món
+            */
             root
                 .querySelectorAll(
                     "[data-day-add-group]"
@@ -447,12 +469,56 @@ window.ThucDon.form =
 
                         button.hidden =
                             state.mode ===
-                                "detail" ||
-                            state.contentView ===
-                                "food";
+                            "detail";
+
+
+                        const label =
+                            button.querySelector(
+                                "span"
+                            );
+
+
+                        if (
+                            label
+                        ) {
+
+                            label.textContent =
+                                directFoodMode
+                                    ? "Thêm món"
+                                    : "Thêm nhóm";
+
+                        }
+
+
+                        button.title =
+                            directFoodMode
+                                ? "Thêm món"
+                                : "Thêm nhóm";
 
                     }
                 );
+
+
+            /*
+            * FALSE:
+            * Không có Chi tiết / Nhóm món / Món ăn.
+            *
+            * Chỉ còn duy nhất chế độ món ăn.
+            */
+            const switcher =
+                root.querySelector(
+                    "[data-content-view-switcher]"
+                );
+
+
+            if (
+                switcher
+            ) {
+
+                switcher.hidden =
+                    directFoodMode;
+
+            }
 
 
             root
@@ -464,7 +530,8 @@ window.ThucDon.form =
 
                         button.classList.toggle(
                             "is-active",
-                            button.dataset.contentView ===
+                            button.dataset
+                                .contentView ===
                                 state.contentView
                         );
 
@@ -991,13 +1058,47 @@ window.ThucDon.form =
                         )
                     );
 
+                    const groupCount =
+                        fragment.querySelector(
+                            "[data-day-group-count]"
+                        );
 
-                    setFragmentText(
-                        fragment,
-                        "[data-day-group-count]",
-                        `${day.dsNhomMonAn.length} nhóm`
-                    );
 
+                    const groupSeparator =
+                        fragment.querySelector(
+                            "[data-day-group-separator]"
+                        );
+
+
+                    if (
+                        state.directFoodMode
+                    ) {
+
+                        if (
+                            groupCount
+                        ) {
+                            groupCount.hidden =
+                                true;
+                        }
+
+
+                        if (
+                            groupSeparator
+                        ) {
+                            groupSeparator.hidden =
+                                true;
+                        }
+
+                    }
+                    else {
+
+                        setFragmentText(
+                            fragment,
+                            "[data-day-group-count]",
+                            `${day.dsNhomMonAn.length} nhóm`
+                        );
+
+                    }
 
                     setFragmentText(
                         fragment,
@@ -1038,27 +1139,20 @@ window.ThucDon.form =
                     setFragmentText(
                         fragment,
                         "[data-day-content-title]",
-                        state.contentView ===
-                            "food"
+                        state.directFoodMode
                             ? "Danh sách món ăn"
-                            : "Danh sách nhóm món"
+                            : (
+                                state.contentView ===
+                                    "food"
+                                    ? "Danh sách món ăn"
+                                    : "Danh sách nhóm món"
+                            )
                     );
 
                     const addGroupButton =
                         fragment.querySelector(
                             "[data-day-add-group]"
                         );
-
-
-                    if (
-                        addGroupButton
-                    ) {
-
-                        addGroupButton.hidden =
-                            state.contentView ===
-                            "food";
-
-                    }
 
                     renderDayContent(
                         groupsList,
@@ -1092,6 +1186,26 @@ window.ThucDon.form =
             day,
             state
         ) {
+
+            /*
+            * Không bắt buộc nhóm:
+            * luôn render món trực tiếp.
+            */
+            if (
+                state.directFoodMode
+            ) {
+
+                renderFoodOverview(
+                    container,
+                    day,
+                    state
+                );
+
+
+                return;
+
+            }
+
 
             switch (
                 state.contentView
@@ -1304,15 +1418,31 @@ window.ThucDon.form =
                         "-"
                     );
 
+                    const groupField =
+                        fragment.querySelector(
+                            "[data-food-overview-group-field]"
+                        );
 
-                    setFragmentText(
-                        fragment,
-                        "[data-food-overview-group]",
-                        group.tenNhomMonAn ||
-                        group.nhomMonAn?.tenNhomMonAn ||
-                        "-"
-                    );
 
+                    if (
+                        state.directFoodMode
+                    ) {
+
+                        groupField?.remove();
+
+                    }
+                    else {
+
+                        setFragmentText(
+                            fragment,
+                            "[data-food-overview-group]",
+                            group.tenNhomMonAn ||
+                            group.nhomMonAn
+                                ?.tenNhomMonAn ||
+                            "-"
+                        );
+
+                    }
 
                     setFragmentText(
                         fragment,

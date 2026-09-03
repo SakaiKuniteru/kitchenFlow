@@ -3,10 +3,12 @@ const {
     loaiThucDon: dsLoaiThucDon
 } = require("../../../constants/enums");
 
+const cauHinhService = require("../../cau-hinh/cau-hinh.service");
+
 const ApiError = require("../../../utils/api-error");
 
 const thucDonRepository = require("./thuc-don.repository");
-
+const MA_BAT_BUOC_CHON_NHOM_MON = "BAT_BUOC_CHON_NHOM_MON";
 class ThucDonService {
     parseId(id) {
         const thucDonId = Number(id);
@@ -649,6 +651,335 @@ class ThucDonService {
         }
     }
 
+    async getBatBuocChonNhomMon() {
+
+        try {
+
+            const result =
+                await cauHinhService
+                    .getGiaTri(
+                        MA_BAT_BUOC_CHON_NHOM_MON
+                    );
+
+
+            const value =
+                result?.giaTri ??
+                result?.value ??
+                result;
+
+
+            if (
+                value === null ||
+                value === undefined ||
+                String(
+                    value
+                ).trim() ===
+                    ""
+            ) {
+
+                return true;
+
+            }
+
+
+            return (
+                String(
+                    value
+                )
+                    .trim()
+                    .toLowerCase() ===
+                "true"
+            );
+
+        } catch {
+
+            return true;
+
+        }
+
+    }
+
+    async chuanHoaNhomMonTheoMonAn(
+        data
+    ) {
+
+        if (
+            !Array.isArray(
+                data?.dsNgay
+            )
+        ) {
+            return;
+        }
+
+
+        for (
+            const itemNgay of
+            data.dsNgay
+        ) {
+
+            const dsNhomCu =
+                Array.isArray(
+                    itemNgay.dsNhomMonAn
+                )
+                    ? itemNgay.dsNhomMonAn
+                    : [];
+
+
+            const dsMon =
+                dsNhomCu
+                    .flatMap(
+                        nhom =>
+                            Array.isArray(
+                                nhom?.dsMonAn
+                            )
+                                ? nhom.dsMonAn
+                                : []
+                    );
+
+
+            if (
+                dsMon.length ===
+                0
+            ) {
+
+                itemNgay.dsNhomMonAn =
+                    [];
+
+
+                continue;
+
+            }
+
+
+            const nhomCuMap =
+                new Map(
+                    dsNhomCu.map(
+                        nhom => [
+                            String(
+                                nhom.nhomMonAnId ??
+                                nhom.nhomMonAn?.id
+                            ),
+                            nhom
+                        ]
+                    )
+                );
+
+
+            const nhomMoiMap =
+                new Map();
+
+
+            const monDaCo =
+                new Set();
+
+
+            for (
+                const mon of
+                dsMon
+            ) {
+
+                const monAnId =
+                    Number(
+                        mon.monAnId ??
+                        mon.monAn?.id
+                    );
+
+
+                if (
+                    !Number.isInteger(
+                        monAnId
+                    ) ||
+                    monAnId <= 0
+                ) {
+
+                    throw new ApiError(
+                        400,
+                        "ID món ăn không hợp lệ."
+                    );
+
+                }
+
+
+                if (
+                    monDaCo.has(
+                        monAnId
+                    )
+                ) {
+
+                    throw new ApiError(
+                        400,
+                        `Món ăn ID ${monAnId} bị lặp trong cùng ngày thực đơn.`
+                    );
+
+                }
+
+
+                monDaCo.add(
+                    monAnId
+                );
+
+
+                const monAn =
+                    await thucDonRepository
+                        .getMonAnById(
+                            monAnId
+                        );
+
+
+                if (
+                    !monAn ||
+                    !monAn.active
+                ) {
+
+                    throw new ApiError(
+                        400,
+                        `Món ăn ID ${monAnId} không tồn tại hoặc đã bị khóa.`
+                    );
+
+                }
+
+
+                const nhomMonAnId =
+                    Number(
+                        monAn.nhom_mon_an_id
+                    );
+
+
+                if (
+                    !Number.isInteger(
+                        nhomMonAnId
+                    ) ||
+                    nhomMonAnId <= 0
+                ) {
+
+                    throw new ApiError(
+                        400,
+                        `Món ăn "${monAn.ten_mon_an}" chưa được gán nhóm món ăn.`
+                    );
+
+                }
+
+
+                const nhomMonAn =
+                    await thucDonRepository
+                        .getNhomMonAnById(
+                            nhomMonAnId
+                        );
+
+
+                if (
+                    !nhomMonAn ||
+                    !nhomMonAn.active
+                ) {
+
+                    throw new ApiError(
+                        400,
+                        `Nhóm món của "${monAn.ten_mon_an}" không tồn tại hoặc đã bị khóa.`
+                    );
+
+                }
+
+
+                const key =
+                    String(
+                        nhomMonAnId
+                    );
+
+
+                let nhom =
+                    nhomMoiMap.get(
+                        key
+                    );
+
+
+                if (
+                    !nhom
+                ) {
+
+                    const nhomCu =
+                        nhomCuMap.get(
+                            key
+                        );
+
+
+                    nhom = {
+
+                        ...(nhomCu || {}),
+
+                        nhomMonAnId,
+
+                        maNhomMonAn:
+                            nhomMonAn.ma_nhom_mon_an,
+
+                        tenNhomMonAn:
+                            nhomMonAn.ten_nhom_mon_an,
+
+                        dsMonAn:
+                            []
+
+                    };
+
+
+                    nhomMoiMap.set(
+                        key,
+                        nhom
+                    );
+
+                }
+
+
+                nhom.dsMonAn.push({
+
+                    ...mon,
+
+                    monAnId
+
+                });
+
+            }
+
+
+            itemNgay.dsNhomMonAn =
+                Array.from(
+                    nhomMoiMap.values()
+                )
+                    .map(
+                        (
+                            nhom,
+                            index
+                        ) => ({
+
+                            ...nhom,
+
+                            thuTuHienThi:
+                                index + 1,
+
+                            dsMonAn:
+                                (
+                                    nhom.dsMonAn ||
+                                    []
+                                )
+                                    .map(
+                                        (
+                                            mon,
+                                            monIndex
+                                        ) => ({
+
+                                            ...mon,
+
+                                            thuTuHienThi:
+                                                monIndex + 1
+
+                                        })
+                                    )
+
+                        })
+                    );
+
+        }
+
+    }
+
     async validateMonAn(
         mon,
         nhomMonAnId,
@@ -1098,6 +1429,18 @@ class ThucDonService {
             duLieuTao
         );
 
+        const batBuocChonNhomMon =
+            await this
+                .getBatBuocChonNhomMon();
+        if (
+            !batBuocChonNhomMon
+        ) {
+            await this
+                .chuanHoaNhomMonTheoMonAn(
+                    duLieuTao
+                );
+        }
+
         await this.validateDsNgay(
             duLieuTao,
             true
@@ -1279,10 +1622,29 @@ class ThucDonService {
             duLieuCapNhat.dsNgay !==
             undefined
         ) {
+
+            const batBuocChonNhomMon =
+                await this
+                    .getBatBuocChonNhomMon();
+
+
+            if (
+                !batBuocChonNhomMon
+            ) {
+
+                await this
+                    .chuanHoaNhomMonTheoMonAn(
+                        duLieuCapNhat
+                    );
+
+            }
+
+
             await this.validateDsNgay(
                 duLieuCapNhat,
                 false
             );
+
         }
 
         let ketQua =
@@ -1474,16 +1836,59 @@ class ThucDonService {
             );
         }
 
-        const ketQua =
-            await thucDonRepository.huyDuyet(
-                thucDonId
+        const daCoBinhChon =
+            await thucDonRepository
+                .existsBinhChonHieuLucTheoThucDon(
+                    thucDonId
+                );
+
+
+        if (
+            daCoBinhChon
+        ) {
+
+            throw new ApiError(
+                409,
+                "Thực đơn đã được tạo bình chọn. Vui lòng hủy đợt bình chọn trước khi hủy duyệt thực đơn."
             );
 
-        if (!ketQua) {
+        }
+
+        const ketQua =
+            await thucDonRepository
+                .huyDuyet(
+                    thucDonId
+                );
+
+
+        if (
+            !ketQua
+        ) {
+
+            const phatSinhBinhChon =
+                await thucDonRepository
+                    .existsBinhChonHieuLucTheoThucDon(
+                        thucDonId
+                    );
+
+
+            if (
+                phatSinhBinhChon
+            ) {
+
+                throw new ApiError(
+                    409,
+                    "Thực đơn đã được tạo bình chọn. Vui lòng hủy đợt bình chọn trước khi hủy duyệt thực đơn."
+                );
+
+            }
+
+
             throw new ApiError(
                 400,
                 "Trạng thái thực đơn đã thay đổi, không thể hủy duyệt."
             );
+
         }
 
         return ketQua;

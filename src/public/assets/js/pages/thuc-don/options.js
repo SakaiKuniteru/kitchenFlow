@@ -20,7 +20,8 @@ window.ThucDon.options =
             ngayBatDauTuan: 0,
             batBuocDuSoNgay: false,
             soTuanHienThi: 5,
-            soNamHienThiThang: 5
+            soNamHienThiThang: 5,
+            batBuocChonNhomMon: true
         };
 
         async function init(
@@ -39,7 +40,8 @@ window.ThucDon.options =
                 ngayBatDauTuan,
                 batBuocDuSoNgay,
                 soTuanHienThi,
-                soNamHienThiThang
+                soNamHienThiThang,
+                batBuocChonNhomMon
             ] =
                 await Promise.all([
 
@@ -91,6 +93,11 @@ window.ThucDon.options =
                     getSetting(
                         "SO_NAM_HIEN_THI_THUC_DON_THANG",
                         DEFAULT_SETTINGS.soNamHienThiThang
+                    ),
+
+                    getSetting(
+                        "BAT_BUOC_CHON_NHOM_MON",
+                        DEFAULT_SETTINGS.batBuocChonNhomMon
                     )
 
                 ]);
@@ -141,6 +148,12 @@ window.ThucDon.options =
                         positiveInteger(
                             soNamHienThiThang,
                             DEFAULT_SETTINGS.soNamHienThiThang
+                        ),
+
+                    batBuocChonNhomMon:
+                        normalizeBoolean(
+                            batBuocChonNhomMon,
+                            DEFAULT_SETTINGS.batBuocChonNhomMon
                         )
                 }
             };
@@ -614,6 +627,11 @@ window.ThucDon.options =
                     nhomMonAnId
                 );
 
+            const coLocTheoNhom =
+                Number.isInteger(
+                    groupId
+                ) &&
+                groupId > 0;
 
             const selectedIds =
                 new Set(
@@ -626,7 +644,6 @@ window.ThucDon.options =
                     )
                 );
 
-
             const list =
                 (
                     root._tdOptions
@@ -636,12 +653,17 @@ window.ThucDon.options =
                     .filter(
                         item => {
 
+                            if (
+                                !coLocTheoNhom
+                            ) {
+                                return true;
+                            }
+
                             const itemGroupId =
                                 Number(
                                     item.nhomMonAnId ??
                                     item.nhomMonAn?.id
                                 );
-
 
                             return (
                                 itemGroupId ===
@@ -650,7 +672,6 @@ window.ThucDon.options =
 
                         }
                     );
-
 
             window.MCS
                 ?.checkboxList
