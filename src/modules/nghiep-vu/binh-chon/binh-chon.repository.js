@@ -1379,20 +1379,180 @@ class BinhChonSuatAnRepository {
 
     }
 
-
     async getLichSuCuaToi(
         taiKhoanId,
         filters = {}
     ) {
+        const values = [
+            taiKhoanId
+        ];
 
-        return await this
-            .getLichSu(
-                taiKhoanId,
-                filters
+        const conditions = [
+            "dbc.trang_thai = 20",
+            "dbc.han_binh_chon < LOCALTIMESTAMP",
+            "tdn.active = TRUE",
+            "td.active = TRUE"
+        ];
+
+
+        if (
+            filters.dotBinhChonId
+        ) {
+            values.push(
+                filters.dotBinhChonId
             );
 
-    }
+            conditions.push(
+                `dbc.id = $${values.length}`
+            );
+        }
 
+
+        if (
+            filters.luaChon !==
+            undefined
+        ) {
+            values.push(
+                filters.luaChon
+            );
+
+            conditions.push(
+                `bc.lua_chon = $${values.length}`
+            );
+        }
+
+
+        if (
+            filters.tuNgay
+        ) {
+            values.push(
+                filters.tuNgay
+            );
+
+            conditions.push(
+                `tdn.ngay >= $${values.length}`
+            );
+        }
+
+
+        if (
+            filters.denNgay
+        ) {
+            values.push(
+                filters.denNgay
+            );
+
+            conditions.push(
+                `tdn.ngay <= $${values.length}`
+            );
+        }
+
+
+        const sql = `
+            SELECT DISTINCT
+                dbc.*,
+
+                tdn.thuc_don_id,
+                tdn.ngay,
+
+                td.ma_thuc_don,
+                td.ten_thuc_don,
+                td.co_so_id,
+                td.nha_an_id,
+                td.ca_an_id,
+
+                cs.ma_co_so,
+                cs.ten_co_so,
+
+                na.ma_nha_an,
+                na.ten_nha_an,
+
+                ca.ma_ca_an,
+                ca.ten_ca_an,
+
+                bc.lua_chon,
+                bc.thoi_gian_binh_chon
+
+            FROM nv_dot_binh_chon dbc
+
+            INNER JOIN ct_thuc_don_ngay tdn
+                ON tdn.id =
+                dbc.thuc_don_ngay_id
+
+            INNER JOIN nv_thuc_don td
+                ON td.id =
+                tdn.thuc_don_id
+
+            INNER JOIN dm_tai_khoan tk
+                ON tk.id = $1
+
+            INNER JOIN ct_nha_an_nhan_vien nanv
+                ON nanv.nhan_vien_id =
+                tk.nhan_vien_id
+            AND nanv.nha_an_id =
+                td.nha_an_id
+            AND nanv.active = TRUE
+
+            LEFT JOIN ct_binh_chon_suat_an bc
+                ON bc.dot_binh_chon_id =
+                dbc.id
+            AND bc.tai_khoan_id = $1
+
+            LEFT JOIN dm_co_so cs
+                ON cs.id =
+                td.co_so_id
+
+            LEFT JOIN dm_nha_an na
+                ON na.id =
+                td.nha_an_id
+
+            LEFT JOIN dm_ca_an ca
+                ON ca.id =
+                td.ca_an_id
+
+            WHERE
+                ${conditions.join(
+                    " AND "
+                )}
+
+            ORDER BY
+                dbc.han_binh_chon DESC,
+                tdn.ngay DESC
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                values
+            );
+
+
+        return result.rows.map(
+            row => {
+                const dot =
+                    this.mapDotBinhChon(
+                        row
+                    );
+
+                return {
+                    ...dot,
+
+                    dotBinhChonId:
+                        dot.id,
+
+                    luaChon:
+                        row.lua_chon,
+
+                    luaChonCuaToi:
+                        row.lua_chon,
+
+                    thoiGianBinhChon:
+                        row.thoi_gian_binh_chon
+                };
+            }
+        );
+    }
 
     async getLichSu(
         taiKhoanId = null,

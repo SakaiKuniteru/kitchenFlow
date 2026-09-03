@@ -10,12 +10,44 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
+    const thucDonId =
+        String(
+            root.dataset
+                .thucDonId ||
+            ""
+        )
+            .trim();
+
+
+    const dotBinhChonId =
+        String(
+            root.dataset
+                .dotBinhChonId ||
+            ""
+        )
+            .trim();
+
+
+    if (
+        !thucDonId ||
+        !dotBinhChonId
+    ) {
+        window.location.replace(
+            "/binh-chon/danh-sach-binh-chon"
+        );
+
+        return;
+    }
+
     const API = {
         current:
             "/api/mcs/v1/binh-chon/cua-toi/hien-tai",
 
         upcoming:
             "/api/mcs/v1/binh-chon/cua-toi/sap-toi",
+
+        history:
+            "/api/mcs/v1/binh-chon/cua-toi/lich-su",
 
         vote(
             id
@@ -179,6 +211,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         upcomingEmpty:
             root.querySelector(
                 "[data-upcoming-empty]"
+            ),
+
+        relatedTabs:
+            root.querySelectorAll(
+                "[data-related-tab]"
+            ),
+
+        relatedEmptyTitle:
+            root.querySelector(
+                "[data-related-empty-title]"
+            ),
+
+        relatedEmptyDescription:
+            root.querySelector(
+                "[data-related-empty-description]"
             )
     };
 
@@ -188,6 +235,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         upcoming:
             [],
+
+        relatedFilter:
+            "all",
 
         changingVote:
             false,
@@ -257,21 +307,19 @@ document.addEventListener("DOMContentLoaded", async () => {
             silent = false
         } = {}
     ) {
-        if (
-            !silent
-        ) {
+        if (!silent) {
             setLoading(
                 true
             );
         }
 
+
         try {
             const requests =
                 [];
 
-            if (
-                canViewCurrent
-            ) {
+
+            if (canViewCurrent) {
                 requests.push(
                     window.MCS.api
                         .request(
@@ -292,9 +340,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 );
             }
 
-            if (
-                canViewUpcoming
-            ) {
+
+            if (canViewUpcoming) {
                 requests.push(
                     window.MCS.api
                         .request(
@@ -315,10 +362,38 @@ document.addEventListener("DOMContentLoaded", async () => {
                 );
             }
 
+
+            if (canViewHistory) {
+                requests.push(
+                    window.MCS.api
+                        .request(
+                            API.history,
+                            {
+                                method:
+                                    "GET"
+                            }
+                        )
+                        .then(
+                            result => ({
+                                type:
+                                    "history",
+
+                                result
+                            })
+                        )
+                );
+            }
+
+
             const responses =
                 await Promise.all(
                     requests
                 );
+
+
+            const records =
+                [];
+
 
             responses.forEach(
                 response => {
@@ -327,48 +402,79 @@ document.addEventListener("DOMContentLoaded", async () => {
                             ?.data ??
                         response.result;
 
-                    if (
-                        response.type ===
-                        "current"
-                    ) {
-                        const items =
-                            Array.isArray(
-                                data
-                            )
-                                ? data
-                                : [];
-
-                        state.current =
-                            items[0] ||
-                            null;
-                    }
 
                     if (
-                        response.type ===
-                        "upcoming"
+                        !Array.isArray(
+                            data
+                        )
                     ) {
-                        state.upcoming =
-                            Array.isArray(
-                                data
-                            )
-                                ? data
-                                : [];
+                        return;
                     }
+
+
+                    data.forEach(
+                        item => {
+                            records.push(
+                                {
+                                    ...item,
+
+                                    source:
+                                        response.type
+                                }
+                            );
+                        }
+                    );
                 }
             );
 
+
+            const record =
+                findTargetRecord(
+                    records
+                );
+
+
+            if (!record) {
+                state.current =
+                    null;
+
+                state.upcoming =
+                    [];
+
+                render();
+
+
+                if (!silent) {
+                    window.MCS
+                        ?.toast
+                        ?.error?.(
+                            "Không tìm thấy đợt bình chọn."
+                        );
+                }
+
+
+                return;
+            }
+
+
+            state.current =
+                record;
+
+            state.upcoming =
+                buildRelatedRecords(
+                    records
+                );
+
             render();
-        } catch (
-            error
-        ) {
+
+        } catch (error) {
             console.error(
                 "Không thể tải bình chọn:",
                 error
             );
 
-            if (
-                !silent
-            ) {
+
+            if (!silent) {
                 window.MCS
                     ?.toast
                     ?.error?.(
@@ -376,15 +482,162 @@ document.addEventListener("DOMContentLoaded", async () => {
                         "Không thể tải thông tin bình chọn."
                     );
             }
+
         } finally {
-            if (
-                !silent
-            ) {
+            if (!silent) {
                 setLoading(
                     false
                 );
             }
         }
+    }
+
+    function findTargetRecord(
+        records
+    ) {
+        if (
+            !Array.isArray(
+                records
+            )
+        ) {
+            return null;
+        }
+
+
+        return (
+            records.find(
+                record => {
+
+                    const recordId =
+                        String(
+                            record.dotBinhChonId ??
+                            record.id ??
+                            ""
+                        );
+
+
+                    const recordThucDonId =
+                        String(
+                            record.thucDonId ??
+                            ""
+                        );
+
+
+                    return (
+                        recordId ===
+                            dotBinhChonId &&
+                        recordThucDonId ===
+                            thucDonId
+                    );
+
+                }
+            ) ||
+            null
+        );
+    }
+
+    function buildRelatedRecords(
+        records
+    ) {
+        if (
+            !Array.isArray(
+                records
+            )
+        ) {
+            return [];
+        }
+
+
+        const map =
+            new Map();
+
+
+        records.forEach(
+            record => {
+                if (
+                    record.source !==
+                        "current" &&
+                    record.source !==
+                        "upcoming"
+                ) {
+                    return;
+                }
+
+                const recordId =
+                    String(
+                        record.dotBinhChonId ??
+                        record.id ??
+                        ""
+                    );
+
+                const recordThucDonId =
+                    String(
+                        record.thucDonId ??
+                        ""
+                    );
+
+
+                /*
+                * Không hiển thị lại chính
+                * đợt đang xem ở phía trên.
+                */
+                if (
+                    recordId ===
+                        dotBinhChonId &&
+                    recordThucDonId ===
+                        thucDonId
+                ) {
+                    return;
+                }
+
+
+                if (!recordId) {
+                    return;
+                }
+
+
+                map.set(
+                    recordId,
+                    record
+                );
+            }
+        );
+
+
+        return Array
+            .from(
+                map.values()
+            )
+            .sort(
+                (
+                    a,
+                    b
+                ) => {
+                    const dateA =
+                        normalizeDate(
+                            a.batDauBinhChon
+                        );
+
+                    const dateB =
+                        normalizeDate(
+                            b.batDauBinhChon
+                        );
+
+
+                    return (
+                        (
+                            dateA
+                                ?.getTime() ??
+                            0
+                        ) -
+                        (
+                            dateB
+                                ?.getTime() ??
+                            0
+                        )
+                    );
+                }
+            );
     }
 
     function render() {
@@ -406,6 +659,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!record) {
             return;
         }
+
+        renderCurrentStatus(
+            record
+        );
 
         const date =
             normalizeDate(
@@ -444,6 +701,74 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderStatistics(
             record
         );
+    }
+
+    function renderCurrentStatus(
+        record
+    ) {
+        if (
+            !elements.currentStatus
+        ) {
+            return;
+        }
+
+
+        const status =
+            getRelatedStatus(
+                record
+            );
+
+
+        elements.currentStatus
+            .classList.remove(
+                "meal-vote-status--active",
+                "meal-vote-status--upcoming",
+                "meal-vote-status--ended"
+            );
+
+
+        if (
+            status ===
+            "ended"
+        ) {
+            elements.currentStatus
+                .textContent =
+                "Đã kết thúc";
+
+            elements.currentStatus
+                .classList.add(
+                    "meal-vote-status--ended"
+                );
+
+            return;
+        }
+
+
+        if (
+            status ===
+            "upcoming"
+        ) {
+            elements.currentStatus
+                .textContent =
+                "Sắp diễn ra";
+
+            elements.currentStatus
+                .classList.add(
+                    "meal-vote-status--upcoming"
+                );
+
+            return;
+        }
+
+
+        elements.currentStatus
+            .textContent =
+            "Đang diễn ra";
+
+        elements.currentStatus
+            .classList.add(
+                "meal-vote-status--active"
+            );
     }
 
     function renderFoods(
@@ -495,6 +820,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     function renderVoteSelection(
         record
     ) {
+        const status =
+            getRelatedStatus(
+                record
+            );
+
+        const canInteract =
+            canVote &&
+            status ===
+                "active";
+                
         const selected =
             record
                 ?.luaChonCuaToi;
@@ -527,6 +862,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         );
 
                     button.disabled =
+                        !canInteract ||
                         state.voting ||
                         (
                             hasSelected &&
@@ -563,10 +899,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             elements.voteChange
         ) {
             elements.voteChange.hidden =
-                !allowChange;
+                !allowChange ||
+                !canInteract;
 
             elements.voteChange.disabled =
-                !canVote ||
+                !canInteract ||
                 state.voting;
         }
     }
@@ -695,26 +1032,224 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ? state.upcoming
                 : [];
 
+
+        const filtered =
+            records.filter(
+                record => {
+                    const status =
+                        getRelatedStatus(
+                            record
+                        );
+
+
+                    if (
+                        state.relatedFilter ===
+                        "active"
+                    ) {
+                        return (
+                            status ===
+                            "active"
+                        );
+                    }
+
+
+                    if (
+                        state.relatedFilter ===
+                        "upcoming"
+                    ) {
+                        return (
+                            status ===
+                            "upcoming"
+                        );
+                    }
+
+
+                    return (
+                        status ===
+                            "active" ||
+                        status ===
+                            "upcoming"
+                    );
+                }
+            );
+
+
         elements.upcomingList
             .innerHTML =
-            records
+            filtered
                 .map(
                     renderUpcomingCard
                 )
                 .join("");
 
+
         elements.upcomingEmpty.hidden =
-            records.length >
+            filtered.length >
             0;
+
+
+        renderRelatedEmpty();
+    }
+
+    function getRelatedStatus(
+        record
+    ) {
+        const now =
+            Date.now();
+
+        const startDate =
+            normalizeDate(
+                record
+                    ?.batDauBinhChon
+            );
+
+        const endDate =
+            normalizeDate(
+                record
+                    ?.hanBinhChon
+            );
+
+        const start =
+            startDate
+                ?.getTime();
+
+        const end =
+            endDate
+                ?.getTime();
+
+
+        if (
+            Number.isFinite(
+                end
+            ) &&
+            now >
+                end
+        ) {
+            return "ended";
+        }
+
+
+        if (
+            Number.isFinite(
+                start
+            ) &&
+            now <
+                start
+        ) {
+            return "upcoming";
+        }
+
+
+        if (
+            Number.isFinite(
+                start
+            ) &&
+            Number.isFinite(
+                end
+            ) &&
+            now >=
+                start &&
+            now <=
+                end
+        ) {
+            return "active";
+        }
+
+
+        if (
+            record.source ===
+            "upcoming"
+        ) {
+            return "upcoming";
+        }
+
+
+        if (
+            record.source ===
+            "current"
+        ) {
+            return "active";
+        }
+
+
+        return "other";
+    }
+
+    function renderRelatedEmpty() {
+        if (
+            !elements
+                .relatedEmptyTitle ||
+            !elements
+                .relatedEmptyDescription
+        ) {
+            return;
+        }
+
+
+        if (
+            state.relatedFilter ===
+            "active"
+        ) {
+            elements
+                .relatedEmptyTitle
+                .textContent =
+                "Chưa có bình chọn đang diễn ra";
+
+            elements
+                .relatedEmptyDescription
+                .textContent =
+                "Hiện chưa có đợt bình chọn nào đang diễn ra.";
+
+            return;
+        }
+
+
+        if (
+            state.relatedFilter ===
+            "upcoming"
+        ) {
+            elements
+                .relatedEmptyTitle
+                .textContent =
+                "Chưa có bình chọn sắp tới";
+
+            elements
+                .relatedEmptyDescription
+                .textContent =
+                "Hiện chưa có đợt bình chọn nào được lên lịch.";
+
+            return;
+        }
+
+
+        elements
+            .relatedEmptyTitle
+            .textContent =
+            "Chưa có bình chọn";
+
+        elements
+            .relatedEmptyDescription
+            .textContent =
+            "Hiện chưa có đợt bình chọn đang diễn ra hoặc sắp diễn ra.";
     }
 
     function renderUpcomingCard(
         record
     ) {
-        const date =
-            normalizeDate(
-                record?.ngay
+        const status =
+            getRelatedStatus(
+                record
             );
+
+        const isActive =
+            status ===
+            "active";
+
+        const participated =
+            record?.luaChonCuaToi ===
+                true ||
+            record?.luaChonCuaToi ===
+                false;
 
         const foods =
             flattenFoods(
@@ -723,183 +1258,59 @@ document.addEventListener("DOMContentLoaded", async () => {
                 []
             );
 
-        const foodText =
+
+        const foodHtml =
             foods.length
                 ? foods
+                    .slice(
+                        0,
+                        6
+                    )
                     .map(
-                        getFoodName
+                        food => `
+                            <span
+                                class="
+                                    vote-list-card__food
+                                ">
+                                ${escapeHtml(
+                                    getFoodName(
+                                        food
+                                    )
+                                )}
+                            </span>
+                        `
                     )
-                    .join(
-                        "  •  "
-                    )
-                : "Chưa có món ăn";
-
-        return `
-            <article
-                class="
-                    meal-vote-upcoming-card
-                ">
-
-                <div>
-
-                    <div
-                        class="
-                            meal-vote-upcoming-card__date
-                        ">
-
-                        <span
-                            class="
-                                meal-vote-upcoming-card__calendar
-                            ">
-
-                            <i
-                                class="
-                                    fa-regular
-                                    fa-calendar
-                                ">
-                            </i>
-
-                        </span>
-
-                        <div
-                            class="
-                                meal-vote-upcoming-card__date-text
-                            ">
-
-                            <strong>
-                                ${escapeHtml(
-                                    getWeekday(
-                                        date
-                                    )
-                                )}
-                            </strong>
-
-                            <span>
-                                ${escapeHtml(
-                                    formatDate(
-                                        date
-                                    )
-                                )}
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                    <div
-                        class="
-                            meal-vote-upcoming-card__meal
-                        ">
-
-                        <i
-                            class="
-                                fa-solid
-                                fa-utensils
-                            ">
-                        </i>
-
-                        ${escapeHtml(
-                            record
-                                ?.tenCaAn ||
-                            "Ca ăn"
-                        )}
-
-                    </div>
-
-                </div>
-
-                <div
-                    class="
-                        meal-vote-upcoming-card__body
-                    ">
-
-                    <div
-                        class="
-                            meal-vote-upcoming-card__menu-title
-                        ">
-                        Thực đơn (dự kiến)
-                    </div>
-
-                    <div
-                        class="
-                            meal-vote-upcoming-card__foods
-                        ">
-                        ${escapeHtml(
-                            foodText
-                        )}
-                    </div>
-
-                    <div
-                        class="
-                            meal-vote-upcoming-card__times
-                        ">
-
-                        <div
-                            class="
-                                meal-vote-upcoming-card__time
-                            ">
-
-                            <i
-                                class="
-                                    fa-regular
-                                    fa-clock
-                                ">
-                            </i>
-
-                            <span>
-                                Bắt đầu bình chọn:
-                            </span>
-
-                            <strong>
-                                ${escapeHtml(
-                                    formatDateTimeShort(
-                                        record
-                                            ?.batDauBinhChon
-                                    )
-                                )}
-                            </strong>
-
-                        </div>
-
-                        <div
-                            class="
-                                meal-vote-upcoming-card__time
-                            ">
-
-                            <i
-                                class="
-                                    fa-regular
-                                    fa-clock
-                                ">
-                            </i>
-
-                            <span>
-                                Hạn bình chọn:
-                            </span>
-
-                            <strong>
-                                ${escapeHtml(
-                                    formatDateTimeShort(
-                                        record
-                                            ?.hanBinhChon
-                                    )
-                                )}
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div
-                    class="
-                        meal-vote-upcoming-card__actions
-                    ">
-
+                    .join("")
+                : `
                     <span
                         class="
-                            meal-vote-upcoming-card__status
+                            vote-list-card__food
+                        ">
+                        ${escapeHtml(
+                            record
+                                ?.tenThucDon ||
+                            "Thực đơn"
+                        )}
+                    </span>
+                `;
+
+
+        let informationHtml = "";
+
+
+        if (
+            status ===
+            "upcoming"
+        ) {
+            informationHtml = `
+                <div
+                    class="
+                        vote-list-card__time
+                    ">
+
+                    <div
+                        class="
+                            vote-list-card__time-row
                         ">
 
                         <i
@@ -909,21 +1320,388 @@ document.addEventListener("DOMContentLoaded", async () => {
                             ">
                         </i>
 
-                        Sắp diễn ra
+                        <span>
+                            Bắt đầu bình chọn:
 
+                            <strong>
+                                ${escapeHtml(
+                                    formatDateTimeShort(
+                                        record
+                                            ?.batDauBinhChon
+                                    )
+                                )}
+                            </strong>
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="
+                            vote-list-card__time-row
+                        ">
+
+                        <i
+                            class="
+                                fa-regular
+                                fa-clock
+                            ">
+                        </i>
+
+                        <span>
+                            Hạn bình chọn:
+
+                            <strong>
+                                ${escapeHtml(
+                                    formatDateTimeShort(
+                                        record
+                                            ?.hanBinhChon
+                                    )
+                                )}
+                            </strong>
+                        </span>
+
+                    </div>
+
+                </div>
+            `;
+        } else if (
+            participated
+        ) {
+            const yes =
+                record
+                    .luaChonCuaToi ===
+                true;
+
+            informationHtml = `
+                <div
+                    class="
+                        vote-list-card__selection
+                        ${
+                            yes
+                                ? "is-yes"
+                                : "is-no"
+                        }
+                    ">
+
+                    <i
+                        class="
+                            fa-regular
+                            ${
+                                yes
+                                    ? "fa-circle-check"
+                                    : "fa-circle-xmark"
+                            }
+                        ">
+                    </i>
+
+                    <span>
+                        Bạn đã chọn:
+
+                        <strong>
+                            ${
+                                yes
+                                    ? "Có tham gia"
+                                    : "Không tham gia"
+                            }
+                        </strong>
                     </span>
+
+                </div>
+            `;
+        } else {
+            informationHtml = `
+                <div
+                    class="
+                        vote-list-card__time-row
+                    ">
+
+                    <i
+                        class="
+                            fa-regular
+                            fa-clock
+                        ">
+                    </i>
+
+                    <span>
+                        Hạn bình chọn:
+
+                        <strong>
+                            ${escapeHtml(
+                                formatDateTimeShort(
+                                    record
+                                        ?.hanBinhChon
+                                )
+                            )}
+                        </strong>
+                    </span>
+
+                </div>
+            `;
+        }
+
+
+        const statistics =
+            record?.thongKe ||
+            {};
+
+        const statisticsHtml =
+            isActive
+                ? `
+                    <div
+                        class="
+                            vote-list-card__stats
+                        ">
+
+                        <span
+                            class="
+                                vote-list-card__stat
+                                vote-list-card__stat--yes
+                            ">
+
+                            <i
+                                class="
+                                    fa-regular
+                                    fa-circle-check
+                                ">
+                            </i>
+
+                            Có tham gia:
+
+                            <strong>
+                                ${Number(
+                                    statistics
+                                        .coThamGia ||
+                                    0
+                                )}
+                            </strong>
+
+                        </span>
+
+
+                        <span
+                            class="
+                                vote-list-card__stat
+                                vote-list-card__stat--no
+                            ">
+
+                            <i
+                                class="
+                                    fa-regular
+                                    fa-circle-xmark
+                                ">
+                            </i>
+
+                            Không tham gia:
+
+                            <strong>
+                                ${Number(
+                                    statistics
+                                        .khongThamGia ||
+                                    0
+                                )}
+                            </strong>
+
+                        </span>
+
+                    </div>
+                `
+                : "";
+
+
+        let statusClass =
+            "vote-list-status--upcoming";
+
+        let statusText =
+            "Sắp diễn ra";
+
+
+        if (
+            isActive &&
+            participated
+        ) {
+            statusClass =
+                "vote-list-status--participated";
+
+            statusText =
+                "Đã tham gia";
+        } else if (
+            isActive
+        ) {
+            statusClass =
+                "vote-list-status--active";
+
+            statusText =
+                "Đang diễn ra";
+        }
+
+
+        const href =
+            buildVoteDetailUrl(
+                record
+            );
+
+
+        return `
+            <article
+                class="
+                    vote-list-card
+                    ${
+                        isActive
+                            ? "is-current"
+                            : ""
+                    }
+                ">
+
+                <div
+                    class="
+                        vote-list-card__date
+                    ">
+
+                    <div
+                        class="
+                            vote-list-card__weekday
+                        ">
+
+                        <i
+                            class="
+                                fa-regular
+                                fa-calendar
+                            ">
+                        </i>
+
+                        <span>
+                            ${escapeHtml(
+                                getWeekday(
+                                    record?.ngay
+                                )
+                            )}
+                        </span>
+
+                    </div>
+
+
+                    <strong
+                        class="
+                            vote-list-card__date-value
+                        ">
+                        ${escapeHtml(
+                            formatDate(
+                                record?.ngay
+                            )
+                        )}
+                    </strong>
+
+
+                    <div
+                        class="
+                            vote-list-card__meal
+                        ">
+
+                        <i class="fa-solid fa-utensils"></i>
+
+                        <span>
+                            ${escapeHtml(
+                                record
+                                    ?.tenCaAn ||
+                                "Ca ăn"
+                            )}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="
+                        vote-list-card__body
+                    ">
+
+                    <h2>
+                        ${escapeHtml(
+                            record
+                                ?.tenThucDon ||
+                            "Bình chọn tham gia ăn"
+                        )}
+                    </h2>
+
+
+                    <div
+                        class="
+                            vote-list-card__foods
+                        ">
+                        ${foodHtml}
+                    </div>
+
+
+                    ${informationHtml}
+
+                    ${statisticsHtml}
+
+                </div>
+
+
+                <div
+                    class="
+                        vote-list-card__actions
+                    ">
+
+                    <span
+                        class="
+                            vote-list-status
+                            ${statusClass}
+                        ">
+                        ${statusText}
+                    </span>
+
+
+                    ${
+                        isActive &&
+                        !participated
+                            ? `
+                                <div
+                                    class="
+                                        vote-list-card__notice
+                                    ">
+
+                                    <i
+                                        class="
+                                            fa-solid
+                                            fa-circle-info
+                                        ">
+                                    </i>
+
+                                    <span>
+                                        Bạn chưa bình chọn
+                                    </span>
+
+                                </div>
+                            `
+                            : ""
+                    }
+
 
                     <a
                         href="${escapeAttribute(
-                            buildMenuDetailUrl(
-                                record
-                            )
+                            href
                         )}"
                         class="
-                            meal-vote-upcoming-card__link
+                            vote-list-card__action
+                            ${
+                                isActive
+                                    ? "is-primary"
+                                    : ""
+                            }
                         ">
 
-                        Xem thực đơn
+                        <span>
+                            ${
+                                isActive
+                                    ? "Vào bình chọn"
+                                    : "Xem chi tiết"
+                            }
+                        </span>
 
                         <i
                             class="
@@ -941,6 +1719,49 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function bindEvents() {
+        elements.relatedTabs
+            .forEach(
+                button => {
+                    button.addEventListener(
+                        "click",
+                        () => {
+                            const filter =
+                                button.dataset
+                                    .relatedTab;
+
+
+                            if (
+                                !filter ||
+                                state.relatedFilter ===
+                                    filter
+                            ) {
+                                return;
+                            }
+
+
+                            state.relatedFilter =
+                                filter;
+
+
+                            elements.relatedTabs
+                                .forEach(
+                                    item => {
+                                        item.classList
+                                            .toggle(
+                                                "is-active",
+                                                item ===
+                                                    button
+                                            );
+                                    }
+                                );
+
+
+                            renderUpcoming();
+                        }
+                    );
+                }
+            );
+            
         elements.voteButtons
             .forEach(
                 button => {
@@ -1245,6 +2066,37 @@ document.addEventListener("DOMContentLoaded", async () => {
             "/" +
             encodeURIComponent(
                 thucDonNgayId
+            )
+        );
+    }
+
+    function buildVoteDetailUrl(
+        record
+    ) {
+        const recordThucDonId =
+            record?.thucDonId;
+
+        const recordId =
+            record?.id ??
+            record?.dotBinhChonId;
+
+
+        if (
+            !recordThucDonId ||
+            !recordId
+        ) {
+            return "#";
+        }
+
+
+        return (
+            "/binh-chon/chi-tiet-binh-chon/" +
+            encodeURIComponent(
+                recordThucDonId
+            ) +
+            "/" +
+            encodeURIComponent(
+                recordId
             )
         );
     }

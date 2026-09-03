@@ -1715,3 +1715,324 @@ Nếu một nghiệp vụ có quy tắc làm tròn riêng được quy định r
 
 ---
 
+---
+
+## 16. BAT_BUOC_CHON_NHOM_MON**
+
+**Mã:** `BAT_BUOC_CHON_NHOM_MON`
+
+**Giá trị:** `true` hoặc `false`.
+
+**Mô tả:**
+
+Quy định khi xây dựng nội dung thực đơn, hệ thống có bắt buộc người dùng phải chọn **nhóm món ăn** trước khi được phép chọn **món ăn** hay không.
+
+Thiết lập này dùng để kiểm soát luồng:
+
+`Nhóm món ăn → Món ăn`
+
+---
+
+### Giá trị `true`
+
+Nếu:
+
+`BAT_BUOC_CHON_NHOM_MON = true`
+
+thì hệ thống bắt buộc người dùng phải chọn nhóm món ăn trước khi thêm hoặc chọn món ăn.
+
+Luồng xử lý:
+
+`Chọn nhóm món ăn → Chọn món ăn`
+
+Nếu chưa có nhóm món ăn được chọn thì hệ thống không cho phép thực hiện thao tác chọn món.
+
+Ví dụ:
+
+Người dùng đang tạo nội dung thực đơn.
+
+Chưa chọn:
+
+`Nhóm món ăn`
+
+và thực hiện:
+
+`Thêm món ăn`
+
+thì hệ thống không cho phép tiếp tục.
+
+Có thể hiển thị thông báo:
+
+`Vui lòng chọn nhóm món ăn trước khi chọn món ăn.`
+
+Sau khi người dùng chọn:
+
+`Món mặn`
+
+thì mới có thể tiếp tục chọn các món như:
+
+- Thịt kho tàu.
+- Cá kho.
+- Gà kho.
+- Các món ăn khác.
+
+Món ăn được chọn sẽ thuộc nhóm món ăn đang được thao tác.
+
+---
+
+### Giá trị `false`
+
+Nếu:
+
+`BAT_BUOC_CHON_NHOM_MON = false`
+
+thì hệ thống không bắt buộc người dùng phải chọn nhóm món ăn trước khi chọn món.
+
+Người dùng có thể thực hiện thao tác chọn món mà không cần phải đi qua bước chọn nhóm món trước.
+
+Ví dụ:
+
+Người dùng có thể mở trực tiếp chức năng:
+
+`Chọn món ăn`
+
+mà chưa cần chọn:
+
+`Nhóm món ăn`
+
+Việc xác định nhóm món của món ăn có thể được xử lý bởi nghiệp vụ khác của hệ thống, ví dụ:
+
+- Lấy theo nhóm mặc định của món ăn.
+- Lấy theo thông tin danh mục món ăn.
+- Cho phép xác định nhóm ở bước tiếp theo.
+- Không sử dụng nhóm món trong trường hợp nghiệp vụ cho phép.
+
+Thiết lập này chỉ bỏ yêu cầu **phải chọn nhóm trước**, không tự động thay đổi dữ liệu nhóm món ăn.
+
+---
+
+### Các giá trị hợp lệ
+
+Thiết lập chỉ chấp nhận hai giá trị:
+
+- `true`
+- `false`
+
+Không chấp nhận các giá trị khác như:
+
+- `1`
+- `0`
+- `yes`
+- `no`
+- `abc`
+- Chuỗi rỗng.
+- Giá trị `null`.
+- Các chuỗi không thể xác định rõ thành `true` hoặc `false`.
+
+---
+
+### Giá trị mặc định
+
+Nếu:
+
+- Không tồn tại thiết lập.
+- Không lấy được giá trị thiết lập.
+- Thiết lập có `active = false`.
+- Giá trị để trống.
+- Giá trị không phải `true` hoặc `false`.
+- Giá trị thiết lập không hợp lệ.
+
+thì hệ thống sử dụng giá trị mặc định:
+
+`true`
+
+Tức là mặc định hệ thống áp dụng luồng:
+
+`Chọn nhóm món ăn → Chọn món ăn`
+
+Người dùng phải chọn nhóm món ăn trước khi được phép chọn món.
+
+Việc đặt mặc định là `true` giúp giữ nguyên luồng xây dựng thực đơn hiện tại nếu thiết lập chưa được cấu hình.
+
+---
+
+### Quy tắc khi giá trị là `true`
+
+Khi:
+
+`BAT_BUOC_CHON_NHOM_MON = true`
+
+trước khi mở chức năng chọn món, hệ thống phải kiểm tra đã xác định nhóm món ăn hay chưa.
+
+Ví dụ:
+
+Nếu:
+
+`nhomMonAnId = null`
+
+thì:
+
+`Không cho phép chọn món`
+
+Nếu:
+
+`nhomMonAnId = 4`
+
+thì:
+
+`Cho phép chọn món`
+
+Ví dụ luồng:
+
+`Món kho`
+
+↓
+
+`Chọn món`
+
+↓
+
+- Thịt kho tàu.
+- Cá kho.
+- Gà kho.
+
+Các món được thêm vào nhóm:
+
+`Món kho`
+
+---
+
+### Quy tắc khi giá trị là `false`
+
+Khi:
+
+`BAT_BUOC_CHON_NHOM_MON = false`
+
+hệ thống không được chặn thao tác chọn món chỉ vì chưa có nhóm món ăn được chọn.
+
+Ví dụ:
+
+`nhomMonAnId = null`
+
+vẫn có thể:
+
+`Mở danh sách món ăn`
+
+và:
+
+`Chọn món ăn`
+
+Tuy nhiên, nếu nghiệp vụ lưu thực đơn yêu cầu món ăn cuối cùng phải thuộc một nhóm thì việc kiểm tra đó vẫn phải được thực hiện tại bước lưu hoặc bước xử lý nghiệp vụ tương ứng.
+
+Thiết lập này không có nghĩa là:
+
+`Món ăn không cần nhóm`
+
+mà chỉ có nghĩa là:
+
+`Không bắt buộc phải chọn nhóm trước khi mở hoặc thực hiện thao tác chọn món`.
+
+---
+
+### Phạm vi áp dụng
+
+Thiết lập có thể được áp dụng tại các chức năng xây dựng nội dung thực đơn như:
+
+- Tạo thực đơn.
+- Cập nhật thực đơn.
+- Thêm nhóm món ăn.
+- Thêm món ăn vào ngày thực đơn.
+- Chỉnh sửa nội dung nhóm món.
+- Chọn món từ danh mục món ăn.
+- Các màn hình biên tập nội dung thực đơn khác có luồng nhóm món và món ăn.
+
+---
+
+### Thiết lập không thay đổi
+
+Thiết lập này không thay đổi:
+
+- Danh mục nhóm món ăn.
+- Danh mục món ăn.
+- Quan hệ mặc định giữa món ăn và nhóm món ăn nếu đã tồn tại.
+- Dữ liệu nhóm món đã lưu trong thực đơn.
+- Dữ liệu món ăn đã lưu trong thực đơn.
+- Cấu trúc bảng dữ liệu.
+- Quyền thêm, sửa hoặc xóa món ăn.
+- Quyền thêm, sửa hoặc xóa nhóm món ăn.
+
+Thiết lập chỉ kiểm soát việc:
+
+`Có bắt buộc chọn nhóm món trước khi chọn món hay không`.
+
+---
+
+### Ví dụ tổng quát
+
+Nếu:
+
+`BAT_BUOC_CHON_NHOM_MON = true`
+
+thì:
+
+`Chưa chọn nhóm món`
+
+↓
+
+`Không thể chọn món`
+
+↓
+
+`Chọn nhóm món`
+
+↓
+
+`Có thể chọn món`
+
+Ví dụ:
+
+`Món chiên → Gà chiên`
+
+---
+
+Nếu:
+
+`BAT_BUOC_CHON_NHOM_MON = false`
+
+thì:
+
+`Chưa chọn nhóm món`
+
+↓
+
+`Vẫn có thể chọn món`
+
+↓
+
+Hệ thống tiếp tục xử lý nhóm món theo nghiệp vụ được cấu hình.
+
+---
+
+### Ý nghĩa nghiệp vụ
+
+Thiết lập `BAT_BUOC_CHON_NHOM_MON` giúp hệ thống linh hoạt giữa hai cách xây dựng thực đơn:
+
+**Luồng có cấu trúc chặt chẽ:**
+
+`Nhóm món → Món ăn`
+
+Sử dụng khi:
+
+`BAT_BUOC_CHON_NHOM_MON = true`
+
+**Luồng linh hoạt:**
+
+`Có thể chọn món trước`
+
+Sử dụng khi:
+
+`BAT_BUOC_CHON_NHOM_MON = false`
+
+Thiết lập này nên được kiểm tra trước khi giao diện thực hiện thao tác mở danh sách chọn món hoặc thêm món vào nội dung thực đơn.
+
+---

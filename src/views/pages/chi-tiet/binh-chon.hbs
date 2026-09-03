@@ -1,10 +1,16 @@
 <link
     rel="stylesheet"
+    href="/assets/css/pages/chi-tiet/danh-sach-binh-chon.css">
+
+<link
+    rel="stylesheet"
     href="/assets/css/pages/chi-tiet/binh-chon.css">
 
 <main
     class="meal-vote-page"
-    data-meal-vote-page>
+    data-meal-vote-page
+    data-thuc-don-id="{{thucDonId}}"
+    data-dot-binh-chon-id="{{dotBinhChonId}}">
 
     <div
         class="meal-vote-page__content"
@@ -410,16 +416,40 @@
         </section>
 
         <section class="meal-vote-upcoming">
-            <div class="meal-vote-upcoming__header">
-                <h2>
-                    Các bình chọn sắp tới
-                </h2>
+
+            <div
+                class="meal-vote-related-tabs"
+                data-related-tabs>
+
+                <button
+                    type="button"
+                    class="meal-vote-related-tab is-active"
+                    data-related-tab="all">
+                    Tất cả
+                </button>
+
+                <button
+                    type="button"
+                    class="meal-vote-related-tab"
+                    data-related-tab="active">
+                    Đang diễn ra
+                </button>
+
+                <button
+                    type="button"
+                    class="meal-vote-related-tab"
+                    data-related-tab="upcoming">
+                    Sắp diễn ra
+                </button>
+
             </div>
+
 
             <div
                 class="meal-vote-upcoming__list"
                 data-upcoming-list>
             </div>
+
 
             <div
                 class="meal-vote-upcoming__empty"
@@ -431,14 +461,16 @@
                     aria-hidden="true">
                 </i>
 
-                <strong>
-                    Chưa có bình chọn sắp tới
+                <strong data-related-empty-title>
+                    Chưa có bình chọn
                 </strong>
 
-                <span>
-                    Hiện chưa có đợt bình chọn nào được lên lịch.
+                <span data-related-empty-description>
+                    Hiện chưa có đợt bình chọn phù hợp.
                 </span>
+
             </div>
+
         </section>
     </div>
 

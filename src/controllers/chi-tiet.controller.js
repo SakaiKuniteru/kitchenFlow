@@ -33,7 +33,7 @@ class ChiTietWebController {
 
         try {
 
-            const {id1, id2 } = req.params;
+            const {thucDonId, thucDonNgayId } = req.params;
             return renderPage(
                 req,
                 res,
@@ -41,8 +41,8 @@ class ChiTietWebController {
                 {
                     title: "Chi tiết thực đơn",
                     pageDescription: "Thông tin chi tiết thực đơn.",
-                    thucDonId: id1,
-                    thucDonNgayId: id2,
+                    thucDonId: thucDonId,
+                    thucDonNgayId: thucDonNgayId,
                 }
             );
 
@@ -81,6 +81,24 @@ class ChiTietWebController {
         next
     ) {
         try {
+            const thucDonId = Number(req.params.thucDonId);
+            const dotBinhChonId = Number(req.params.dotBinhChonId);
+            if (
+                !Number.isInteger(
+                    thucDonId
+                ) ||
+                thucDonId <= 0 ||
+                !Number.isInteger(
+                    dotBinhChonId
+                ) ||
+                dotBinhChonId <= 0
+            ) {
+                return res.redirect(
+                    "/binh-chon/danh-sach-binh-chon"
+                );
+            }
+
+
             return renderPage(
                 req,
                 res,
@@ -88,6 +106,9 @@ class ChiTietWebController {
                 {
                     title: "Bình chọn",
                     pageDescription: "Danh sách bình chọn của tài khoản.",
+                    thucDonId,
+                    dotBinhChonId,
+
                     breadcrumbs: [
                         {
                             label: "Danh sách bình chọn",
@@ -121,7 +142,7 @@ class ChiTietWebController {
                     breadcrumbs: [
                         {
                             label: "Bình chọn",
-                            path: "/binh-chon/chi-tiet-binh-chon"
+                            path: "/binh-chon/chi-tiet-binh-chon/:thucDonId/:dotBinhChonId",
                         },
                         {
                             label: "Lịch sử bình chọn"

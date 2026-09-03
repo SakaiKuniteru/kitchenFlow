@@ -18,7 +18,8 @@ const MA_THIET_LAP = {
     SO_NAM_HIEN_THI_THUC_DON_THANG: "SO_NAM_HIEN_THI_THUC_DON_THANG",
     QUY_TAC_CHON_DON_VI_QUY_DOI: "QUY_TAC_CHON_DON_VI_QUY_DOI",
     QUY_TAC_LAM_TRON: "QUY_TAC_LAM_TRON",
-    SO_CHU_SO_SAU_DAU_PHAY: "SO_CHU_SO_SAU_DAU_PHAY"
+    SO_CHU_SO_SAU_DAU_PHAY: "SO_CHU_SO_SAU_DAU_PHAY",
+    BAT_BUOC_CHON_NHOM_MON: "BAT_BUOC_CHON_NHOM_MON"
 };
 
 class CauHinhService {
@@ -123,6 +124,12 @@ class CauHinhService {
                 return {
                     ma: maThietLap,
                     giaTri: await this.getSoChuSoSauDauPhay()
+                };
+
+            case MA_THIET_LAP.BAT_BUOC_CHON_NHOM_MON:
+                return {
+                    ma: maThietLap,
+                    giaTri: await this.getBatBuocChonNhomMon()
                 };
 
                     default: return this.resolveMacDinh(thietLap);
@@ -610,6 +617,43 @@ class CauHinhService {
 
         return giaTri;
 
+    }
+
+    async getBatBuocChonNhomMon() {
+        const MAC_DINH = true;
+
+        const thietLap =
+            await cauHinhRepository
+                .getThietLapByMa(
+                    MA_THIET_LAP.BAT_BUOC_CHON_NHOM_MON
+                );
+
+        if (
+            !thietLap ||
+            thietLap.active !== true
+        ) {
+            return MAC_DINH;
+        }
+
+        const giaTri =
+            String(
+                thietLap.gia_tri ??
+                ""
+            )
+                .trim()
+                .toLowerCase();
+
+        if (
+            giaTri !== "true" &&
+            giaTri !== "false"
+        ) {
+            return MAC_DINH;
+        }
+
+        return (
+            giaTri ===
+            "true"
+        );
     }
 }
 

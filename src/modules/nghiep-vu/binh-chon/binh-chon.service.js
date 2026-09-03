@@ -1417,28 +1417,83 @@ class BinhChonSuatAnService {
 
     }
 
-
     async getLichSuCuaToi(
         taiKhoanId,
         query = {}
     ) {
-
         const accountId =
             this.parseTaiKhoanId(
                 taiKhoanId
             );
 
 
-        return await binhChonRepository
-            .getLichSuCuaToi(
-                accountId,
-                this.chuanHoaFilterLichSu(
-                    query
-                )
-            );
+        const danhSach =
+            await binhChonRepository
+                .getLichSuCuaToi(
+                    accountId,
+                    this.chuanHoaFilterLichSu(
+                        query
+                    )
+                );
 
+
+        const data = [];
+
+
+        for (
+            const dot of
+            danhSach
+        ) {
+            const [
+                dsNhomMonAn,
+                thongKe
+            ] =
+                await Promise.all([
+                    binhChonRepository
+                        .getDanhSachMonAn(
+                            dot.id
+                        ),
+
+                    binhChonRepository
+                        .getThongKe(
+                            dot.id
+                        )
+                ]);
+
+
+            const luaChon =
+                dot.luaChonCuaToi ??
+                dot.luaChon ??
+                null;
+
+
+            data.push({
+                ...this.mapResponse(
+                    dot
+                ),
+
+                dotBinhChonId:
+                    dot.id,
+
+                luaChonCuaToi:
+                    luaChon,
+
+                luaChon:
+                    luaChon,
+
+                thoiGianBinhChon:
+                    dot.thoiGianBinhChon ??
+                    null,
+
+                dsNhomMonAn,
+
+                thongKe
+            });
+        }
+
+
+        return data;
     }
-
 
     async getThongKe(
         id

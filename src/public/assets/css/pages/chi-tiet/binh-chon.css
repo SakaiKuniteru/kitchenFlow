@@ -667,11 +667,53 @@
     gap: 14px;
 }
 
-.meal-vote-upcoming__header h2 {
-    margin: 0;
-    color: var(--color-text-primary);
-    font-size: 21px;
-    font-weight: 800;
+.meal-vote-related-tabs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.meal-vote-related-tab {
+    display: inline-flex;
+    min-height: 42px;
+    padding: 0 18px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    border-radius: 9px;
+    color: var(--color-text-secondary);
+    background: var(--color-surface);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+    transition:
+        color var(--transition-fast),
+        border-color var(--transition-fast),
+        background-color var(--transition-fast);
+}
+
+.meal-vote-related-tab:hover {
+    color: var(--color-primary);
+    border-color: #bfdbfe;
+    background: var(--color-primary-soft);
+}
+
+.meal-vote-related-tab.is-active {
+    color: var(--color-primary);
+    border-color: #bfdbfe;
+    background: #eff6ff;
+}
+
+.meal-vote-upcoming-card__status.is-active {
+    color: #16a34a;
+    background: #f0fdf4;
+}
+
+.meal-vote-upcoming-card__status.is-upcoming {
+    color: #d97706;
+    background: #fff7ed;
 }
 
 .meal-vote-upcoming__list {
@@ -903,6 +945,11 @@
         700ms
         linear
         infinite;
+}
+
+.meal-vote-status--ended {
+    color: #64748b;
+    background: #f1f5f9;
 }
 
 @keyframes meal-vote-spin {

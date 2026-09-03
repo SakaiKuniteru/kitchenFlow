@@ -163,7 +163,7 @@ const chiTietRoutes = [
     },
     {
         method: "get",
-        path: "/thong-tin-chi-tiet-thuc-don/:id1/:id2",
+        path: "/thong-tin-chi-tiet-thuc-don/:thucDonId/:thucDonNgayId",
         handler: chiTietWebController.thucDon
     },
     {
@@ -173,7 +173,7 @@ const chiTietRoutes = [
     },
     {
         method: "get",
-        path: "/binh-chon/chi-tiet-binh-chon",
+        path: "/binh-chon/chi-tiet-binh-chon/:thucDonId/:dotBinhChonId",
         handler: chiTietWebController.binhChon
     },
     {

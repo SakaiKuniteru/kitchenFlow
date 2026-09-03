@@ -726,7 +726,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                                     <div class="vote-list-card__notice">
 
                                         <i
-                                            class="fa-regular fa-circle-info">
+                                            class="fa-solid fa-circle-info">
                                         </i>
 
                                         <span>
@@ -875,33 +875,79 @@ document.addEventListener("DOMContentLoaded", async () => {
         record,
         status
     ) {
+        const thucDonId =
+            record.thucDonId;
+
+        const dotBinhChonId =
+            record.id;
+
+
+        const href =
+            buildVoteDetailUrl(
+                thucDonId,
+                dotBinhChonId
+            );
+
+
         if (status === "active") {
             return {
-                label: "Vào bình chọn",
-                href: `/binh-chon?id=${encodeURIComponent(
-                    record.id
-                )}`,
-                primary: true
+                label:
+                    "Vào bình chọn",
+
+                href,
+
+                primary:
+                    true
             };
         }
+
 
         if (status === "ended") {
             return {
-                label: "Xem kết quả",
-                href: `/binh-chon?id=${encodeURIComponent(
-                    record.id
-                )}`,
-                primary: false
+                label:
+                    "Xem kết quả",
+
+                href,
+
+                primary:
+                    false
             };
         }
 
+
         return {
-            label: "Xem chi tiết",
-            href: `/binh-chon?id=${encodeURIComponent(
-                record.id
-            )}`,
-            primary: false
+            label:
+                "Xem chi tiết",
+
+            href,
+
+            primary:
+                false
         };
+    }
+
+    function buildVoteDetailUrl(
+        thucDonId,
+        dotBinhChonId
+    ) {
+        if (
+            !thucDonId ||
+            !dotBinhChonId
+        ) {
+            return "#";
+        }
+
+
+        return (
+            "/binh-chon/chi-tiet-binh-chon/" +
+            encodeURIComponent(
+                thucDonId
+            ) +
+            "/" +
+            encodeURIComponent(
+                dotBinhChonId
+            )
+        );
     }
 
     function getFoodNames(record) {
