@@ -2046,6 +2046,67 @@ class BinhChonSuatAnRepository {
 
     }
 
+    async getTaiKhoanNhanThongBao(
+        dotBinhChonId
+    ) {
+
+        const result =
+            await pool.query(
+                `
+                    SELECT DISTINCT
+                        tk.id
+
+                    FROM nv_dot_binh_chon dbc
+
+                    INNER JOIN ct_thuc_don_ngay tdn
+                        ON tdn.id =
+                        dbc.thuc_don_ngay_id
+
+                    INNER JOIN nv_thuc_don td
+                        ON td.id =
+                        tdn.thuc_don_id
+
+                    INNER JOIN ct_nha_an_nhan_vien nanv
+                        ON nanv.nha_an_id =
+                        td.nha_an_id
+
+                    AND nanv.active =
+                        TRUE
+
+                    INNER JOIN dm_tai_khoan tk
+                        ON tk.nhan_vien_id =
+                        nanv.nhan_vien_id
+
+                    INNER JOIN dm_nhan_vien nv
+                        ON nv.id =
+                        tk.nhan_vien_id
+
+                    WHERE dbc.id = $1
+
+                    AND tk.active =
+                        TRUE
+
+                    AND tk.bi_khoa =
+                        FALSE
+
+                    AND nv.active =
+                        TRUE
+                `,
+                [
+                    dotBinhChonId
+                ]
+            );
+
+
+        return result.rows.map(
+            row =>
+                Number(
+                    row.id
+                )
+        );
+
+    }
+
     async existsMonAnTheoThucDonNgay(
         thucDonNgayId
     ) {
@@ -2138,7 +2199,6 @@ class BinhChonSuatAnRepository {
         return result.rowCount > 0;
 
     }
-
 
     async kiemTraDuocBinhChon(
         dotBinhChonId,
@@ -2302,16 +2362,26 @@ class BinhChonSuatAnRepository {
         const result =
             await pool.query(
                 `
-
                     UPDATE nv_dot_binh_chon
 
                     SET
-
                         trang_thai = 20,
 
                         nguoi_gui_id = $1,
 
                         thoi_gian_gui =
+                            LOCALTIMESTAMP,
+
+                        nguoi_huy_id =
+                            NULL,
+
+                        thoi_gian_huy =
+                            NULL,
+
+                        ly_do_huy =
+                            NULL,
+
+                        updated_at =
                             LOCALTIMESTAMP
 
                     WHERE id = $2
@@ -2322,7 +2392,6 @@ class BinhChonSuatAnRepository {
                     )
 
                     RETURNING id
-
                 `,
                 [
                     nguoiGuiId,
@@ -2331,9 +2400,13 @@ class BinhChonSuatAnRepository {
             );
 
 
-        return result.rows[0] || null;
+        return (
+            result.rows[0] ||
+            null
+        );
 
     }
+
     async huy(
         id,
         nguoiHuyId,
@@ -2373,6 +2446,81 @@ class BinhChonSuatAnRepository {
 
 
         return result.rows[0] || null;
+
+    }
+
+    async remove(
+        id
+    ) {
+
+        const client =
+            await pool.connect();
+
+
+        try {
+
+            await client.query(
+                "BEGIN"
+            );
+
+
+            await client.query(
+                `
+                    DELETE FROM ct_binh_chon_suat_an
+                    WHERE dot_binh_chon_id = $1
+                `,
+                [
+                    id
+                ]
+            );
+
+
+            const result =
+                await client.query(
+                    `
+                        DELETE FROM nv_dot_binh_chon
+
+                        WHERE id = $1
+
+                        AND trang_thai IN (
+                            10,
+                            30
+                        )
+
+                        RETURNING id
+                    `,
+                    [
+                        id
+                    ]
+                );
+
+
+            await client.query(
+                "COMMIT"
+            );
+
+
+            return (
+                result.rows[0] ||
+                null
+            );
+
+        } catch (
+            error
+        ) {
+
+            await client.query(
+                "ROLLBACK"
+            );
+
+
+            throw error;
+
+        } finally {
+
+            client.release();
+
+        }
 
     }
 

@@ -1388,6 +1388,47 @@ class ThongBaoRepository {
         );
     }
 
+    async thuHoiDuongDanTheoThamChieu(
+        loaiThamChieu,
+        thamChieuId,
+        maSuKien,
+        client = pool
+    ) {
+
+        const result =
+            await client.query(
+                `
+                    UPDATE nv_thong_bao
+
+                    SET
+                        duong_dan = NULL,
+                        updated_at = NOW()
+
+                    WHERE tu_dong = TRUE
+
+                    AND loai_tham_chieu = $1
+
+                    AND tham_chieu_id = $2
+
+                    AND ma_su_kien = $3
+
+                    AND trang_thai = 20
+
+                    AND duong_dan IS NOT NULL
+
+                    RETURNING id
+                `,
+                [
+                    loaiThamChieu,
+                    thamChieuId,
+                    maSuKien
+                ]
+            );
+
+
+        return result.rows;
+
+    }
 
     async getTaiKhoanIdsTrucTiep(
         taiKhoanIds,
@@ -1489,7 +1530,6 @@ class ThongBaoRepository {
         );
     }
 
-
     async danhDauDaGui(
         id,
         client = pool
@@ -1499,11 +1539,14 @@ class ThongBaoRepository {
             await client.query(
                 `
                     UPDATE nv_thong_bao
+
                     SET
                         trang_thai = 20,
                         thoi_gian_gui = NOW(),
                         updated_at = NOW()
+
                     WHERE id = $1
+
                     RETURNING id
                 `,
                 [
@@ -1516,8 +1559,8 @@ class ThongBaoRepository {
             result.rows[0] ||
             null
         );
-    }
 
+    }
 
     async danhDauDaHuy(
         id,
@@ -1528,10 +1571,13 @@ class ThongBaoRepository {
             await client.query(
                 `
                     UPDATE nv_thong_bao
+
                     SET
                         trang_thai = 30,
                         updated_at = NOW()
+
                     WHERE id = $1
+
                     RETURNING id
                 `,
                 [
@@ -1544,6 +1590,7 @@ class ThongBaoRepository {
             result.rows[0] ||
             null
         );
+
     }
 
 }

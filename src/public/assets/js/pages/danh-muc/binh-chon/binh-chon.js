@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "/api/mcs/v1/binh-chon";
 
     const API_TRANG_THAI =
-        "/api/mcs/v1/enums?name=trangThaiThongBao";
+        "/api/mcs/v1/enums?name=trangThaiTaoBinhChon";
 
     const API_THUC_DON_NGAY_HOP_LE =
         `${API_BASE}/thuc-don-ngay-hop-le`;

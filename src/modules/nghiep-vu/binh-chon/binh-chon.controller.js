@@ -509,6 +509,40 @@ class BinhChonSuatAnController {
 
     }
 
+    async remove(
+        req,
+        res,
+        next
+    ) {
+
+        try {
+
+            const data =
+                await binhChonService
+                    .remove(
+                        req.params.id
+                    );
+
+
+            return successResponse(
+                res,
+                "Xóa đợt bình chọn thành công.",
+                data,
+                200
+            );
+
+        } catch (
+            error
+        ) {
+
+            next(
+                error
+            );
+
+        }
+
+    }
+
 }
 
 

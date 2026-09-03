@@ -4,25 +4,32 @@ const ApiError =
     );
 
 const {
-    trangThaiThongBao:
-        danhSachTrangThaiThongBao
-} =
-    require(
-        "../../../constants/enums"
-    );
+    trangThaiTaoBinhChon: danhSachTrangThaiTaoBinhChon,
+    loaiDoiTuong: danhSachLoaiDoiTuong
+} = require("../../../constants/enums");
 
 const binhChonRepository =
     require(
         "./binh-chon.repository"
     );
 
+const thongBaoService =
+    require(
+        "../thong-bao/thong-bao.service"
+    );
 
-const TRANG_THAI = {
-    TAO_MOI: 10,
-    DA_GUI: 20,
-    DA_HUY: 30
+const THONG_BAO_BINH_CHON = {
+
+    GUI:
+        "BINH_CHON_SUAT_AN_GUI",
+
+    HUY:
+        "BINH_CHON_SUAT_AN_HUY",
+
+    LOAI_THAM_CHIEU:
+        "DOT_BINH_CHON_SUAT_AN"
+
 };
-
 
 class BinhChonSuatAnService {
 
@@ -53,6 +60,245 @@ class BinhChonSuatAnService {
 
     }
 
+    formatNgay(
+        value
+    ) {
+
+        if (
+            !value
+        ) {
+
+            return "-";
+
+        }
+
+
+        const date =
+            new Date(
+                value
+            );
+
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return "-";
+
+        }
+
+
+        return new Intl.DateTimeFormat(
+            "vi-VN",
+            {
+                timeZone:
+                    "Asia/Ho_Chi_Minh",
+
+                day:
+                    "2-digit",
+
+                month:
+                    "2-digit",
+
+                year:
+                    "numeric"
+            }
+        ).format(
+            date
+        );
+
+    }
+
+    formatNgayGio(
+        value
+    ) {
+
+        if (
+            !value
+        ) {
+
+            return "-";
+
+        }
+
+
+        const date =
+            new Date(
+                value
+            );
+
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return "-";
+
+        }
+
+
+        return new Intl.DateTimeFormat(
+            "vi-VN",
+            {
+                timeZone:
+                    "Asia/Ho_Chi_Minh",
+
+                day:
+                    "2-digit",
+
+                month:
+                    "2-digit",
+
+                year:
+                    "numeric",
+
+                hour:
+                    "2-digit",
+
+                minute:
+                    "2-digit",
+
+                hour12:
+                    false
+            }
+        ).format(
+            date
+        );
+
+    }
+
+    getTenBinhChon(
+        dot
+    ) {
+
+        const tenThucDon =
+            String(
+                dot?.tenThucDon ||
+                ""
+            ).trim() ||
+            `#${dot?.id}`;
+
+
+        const ngay =
+            this.formatNgay(
+                dot?.ngay
+            );
+
+
+        return ngay !==
+            "-"
+            ? `${tenThucDon} - ${ngay}`
+            : tenThucDon;
+
+    }
+
+    buildNoiDungThongBaoGui(
+        dot
+    ) {
+
+        return [
+            "Bạn có một đợt bình chọn suất ăn mới.",
+            "",
+            `Thực đơn: ${dot?.tenThucDon || "-"}`,
+            `Ngày áp dụng: ${this.formatNgay(dot?.ngay)}`,
+            `Nhà ăn: ${dot?.tenNhaAn || "-"}`,
+            `Ca ăn: ${dot?.tenCaAn || "-"}`,
+            `Bắt đầu bình chọn: ${this.formatNgayGio(dot?.batDauBinhChon)}`,
+            `Hạn bình chọn: ${this.formatNgayGio(dot?.hanBinhChon)}`
+        ].join(
+            "\n"
+        );
+
+    }
+
+    buildDuongDanBinhChon(
+        dot
+    ) {
+
+        const thucDonId =
+            Number(
+                dot?.thucDonId
+            );
+
+
+        const dotBinhChonId =
+            Number(
+                dot?.id
+            );
+
+
+        if (
+            !Number.isInteger(
+                thucDonId
+            ) ||
+            thucDonId <= 0 ||
+            !Number.isInteger(
+                dotBinhChonId
+            ) ||
+            dotBinhChonId <= 0
+        ) {
+
+            throw new ApiError(
+                500,
+                "Không thể xác định đường dẫn chi tiết bình chọn."
+            );
+
+        }
+
+
+        return (
+            "/binh-chon/chi-tiet-binh-chon/" +
+            thucDonId +
+            "/" +
+            dotBinhChonId
+        );
+
+    }
+
+    buildNoiDungThongBaoHuy(
+        dot
+    ) {
+
+        return [
+            "Đợt bình chọn suất ăn đã bị hủy.",
+            "",
+            `Thực đơn: ${dot?.tenThucDon || "-"}`,
+            `Ngày áp dụng: ${this.formatNgay(dot?.ngay)}`,
+            `Nhà ăn: ${dot?.tenNhaAn || "-"}`,
+            `Ca ăn: ${dot?.tenCaAn || "-"}`,
+            `Lý do hủy: ${dot?.lyDoHuy || "-"}`
+        ].join(
+            "\n"
+        );
+
+    }
+
+    buildDoiTuongThongBao(
+        taiKhoanIds
+    ) {
+
+        return (
+            taiKhoanIds ||
+            []
+        ).map(
+            taiKhoanId => ({
+
+                loaiDoiTuong:
+                    30,
+
+                doiTuongId:
+                    Number(
+                        taiKhoanId
+                    )
+
+            })
+        );
+
+    }
 
     parseTaiKhoanId(
         id
@@ -91,7 +337,7 @@ class BinhChonSuatAnService {
 
 
         const item =
-            danhSachTrangThaiThongBao
+            danhSachTrangThaiTaoBinhChon
                 .find(
                     item =>
                         Number(
@@ -138,8 +384,7 @@ class BinhChonSuatAnService {
         if (
             Number(
                 dotBinhChon.trangThai
-            ) ===
-            TRANG_THAI.DA_HUY
+            ) === 30
         ) {
 
             return {
@@ -461,7 +706,7 @@ class BinhChonSuatAnService {
 
 
             const hopLe =
-                danhSachTrangThaiThongBao
+                danhSachTrangThaiTaoBinhChon
                     .some(
                         item =>
                             Number(
@@ -746,8 +991,7 @@ class BinhChonSuatAnService {
 
         if (
             ![
-                TRANG_THAI.TAO_MOI,
-                TRANG_THAI.DA_HUY
+                10, 30
             ].includes(
                 trangThai
             )
@@ -849,6 +1093,7 @@ class BinhChonSuatAnService {
                 id
             );
 
+
         const taiKhoanId =
             this.parseTaiKhoanId(
                 nguoiGuiId
@@ -873,6 +1118,7 @@ class BinhChonSuatAnService {
 
         }
 
+
         const trangThai =
             Number(
                 dot.trangThai
@@ -881,8 +1127,7 @@ class BinhChonSuatAnService {
 
         if (
             ![
-                TRANG_THAI.TAO_MOI,
-                TRANG_THAI.DA_HUY
+                10, 30
             ].includes(
                 trangThai
             )
@@ -894,6 +1139,7 @@ class BinhChonSuatAnService {
             );
 
         }
+
 
         if (
             new Date(
@@ -928,6 +1174,7 @@ class BinhChonSuatAnService {
 
         }
 
+
         const daTonTai =
             await binhChonRepository
                 .existsDotHieuLucTheoThucDonNgay(
@@ -946,6 +1193,27 @@ class BinhChonSuatAnService {
             );
 
         }
+
+
+        const taiKhoanNhanIds =
+            await binhChonRepository
+                .getTaiKhoanNhanThongBao(
+                    dotId
+                );
+
+
+        if (
+            taiKhoanNhanIds.length ===
+            0
+        ) {
+
+            throw new ApiError(
+                400,
+                "Không xác định được người dùng nhận đợt bình chọn."
+            );
+
+        }
+
 
         const result =
             await binhChonRepository
@@ -967,6 +1235,67 @@ class BinhChonSuatAnService {
         }
 
 
+        const dotDaGui =
+            await binhChonRepository
+                .getChiTiet(
+                    dotId
+                );
+        
+        const duongDan =
+            this.buildDuongDanBinhChon(
+                dotDaGui
+            );
+
+        const hoTenNguoiGui =
+            dotDaGui
+                ?.nguoiGui
+                ?.hoTen ||
+            "Người dùng";
+
+
+        const tenBinhChon =
+            this.getTenBinhChon(
+                dotDaGui
+            );
+
+        await thongBaoService
+            .send({
+
+                tieuDe:
+                    `${hoTenNguoiGui} đã tạo bình chọn ${tenBinhChon}`,
+
+                noiDung:
+                    this.buildNoiDungThongBaoGui(
+                        dotDaGui
+                    ),
+
+                guiTatCa:
+                    false,
+
+                doiTuong:
+                    this.buildDoiTuongThongBao(
+                        taiKhoanNhanIds
+                    ),
+
+                maSuKien:
+                    THONG_BAO_BINH_CHON
+                        .GUI,
+
+                loaiThamChieu:
+                    THONG_BAO_BINH_CHON
+                        .LOAI_THAM_CHIEU,
+
+                thamChieuId:
+                    dotId,
+
+                duongDan:
+                    duongDan,
+
+                nguoiTaoId:
+                    taiKhoanId
+
+            });
+
         return await this
             .getChiTiet(
                 dotId
@@ -974,6 +1303,94 @@ class BinhChonSuatAnService {
 
     }
 
+    async remove(
+        id
+    ) {
+
+        const dotId =
+            this.parseId(
+                id
+            );
+
+
+        const dot =
+            await binhChonRepository
+                .getChiTiet(
+                    dotId
+                );
+
+
+        if (
+            !dot
+        ) {
+
+            throw new ApiError(
+                404,
+                "Đợt bình chọn không tồn tại."
+            );
+
+        }
+
+
+        const trangThai =
+            Number(
+                dot.trangThai
+            );
+
+
+        if (
+            trangThai === 20
+        ) {
+
+            throw new ApiError(
+                400,
+                "Không thể xóa đợt bình chọn ở trạng thái Đã gửi. Vui lòng hủy gửi trước."
+            );
+
+        }
+
+
+        if (
+            ![
+                10, 30
+            ].includes(
+                trangThai
+            )
+        ) {
+
+            throw new ApiError(
+                400,
+                "Chỉ được xóa đợt bình chọn ở trạng thái Tạo mới hoặc Đã hủy."
+            );
+
+        }
+
+
+        const result =
+            await binhChonRepository
+                .remove(
+                    dotId
+                );
+
+
+        if (
+            !result
+        ) {
+
+            throw new ApiError(
+                400,
+                "Không thể xóa đợt bình chọn."
+            );
+
+        }
+
+
+        return {
+            id:
+                dotId
+        };
+
+    }
 
     async huy(
         id,
@@ -985,6 +1402,7 @@ class BinhChonSuatAnService {
             this.parseId(
                 id
             );
+
 
         const taiKhoanId =
             this.parseTaiKhoanId(
@@ -1010,11 +1428,11 @@ class BinhChonSuatAnService {
 
         }
 
+
         if (
             Number(
                 dot.trangThai
-            ) !==
-            TRANG_THAI.DA_GUI
+            ) !== 20
         ) {
 
             throw new ApiError(
@@ -1024,9 +1442,20 @@ class BinhChonSuatAnService {
 
         }
 
+
         const lyDoHuy =
             data.lyDoHuy
                 ?.trim();
+
+
+        /*
+        * Lấy đối tượng nhận trước khi thay đổi trạng thái.
+        */
+        const taiKhoanNhanIds =
+            await binhChonRepository
+                .getTaiKhoanNhanThongBao(
+                    dotId
+                );
 
 
         const result =
@@ -1046,6 +1475,95 @@ class BinhChonSuatAnService {
                 400,
                 "Không thể hủy đợt bình chọn."
             );
+
+        }
+
+
+        const dotDaHuy =
+            await binhChonRepository
+                .getChiTiet(
+                    dotId
+                );
+
+
+        await thongBaoService
+            .thuHoiDuongDanTheoThamChieu(
+
+                THONG_BAO_BINH_CHON
+                    .LOAI_THAM_CHIEU,
+
+                dotId,
+
+                THONG_BAO_BINH_CHON
+                    .GUI
+
+            );
+
+
+        /*
+        * Nếu vẫn còn người nhận hợp lệ,
+        * gửi thông báo hủy cho họ.
+        */
+        if (
+            taiKhoanNhanIds.length >
+            0
+        ) {
+
+            const hoTenNguoiHuy =
+                dotDaHuy
+                    ?.nguoiHuy
+                    ?.hoTen ||
+                "Người dùng";
+
+
+            const tenBinhChon =
+                this.getTenBinhChon(
+                    dotDaHuy
+                );
+
+
+            await thongBaoService
+                .send({
+
+                    tieuDe:
+                        `${hoTenNguoiHuy} hủy bình chọn ${tenBinhChon}`,
+
+                    noiDung:
+                        this.buildNoiDungThongBaoHuy(
+                            dotDaHuy
+                        ),
+
+                    guiTatCa:
+                        false,
+
+                    doiTuong:
+                        this.buildDoiTuongThongBao(
+                            taiKhoanNhanIds
+                        ),
+
+                    maSuKien:
+                        THONG_BAO_BINH_CHON
+                            .HUY,
+
+                    loaiThamChieu:
+                        THONG_BAO_BINH_CHON
+                            .LOAI_THAM_CHIEU,
+
+                    thamChieuId:
+                        dotId,
+
+                    /*
+                    * QUAN TRỌNG:
+                    * thông báo hủy tuyệt đối
+                    * không có đường dẫn.
+                    */
+                    duongDan:
+                        null,
+
+                    nguoiTaoId:
+                        taiKhoanId
+
+                });
 
         }
 
@@ -1229,8 +1747,7 @@ class BinhChonSuatAnService {
         if (
             Number(
                 dot.trangThai
-            ) !==
-            TRANG_THAI.DA_GUI
+            ) !== 20
         ) {
 
             throw new ApiError(

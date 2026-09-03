@@ -112,4 +112,11 @@ router.get(
     controller.getChiTiet
 );
 
+router.delete(
+    "/xoa/:id",
+    authenticate,
+    authorize("Q001021"),
+    controller.remove
+);
+
 module.exports = router;

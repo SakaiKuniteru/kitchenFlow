@@ -5,7 +5,6 @@ const ApiError =
     require("../../../utils/api-error");
 
 const {
-    loaiDoiTuong: danhSachLoaiDoiTuong,
     trangThaiThongBao: danhSachTrangThaiThongBao
 } = require("../../../constants/enums");
 
@@ -374,6 +373,31 @@ class ThongBaoService {
                 "Bạn không có quyền cập nhật thông báo."
             );
         }
+    }
+
+    async thuHoiDuongDanTheoThamChieu(
+        loaiThamChieu,
+        thamChieuId,
+        maSuKien
+    ) {
+
+        return await thongBaoRepository
+            .thuHoiDuongDanTheoThamChieu(
+                String(
+                    loaiThamChieu ||
+                    ""
+                ).trim(),
+
+                Number(
+                    thamChieuId
+                ),
+
+                String(
+                    maSuKien ||
+                    ""
+                ).trim()
+            );
+
     }
 
     async validateDoiTuong(
@@ -1240,12 +1264,11 @@ class ThongBaoService {
                 );
 
 
-            await thongBaoRepository
-                .danhDauDaGui(
-                    thongBaoId,
-                    client
-                );
-
+        await thongBaoRepository
+            .danhDauDaGui(
+                thongBao.id,
+                client
+            );
 
             await client.query(
                 "COMMIT"
