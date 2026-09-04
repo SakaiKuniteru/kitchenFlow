@@ -176,3 +176,127 @@
         0 0 0 3px
         var(--color-primary-soft) !important;
 }
+
+[data-detail-panel][data-mode="view"]
+[data-binh-chon-mo-lai-field].is-editable {
+    pointer-events: auto !important;
+}
+
+[data-detail-panel][data-mode="view"]
+[data-binh-chon-mo-lai-field].is-editable
+.form-field {
+    pointer-events: auto !important;
+}
+
+[data-detail-panel][data-mode="view"]
+[data-binh-chon-mo-lai-field].is-editable
+.form-field__control {
+    pointer-events: auto !important;
+}
+
+[data-detail-panel][data-mode="view"]
+[data-binh-chon-mo-lai-field].is-editable
+.date-picker {
+    pointer-events: auto !important;
+}
+
+[data-detail-panel][data-mode="view"]
+[data-binh-chon-mo-lai-field].is-editable
+.date-picker__control {
+    pointer-events: auto !important;
+}
+
+[data-detail-panel][data-mode="view"]
+[data-binh-chon-mo-lai-field].is-editable
+.date-picker__input:not(:disabled) {
+    pointer-events: auto !important;
+    color: var(--color-text-primary) !important;
+    background: var(--color-surface) !important;
+    border-color: var(--color-border) !important;
+    opacity: 1 !important;
+    cursor: text !important;
+}
+
+[data-detail-panel][data-mode="view"]
+[data-binh-chon-mo-lai-field].is-editable
+.date-picker__input:not(:disabled):hover {
+    border-color:
+        var(
+            --color-border-strong,
+            var(--color-border)
+        ) !important;
+}
+
+[data-detail-panel][data-mode="view"]
+[data-binh-chon-mo-lai-field].is-editable
+.date-picker__input:not(:disabled):focus {
+    border-color:
+        var(--color-primary) !important;
+    background:
+        var(--color-surface) !important;
+    outline: none;
+    box-shadow:
+        0 0 0 3px
+        var(--color-primary-soft) !important;
+}
+
+[data-detail-panel][data-mode="view"]
+[data-binh-chon-mo-lai-field].is-editable
+.date-picker__toggle:not(:disabled) {
+    pointer-events: auto !important;
+    opacity: 1 !important;
+    cursor: pointer !important;
+}
+
+[data-detail-panel][data-mode="view"]
+[data-binh-chon-mo-lai-field].is-editable
+.date-picker__dropdown {
+    pointer-events: auto !important;
+}
+
+.binh-chon-delete-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    font-size: 15px;
+    transition:
+        color 0.15s ease,
+        background-color 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.binh-chon-delete-button.is-enabled {
+    color: #dc2626;
+    cursor: pointer;
+}
+
+.binh-chon-delete-button.is-enabled:hover {
+    color: #b91c1c;
+    background: #fee2e2;
+}
+
+.binh-chon-delete-button.is-enabled:active {
+    background: #fecaca;
+}
+
+.binh-chon-delete-button.is-disabled {
+    color: #fca5a5;
+    background: transparent;
+    opacity: 1;
+    cursor: not-allowed;
+}
+
+.binh-chon-delete-button.is-disabled:hover {
+    color: #fca5a5;
+    background: transparent;
+}
+
+.binh-chon-delete-button:disabled {
+    pointer-events: auto;
+}

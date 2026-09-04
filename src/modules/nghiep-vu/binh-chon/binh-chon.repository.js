@@ -97,6 +97,15 @@ class BinhChonSuatAnRepository {
             tenCaAn:
                 row.ten_ca_an,
 
+            thoiGianBatDauCa:
+                row.thoi_gian_bat_dau_ca,
+
+            thoiGianKetThucCa:
+                row.thoi_gian_ket_thuc_ca,
+
+            hanBinhChonToiDa:
+                row.han_binh_chon_toi_da,
+
             nguoiTao: row.nguoi_tao_ho_ten
                 ? {
                     id:
@@ -557,6 +566,22 @@ class BinhChonSuatAnRepository {
                 ca.ma_ca_an,
 
                 ca.ten_ca_an,
+
+                ca.thoi_gian_bat_dau
+                    AS thoi_gian_bat_dau_ca,
+
+                ca.thoi_gian_ket_thuc
+                    AS thoi_gian_ket_thuc_ca,
+
+                (
+                    (
+                        tdn.ngay +
+                        ca.thoi_gian_bat_dau
+                    )
+                    - INTERVAL '3 hours'
+                    - INTERVAL '1 second'
+                )
+                    AS han_binh_chon_toi_da,
 
 
                 nv_tao.ho_ten
@@ -1892,10 +1917,24 @@ class BinhChonSuatAnRepository {
 
                         na.ten_nha_an,
 
-
                         ca.ma_ca_an,
+                        ca.ten_ca_an,
 
-                        ca.ten_ca_an
+                        ca.thoi_gian_bat_dau
+                            AS thoi_gian_bat_dau_ca,
+
+                        ca.thoi_gian_ket_thuc
+                            AS thoi_gian_ket_thuc_ca,
+
+                        (
+                            (
+                                tdn.ngay +
+                                ca.thoi_gian_bat_dau
+                            )
+                            - INTERVAL '3 hours'
+                            - INTERVAL '1 second'
+                        )
+                            AS han_binh_chon_toi_da
 
 
                     FROM ct_thuc_don_ngay tdn
@@ -1927,7 +1966,21 @@ class BinhChonSuatAnRepository {
 
                     AND td.trang_thai = 30
 
+                    AND td.den_ngay >= CURRENT_DATE
+
                     AND tdn.ngay >= CURRENT_DATE
+
+                    AND ca.thoi_gian_bat_dau IS NOT NULL
+
+                    AND LOCALTIMESTAMP <=
+                        (
+                            (
+                                tdn.ngay +
+                                ca.thoi_gian_bat_dau
+                            )
+                            - INTERVAL '3 hours'
+                            - INTERVAL '1 second'
+                        )
 
                     ${excludeSql}
 
@@ -1988,7 +2041,16 @@ class BinhChonSuatAnRepository {
                     row.ma_ca_an,
 
                 tenCaAn:
-                    row.ten_ca_an
+                    row.ten_ca_an,
+
+                thoiGianBatDauCa:
+                    row.thoi_gian_bat_dau_ca,
+
+                thoiGianKetThucCa:
+                    row.thoi_gian_ket_thuc_ca,
+
+                hanBinhChonToiDa:
+                    row.han_binh_chon_toi_da
 
             })
         );
@@ -2002,26 +2064,38 @@ class BinhChonSuatAnRepository {
         const result =
             await pool.query(
                 `
-
                     SELECT
-
                         tdn.id,
-
                         tdn.thuc_don_id,
-
                         tdn.ngay,
 
                         td.trang_thai,
-
                         td.tu_ngay,
+                        td.den_ngay,
+                        td.ca_an_id,
 
-                        td.den_ngay
+                        ca.thoi_gian_bat_dau,
+                        ca.thoi_gian_ket_thuc,
+
+                        (
+                            (
+                                tdn.ngay +
+                                ca.thoi_gian_bat_dau
+                            )
+                            - INTERVAL '3 hours'
+                            - INTERVAL '1 second'
+                        )
+                            AS han_binh_chon_toi_da
 
                     FROM ct_thuc_don_ngay tdn
 
                     INNER JOIN nv_thuc_don td
                         ON td.id =
                         tdn.thuc_don_id
+
+                    INNER JOIN dm_ca_an ca
+                        ON ca.id =
+                        td.ca_an_id
 
                     WHERE tdn.id = $1
 
@@ -2031,10 +2105,23 @@ class BinhChonSuatAnRepository {
 
                     AND td.trang_thai = 30
 
+                    AND td.den_ngay >= CURRENT_DATE
+
                     AND tdn.ngay >= CURRENT_DATE
 
-                    LIMIT 1
+                    AND ca.thoi_gian_bat_dau IS NOT NULL
 
+                    AND LOCALTIMESTAMP <=
+                        (
+                            (
+                                tdn.ngay +
+                                ca.thoi_gian_bat_dau
+                            )
+                            - INTERVAL '3 hours'
+                            - INTERVAL '1 second'
+                        )
+
+                    LIMIT 1
                 `,
                 [
                     thucDonNgayId
@@ -2254,6 +2341,39 @@ class BinhChonSuatAnRepository {
 
     }
 
+    async getHoTenTaiKhoan(
+        taiKhoanId
+    ) {
+
+        const result =
+            await pool.query(
+                `
+                    SELECT
+                        nv.ho_ten
+
+                    FROM dm_tai_khoan tk
+
+                    INNER JOIN dm_nhan_vien nv
+                        ON nv.id =
+                        tk.nhan_vien_id
+
+                    WHERE tk.id = $1
+
+                    LIMIT 1
+                `,
+                [
+                    taiKhoanId
+                ]
+            );
+
+
+        return (
+            result.rows[0]
+                ?.ho_ten ||
+            null
+        );
+
+    }
 
     async create(
         data
@@ -2395,6 +2515,42 @@ class BinhChonSuatAnRepository {
                 `,
                 [
                     nguoiGuiId,
+                    id
+                ]
+            );
+
+
+        return (
+            result.rows[0] ||
+            null
+        );
+
+    }
+
+    async moLai(
+        id,
+        hanBinhChon
+    ) {
+
+        const result =
+            await pool.query(
+                `
+                    UPDATE nv_dot_binh_chon
+
+                    SET
+                        han_binh_chon = $1,
+                        updated_at = LOCALTIMESTAMP
+
+                    WHERE id = $2
+
+                    AND trang_thai = 20
+
+                    AND han_binh_chon < LOCALTIMESTAMP
+
+                    RETURNING id
+                `,
+                [
+                    hanBinhChon,
                     id
                 ]
             );

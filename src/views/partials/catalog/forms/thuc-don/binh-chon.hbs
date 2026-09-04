@@ -91,15 +91,21 @@
             required=true
         }}
 
-        {{> forms/date
-            id="hanBinhChon"
-            name="hanBinhChon"
-            label="Hạn bình chọn"
-            placeholder="dd/mm/yyyy hh:mm:ss"
-            showTime=true
-            defaultTime="00:00:00"
-            required=true
-        }}
+        <div
+            data-binh-chon-mo-lai-field
+            data-editable-in-view-field
+        >
+            {{> forms/date
+                id="hanBinhChon"
+                name="hanBinhChon"
+                label="Hạn bình chọn"
+                placeholder="dd/mm/yyyy hh:mm:ss"
+                showTime=true
+                defaultTime="23:59:59"
+                required=true
+                editableInView=true
+            }}
+        </div>
     </div>
 </div>
 

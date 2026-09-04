@@ -282,10 +282,42 @@ const cancelSchema =
 
         });
 
+const reopenSchema =
+    Joi.object({
+
+        hanBinhChon:
+            Joi.date()
+                .iso()
+                .required()
+                .messages({
+
+                    "date.base":
+                        "Hạn bình chọn không hợp lệ.",
+
+                    "date.format":
+                        "Hạn bình chọn phải đúng định dạng ISO.",
+
+                    "any.required":
+                        "Hạn bình chọn mới là bắt buộc."
+
+                })
+
+    })
+        .required()
+        .messages({
+
+            "any.required":
+                "Dữ liệu mở lại bình chọn là bắt buộc.",
+
+            "object.base":
+                "Dữ liệu mở lại bình chọn không hợp lệ."
+
+        });
 
 module.exports = {
     createSchema,
     updateSchema,
     voteSchema,
-    cancelSchema
+    cancelSchema,
+    reopenSchema
 };

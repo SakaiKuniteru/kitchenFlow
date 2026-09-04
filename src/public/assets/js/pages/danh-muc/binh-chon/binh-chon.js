@@ -33,6 +33,10 @@ document.addEventListener("DOMContentLoaded", () => {
             permissionSet =
                 getCurrentPermissionSet();
 
+            catalog
+                ?.table
+                ?.render();
+
             applyRecordUpdatePermission();
 
             bindEvents();
@@ -248,7 +252,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             className:
                                 "catalog-table__cell--center"
                         },
-
                         {
                             key:
                                 "coThamGia",
@@ -267,6 +270,124 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             className:
                                 "catalog-table__cell--center"
+                        },
+                        {
+                            key:
+                                "xoa",
+
+                            label:
+                                "Xóa",
+
+                            width:
+                                "70px",
+
+                            sortable:
+                                false,
+
+                            filterable:
+                                false,
+
+                            title:
+                                false,
+
+                            className:
+                                "catalog-table__cell--center catalog-table__cell--actions",
+
+                            render(
+                                value,
+                                record
+                            ) {
+
+                                const coQuyenXoa =
+                                    hasDeletePermission();
+
+
+                                const button =
+                                    document.createElement(
+                                        "button"
+                                    );
+
+
+                                button.type =
+                                    "button";
+
+                                button.className =
+                                    [
+                                        "binh-chon-delete-button",
+
+                                        coQuyenXoa
+                                            ? "is-enabled"
+                                            : "is-disabled"
+                                    ]
+                                        .join(
+                                            " "
+                                        );
+
+                                button.title =
+                                    coQuyenXoa
+                                        ? "Xóa đợt bình chọn"
+                                        : "Bạn không có quyền xóa đợt bình chọn";
+
+                                button.setAttribute(
+                                    "aria-label",
+                                    button.title
+                                );
+
+
+                                button.disabled =
+                                    !coQuyenXoa;
+
+
+                                const icon =
+                                    document.createElement(
+                                        "i"
+                                    );
+
+
+                                icon.className =
+                                    "fa-solid fa-trash-can";
+
+                                icon.setAttribute(
+                                    "aria-hidden",
+                                    "true"
+                                );
+
+
+                                button.appendChild(
+                                    icon
+                                );
+
+
+                                button.addEventListener(
+                                    "click",
+                                    async event => {
+
+                                        event.preventDefault();
+
+                                        event.stopPropagation();
+
+
+                                        if (
+                                            !coQuyenXoa
+                                        ) {
+
+                                            return;
+
+                                        }
+
+
+                                        await handleXoa(
+                                            record,
+                                            catalog
+                                        );
+
+                                    }
+                                );
+
+
+                                return button;
+
+                            }
                         }
                     ],
 
@@ -367,6 +488,40 @@ document.addEventListener("DOMContentLoaded", () => {
                         ) {
                             errors.hanBinhChon =
                                 "Hạn bình chọn phải lớn hơn thời gian bắt đầu.";
+                        }
+
+                        const thucDonNgay =
+                            dsThucDonNgay.find(
+                                item =>
+                                    String(
+                                        item?.id
+                                    ) ===
+                                    String(
+                                        formData.thucDonNgayId
+                                    )
+                            );
+
+
+                        const hanToiDa =
+                            parseDate(
+                                thucDonNgay
+                                    ?.hanBinhChonToiDa
+                            );
+
+
+                        if (
+                            han &&
+                            hanToiDa &&
+                            han >
+                            hanToiDa
+                        ) {
+
+                            errors.hanBinhChon =
+                                (
+                                    "Hạn bình chọn phải trước thời gian bắt đầu ca ăn ít nhất 3 giờ. " +
+                                    `Hạn tối đa là ${formatDateTime(hanToiDa)}.`
+                                );
+
                         }
 
                         return errors;
@@ -520,6 +675,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         syncLyDoHuyField(
                             record
                         );
+
+                        syncHanBinhChonMoLaiField(
+                            record,
+                            mode
+                        );
                     },
 
                     transformPayload(
@@ -622,12 +782,48 @@ document.addEventListener("DOMContentLoaded", () => {
                             when({
                                 record
                             }) {
+
                                 return (
                                     getTrangThaiValue(
                                         record
                                     ) ===
-                                    20
+                                    20 &&
+                                    !isBinhChonHetHan(
+                                        record
+                                    )
                                 );
+
+                            }
+                        },
+
+                        {
+                            action:
+                                "mo-lai-binh-chon",
+
+                            label:
+                                "Mở lại",
+
+                            icon:
+                                "fa-solid fa-rotate-right",
+
+                            variant:
+                                "primary",
+
+                            modes: [
+                                "view"
+                            ],
+
+                            permission:
+                                "Q001031",
+
+                            when({
+                                record
+                            }) {
+
+                                return isBinhChonHetHan(
+                                    record
+                                );
+
                             }
                         }
                     ],
@@ -660,6 +856,20 @@ document.addEventListener("DOMContentLoaded", () => {
                                 catalogInstance
                             );
                         }
+
+                        if (
+                            action ===
+                            "mo-lai-binh-chon"
+                        ) {
+
+                            handleMoLai(
+                                record,
+                                catalogInstance
+                            );
+
+                            return;
+
+                        }
                     },
 
                     toolbarActions: [
@@ -675,6 +885,43 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     ]
                 });
+    }
+
+    function isBinhChonHetHan(
+        record
+    ) {
+
+        if (
+            getTrangThaiValue(
+                record
+            ) !==
+            20
+        ) {
+
+            return false;
+
+        }
+
+
+        const han =
+            parseDate(
+                record
+                    ?.hanBinhChon
+            );
+
+
+        if (!han) {
+
+            return false;
+
+        }
+
+
+        return (
+            Date.now() >
+            han.getTime()
+        );
+
     }
 
     function syncLyDoHuyField(
@@ -709,7 +956,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (
             trangThai ===
-            20
+            20 &&
+            !isBinhChonHetHan(
+                record
+            )
         ) {
             field.disabled =
                 false;
@@ -772,6 +1022,201 @@ document.addEventListener("DOMContentLoaded", () => {
             ?.clearFieldError(
                 "lyDoHuy"
             );
+    }
+
+    function syncHanBinhChonMoLaiField(
+        record,
+        mode
+    ) {
+
+        const container =
+            document.querySelector(
+                '[data-binh-chon-mo-lai-field]'
+            );
+
+
+        const fieldContainer =
+            document.querySelector(
+                '[data-form-field="hanBinhChon"]'
+            );
+
+
+        if (
+            !container ||
+            !fieldContainer
+        ) {
+
+            return;
+
+        }
+
+
+        const datePicker =
+            fieldContainer.matches(
+                "[data-date-picker]"
+            )
+                ? fieldContainer
+                : fieldContainer.querySelector(
+                    "[data-date-picker]"
+                );
+
+
+        const hiddenInput =
+            fieldContainer.querySelector(
+                "[data-date-value]"
+            ) ||
+            document.getElementById(
+                "hanBinhChon"
+            );
+
+
+        const input =
+            fieldContainer.querySelector(
+                "[data-date-input]"
+            );
+
+
+        const toggle =
+            fieldContainer.querySelector(
+                "[data-date-toggle]"
+            );
+
+
+        const dropdown =
+            fieldContainer.querySelector(
+                "[data-date-dropdown]"
+            );
+
+
+        const coTheMoLai =
+            mode ===
+                "view" &&
+            isBinhChonHetHan(
+                record
+            ) &&
+            permissionSet.has(
+                "Q001031"
+            );
+
+
+        const choPhepNhap =
+            mode !==
+                "view" ||
+            coTheMoLai;
+
+
+        container.classList.toggle(
+            "is-editable",
+            coTheMoLai
+        );
+
+
+        if (
+            hiddenInput
+        ) {
+
+            hiddenInput.disabled =
+                false;
+
+            hiddenInput.required =
+                choPhepNhap;
+
+        }
+
+
+        if (
+            input
+        ) {
+
+            input.disabled =
+                !choPhepNhap;
+
+            input.readOnly =
+                !choPhepNhap;
+
+            input.tabIndex =
+                choPhepNhap
+                    ? 0
+                    : -1;
+
+
+            if (
+                choPhepNhap
+            ) {
+
+                input.removeAttribute(
+                    "aria-disabled"
+                );
+
+            } else {
+
+                input.setAttribute(
+                    "aria-disabled",
+                    "true"
+                );
+
+            }
+
+        }
+
+
+        if (
+            toggle
+        ) {
+
+            toggle.disabled =
+                !choPhepNhap;
+
+            toggle.tabIndex =
+                choPhepNhap
+                    ? 0
+                    : -1;
+
+        }
+
+
+        if (
+            datePicker
+        ) {
+
+            datePicker.classList.toggle(
+                "is-editable-in-view",
+                coTheMoLai
+            );
+
+            datePicker.setAttribute(
+                "aria-disabled",
+                String(
+                    !choPhepNhap
+                )
+            );
+
+        }
+
+
+        if (
+            !choPhepNhap &&
+            dropdown
+        ) {
+
+            dropdown.hidden =
+                true;
+
+            datePicker
+                ?.classList
+                ?.remove(
+                    "is-open"
+                );
+
+        }
+
+
+        catalog
+            ?.form
+            ?.clearFieldError(
+                "hanBinhChon"
+            );
+
     }
 
     function getCurrentPermissionSet() {
@@ -878,6 +1323,39 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
+    function hasDeletePermission() {
+
+        return permissionSet.has(
+            "Q001030"
+        );
+
+    }
+
+
+    function canDeleteByStatus(
+        record
+    ) {
+
+        if (
+            !record
+        ) {
+
+            return false;
+
+        }
+
+
+        return [
+            10,
+            30
+        ].includes(
+            getTrangThaiValue(
+                record
+            )
+        );
+
+    }
+
     function bindEvents() {
         const select =
             document.getElementById(
@@ -897,9 +1375,18 @@ document.addEventListener("DOMContentLoaded", () => {
             select.addEventListener(
                 "change",
                 event => {
+
                     renderThongTinThucDon(
                         event.target.value
                     );
+
+
+                    catalog
+                        ?.form
+                        ?.clearFieldError(
+                            "hanBinhChon"
+                        );
+
                 }
             );
         }
@@ -924,6 +1411,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             renderThongKe(
                                 null
+                            );
+
+                            syncHanBinhChonMoLaiField(
+                                null,
+                                "create"
                             );
                         },
                         0
@@ -1405,6 +1897,162 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
+    async function handleXoa(
+        record,
+        catalogInstance
+    ) {
+
+        if (
+            !record?.id
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            !hasDeletePermission()
+        ) {
+
+            return;
+
+        }
+
+
+        const trangThai =
+            getTrangThaiValue(
+                record
+            );
+
+
+        if (
+            !canDeleteByStatus(
+                record
+            )
+        ) {
+
+            const message =
+                trangThai ===
+                20
+                    ? "Không thể xóa đợt bình chọn ở trạng thái Đã gửi. Vui lòng hủy gửi trước."
+                    : "Chỉ được xóa đợt bình chọn ở trạng thái Tạo mới hoặc Đã hủy.";
+
+
+            window.MCS
+                ?.toast
+                ?.error(
+                    message
+                );
+
+
+            return;
+
+        }
+
+
+        const executeDelete =
+            async () => {
+
+                try {
+
+                    const result =
+                        await window.MCS
+                            .api
+                            .request(
+                                `${API_BASE}/xoa/${record.id}`,
+                                {
+                                    method:
+                                        "DELETE"
+                                }
+                            );
+
+
+                    window.MCS
+                        ?.toast
+                        ?.success(
+                            result?.message ||
+                            "Xóa đợt bình chọn thành công."
+                        );
+
+
+                    catalogInstance
+                        ?.table
+                        ?.clearSelection();
+
+
+                    await catalogInstance
+                        ?.load();
+
+                } catch (
+                    error
+                ) {
+
+                    console.error(
+                        "Không thể xóa đợt bình chọn:",
+                        error
+                    );
+
+
+                    window.MCS
+                        ?.toast
+                        ?.error(
+                            error?.message ||
+                            "Không thể xóa đợt bình chọn."
+                        );
+
+                }
+
+            };
+
+
+        if (
+            window.MCS
+                ?.confirm
+                ?.show
+        ) {
+
+            window.MCS
+                .confirm
+                .show({
+                    title:
+                        "Xóa đợt bình chọn",
+
+                    message:
+                        "Bạn có chắc chắn muốn xóa đợt bình chọn này không?",
+
+                    confirmLabel:
+                        "Xóa",
+
+                    type:
+                        "danger",
+
+                    onConfirm:
+                        executeDelete
+                });
+
+
+            return;
+
+        }
+
+
+        const confirmed =
+            window.confirm(
+                "Bạn có chắc chắn muốn xóa đợt bình chọn này không?"
+            );
+
+
+        if (
+            confirmed
+        ) {
+
+            await executeDelete();
+
+        }
+
+    }
+
     async function handleGui(
         record,
         catalogInstance
@@ -1495,6 +2143,229 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     }
             });
+    }
+
+    async function handleMoLai(
+        record,
+        catalogInstance
+    ) {
+
+        if (
+            !record?.id
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            !permissionSet.has(
+                "Q001031"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            !isBinhChonHetHan(
+                record
+            )
+        ) {
+
+            window.MCS
+                ?.toast
+                ?.error(
+                    "Chỉ được mở lại đợt bình chọn đã hết hạn."
+                );
+
+
+            return;
+
+        }
+
+
+        const field =
+            document.getElementById(
+                "hanBinhChon"
+            );
+
+
+        const hanMoi =
+            String(
+                field?.value ||
+                ""
+            ).trim();
+
+
+        const hanMoiDate =
+            parseDate(
+                hanMoi
+            );
+
+
+        if (
+            !hanMoiDate
+        ) {
+
+            catalogInstance
+                ?.form
+                ?.setFieldError(
+                    "hanBinhChon",
+                    "Vui lòng chọn hạn bình chọn mới."
+                );
+
+
+            return;
+
+        }
+
+
+        const now =
+            new Date();
+
+
+        if (
+            hanMoiDate <=
+            now
+        ) {
+
+            catalogInstance
+                ?.form
+                ?.setFieldError(
+                    "hanBinhChon",
+                    "Hạn bình chọn mới phải lớn hơn thời gian hiện tại."
+                );
+
+
+            return;
+
+        }
+
+
+        const hanToiDa =
+            parseDate(
+                record
+                    ?.hanBinhChonToiDa
+            );
+
+
+        if (
+            hanToiDa &&
+            hanMoiDate >
+            hanToiDa
+        ) {
+
+            catalogInstance
+                ?.form
+                ?.setFieldError(
+                    "hanBinhChon",
+                    (
+                        "Hạn bình chọn phải trước thời gian bắt đầu ca ăn ít nhất 3 giờ. " +
+                        `Hạn tối đa là ${formatDateTime(hanToiDa)}.`
+                    )
+                );
+
+
+            return;
+
+        }
+
+
+        catalogInstance
+            ?.form
+            ?.clearFieldError(
+                "hanBinhChon"
+            );
+
+
+        window.MCS
+            .confirm
+            ?.show({
+
+                title:
+                    "Mở lại đợt bình chọn",
+
+                message:
+                    (
+                        "Bạn có chắc chắn muốn mở lại đợt bình chọn đến " +
+                        `${formatDateTime(hanMoiDate)} không?`
+                    ),
+
+                confirmLabel:
+                    "Mở lại",
+
+                type:
+                    "primary",
+
+                onConfirm:
+                    async () => {
+
+                        try {
+
+                            const result =
+                                await window.MCS
+                                    .api
+                                    .request(
+                                        `${API_BASE}/mo-lai/${record.id}`,
+                                        {
+                                            method:
+                                                "PATCH",
+
+                                            body:
+                                                JSON.stringify({
+
+                                                    hanBinhChon:
+                                                        hanMoi
+
+                                                })
+                                        }
+                                    );
+
+
+                            window.MCS
+                                ?.toast
+                                ?.success(
+                                    result?.message ||
+                                    "Mở lại đợt bình chọn thành công."
+                                );
+
+
+                            await catalogInstance
+                                .load();
+
+
+                            await catalogInstance
+                                .openDetail(
+                                    record.id
+                                );
+
+                        } catch (
+                            error
+                        ) {
+
+                            console.error(
+                                "Không thể mở lại đợt bình chọn:",
+                                error
+                            );
+
+
+                            window.MCS
+                                ?.toast
+                                ?.error(
+                                    error?.message ||
+                                    "Không thể mở lại đợt bình chọn."
+                                );
+
+                        }
+
+                    }
+
+            });
+
     }
 
     async function handleHuy(

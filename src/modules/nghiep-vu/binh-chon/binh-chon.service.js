@@ -4,8 +4,7 @@ const ApiError =
     );
 
 const {
-    trangThaiTaoBinhChon: danhSachTrangThaiTaoBinhChon,
-    loaiDoiTuong: danhSachLoaiDoiTuong
+    trangThaiTaoBinhChon: danhSachTrangThaiTaoBinhChon
 } = require("../../../constants/enums");
 
 const binhChonRepository =
@@ -25,6 +24,9 @@ const THONG_BAO_BINH_CHON = {
 
     HUY:
         "BINH_CHON_SUAT_AN_HUY",
+
+    MO_LAI:
+        "BINH_CHON_SUAT_AN_MO_LAI",
 
     LOAI_THAM_CHIEU:
         "DOT_BINH_CHON_SUAT_AN"
@@ -209,6 +211,24 @@ class BinhChonSuatAnService {
             `Ca ăn: ${dot?.tenCaAn || "-"}`,
             `Bắt đầu bình chọn: ${this.formatNgayGio(dot?.batDauBinhChon)}`,
             `Hạn bình chọn: ${this.formatNgayGio(dot?.hanBinhChon)}`
+        ].join(
+            "\n"
+        );
+
+    }
+
+    buildNoiDungThongBaoMoLai(
+        dot
+    ) {
+
+        return [
+            "Đợt bình chọn suất ăn đã được mở lại.",
+            "",
+            `Thực đơn: ${dot?.tenThucDon || "-"}`,
+            `Ngày áp dụng: ${this.formatNgay(dot?.ngay)}`,
+            `Nhà ăn: ${dot?.tenNhaAn || "-"}`,
+            `Ca ăn: ${dot?.tenCaAn || "-"}`,
+            `Hạn bình chọn mới: ${this.formatNgayGio(dot?.hanBinhChon)}`
         ].join(
             "\n"
         );
@@ -556,6 +576,72 @@ class BinhChonSuatAnService {
 
     }
 
+    validateHanBinhChonTheoCa(
+        hanBinhChon,
+        thucDonNgay
+    ) {
+
+        const han =
+            new Date(
+                hanBinhChon
+            );
+
+
+        const hanToiDa =
+            new Date(
+                thucDonNgay
+                    ?.han_binh_chon_toi_da
+            );
+
+
+        if (
+            Number.isNaN(
+                han.getTime()
+            )
+        ) {
+
+            throw new ApiError(
+                400,
+                "Hạn bình chọn không hợp lệ."
+            );
+
+        }
+
+
+        if (
+            Number.isNaN(
+                hanToiDa.getTime()
+            )
+        ) {
+
+            throw new ApiError(
+                400,
+                "Không xác định được thời gian bắt đầu ca ăn."
+            );
+
+        }
+
+
+        if (
+            han >
+            hanToiDa
+        ) {
+
+            throw new ApiError(
+                400,
+                (
+                    "Hạn bình chọn phải trước thời gian bắt đầu ca ăn ít nhất 3 giờ. " +
+                    `Hạn tối đa là ${this.formatNgayGio(hanToiDa)}.`
+                )
+            );
+
+        }
+
+
+        return hanToiDa;
+
+    }
+
     async validateThucDonNgay(
         thucDonNgayId
     ) {
@@ -593,8 +679,8 @@ class BinhChonSuatAnService {
         ) {
 
             throw new ApiError(
-                404,
-                "Ngày thực đơn không tồn tại hoặc không còn hoạt động."
+                400,
+                "Ngày thực đơn hoặc ca ăn đã quá thời gian cho phép tạo bình chọn."
             );
 
         }
@@ -603,7 +689,8 @@ class BinhChonSuatAnService {
         if (
             Number(
                 thucDonNgay.trang_thai
-            ) !== 30
+            ) !==
+            30
         ) {
 
             throw new ApiError(
@@ -614,44 +701,7 @@ class BinhChonSuatAnService {
         }
 
 
-        const ngayHienTai =
-            new Date();
-
-        ngayHienTai.setHours(
-            0,
-            0,
-            0,
-            0
-        );
-
-
-        const ngayThucDon =
-            new Date(
-                thucDonNgay.ngay
-            );
-
-        ngayThucDon.setHours(
-            0,
-            0,
-            0,
-            0
-        );
-
-
-        if (
-            ngayThucDon <
-            ngayHienTai
-        ) {
-
-            throw new ApiError(
-                400,
-                "Ngày thực đơn đã hết hạn."
-            );
-
-        }
-
-
-        return id;
+        return thucDonNgay;
 
     }
 
@@ -872,7 +922,6 @@ class BinhChonSuatAnService {
 
     }
 
-
     async create(
         data,
         nguoiTaoId
@@ -884,11 +933,17 @@ class BinhChonSuatAnService {
             );
 
 
-        const thucDonNgayId =
+        const thucDonNgay =
             await this
                 .validateThucDonNgay(
                     data.thucDonNgayId
                 );
+
+
+        const thucDonNgayId =
+            Number(
+                thucDonNgay.id
+            );
 
 
         this.validateKhoangThoiGian(
@@ -897,12 +952,17 @@ class BinhChonSuatAnService {
         );
 
 
+        this.validateHanBinhChonTheoCa(
+            data.hanBinhChon,
+            thucDonNgay
+        );
+
+
         const daTonTai =
             await binhChonRepository
                 .existsDotHieuLucTheoThucDonNgay(
                     thucDonNgayId
                 );
-
 
         if (
             daTonTai
@@ -1035,10 +1095,16 @@ class BinhChonSuatAnService {
 
         };
 
+        const thucDonNgay =
+            await this
+                .validateThucDonNgay(
+                    duLieu.thucDonNgayId
+                );
 
-        await this
-            .validateThucDonNgay(
-                duLieu.thucDonNgayId
+
+        duLieu.thucDonNgayId =
+            Number(
+                thucDonNgay.id
             );
 
 
@@ -1047,6 +1113,11 @@ class BinhChonSuatAnService {
             duLieu.hanBinhChon
         );
 
+
+        this.validateHanBinhChonTheoCa(
+            duLieu.hanBinhChon,
+            thucDonNgay
+        );
 
         const daTonTai =
             await binhChonRepository
@@ -1155,6 +1226,17 @@ class BinhChonSuatAnService {
 
         }
 
+        const thucDonNgay =
+            await this
+                .validateThucDonNgay(
+                    dot.thucDonNgayId
+                );
+
+
+        this.validateHanBinhChonTheoCa(
+            dot.hanBinhChon,
+            thucDonNgay
+        );
 
         const coMonAn =
             await binhChonRepository
@@ -1392,6 +1474,239 @@ class BinhChonSuatAnService {
 
     }
 
+    async moLai(
+        id,
+        data,
+        nguoiMoLaiId
+    ) {
+
+        const dotId =
+            this.parseId(
+                id
+            );
+
+
+        const taiKhoanId =
+            this.parseTaiKhoanId(
+                nguoiMoLaiId
+            );
+
+
+        const dot =
+            await binhChonRepository
+                .getChiTiet(
+                    dotId
+                );
+
+
+        if (
+            !dot
+        ) {
+
+            throw new ApiError(
+                404,
+                "Đợt bình chọn không tồn tại."
+            );
+
+        }
+
+
+        if (
+            Number(
+                dot.trangThai
+            ) !==
+            20
+        ) {
+
+            throw new ApiError(
+                400,
+                "Chỉ được mở lại đợt bình chọn đã gửi."
+            );
+
+        }
+
+
+        const now =
+            new Date();
+
+
+        const hanCu =
+            new Date(
+                dot.hanBinhChon
+            );
+
+
+        if (
+            now <=
+            hanCu
+        ) {
+
+            throw new ApiError(
+                400,
+                "Đợt bình chọn chưa hết hạn."
+            );
+
+        }
+
+
+        const hanMoi =
+            new Date(
+                data.hanBinhChon
+            );
+
+
+        if (
+            Number.isNaN(
+                hanMoi.getTime()
+            )
+        ) {
+
+            throw new ApiError(
+                400,
+                "Hạn bình chọn mới không hợp lệ."
+            );
+
+        }
+
+
+        if (
+            hanMoi <=
+            now
+        ) {
+
+            throw new ApiError(
+                400,
+                "Hạn bình chọn mới phải lớn hơn thời gian hiện tại."
+            );
+
+        }
+
+
+        const thucDonNgay =
+            await this
+                .validateThucDonNgay(
+                    dot.thucDonNgayId
+                );
+
+
+        this.validateHanBinhChonTheoCa(
+            data.hanBinhChon,
+            thucDonNgay
+        );
+
+
+        const taiKhoanNhanIds =
+            await binhChonRepository
+                .getTaiKhoanNhanThongBao(
+                    dotId
+                );
+
+
+        if (
+            taiKhoanNhanIds.length ===
+            0
+        ) {
+
+            throw new ApiError(
+                400,
+                "Không xác định được người dùng nhận đợt bình chọn."
+            );
+
+        }
+
+
+        const result =
+            await binhChonRepository
+                .moLai(
+                    dotId,
+                    data.hanBinhChon
+                );
+
+
+        if (
+            !result
+        ) {
+
+            throw new ApiError(
+                400,
+                "Không thể mở lại đợt bình chọn."
+            );
+
+        }
+
+
+        const dotDaMoLai =
+            await binhChonRepository
+                .getChiTiet(
+                    dotId
+                );
+
+
+        const hoTenNguoiMoLai =
+            await binhChonRepository
+                .getHoTenTaiKhoan(
+                    taiKhoanId
+                ) ||
+            "Người dùng";
+
+
+        const tenBinhChon =
+            this.getTenBinhChon(
+                dotDaMoLai
+            );
+
+
+        const duongDan =
+            this.buildDuongDanBinhChon(
+                dotDaMoLai
+            );
+
+
+        await thongBaoService
+            .send({
+
+                tieuDe:
+                    `${hoTenNguoiMoLai} đã mở lại bình chọn ${tenBinhChon}`,
+
+                noiDung:
+                    this.buildNoiDungThongBaoMoLai(
+                        dotDaMoLai
+                    ),
+
+                guiTatCa:
+                    false,
+
+                doiTuong:
+                    this.buildDoiTuongThongBao(
+                        taiKhoanNhanIds
+                    ),
+
+                maSuKien:
+                    THONG_BAO_BINH_CHON
+                        .MO_LAI,
+
+                loaiThamChieu:
+                    THONG_BAO_BINH_CHON
+                        .LOAI_THAM_CHIEU,
+
+                thamChieuId:
+                    dotId,
+
+                duongDan,
+
+                nguoiTaoId:
+                    taiKhoanId
+
+            });
+
+
+        return await this
+            .getChiTiet(
+                dotId
+            );
+
+    }
+
     async huy(
         id,
         data,
@@ -1499,11 +1814,17 @@ class BinhChonSuatAnService {
 
             );
 
+        await thongBaoService
+            .thuHoiDuongDanTheoThamChieu(
+                THONG_BAO_BINH_CHON
+                    .LOAI_THAM_CHIEU,
 
-        /*
-        * Nếu vẫn còn người nhận hợp lệ,
-        * gửi thông báo hủy cho họ.
-        */
+                dotId,
+
+                THONG_BAO_BINH_CHON
+                    .MO_LAI
+            );
+            
         if (
             taiKhoanNhanIds.length >
             0

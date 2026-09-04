@@ -223,6 +223,41 @@ class BinhChonSuatAnController {
 
     }
 
+    async moLai(
+        req,
+        res,
+        next
+    ) {
+
+        try {
+
+            const data =
+                await binhChonService
+                    .moLai(
+                        req.params.id,
+                        req.body,
+                        req.user?.taiKhoanId
+                    );
+
+
+            return successResponse(
+                res,
+                "Mở lại đợt bình chọn thành công.",
+                data,
+                200
+            );
+
+        } catch (
+            error
+        ) {
+
+            next(
+                error
+            );
+
+        }
+
+    }
 
     async huy(
         req,

@@ -1,10 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {
-    createSchema,
-    updateSchema,
-    voteSchema,
-    cancelSchema} = require("./binh-chon.validation");
+const {createSchema, updateSchema, voteSchema, cancelSchema, reopenSchema} = require("./binh-chon.validation");
 const validate = require("../../../middlewares/validate.middleware");
 const authenticate = require("../../../middlewares/authenticate.middleware");
 const authorize = require("../../../middlewares/authorize.middleware");
@@ -76,6 +72,14 @@ router.patch(
 );
 
 router.patch(
+    "/mo-lai/:id",
+    authenticate,
+    authorize("Q001031"),
+    validate(reopenSchema),
+    controller.moLai
+);
+
+router.patch(
     "/huy/:id",
     authenticate,
     authorize("Q001022"),
@@ -115,7 +119,7 @@ router.get(
 router.delete(
     "/xoa/:id",
     authenticate,
-    authorize("Q001021"),
+    authorize("Q001030"),
     controller.remove
 );
 

@@ -5,6 +5,7 @@ const ApiError =
     require("../../../utils/api-error");
 
 const {
+    loaiDoiTuong: danhSachLoaiDoiTuong,
     trangThaiThongBao: danhSachTrangThaiThongBao
 } = require("../../../constants/enums");
 

@@ -669,6 +669,7 @@ class DanhMucWebController {
                     textColumn("trangThai", "Trạng thái", { width: "160px", className: "catalog-table__cell--center" }),
                     textColumn("tongBinhChon", "Tổng bình chọn", { width: "160px", className: "catalog-table__cell--center" }),
                     textColumn("daThamGia", "Đã tham gia", { width: "160px", className: "catalog-table__cell--center" }),
+                    textColumn("thaoTac", "Thao tác", { width: "80px", className: "catalog-table__cell--center" }),
 
                 ]
             });
