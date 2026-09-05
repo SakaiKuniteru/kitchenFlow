@@ -366,14 +366,23 @@ class GiaVeAnRepository {
                 WHERE
                     doi_tuong_lay_ve = $1
 
-                    AND co_so_id
-                        IS NOT DISTINCT FROM $2
+                    AND (
+                        co_so_id IS NULL
+                        OR $2::BIGINT IS NULL
+                        OR co_so_id = $2
+                    )
 
-                    AND nha_an_id
-                        IS NOT DISTINCT FROM $3
+                    AND (
+                        nha_an_id IS NULL
+                        OR $3::BIGINT IS NULL
+                        OR nha_an_id = $3
+                    )
 
-                    AND ca_an_id
-                        IS NOT DISTINCT FROM $4
+                    AND (
+                        ca_an_id IS NULL
+                        OR $4::BIGINT IS NULL
+                        OR ca_an_id = $4
+                    )
 
                     AND daterange(
                         tu_ngay,
@@ -399,7 +408,9 @@ class GiaVeAnRepository {
             values.push(excludeId);
 
             sql += `
-                AND id <> $7
+
+                AND id <> $${values.length}
+
             `;
         }
 

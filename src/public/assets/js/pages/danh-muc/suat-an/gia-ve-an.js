@@ -275,32 +275,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
 
                 mapRecordToForm(record) {
-                    window.setTimeout(
-                        async () => {
-                            renderDoiTuongLayVe(
-                                record?.doiTuongLayVe
-                            );
-
-                            renderCoSo(
-                                record?.coSoId
-                            );
-
-                            await loadNhaAn(
-                                record?.coSoId ||
-                                null
-                            );
-
-                            renderNhaAn(
-                                record?.nhaAnId
-                            );
-
-                            renderCaAn(
-                                record?.caAnId
-                            );
-                        },
-                        0
-                    );
-
                     return {
                         id: record?.id ?? "",
 
@@ -346,19 +320,34 @@ document.addEventListener("DOMContentLoaded", () => {
                     };
                 },
 
-                onRecordLoaded(
+                async onRecordLoaded(
                     record,
                     mode
                 ) {
-                    syncDateField(
-                        "tuNgay",
-                        record?.tuNgay
-                    );
 
-                    syncDateField(
-                        "denNgay",
-                        record?.denNgay
-                    );
+                    if (
+                        mode === "create" || !record
+                    ) {
+                        renderDoiTuongLayVe("");
+                        renderCoSo("");
+                        await loadNhaAn(null);
+                        renderNhaAn("");
+                        renderCaAn("");
+                        syncDateField( "tuNgay", "");
+                        syncDateField("denNgay", "");
+                        const donGiaInput = document.getElementById("donGia");
+                        if (donGiaInput) {
+                            donGiaInput.value = "";
+                        }
+                        return;
+                    }
+                    renderDoiTuongLayVe(record?.doiTuongLayVe);
+                    renderCoSo(record?.coSoId);
+                    await loadNhaAn(record?.coSoId || null);
+                    renderNhaAn(record?.nhaAnId);
+                    renderCaAn(record?.caAnId);
+                    syncDateField("tuNgay", record?.tuNgay);
+                    syncDateField("denNgay", record?.denNgay);
                 },
 
                 transformPayload(formData) {
@@ -687,15 +676,21 @@ document.addEventListener("DOMContentLoaded", () => {
             "[data-smart-select]"
         );
 
-        window.MCS
-            ?.smartSelect
-            ?.initialize(
-                smartSelectRoot
+        const smartSelect = smartSelectRoot ?.smartSelect ||
+            window.MCS
+                ?.smartSelect
+                ?.initialize(smartSelectRoot);
+        smartSelect?.refresh?.();
+        if (selected === "") {
+            smartSelect?.clear?.(false);
+        }
+        else {
+            smartSelect?.setValue?.(
+                selected,
+                false
             );
 
-        smartSelectRoot
-            ?.smartSelect
-            ?.refresh?.();
+        }
     }
 
     function getDoiTuongLayVeLabel(
