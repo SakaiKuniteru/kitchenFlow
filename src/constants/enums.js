@@ -225,27 +225,142 @@ const LOAI_THUC_DON = [
     }
 ];
 
+const DOI_TUONG_LAY_VE = [
+    {
+        value: 10,
+        name: "Nhân viên"
+    },
+    {
+        value: 20,
+        name: "Đối tác"
+    },
+    {
+        value: 30,
+        name: "Khách"
+    }
+];
+
+const LOAI_VE = [
+    {
+        value: 10,
+        name: "Vé thường"
+    },
+    {
+        value: 20,
+        name: "Vé ngày"
+    },
+    {
+        value: 30,
+        name: "Vé tuần"
+    },
+    {
+        value: 40,
+        name: "Vé tháng"
+    }
+];
+
+const PHUONG_THUC_THANH_TOAN = [
+    {
+        value: 10,
+        name: "Tiền mặt"
+    },
+    {
+        value: 20,
+        name: "Chuyển khoản"
+    },
+    {
+        value: 30,
+        name: "QR Code"
+    }
+];
+
+const LOAI_GIAO_DICH = [
+    {
+        value: 10,
+        name: "Thanh toán"
+    },
+    {
+        value: 20,
+        name: "Hoàn tiền"
+    }
+];
+
 const TRANG_THAI_PHIEU_THU = [
     {
         value: -10,
         name: "Chưa thanh toán + Tạo QR"
     },
-
     {
         value: 0,
         name: "Chưa thanh toán"
     },
-
     {
         value: 10,
         name: "Tạo QR"
     },
-
+    {
+        value: 20,
+        name: "Huỷ QR"
+    },
+    {
+        value: 30,
+        name: "Đã duyệt QR"
+    },
+    {
+        value: 40,
+        name: "Đã thanh toán"
+    },
     {
         value: 50,
-        name: "Đã thanh toán"
+        name: "Đã huỷ"
+    },
+    {
+        value: 60,
+        name: "Đã hoàn"
     }
-]
+];
+
+const TRANG_THAI_THANH_TOAN = [
+    {
+        value: 10,
+        name: "Chờ xử lý"
+    },
+    {
+        value: 20,
+        name: "Đang xử lý"
+    },
+    {
+        value: 30,
+        name: "Thành công"
+    },
+    {
+        value: 40,
+        name: "Thất bại"
+    },
+    {
+        value: 50,
+        name: "Đã huỷ"
+    }
+];
+
+const TRANG_THAI_VE = [
+    {
+        value: 10,
+        name: "Chưa sử dụng"
+    },
+    {
+        value: 20,
+        name: "Đã sử dụng"
+    },
+    {
+        value: 30,
+        name: "Đã huỷ"
+    },
+    {
+        value: 40,
+        name: "Đã hết hạn"
+    }
+];
 
 const TRANG_THAI_PHIEU_NHAP_XUAT = [
     {
@@ -262,7 +377,7 @@ const TRANG_THAI_PHIEU_NHAP_XUAT = [
         name: "Đã duyệt"
     }
 
-]
+];
 
 const TRANG_THAI_BINH_CHON = [
     {
@@ -274,7 +389,7 @@ const TRANG_THAI_BINH_CHON = [
         value: 20,
         name: "Đã bình chọn"
     }
-]
+];
 
 const LOAI_BINH_CHON = [
     {
@@ -286,7 +401,7 @@ const LOAI_BINH_CHON = [
         value: 1,
         name: "Có"
     }
-]
+];
 
 module.exports = {
     "gioiTinh": GIOI_TINH,
@@ -300,7 +415,13 @@ module.exports = {
     "loaiXuatFile": LOAI_XUAT_FILE,
     "trangThaiThucDon": TRANG_THAI_THUC_DON,
     "loaiThucDon": LOAI_THUC_DON,
+    "doiTuongLayVe": DOI_TUONG_LAY_VE,
+    "loaiVe": LOAI_VE,
+    "phuongThucThanhToan": PHUONG_THUC_THANH_TOAN,
+    "loaiGiaoDich": LOAI_GIAO_DICH,
     "trangThaiPhieuThu": TRANG_THAI_PHIEU_THU,
+    "trangThaiThanhToan": TRANG_THAI_THANH_TOAN,
+    "trangThaiVe": TRANG_THAI_VE,
     "trangThaiPhieuNhapXuat": TRANG_THAI_PHIEU_NHAP_XUAT,
     "trangThaiBinhChon": TRANG_THAI_BINH_CHON,
     "loaiBinhChon": LOAI_BINH_CHON

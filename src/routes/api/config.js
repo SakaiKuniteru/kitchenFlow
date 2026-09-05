@@ -125,6 +125,12 @@ const routes = [
             "../../modules/danh-muc/suat-an/don-vi-tinh/don-vi-tinh.route"
         )
     ],
+    [
+        "/dm-gia-ve-an",
+        require(
+            "../../modules/danh-muc/suat-an/gia-ve-an/gia-ve-an.route"
+        )
+    ],
 
     [
         "/dm-nha-an",
