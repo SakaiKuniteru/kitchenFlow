@@ -1,31 +1,14 @@
-const giaVeAnService =
-    require(
-        "./gia-ve-an.service"
-    );
-
-const {
-    successResponse
-} = require(
-    "../../../../utils/response.util"
-);
-
+const giaVeAnService = require("./gia-ve-an.service");
+const { successResponse } = require("../../../../utils/response.util");
 
 class GiaVeAnController {
-
     async getTongHop(
         req,
         res,
         next
     ) {
-
         try {
-
-            const data =
-                await giaVeAnService
-                    .getTongHop(
-                        req.query
-                    );
-
+            const data = await giaVeAnService.getTongHop(req.query);
 
             return successResponse(
                 res,
@@ -33,17 +16,9 @@ class GiaVeAnController {
                 data,
                 200
             );
-
-        } catch (
-            error
-        ) {
-
-            next(
-                error
-            );
-
+        } catch (error) {
+            next(error);
         }
-
     }
 
     async getTimGia(
@@ -51,15 +26,8 @@ class GiaVeAnController {
         res,
         next
     ) {
-
         try {
-
-            const data =
-                await giaVeAnService
-                    .getTimGia(
-                        req.query
-                    );
-
+            const data = await giaVeAnService.getTimGia(req.query);
 
             return successResponse(
                 res,
@@ -67,17 +35,9 @@ class GiaVeAnController {
                 data,
                 200
             );
-
-        } catch (
-            error
-        ) {
-
-            next(
-                error
-            );
-
+        } catch (error) {
+            next(error);
         }
-
     }
 
     async getChiTiet(
@@ -85,21 +45,10 @@ class GiaVeAnController {
         res,
         next
     ) {
-
         try {
+            const { id } = req.params;
 
-            const {
-                id
-            } =
-                req.params;
-
-
-            const data =
-                await giaVeAnService
-                    .getChiTiet(
-                        id
-                    );
-
+            const data = await giaVeAnService.getChiTiet(id);
 
             return successResponse(
                 res,
@@ -107,17 +56,9 @@ class GiaVeAnController {
                 data,
                 200
             );
-
-        } catch (
-            error
-        ) {
-
-            next(
-                error
-            );
-
+        } catch (error) {
+            next(error);
         }
-
     }
 
     async create(
@@ -125,15 +66,8 @@ class GiaVeAnController {
         res,
         next
     ) {
-
         try {
-
-            const data =
-                await giaVeAnService
-                    .create(
-                        req.body
-                    );
-
+            const data = await giaVeAnService.create(req.body);
 
             return successResponse(
                 res,
@@ -141,17 +75,9 @@ class GiaVeAnController {
                 data,
                 201
             );
-
-        } catch (
-            error
-        ) {
-
-            next(
-                error
-            );
-
+        } catch (error) {
+            next(error);
         }
-
     }
 
     async update(
@@ -159,22 +85,13 @@ class GiaVeAnController {
         res,
         next
     ) {
-
         try {
+            const { id } = req.params;
 
-            const {
-                id
-            } =
-                req.params;
-
-
-            const data =
-                await giaVeAnService
-                    .update(
-                        id,
-                        req.body
-                    );
-
+            const data = await giaVeAnService.update(
+                id,
+                req.body
+            );
 
             return successResponse(
                 res,
@@ -182,20 +99,10 @@ class GiaVeAnController {
                 data,
                 200
             );
-
-        } catch (
-            error
-        ) {
-
-            next(
-                error
-            );
-
+        } catch (error) {
+            next(error);
         }
-
     }
-
 }
 
-module.exports =
-    new GiaVeAnController();
+module.exports = new GiaVeAnController();

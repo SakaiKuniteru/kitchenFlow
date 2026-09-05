@@ -139,6 +139,13 @@ window.MCS.navigationItems = [
     },
 
     {
+        label: "Danh mục Giá vé ăn",
+        group: "Suất ăn",
+        url: "/suat-an/gia-ve-an",
+        permission: "Q000029"
+    },
+
+    {
         label: "Danh mục Chính sách",
         group: "Chính sách",
         url: "/chuong-trinh/chinh-sach",

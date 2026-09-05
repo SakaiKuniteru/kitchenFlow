@@ -77,6 +77,11 @@ const danhMucRoutes = [
     },
     {
         method: "get",
+        path: "/suat-an/gia-ve-an",
+        handler: danhMucWebController.giaVeAn
+    },
+    {
+        method: "get",
         path: "/to-chuc/nhan-vien",
         handler: danhMucWebController.nhanVien
     },

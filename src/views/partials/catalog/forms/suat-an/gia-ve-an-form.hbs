@@ -1,0 +1,106 @@
+<div class="detail-panel__section">
+    <h3 class="detail-panel__section-title">Thông tin giá vé ăn</h3>
+
+    <div class="catalog-form-grid">
+        {{> forms/select
+            id="doiTuongLayVe"
+            name="doiTuongLayVe"
+            label="Đối tượng lấy vé"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn đối tượng lấy vé..."
+            required=true
+        }}
+
+        {{> forms/select
+            id="coSoId"
+            name="coSoId"
+            label="Cơ sở"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn cơ sở..."
+        }}
+
+        {{> forms/select
+            id="nhaAnId"
+            name="nhaAnId"
+            label="Nhà ăn"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn nhà ăn..."
+        }}
+
+        {{> forms/select
+            id="caAnId"
+            name="caAnId"
+            label="Ca ăn"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn ca ăn..."
+            required=true
+        }}
+
+        {{> forms/number
+            id="donGia"
+            name="donGia"
+            label="Đơn giá"
+            placeholder="Nhập đơn giá"
+            min=0
+            step="0.01"
+            required=true
+        }}
+
+        {{> forms/number
+            id="mucDoUuTien"
+            name="mucDoUuTien"
+            label="Mức độ ưu tiên"
+            placeholder="Nhập mức độ ưu tiên"
+            min=1
+            step="1"
+            required=true
+        }}
+
+        {{> forms/date
+            id="tuNgay"
+            name="tuNgay"
+            label="Từ ngày"
+            placeholder="dd/mm/yyyy"
+            showTime=false
+            defaultTime="00:00:00"
+            required=true
+        }}
+
+        {{> forms/date
+            id="denNgay"
+            name="denNgay"
+            label="Đến ngày"
+            placeholder="dd/mm/yyyy"
+            showTime=false
+            defaultTime="23:59:59"
+        }}
+
+        <div class="catalog-form-grid__full">
+            {{> forms/textarea
+                id="ghiChu"
+                name="ghiChu"
+                label="Ghi chú"
+                placeholder="Nhập ghi chú"
+                rows=3
+                maxlength=500
+            }}
+        </div>
+    </div>
+</div>
+
+<div class="detail-panel__section">
+    {{> forms/switch
+        id="active"
+        name="active"
+        label="Đang hoạt động"
+        checked=true
+    }}
+</div>

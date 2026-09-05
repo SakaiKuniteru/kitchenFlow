@@ -1,0 +1,26 @@
+{{> catalog/module-page
+    moduleName="gia-ve-an"
+    apiBase="/api/mcs/v1/dm-gia-ve-an"
+    title="Danh mục giá vé ăn"
+    searchPlaceholder="Tìm theo đối tượng, cơ sở, nhà ăn hoặc ca ăn..."
+    createButtonLabel="Thêm giá vé ăn"
+    createButtonId="btnCreateGiaVeAn"
+    searchInputId="searchGiaVeAn"
+    tableId="giaVeAnTable"
+    tableBodyId="giaVeAnTableBody"
+    paginationId="giaVeAnPagination"
+    detailPanelId="giaVeAnDetailPanel"
+    detailContentId="giaVeAnDetailContent"
+    formId="giaVeAnForm"
+    formPartial="catalog/forms/suat-an/gia-ve-an-form"
+    detailTitle="Thông tin giá vé ăn"
+    showEditButton=true
+    showActions=true
+    mobilePanelId="giaVeAnMobilePanel"
+    columns=columns
+}}
+
+{{> scripts/catalog-page
+    folder="suat-an"
+    page="gia-ve-an"
+}}

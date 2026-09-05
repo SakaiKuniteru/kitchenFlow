@@ -407,6 +407,31 @@ class DanhMucWebController {
         }
     }
 
+    async giaVeAn(req, res, next) {
+        try {
+            return renderDanhMuc(req, res, {
+                view: "pages/danh-muc/suat-an/gia-ve-an/index",
+                title: "Danh mục giá vé ăn",
+                description: "Quản lý giá vé ăn.",
+                page: "Giá vé ăn",
+                activeSubmenu: "gia-ve-an",
+                columns: [
+                    textColumn("doiTuongLayVe", "Đối tượng lấy vé", { with: "180", className: "catalog-table__cell--center"}),
+                    textColumn("tenCoSo", "Tên cơ sở", { with: "200", className: "catalog-table__cell--center"}),
+                    textColumn("tenNhaAn", "Tên nhà ăn", { with: "200", className: "catalog-table__cell--center"}),
+                    textColumn("tenCaAn", "Tên ca ăn", { with: "200", className: "catalog-table__cell--center"}),
+                    textColumn("donGia", "Đơn giá", { with: "160", className: "catalog-table__cell--center"}),
+                    textColumn("tuNgay", "Từ ngày", { with: "150", className: "catalog-table__cell--center"}),
+                    textColumn("denNgay", "Đến ngày", { with: "150", className: "catalog-table__cell--center"}),
+                    textColumn("mucDoUuTien", "Mức độ ưu tiên", { with: "100", className: "catalog-table__cell--center"}),
+                    booleanColumn("active", "Hiệu lực", { width: "130px", className: "catalog-table__cell--center" }),
+                ]
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async nhanVien(req, res, next) {
         try {
             return renderDanhMuc(req, res, {
