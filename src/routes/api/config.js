@@ -213,6 +213,33 @@ const routes = [
         )
     ],
 
+    [
+        "/nv-phieu-lay-ve-an",
+        require(
+            "../../modules/nghiep-vu/lay-ve-an/phieu-lay-ve-an/phieu-lay-ve-an.route"
+        )
+    ],
+
+    [
+        "/ct-phieu-lay-ve-mien-giam",
+        require(
+            "../../modules/nghiep-vu/lay-ve-an/phieu-lay-ve-mien-giam/phieu-lay-ve-mien-giam.route"
+        )
+    ],
+
+    [
+        "/nv-thanh-toan-ve-an",
+        require(
+            "../../modules/nghiep-vu/lay-ve-an/thanh-toan-ve-an/thanh-toan-ve-an.route"
+        )
+    ],
+
+    [
+        "/ct-ve-an",
+        require(
+            "../../modules/nghiep-vu/lay-ve-an/ve-an/ve-an.route"
+        )
+    ],
 ];
 
 module.exports = routes;
