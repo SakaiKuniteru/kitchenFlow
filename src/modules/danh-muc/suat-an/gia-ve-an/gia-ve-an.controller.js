@@ -46,6 +46,39 @@ class GiaVeAnController {
 
     }
 
+    async getTimGia(
+        req,
+        res,
+        next
+    ) {
+
+        try {
+
+            const data =
+                await giaVeAnService
+                    .getTimGia(
+                        req.query
+                    );
+
+
+            return successResponse(
+                res,
+                "Lấy giá vé ăn thành công.",
+                data,
+                200
+            );
+
+        } catch (
+            error
+        ) {
+
+            next(
+                error
+            );
+
+        }
+
+    }
 
     async getChiTiet(
         req,
@@ -87,7 +120,6 @@ class GiaVeAnController {
 
     }
 
-
     async create(
         req,
         res,
@@ -121,7 +153,6 @@ class GiaVeAnController {
         }
 
     }
-
 
     async update(
         req,
@@ -165,7 +196,6 @@ class GiaVeAnController {
     }
 
 }
-
 
 module.exports =
     new GiaVeAnController();

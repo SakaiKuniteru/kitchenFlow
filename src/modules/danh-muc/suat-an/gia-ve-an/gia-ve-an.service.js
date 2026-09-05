@@ -106,6 +106,83 @@ class GiaVeAnService {
 
     }
 
+        async getTimGia(
+        query
+    ) {
+
+        const thucDonNgayId =
+            Number(
+                query.thucDonNgayId
+            );
+
+
+        if (
+            !Number.isInteger(
+                thucDonNgayId
+            ) ||
+            thucDonNgayId <=
+                0
+        ) {
+
+            throw new ApiError(
+                400,
+                "Thực đơn ngày không hợp lệ."
+            );
+
+        }
+
+
+        if (
+            query.doiTuongLayVe ===
+                undefined ||
+            query.doiTuongLayVe ===
+                null ||
+            query.doiTuongLayVe ===
+                ""
+        ) {
+
+            throw new ApiError(
+                400,
+                "Đối tượng lấy vé là bắt buộc."
+            );
+
+        }
+
+
+        const doiTuongLayVe =
+            Number(
+                query.doiTuongLayVe
+            );
+
+
+        this.validateDoiTuongLayVe(
+            doiTuongLayVe
+        );
+
+
+        const giaVeAn =
+            await giaVeAnRepository
+                .getTimGia(
+                    thucDonNgayId,
+                    doiTuongLayVe
+                );
+
+
+        if (
+            !giaVeAn
+        ) {
+
+            throw new ApiError(
+                404,
+                "Không tìm thấy giá vé ăn phù hợp."
+            );
+
+        }
+
+
+        return giaVeAn;
+
+    }
 
     async getChiTiet(
         id

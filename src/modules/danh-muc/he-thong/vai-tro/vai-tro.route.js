@@ -12,7 +12,6 @@ router.get(
     "/tong-hop",
     authenticate,
     authorize("Q000011"),
-    authorize("Q000526", "Q000527", "Q000528"),
     controller.getTongHop
 );
 

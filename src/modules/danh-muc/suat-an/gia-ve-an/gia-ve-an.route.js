@@ -40,14 +40,19 @@ router.get(
     authorize(
         "Q000029"
     ),
+    controller.getTongHop
+);
+
+router.get(
+    "/tim-gia",
+    authenticate,
     authorize(
         "Q000568",
         "Q000569",
         "Q000570"
     ),
-    controller.getTongHop
+    controller.getTimGia
 );
-
 
 router.get(
     "/:id",
@@ -59,7 +64,6 @@ router.get(
     ),
     controller.getChiTiet
 );
-
 
 router.post(
     "/them-moi",
@@ -74,7 +78,6 @@ router.post(
     controller.create
 );
 
-
 router.patch(
     "/cap-nhat/:id",
     authenticate,
@@ -86,7 +89,6 @@ router.patch(
     ),
     controller.update
 );
-
 
 module.exports =
     router;

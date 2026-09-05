@@ -335,6 +335,165 @@ class GiaVeAnRepository {
     }
 
 
+        async getTimGia(
+        thucDonNgayId,
+        doiTuongLayVe
+    ) {
+
+        const sql = `
+
+            SELECT
+
+                gva.id,
+
+                gva.doi_tuong_lay_ve,
+
+                gva.co_so_id,
+
+                cs.ma_co_so,
+                cs.ten_co_so,
+
+                gva.nha_an_id,
+
+                na.ma_nha_an,
+                na.ten_nha_an,
+
+                gva.ca_an_id,
+
+                ca.ma_ca_an,
+                ca.ten_ca_an,
+                ca.thoi_gian_bat_dau,
+                ca.thoi_gian_ket_thuc,
+
+                gva.don_gia,
+
+                gva.tu_ngay,
+                gva.den_ngay,
+
+                gva.muc_do_uu_tien,
+
+                gva.ghi_chu,
+
+                gva.active,
+                gva.created_at,
+                gva.updated_at
+
+            FROM ct_thuc_don_ngay tdn
+
+            INNER JOIN nv_thuc_don td
+                ON td.id =
+                   tdn.thuc_don_id
+
+            INNER JOIN dm_gia_ve_an gva
+                ON gva.doi_tuong_lay_ve = $2
+
+                AND gva.active = TRUE
+
+                AND (
+                    gva.co_so_id IS NULL
+                    OR gva.co_so_id =
+                       td.co_so_id
+                )
+
+                AND (
+                    gva.nha_an_id IS NULL
+                    OR gva.nha_an_id =
+                       td.nha_an_id
+                )
+
+                AND (
+                    gva.ca_an_id IS NULL
+                    OR gva.ca_an_id =
+                       td.ca_an_id
+                )
+
+                AND gva.tu_ngay <=
+                    tdn.ngay
+
+                AND (
+                    gva.den_ngay IS NULL
+                    OR gva.den_ngay >=
+                       tdn.ngay
+                )
+
+            LEFT JOIN dm_co_so cs
+                ON cs.id =
+                   gva.co_so_id
+
+            LEFT JOIN dm_nha_an na
+                ON na.id =
+                   gva.nha_an_id
+
+            LEFT JOIN dm_ca_an ca
+                ON ca.id =
+                   gva.ca_an_id
+
+            WHERE
+                tdn.id = $1
+
+                AND tdn.active = TRUE
+
+                AND td.active = TRUE
+
+            ORDER BY
+
+                (
+                    CASE
+                        WHEN gva.co_so_id IS NOT NULL
+                        THEN 1
+                        ELSE 0
+                    END
+                    +
+                    CASE
+                        WHEN gva.nha_an_id IS NOT NULL
+                        THEN 1
+                        ELSE 0
+                    END
+                    +
+                    CASE
+                        WHEN gva.ca_an_id IS NOT NULL
+                        THEN 1
+                        ELSE 0
+                    END
+                ) DESC,
+
+                gva.muc_do_uu_tien DESC,
+
+                gva.tu_ngay DESC,
+
+                gva.id DESC
+
+            LIMIT 1
+
+        `;
+
+
+        const result =
+            await pool.query(
+                sql,
+                [
+                    thucDonNgayId,
+                    doiTuongLayVe
+                ]
+            );
+
+
+        if (
+            result.rows.length ===
+            0
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapGiaVeAn(
+            result.rows[0]
+        );
+
+    }
+    
     async existsCauHinhTrung(
         data,
         excludeId = null
