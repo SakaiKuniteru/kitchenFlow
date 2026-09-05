@@ -62,155 +62,82 @@ const controller =
 
     );
 
-
 router.get(
-
     "/tong-hop",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_XEM_MODULE"
-
+        "Q000030"
     ),
-
     controller.getTongHop
-
 );
 
-
 router.get(
-
     "/thuc-don-ngay-hop-le",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_XEM",
-
-        "Q_QUYEN_THEM",
-
-        "Q_QUYEN_SUA"
-
+        "Q001032",
+        "Q001033",
+        "Q001034"
     ),
-
     controller.getThucDonNgayHopLe
-
 );
 
-
 router.get(
-
     "/in-ve/:id",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_XEM",
-
-        "Q_QUYEN_IN"
-
+        "Q001036"
     ),
-
     controller.inVe
-
 );
-
 
 router.get(
-
     "/:id",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_XEM",
-
-        "Q_QUYEN_THEM",
-
-        "Q_QUYEN_SUA"
-
+        "Q001032",
+        "Q001033",
+        "Q001034"
     ),
-
     controller.getChiTiet
-
 );
-
 
 router.post(
-
     "/them-moi",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_THEM",
-
-        "Q_QUYEN_SUA"
-
+        "Q001033",
+        "Q001034"
     ),
-
     validate(
-
         createSchema
-
     ),
-
     controller.create
-
 );
 
-
 router.patch(
-
     "/cap-nhat/:id",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_SUA"
-
+        "Q001034"
     ),
-
     validate(
-
         updateSchema
-
     ),
-
     controller.update
-
 );
-
 
 router.patch(
-
     "/huy/:id",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_HUY"
-
+        "Q001035"
     ),
-
     validate(
-
         huySchema
-
     ),
-
     controller.huy
-
 );
-
 
 module.exports =
 

@@ -62,165 +62,85 @@ const controller =
 
     );
 
-
 router.get(
-
     "/tong-hop",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_XEM_MODULE"
-
+        "Q001037",
+        "Q001038",
+        "Q001039"
     ),
-
-    authorize(
-
-        "Q_QUYEN_XEM",
-
-        "Q_QUYEN_THEM",
-
-        "Q_QUYEN_SUA"
-
-    ),
-
     controller.getTongHop
-
 );
-
 
 router.get(
-
     "/kha-dung",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_XEM",
-
-        "Q_QUYEN_THEM",
-
-        "Q_QUYEN_SUA"
-
+        "Q001037",
+        "Q001038",
+        "Q001039"
     ),
-
     controller.getKhaDung
-
 );
 
-
 router.post(
-
     "/ap-dung",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_THEM",
-
-        "Q_QUYEN_SUA"
-
+        "Q001038",
+        "Q001039"
     ),
-
     validate(
-
         apDungSchema
-
     ),
-
     controller.apDung
-
 );
-
 
 router.post(
-
     "/them-moi",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_THEM",
-
-        "Q_QUYEN_SUA"
-
+        "Q001038",
+        "Q001039"
     ),
-
     validate(
-
         createSchema
-
     ),
-
     controller.create
-
 );
-
 
 router.patch(
-
     "/cap-nhat/:id",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_SUA"
-
+        "Q001039"
     ),
-
     validate(
-
         updateSchema
-
     ),
-
     controller.update
-
 );
-
 
 router.delete(
-
     "/xoa/:id",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_SUA"
-
+        "Q001040"
     ),
-
     controller.delete
-
 );
-
 
 router.get(
-
     "/:id",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_XEM",
-
-        "Q_QUYEN_THEM",
-
-        "Q_QUYEN_SUA"
-
+        "Q001037",
+        "Q001038",
+        "Q001039"
     ),
-
     controller.getChiTiet
-
 );
-
 
 module.exports =
 

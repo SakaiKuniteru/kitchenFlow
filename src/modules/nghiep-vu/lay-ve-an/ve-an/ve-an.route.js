@@ -62,121 +62,66 @@ const controller =
 
     );
 
-
 router.get(
-
     "/tong-hop",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_XEM_MODULE"
-
+        "Q001047",
+        "Q001048",
+        "Q001049",
+        "Q001050"
     ),
-
-    authorize(
-
-        "Q_QUYEN_XEM",
-
-        "Q_QUYEN_SUA"
-
-    ),
-
     controller.getTongHop
-
 );
 
-
 router.post(
-
     "/kiem-tra",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_XEM",
-
-        "Q_QUYEN_SUA"
-
+        "Q001048",
+        "Q001049"
     ),
-
     validate(
-
         kiemTraSchema
-
     ),
-
     controller.kiemTra
-
 );
-
 
 router.post(
-
     "/xac-nhan-su-dung",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_SUA"
-
+        "Q001049"
     ),
-
     validate(
-
         xacNhanSuDungSchema
-
     ),
-
     controller.xacNhanSuDung
-
 );
-
 
 router.patch(
-
     "/huy/:id",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_SUA"
-
+        "Q001050"
     ),
-
     validate(
-
         huySchema
-
     ),
-
     controller.huy
-
 );
-
 
 router.get(
-
     "/:id",
-
     authenticate,
-
     authorize(
-
-        "Q_QUYEN_XEM",
-
-        "Q_QUYEN_SUA"
-
+        "Q001047",
+        "Q001048",
+        "Q001049",
+        "Q001050"
     ),
-
     controller.getChiTiet
-
 );
-
 
 module.exports =
 
