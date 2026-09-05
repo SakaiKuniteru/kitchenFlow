@@ -48,6 +48,13 @@ router.get(
     controller.getLichSuCuaToi
 );
 
+router.get(
+    "/cua-toi/:id",
+    authenticate,
+    authorize("Q001023", "Q001024", "Q001025", "Q001026", "Q001027"),
+    controller.getChiTietCuaToi
+);
+
 router.post(
     "/them-moi",
     authenticate,

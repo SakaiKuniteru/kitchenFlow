@@ -26,25 +26,11 @@ class TaiKhoanRepository {
             doiMatKhauLanDau: row.doi_mat_khau_lan_dau,
             nhanVienId: row.nhan_vien_id,
             nhanVien: row.nhan_vien || null,
-
-            dsVaiTroId: dsVaiTro.map(
-                item => item.id
-            ),
-
-            dsMaVaiTro: dsVaiTro.map(
-                item => item.maVaiTro
-            ),
-
+            dsVaiTroId: dsVaiTro.map(item => item.id),
+            dsMaVaiTro: dsVaiTro.map(item => item.maVaiTro),
             dsVaiTro: dsVaiTro,
-
-            dsQuyenId: dsQuyen.map(
-                item => item.id
-            ),
-
-            dsMaQuyen: dsQuyen.map(
-                item => item.maQuyen
-            ),
-
+            dsQuyenId: dsQuyen.map(item => item.id),
+            dsMaQuyen: dsQuyen.map(item => item.maQuyen),
             dsQuyen: dsQuyen,
             active: row.active,
             createdAt: row.created_at,
@@ -54,9 +40,7 @@ class TaiKhoanRepository {
 
     getBaseQuery() {
         return `
-
             SELECT
-
                 tk.id,
                 tk.nhan_vien_id,
                 tk.ten_dang_nhap,
@@ -72,255 +56,126 @@ class TaiKhoanRepository {
                 tk.updated_at,
 
                 JSON_BUILD_OBJECT(
-
-                    'id',
-                        nv.id,
-
-                    'maNhanVien',
-                        nv.ma_nhan_vien,
-
-                    'hoTen',
-                        nv.ho_ten,
-
-                    'email',
-                        nv.email,
-
-                    'soDienThoai',
-                        nv.so_dien_thoai,
-
-                    'ngaySinh',
-                        nv.ngay_sinh,
-
-                    'anhDaiDien',
-                        nv.anh_dai_dien,
-
-                    'active',
-                        nv.active,
-
+                    'id', nv.id,
+                    'maNhanVien', nv.ma_nhan_vien,
+                    'hoTen', nv.ho_ten,
+                    'email', nv.email,
+                    'soDienThoai', nv.so_dien_thoai,
+                    'ngaySinh', nv.ngay_sinh,
+                    'anhDaiDien', nv.anh_dai_dien,
+                    'active', nv.active,
                     'coSo',
-
                         CASE
-
                             WHEN cs.id IS NOT NULL THEN
-
                                 JSON_BUILD_OBJECT(
-
-                                    'id',
-                                        cs.id,
-
-                                    'maCoSo',
-                                        cs.ma_co_so,
-
-                                    'tenCoSo',
-                                        cs.ten_co_so,
-
-                                    'diaChi',
-                                        cs.dia_chi,
-
-                                    'active',
-                                        cs.active
-
+                                    'id', cs.id,
+                                    'maCoSo', cs.ma_co_so,
+                                    'tenCoSo', cs.ten_co_so,
+                                    'diaChi', cs.dia_chi,
+                                    'active', cs.active
                                 )
-
                             ELSE NULL
-
                         END,
-
                     'phongBan',
-
                         CASE
-
                             WHEN pb.id IS NOT NULL THEN
-
                                 JSON_BUILD_OBJECT(
-
-                                    'id',
-                                        pb.id,
-
-                                    'maPhongBan',
-                                        pb.ma_phong_ban,
-
-                                    'tenPhongBan',
-                                        pb.ten_phong_ban,
-
-                                    'active',
-                                        pb.active
-
+                                    'id', pb.id,
+                                    'maPhongBan', pb.ma_phong_ban,
+                                    'tenPhongBan', pb.ten_phong_ban,
+                                    'active', pb.active
                                 )
-
                             ELSE NULL
-
                         END,
-
                     'chucVu',
-
                         CASE
-
                             WHEN cv.id IS NOT NULL THEN
-
                                 JSON_BUILD_OBJECT(
-
-                                    'id',
-                                        cv.id,
-
-                                    'maChucVu',
-                                        cv.ma_chuc_vu,
-
-                                    'tenChucVu',
-                                        cv.ten_chuc_vu,
-
-                                    'active',
-                                        cv.active
-
+                                    'id', cv.id,
+                                    'maChucVu', cv.ma_chuc_vu,
+                                    'tenChucVu', cv.ten_chuc_vu,
+                                    'active', cv.active
                                 )
-
                             ELSE NULL
-
                         END
-
                 ) AS nhan_vien,
 
                 COALESCE(
-
                     (
-
                         SELECT
-
                             JSON_AGG(
-
                                 JSON_BUILD_OBJECT(
-
-                                    'id',
-                                        ds_vai_tro.id,
-
-                                    'maVaiTro',
-                                        ds_vai_tro.ma_vai_tro,
-
-                                    'tenVaiTro',
-                                        ds_vai_tro.ten_vai_tro,
-
-                                    'moTa',
-                                        ds_vai_tro.mo_ta,
-
-                                    'active',
-                                        ds_vai_tro.active
-
+                                    'id', ds_vai_tro.id,
+                                    'maVaiTro', ds_vai_tro.ma_vai_tro,
+                                    'tenVaiTro', ds_vai_tro.ten_vai_tro,
+                                    'moTa', ds_vai_tro.mo_ta,
+                                    'active', ds_vai_tro.active
                                 )
-
-                                ORDER BY
-                                    ds_vai_tro.ma_vai_tro ASC
-
+                                ORDER BY ds_vai_tro.ma_vai_tro ASC
                             )
-
                         FROM (
-
                             SELECT DISTINCT
-
                                 vt.id,
                                 vt.ma_vai_tro,
                                 vt.ten_vai_tro,
                                 vt.mo_ta,
                                 vt.active
-
                             FROM dm_tai_khoan_vai_tro tkvt
-
                             INNER JOIN dm_vai_tro vt
                                 ON vt.id = tkvt.vai_tro_id
-
                             WHERE tkvt.tai_khoan_id = tk.id
-
                                 AND tkvt.active = TRUE
-
                         ) AS ds_vai_tro
-
                     ),
-
                     '[]'::JSON
-
                 ) AS vai_tros,
 
                 COALESCE(
-
                     (
-
                         SELECT
-
                             JSON_AGG(
-
                                 JSON_BUILD_OBJECT(
-
-                                    'id',
-                                        ds_quyen.id,
-
-                                    'maQuyen',
-                                        ds_quyen.ma_quyen,
-
-                                    'tenQuyen',
-                                        ds_quyen.ten_quyen,
-
-                                    'moTa',
-                                        ds_quyen.mo_ta,
-
-                                    'active',
-                                        ds_quyen.active
-
+                                    'id', ds_quyen.id,
+                                    'maQuyen', ds_quyen.ma_quyen,
+                                    'tenQuyen', ds_quyen.ten_quyen,
+                                    'moTa', ds_quyen.mo_ta,
+                                    'active', ds_quyen.active
                                 )
-
-                                ORDER BY
-                                    ds_quyen.ma_quyen ASC
-
+                                ORDER BY ds_quyen.ma_quyen ASC
                             )
-
                         FROM (
-
                             SELECT DISTINCT
-
                                 q.id,
                                 q.ma_quyen,
                                 q.ten_quyen,
                                 q.mo_ta,
                                 q.active
-
                             FROM dm_tai_khoan_vai_tro tkvt
-
                             INNER JOIN dm_vai_tro vt
                                 ON vt.id = tkvt.vai_tro_id
                                 AND vt.active = TRUE
-
                             INNER JOIN dm_vai_tro_quyen vtq
                                 ON vtq.vai_tro_id = vt.id
                                 AND vtq.active = TRUE
-
                             INNER JOIN dm_quyen q
                                 ON q.id = vtq.quyen_id
                                 AND q.active = TRUE
-
                             WHERE tkvt.tai_khoan_id = tk.id
-
                                 AND tkvt.active = TRUE
-
                         ) AS ds_quyen
-
                     ),
-
                     '[]'::JSON
-
                 ) AS quyens
 
             FROM dm_tai_khoan tk
-
             INNER JOIN dm_nhan_vien nv
                 ON nv.id = tk.nhan_vien_id
-
             LEFT JOIN dm_co_so cs
                 ON cs.id = nv.co_so_id
-
             LEFT JOIN dm_phong_ban pb
                 ON pb.id = nv.phong_ban_id
-
             LEFT JOIN dm_chuc_vu cv
                 ON cv.id = nv.chuc_vu_id
-
         `;
     }
 
@@ -343,6 +198,42 @@ class TaiKhoanRepository {
         );
 
         return result.rows[0] || null;
+    }
+
+    async getNhanVienKhaDung(taiKhoanId = null) {
+        const sql = `
+            SELECT
+                nv.id,
+                nv.ma_nhan_vien AS "maNhanVien",
+                nv.ho_ten AS "hoTen",
+                nv.anh_dai_dien AS "anhDaiDien",
+                nv.active
+
+            FROM dm_nhan_vien nv
+
+            LEFT JOIN dm_tai_khoan tk
+                ON tk.nhan_vien_id = nv.id
+
+            WHERE nv.active = TRUE
+            AND (
+                tk.id IS NULL
+                OR (
+                    $1::INTEGER IS NOT NULL
+                    AND tk.id = $1
+                )
+            )
+
+            ORDER BY
+                nv.ma_nhan_vien ASC,
+                nv.ho_ten ASC
+        `;
+
+        const result = await pool.query(
+            sql,
+            [taiKhoanId]
+        );
+
+        return result.rows;
     }
 
     async getTongHop() {
@@ -412,40 +303,22 @@ class TaiKhoanRepository {
 
     async findNhanVienByMa(maNhanVien) {
         const sql = `
-
             SELECT
-
                 id,
-
                 ma_nhan_vien,
-
                 ho_ten,
-
                 email,
-
                 so_dien_thoai,
-
                 ngay_sinh,
-
                 anh_dai_dien,
-
                 co_so_id,
-
                 phong_ban_id,
-
                 chuc_vu_id,
-
                 active
-
             FROM dm_nhan_vien
-
             WHERE
-
-                UPPER(ma_nhan_vien)
-                    = UPPER($1)
-
+                UPPER(ma_nhan_vien) = UPPER($1)
             LIMIT 1
-
         `;
 
         const result = await pool.query(
@@ -481,21 +354,14 @@ class TaiKhoanRepository {
         ];
 
         let sql = `
-
             SELECT EXISTS (
-
                 SELECT 1
-
                 FROM dm_tai_khoan
-
                 WHERE nhan_vien_id = $1
-
         `;
 
         if (excludeId) {
-            values.push(
-                excludeId
-            );
+            values.push(excludeId);
 
             sql += `
                 AND id <> $2
@@ -503,9 +369,7 @@ class TaiKhoanRepository {
         }
 
         sql += `
-
             ) AS "exists"
-
         `;
 
         const result = await pool.query(
@@ -525,24 +389,15 @@ class TaiKhoanRepository {
         ];
 
         let sql = `
-
             SELECT EXISTS (
-
                 SELECT 1
-
                 FROM dm_tai_khoan
-
                 WHERE
-
-                    UPPER(ten_dang_nhap)
-                        = UPPER($1)
-
+                    UPPER(ten_dang_nhap) = UPPER($1)
         `;
 
         if (excludeId) {
-            values.push(
-                excludeId
-            );
+            values.push(excludeId);
 
             sql += `
                 AND id <> $2
@@ -550,9 +405,7 @@ class TaiKhoanRepository {
         }
 
         sql += `
-
             ) AS "exists"
-
         `;
 
         const result = await pool.query(
@@ -849,9 +702,7 @@ class TaiKhoanRepository {
                 parameterIndex++;
             }
 
-            if (
-                data.resetSoLanDangNhapSai === true
-            ) {
+            if (data.resetSoLanDangNhapSai === true) {
                 fields.push(
                     "so_lan_dang_nhap_sai = 0"
                 );
@@ -889,16 +740,12 @@ class TaiKhoanRepository {
             );
 
             if (result.rows.length === 0) {
-                await client.query(
-                    "ROLLBACK"
-                );
+                await client.query("ROLLBACK");
 
                 return null;
             }
 
-            if (
-                data.dsVaiTroId !== undefined
-            ) {
+            if (data.dsVaiTroId !== undefined) {
                 await this.khoaTatCaVaiTro(
                     client,
                     id

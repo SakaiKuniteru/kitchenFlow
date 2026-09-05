@@ -1,163 +1,64 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const root =
-        document.querySelector(
-            "[data-menu-detail-page]"
-        );
+    const root = document.querySelector("[data-menu-detail-page]");
 
     if (!root) {
         return;
     }
 
-    const thucDonId =
-        Number(
-            root.dataset
-                .thucDonId
-        );
-
-    const thucDonNgayId =
-        Number(
-            root.dataset
-                .thucDonNgayId
-        );
+    const thucDonId = Number(root.dataset.thucDonId);
+    const thucDonNgayId = Number(root.dataset.thucDonNgayId);
 
     const elements = {
-        content:
-            root.querySelector(
-                "[data-menu-detail-content]"
-            ),
-
-        loading:
-            root.querySelector(
-                "[data-menu-detail-loading]"
-            ),
-
-        heroImage:
-            root.querySelector(
-                "[data-menu-hero-image]"
-            ),
-
-        heroImagePlaceholder:
-            root.querySelector(
-                "[data-menu-hero-image-placeholder]"
-            ),
-
-        heroCategory:
-            root.querySelector(
-                "[data-menu-hero-category]"
-            ),
-
-        heroTitle:
-            root.querySelector(
-                "[data-menu-hero-title]"
-            ),
-
-        heroCode:
-            root.querySelector(
-                "[data-menu-hero-code]"
-            ),
-
-        heroGroup:
-            root.querySelector(
-                "[data-menu-hero-group]"
-            ),
-
-        heroUnit:
-            root.querySelector(
-                "[data-menu-hero-unit]"
-            ),
-
-        heroStatus:
-            root.querySelector(
-                "[data-menu-hero-status]"
-            ),
-
-        heroMenu:
-            root.querySelector(
-                "[data-menu-hero-menu]"
-            ),
-
-        heroDescription:
-            root.querySelector(
-                "[data-menu-hero-description]"
-            ),
-
-        currentMenuLabel:
-            root.querySelector(
-                "[data-current-menu-label]"
-            ),
-
-        foodTrack:
-            root.querySelector(
-                "[data-menu-food-track]"
-            ),
-
-        foodEmpty:
-            root.querySelector(
-                "[data-menu-food-empty]"
-            ),
-
-        dayGrid:
-            root.querySelector(
-                "[data-menu-day-grid]"
-            ),
-
-        dayEmpty:
-            root.querySelector(
-                "[data-menu-day-empty]"
-            )
+        content: root.querySelector("[data-menu-detail-content]"),
+        loading: root.querySelector("[data-menu-detail-loading]"),
+        heroImage: root.querySelector("[data-menu-hero-image]"),
+        heroImagePlaceholder: root.querySelector("[data-menu-hero-image-placeholder]"),
+        heroCategory: root.querySelector("[data-menu-hero-category]"),
+        heroTitle: root.querySelector("[data-menu-hero-title]"),
+        heroCode: root.querySelector("[data-menu-hero-code]"),
+        heroGroup: root.querySelector("[data-menu-hero-group]"),
+        heroUnit: root.querySelector("[data-menu-hero-unit]"),
+        heroStatus: root.querySelector("[data-menu-hero-status]"),
+        heroMenu: root.querySelector("[data-menu-hero-menu]"),
+        heroDescription: root.querySelector("[data-menu-hero-description]"),
+        currentMenuLabel: root.querySelector("[data-current-menu-label]"),
+        foodTrack: root.querySelector("[data-menu-food-track]"),
+        foodEmpty: root.querySelector("[data-menu-food-empty]"),
+        dayGrid: root.querySelector("[data-menu-day-grid]"),
+        dayEmpty: root.querySelector("[data-menu-day-empty]")
     };
 
     const state = {
-        menu:
-            null,
-
-        day:
-            null,
-
-        days:
-            [],
-
-        foods:
-            [],
-
-        selectedFoodId:
-            null
+        menu: null,
+        day: null,
+        days: [],
+        foods: [],
+        selectedFoodId: null
     };
 
     if (
-        !Number.isInteger(
-            thucDonId
-        ) ||
+        !Number.isInteger(thucDonId) ||
         thucDonId <= 0 ||
-        !Number.isInteger(
-            thucDonNgayId
-        ) ||
+        !Number.isInteger(thucDonNgayId) ||
         thucDonNgayId <= 0
     ) {
-        showError(
-            "Thông tin thực đơn không hợp lệ."
-        );
-
+        showError("Thông tin thực đơn không hợp lệ.");
         return;
     }
 
-    const canContinue =
-        await checkPermission();
+    const canContinue = await checkPermission();
 
     if (!canContinue) {
         return;
     }
 
     bindEvents();
-
     await load();
 
     async function checkPermission() {
-        const permission =
-            window.ThucDon
-                ?.permission;
+        const permission = window.ThucDon?.permission;
 
         if (
             !permission?.load ||
@@ -167,30 +68,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         try {
-            const permissions =
-                await permission
-                    .load();
+            const permissions = await permission.load();
 
-            if (
-                permission.canView(
-                    permissions
-                )
-            ) {
-                permission
-                    .hideNoPermission
-                    ?.(
-                        root
-                    );
-
+            if (permission.canView(permissions)) {
+                permission.hideNoPermission?.(root);
                 return true;
             }
 
-            permission
-                .showNoPermission
-                ?.(
-                    root
-                );
-
+            permission.showNoPermission?.(root);
             return false;
         } catch (error) {
             console.error(
@@ -200,54 +85,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             permission
                 ?.showNoPermission
-                ?.(
-                    root
-                );
+                ?.(root);
 
             return false;
         }
     }
 
     async function load() {
-        setLoading(
-            true
-        );
+        setLoading(true);
 
         try {
-            const response =
-                await window.ThucDon
-                    .api
-                    .detail(
-                        thucDonId
-                    );
-
-            const data =
-                response?.data ??
-                response;
+            const response = await window.ThucDon.api.detail(thucDonId);
+            const data = response?.data ?? response;
 
             if (!data) {
-                throw new Error(
-                    "Không tìm thấy thực đơn."
-                );
+                throw new Error("Không tìm thấy thực đơn.");
             }
 
-            state.menu =
-                data;
+            state.menu = data;
+            state.days = normalizeDays(data.dsNgay || []);
 
-            state.days =
-                normalizeDays(
-                    data.dsNgay ||
-                    []
-                );
-
-            state.day =
-                state.days.find(
-                    day =>
-                        Number(
-                            day.id
-                        ) ===
-                        thucDonNgayId
-                );
+            state.day = state.days.find(
+                day => Number(day.id) === thucDonNgayId
+            );
 
             if (!state.day) {
                 throw new Error(
@@ -255,183 +115,98 @@ document.addEventListener("DOMContentLoaded", async () => {
                 );
             }
 
-            state.foods =
-                flattenFoods(
-                    state.day
-                );
+            state.foods = flattenFoods(state.day);
 
-            state.selectedFoodId =
-                state.foods[0]
-                    ? getFoodKey(
-                        state.foods[0]
-                    )
-                    : null;
+            state.selectedFoodId = state.foods[0]
+                ? getFoodKey(state.foods[0])
+                : null;
 
             render();
         } catch (error) {
-            console.error(
-                error
-            );
+            console.error(error);
 
             showError(
                 error?.message ||
                 "Không thể tải chi tiết thực đơn."
             );
         } finally {
-            setLoading(
-                false
-            );
+            setLoading(false);
         }
     }
 
     function render() {
         renderCurrentMenuLabel();
-
         renderFoodList();
-
         renderOtherDays();
 
         const food =
             state.foods.find(
-                item =>
-                    getFoodKey(
-                        item
-                    ) ===
-                    state.selectedFoodId
+                item => getFoodKey(item) === state.selectedFoodId
             ) ||
             state.foods[0] ||
             null;
 
-        renderHero(
-            food
-        );
+        renderHero(food);
     }
 
-    function renderHero(
-        food
-    ) {
+    function renderHero(food) {
         if (!food) {
-            renderHeroImage(
-                ""
-            );
+            renderHeroImage("");
 
-            elements.heroCategory
-                .textContent =
-                "Chưa có món";
-
-            elements.heroTitle
-                .textContent =
-                "Chưa có món ăn";
-
-            elements.heroCode
-                .textContent =
-                "—";
-
-            elements.heroGroup
-                .textContent =
-                "—";
-
-            elements.heroUnit
-                .textContent =
-                "—";
-
-            elements.heroDescription
-                .textContent =
-                "Ngày thực đơn này chưa có món ăn.";
+            elements.heroCategory.textContent = "Chưa có món";
+            elements.heroTitle.textContent = "Chưa có món ăn";
+            elements.heroCode.textContent = "—";
+            elements.heroGroup.textContent = "—";
+            elements.heroUnit.textContent = "—";
+            elements.heroDescription.textContent = "Ngày thực đơn này chưa có món ăn.";
 
             renderHeroStatus();
 
-            elements.heroMenu
-                .textContent =
-                getMenuDayLabel();
-
+            elements.heroMenu.textContent = getMenuDayLabel();
             return;
         }
 
-        const mon =
-            getFoodRecord(
-                food
-            );
-
-        const group =
-            food._group ||
-            {};
-
-        const image =
-            getFoodImage(
-                mon
-            );
+        const mon = getFoodRecord(food);
+        const group = food._group || {};
+        const image = getFoodImage(mon);
 
         renderHeroImage(
             image,
-            getFoodName(
-                mon
-            )
+            getFoodName(mon)
         );
 
-        const groupName =
-            getGroupName(
-                group,
-                mon
-            );
+        const groupName = getGroupName(
+            group,
+            mon
+        );
 
-        elements.heroCategory
-            .textContent =
-            groupName;
-
-        elements.heroTitle
-            .textContent =
-            getFoodName(
-                mon
-            );
-
-        elements.heroCode
-            .textContent =
-            getFoodCode(
-                mon
-            );
-
-        elements.heroGroup
-            .textContent =
-            groupName;
-
-        elements.heroUnit
-            .textContent =
-            getUnitName(
-                food,
-                mon
-            );
-
-        elements.heroMenu
-            .textContent =
-            getMenuDayLabel();
-
-        elements.heroDescription
-            .textContent =
-            getFoodDescription(
-                food,
-                mon
-            );
+        elements.heroCategory.textContent = groupName;
+        elements.heroTitle.textContent = getFoodName(mon);
+        elements.heroCode.textContent = getFoodCode(mon);
+        elements.heroGroup.textContent = groupName;
+        elements.heroUnit.textContent = getUnitName(
+            food,
+            mon
+        );
+        elements.heroMenu.textContent = getMenuDayLabel();
+        elements.heroDescription.textContent = getFoodDescription(
+            food,
+            mon
+        );
 
         renderHeroStatus();
     }
 
     function renderHeroStatus() {
-        const status =
-            getStatusInformation(
-                state.menu
-                    ?.trangThai,
-                state.menu
-                    ?.tenTrangThai
-            );
+        const status = getStatusInformation(
+            state.menu?.trangThai,
+            state.menu?.tenTrangThai
+        );
 
-        elements.heroStatus
-            .className =
+        elements.heroStatus.className =
             `menu-detail-status ${status.className}`;
 
-        elements.heroStatus
-            .textContent =
-            status.label;
+        elements.heroStatus.textContent = status.label;
     }
 
     function renderHeroImage(
@@ -439,108 +214,53 @@ document.addEventListener("DOMContentLoaded", async () => {
         alt = ""
     ) {
         if (!url) {
-            elements.heroImage.hidden =
-                true;
+            elements.heroImage.hidden = true;
+            elements.heroImagePlaceholder.hidden = false;
 
-            elements
-                .heroImagePlaceholder
-                .hidden =
-                false;
-
-            elements.heroImage
-                .removeAttribute(
-                    "src"
-                );
-
+            elements.heroImage.removeAttribute("src");
             return;
         }
 
-        elements.heroImage.src =
-            url;
+        elements.heroImage.src = url;
+        elements.heroImage.alt = alt;
+        elements.heroImage.hidden = false;
+        elements.heroImagePlaceholder.hidden = true;
 
-        elements.heroImage.alt =
-            alt;
-
-        elements.heroImage.hidden =
-            false;
-
-        elements
-            .heroImagePlaceholder
-            .hidden =
-            true;
-
-        elements.heroImage.onerror =
-            () => {
-                elements.heroImage.hidden =
-                    true;
-
-                elements
-                    .heroImagePlaceholder
-                    .hidden =
-                    false;
-            };
+        elements.heroImage.onerror = () => {
+            elements.heroImage.hidden = true;
+            elements.heroImagePlaceholder.hidden = false;
+        };
     }
 
     function renderCurrentMenuLabel() {
-        elements
-            .currentMenuLabel
-            .textContent =
-            getMenuDayLabel();
+        elements.currentMenuLabel.textContent = getMenuDayLabel();
     }
 
     function renderFoodList() {
-        if (
-            !state.foods.length
-        ) {
-            elements.foodTrack
-                .innerHTML =
-                "";
-
-            elements.foodEmpty.hidden =
-                false;
-
+        if (!state.foods.length) {
+            elements.foodTrack.innerHTML = "";
+            elements.foodEmpty.hidden = false;
             return;
         }
 
-        elements.foodEmpty.hidden =
-            true;
+        elements.foodEmpty.hidden = true;
 
-        elements.foodTrack
-            .innerHTML =
+        elements.foodTrack.innerHTML =
             state.foods
-                .map(
-                    renderFoodCard
-                )
+                .map(renderFoodCard)
                 .join("");
     }
 
-    function renderFoodCard(
-        food
-    ) {
-        const mon =
-            getFoodRecord(
-                food
-            );
+    function renderFoodCard(food) {
+        const mon = getFoodRecord(food);
+        const key = getFoodKey(food);
+        const active = key === state.selectedFoodId;
+        const image = getFoodImage(mon);
 
-        const key =
-            getFoodKey(
-                food
-            );
-
-        const active =
-            key ===
-                state.selectedFoodId;
-
-        const image =
-            getFoodImage(
-                mon
-            );
-
-        const groupName =
-            getGroupName(
-                food._group,
-                mon
-            );
+        const groupName = getGroupName(
+            food._group,
+            mon
+        );
 
         return `
             <button
@@ -626,68 +346,45 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function renderOtherDays() {
-        if (
-            !state.days.length
-        ) {
-            elements.dayGrid
-                .innerHTML =
-                "";
-
-            elements.dayEmpty.hidden =
-                false;
-
+        if (!state.days.length) {
+            elements.dayGrid.innerHTML = "";
+            elements.dayEmpty.hidden = false;
             return;
         }
 
-        elements.dayEmpty.hidden =
-            true;
+        elements.dayEmpty.hidden = true;
 
-        elements.dayGrid
-            .innerHTML =
+        elements.dayGrid.innerHTML =
             state.days
-                .map(
-                    renderDayCard
-                )
+                .map(renderDayCard)
                 .join("");
     }
 
-    function renderDayCard(
-        day
-    ) {
-        const active =
-            Number(
-                day.id
-            ) ===
-            thucDonNgayId;
+    function renderDayCard(day) {
+        const active = Number(day.id) === thucDonNgayId;
 
-        const groups =
-            normalizeGroups(
-                day
-                    .dsNhomMonAn ||
-                []
-            );
+        const groups = normalizeGroups(
+            day.dsNhomMonAn ||
+            []
+        );
 
-        const total =
-            groups.reduce(
+        const total = groups.reduce(
+            (
+                sum,
+                group
+            ) =>
+                sum +
                 (
-                    sum,
-                    group
-                ) =>
-                    sum +
-                    (
-                        group
-                            .dsMonAn
-                            ?.length ||
-                        0
-                    ),
-                0
-            );
+                    group.dsMonAn?.length ||
+                    0
+                ),
+            0
+        );
 
-        const date =
-            normalizeDate(
-                day.ngay ||
-                day.ngayApDung
-            );
+        const date = normalizeDate(
+            day.ngay ||
+            day.ngayApDung
+        );
 
         return `
             <article
@@ -829,19 +526,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         `;
     }
 
-    function renderDayGroup(
-        group
-    ) {
-        const name =
-            getGroupName(
-                group
-            );
-
-        const count =
-            group
-                .dsMonAn
-                ?.length ||
-            0;
+    function renderDayGroup(group) {
+        const name = getGroupName(group);
+        const count = group.dsMonAn?.length || 0;
 
         return `
             <div
@@ -877,72 +564,48 @@ document.addEventListener("DOMContentLoaded", async () => {
             ?.addEventListener(
                 "click",
                 event => {
-                    const card =
-                        event.target
-                            .closest(
-                                "[data-food-id]"
-                            );
+                    const card = event.target.closest("[data-food-id]");
 
                     if (!card) {
                         return;
                     }
 
-                    state.selectedFoodId =
-                        card.dataset
-                            .foodId;
+                    state.selectedFoodId = card.dataset.foodId;
 
                     renderFoodList();
 
-                    const selected =
-                        state.foods
-                            .find(
-                                food =>
-                                    getFoodKey(
-                                        food
-                                    ) ===
-                                    state.selectedFoodId
-                            );
-
-                    renderHero(
-                        selected
+                    const selected = state.foods.find(
+                        food =>
+                            getFoodKey(food) ===
+                            state.selectedFoodId
                     );
+
+                    renderHero(selected);
                 }
             );
 
         root
-            .querySelectorAll(
-                "[data-food-scroll]"
-            )
-            .forEach(
-                button => {
-                    button.addEventListener(
-                        "click",
-                        () => {
-                            const direction =
-                                button.dataset
-                                    .foodScroll ===
-                                "prev"
-                                    ? -1
-                                    : 1;
+            .querySelectorAll("[data-food-scroll]")
+            .forEach(button => {
+                button.addEventListener(
+                    "click",
+                    () => {
+                        const direction =
+                            button.dataset.foodScroll === "prev"
+                                ? -1
+                                : 1;
 
-                            elements.foodTrack
-                                ?.scrollBy({
-                                    left:
-                                        direction *
-                                        560,
-
-                                    behavior:
-                                        "smooth"
-                                });
-                        }
-                    );
-                }
-            );
+                        elements.foodTrack
+                            ?.scrollBy({
+                                left: direction * 560,
+                                behavior: "smooth"
+                            });
+                    }
+                );
+            });
     }
 
-    function flattenFoods(
-        day
-    ) {
+    function flattenFoods(day) {
         return normalizeGroups(
             day?.dsNhomMonAn ||
             []
@@ -950,24 +613,19 @@ document.addEventListener("DOMContentLoaded", async () => {
             .flatMap(
                 group =>
                     normalizeFoods(
-                        group
-                            .dsMonAn ||
+                        group.dsMonAn ||
                         []
                     )
                         .map(
                             food => ({
                                 ...food,
-
-                                _group:
-                                    group
+                                _group: group
                             })
                         )
             );
     }
 
-    function normalizeDays(
-        days
-    ) {
+    function normalizeDays(days) {
         return [
             ...days
         ]
@@ -976,27 +634,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                     a,
                     b
                 ) => {
-                    const orderA =
-                        Number(
-                            a
-                                ?.thuTuHienThi
-                        );
-
-                    const orderB =
-                        Number(
-                            b
-                                ?.thuTuHienThi
-                        );
+                    const orderA = Number(a?.thuTuHienThi);
+                    const orderB = Number(b?.thuTuHienThi);
 
                     if (
-                        Number.isFinite(
-                            orderA
-                        ) &&
-                        Number.isFinite(
-                            orderB
-                        ) &&
-                        orderA !==
-                        orderB
+                        Number.isFinite(orderA) &&
+                        Number.isFinite(orderB) &&
+                        orderA !== orderB
                     ) {
                         return (
                             orderA -
@@ -1018,9 +662,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
     }
 
-    function normalizeGroups(
-        groups
-    ) {
+    function normalizeGroups(groups) {
         return [
             ...groups
         ]
@@ -1030,21 +672,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                     b
                 ) =>
                     Number(
-                        a
-                            ?.thuTuHienThi ||
+                        a?.thuTuHienThi ||
                         0
                     ) -
                     Number(
-                        b
-                            ?.thuTuHienThi ||
+                        b?.thuTuHienThi ||
                         0
                     )
             );
     }
 
-    function normalizeFoods(
-        foods
-    ) {
+    function normalizeFoods(foods) {
         return [
             ...foods
         ]
@@ -1054,21 +692,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                     b
                 ) =>
                     Number(
-                        a
-                            ?.thuTuHienThi ||
+                        a?.thuTuHienThi ||
                         0
                     ) -
                     Number(
-                        b
-                            ?.thuTuHienThi ||
+                        b?.thuTuHienThi ||
                         0
                     )
             );
     }
 
-    function getFoodRecord(
-        food
-    ) {
+    function getFoodRecord(food) {
         return (
             food?.monAn ||
             food ||
@@ -1076,9 +710,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
     }
 
-    function getFoodKey(
-        food
-    ) {
+    function getFoodKey(food) {
         return String(
             food?.id ??
             food?.monAnId ??
@@ -1087,9 +719,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
     }
 
-    function getFoodName(
-        mon
-    ) {
+    function getFoodName(mon) {
         return (
             mon?.tenMonAn ||
             mon?.tenMon ||
@@ -1098,9 +728,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
     }
 
-    function getFoodCode(
-        mon
-    ) {
+    function getFoodCode(mon) {
         return (
             mon?.maMonAn ||
             mon?.maMon ||
@@ -1115,12 +743,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     ) {
         return (
             group?.tenNhomMonAn ||
-            group
-                ?.nhomMonAn
-                ?.tenNhomMonAn ||
-            mon
-                ?.nhomMonAn
-                ?.tenNhomMonAn ||
+            group?.nhomMonAn?.tenNhomMonAn ||
+            mon?.nhomMonAn?.tenNhomMonAn ||
             mon?.tenNhomMonAn ||
             "Nhóm món"
         );
@@ -1131,18 +755,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         mon
     ) {
         return (
-            food
-                ?.donViTinh
-                ?.tenDonViTinh ||
-            food
-                ?.donViTinh
-                ?.tenDvt ||
-            mon
-                ?.donViTinh
-                ?.tenDonViTinh ||
-            mon
-                ?.donViTinh
-                ?.tenDvt ||
+            food?.donViTinh?.tenDonViTinh ||
+            food?.donViTinh?.tenDvt ||
+            mon?.donViTinh?.tenDonViTinh ||
+            mon?.donViTinh?.tenDvt ||
             mon?.tenDonViTinh ||
             "—"
         );
@@ -1160,37 +776,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
     }
 
-    function getFoodImage(
-        mon
-    ) {
-        const value =
-            (
-                mon?.anhDaiDien ||
-                mon?.anhMonAn ||
-                mon?.hinhAnh ||
-                mon?.duongDanAnh ||
-                mon?.urlAnh ||
-                mon?.image ||
-                ""
-            );
+    function getFoodImage(mon) {
+        const value = (
+            mon?.anhDaiDien ||
+            mon?.anhMonAn ||
+            mon?.hinhAnh ||
+            mon?.duongDanAnh ||
+            mon?.urlAnh ||
+            mon?.image ||
+            ""
+        );
 
-        const image =
-            String(
-                value
-            ).trim();
+        const image = String(value).trim();
 
         if (!image) {
             return "";
         }
 
         if (
-            image.startsWith(
-                "/"
-            ) ||
-            /^https?:\/\//i
-                .test(
-                    image
-                )
+            image.startsWith("/") ||
+            /^https?:\/\//i.test(image)
         ) {
             return image;
         }
@@ -1200,22 +805,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function getMealName() {
         return (
-            state.menu
-                ?.caAn
-                ?.tenCaAn ||
-            state.menu
-                ?.tenCaAn ||
+            state.menu?.caAn?.tenCaAn ||
+            state.menu?.tenCaAn ||
             "Ca ăn"
         );
     }
 
     function getMenuDayLabel() {
-        const date =
-            normalizeDate(
-                state.day?.ngay ||
-                state.day
-                    ?.ngayApDung
-            );
+        const date = normalizeDate(
+            state.day?.ngay ||
+            state.day?.ngayApDung
+        );
 
         return (
             `Thực đơn ngày ` +
@@ -1228,99 +828,64 @@ document.addEventListener("DOMContentLoaded", async () => {
         value,
         labelFromApi
     ) {
-        const status =
-            Number(
-                value
-            );
+        const status = Number(value);
 
         const map = {
             10: {
-                label:
-                    "Mới",
-
-                className:
-                    "is-new"
+                label: "Mới",
+                className: "is-new"
             },
 
             20: {
-                label:
-                    "Chờ duyệt",
-
-                className:
-                    "is-pending"
+                label: "Chờ duyệt",
+                className: "is-pending"
             },
 
             30: {
-                label:
-                    "Đang áp dụng",
-
-                className:
-                    "is-active"
+                label: "Đang áp dụng",
+                className: "is-active"
             },
 
             40: {
-                label:
-                    "Đang rà soát",
-
-                className:
-                    "is-review"
+                label: "Đang rà soát",
+                className: "is-review"
             },
 
             50: {
-                label:
-                    "Đã hủy",
-
-                className:
-                    "is-cancelled"
+                label: "Đã hủy",
+                className: "is-cancelled"
             },
 
             60: {
-                label:
-                    "Đã kết thúc",
-
-                className:
-                    "is-ended"
+                label: "Đã kết thúc",
+                className: "is-ended"
             }
         };
 
         const result =
             map[status] ||
             {
-                label:
-                    "Đang áp dụng",
-
-                className:
-                    "is-active"
+                label: "Đang áp dụng",
+                className: "is-active"
             };
 
-        if (
-            labelFromApi
-        ) {
-            result.label =
-                String(
-                    labelFromApi
-                );
+        if (labelFromApi) {
+            result.label = String(labelFromApi);
         }
 
         return result;
     }
 
-    function normalizeDate(
-        value
-    ) {
+    function normalizeDate(value) {
         if (!value) {
             return "";
         }
 
-        const text =
-            String(
-                value
-            );
+        const text = String(value);
 
-        const match =
-            text.match(
-                /^(\d{4})-(\d{2})-(\d{2})/
-            );
+        const match = text.match(
+            /^(\d{4})-(\d{2})-(\d{2})/
+        );
 
         if (match) {
             return (
@@ -1330,40 +895,30 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
         }
 
-        const date =
-            new Date(
-                value
-            );
+        const date = new Date(value);
 
-        if (
-            Number.isNaN(
-                date.getTime()
-            )
-        ) {
+        if (Number.isNaN(date.getTime())) {
             return "";
         }
 
-        const year =
-            date.getFullYear();
+        const year = date.getFullYear();
 
-        const month =
-            String(
-                date.getMonth() +
-                1
-            )
-                .padStart(
-                    2,
-                    "0"
-                );
+        const month = String(
+            date.getMonth() +
+            1
+        )
+            .padStart(
+                2,
+                "0"
+            );
 
-        const day =
-            String(
-                date.getDate()
-            )
-                .padStart(
-                    2,
-                    "0"
-                );
+        const day = String(
+            date.getDate()
+        )
+            .padStart(
+                2,
+                "0"
+            );
 
         return (
             `${year}-` +
@@ -1372,13 +927,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
     }
 
-    function formatDate(
-        value
-    ) {
-        const date =
-            normalizeDate(
-                value
-            );
+    function formatDate(value) {
+        const date = normalizeDate(value);
 
         if (!date) {
             return "—";
@@ -1388,10 +938,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             year,
             month,
             day
-        ] =
-            date.split(
-                "-"
-            );
+        ] = date.split("-");
 
         return (
             `${day}/` +
@@ -1400,13 +947,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
     }
 
-    function getWeekday(
-        value
-    ) {
-        const date =
-            normalizeDate(
-                value
-            );
+    function getWeekday(value) {
+        const date = normalizeDate(value);
 
         if (!date) {
             return "—";
@@ -1416,21 +958,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             year,
             month,
             day
-        ] =
-            date
-                .split(
-                    "-"
-                )
-                .map(
-                    Number
-                );
+        ] = date
+            .split("-")
+            .map(Number);
 
-        const valueDate =
-            new Date(
-                year,
-                month - 1,
-                day
-            );
+        const valueDate = new Date(
+            year,
+            month - 1,
+            day
+        );
 
         const names = [
             "Chủ nhật",
@@ -1442,39 +978,23 @@ document.addEventListener("DOMContentLoaded", async () => {
             "Thứ bảy"
         ];
 
-        return names[
-            valueDate.getDay()
-        ];
+        return names[valueDate.getDay()];
     }
 
-    function setLoading(
-        loading
-    ) {
-        if (
-            elements.loading
-        ) {
-            elements.loading.hidden =
-                !loading;
+    function setLoading(loading) {
+        if (elements.loading) {
+            elements.loading.hidden = !loading;
         }
 
-        if (
-            elements.content
-        ) {
-            elements.content.hidden =
-                loading;
+        if (elements.content) {
+            elements.content.hidden = loading;
         }
     }
 
-    function showError(
-        message
-    ) {
-        setLoading(
-            false
-        );
+    function showError(message) {
+        setLoading(false);
 
-        if (
-            elements.content
-        ) {
+        if (elements.content) {
             elements.content.innerHTML = `
                 <div
                     class="
@@ -1505,14 +1025,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.MCS
             ?.toast
             ?.error
-            ?.(
-                message
-            );
+            ?.(message);
     }
 
-    function escapeHtml(
-        value
-    ) {
+    function escapeHtml(value) {
         return String(
             value ??
             ""
@@ -1539,11 +1055,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
     }
 
-    function escapeAttribute(
-        value
-    ) {
-        return escapeHtml(
-            value
-        );
+    function escapeAttribute(value) {
+        return escapeHtml(value);
     }
 });

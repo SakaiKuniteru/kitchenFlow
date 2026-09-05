@@ -2,7 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     const API_BASE = "/api/mcs/v1/dm-tai-khoan";
-    const API_NHAN_VIEN = "/api/mcs/v1/dm-nhan-vien/tong-hop?active=true";
+    const API_NHAN_VIEN_KHA_DUNG = `${API_BASE}/nhan-vien-kha-dung`;
     const API_VAI_TRO = "/api/mcs/v1/dm-vai-tro/tong-hop?active=true";
 
     let catalog = null;
@@ -19,12 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function initialize() {
         await initializeCatalog();
-
-        await Promise.all([
-            loadNhanVien(),
-            loadVaiTro()
-        ]);
-
+        await loadVaiTro();
         initializeFilters();
         bindEvents();
         syncChooseButton();
@@ -103,10 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     className: "catalog-table__cell--center",
                     filterable: false,
 
-                    render: (
-                        value,
-                        record
-                    ) => {
+                    render: (value, record) => {
                         if (!record?.id) {
                             return "";
                         }
@@ -198,109 +190,79 @@ document.addEventListener("DOMContentLoaded", () => {
 
             mapRecordToForm(record) {
                 return {
-                    id:
-                        record?.id ??
-                        "",
-
+                    id: record?.id ?? "",
                     tenDangNhap:
                         record?.tenDangNhap ??
                         record?.ten_dang_nhap ??
                         "",
-
                     nhanVienId:
                         record?.nhanVienId ??
                         record?.nhan_vien_id ??
                         record?.nhanVien?.id ??
                         "",
-
                     anhDaiDien:
                         record?.anhDaiDien ??
                         record?.anh_dai_dien ??
                         record?.nhanVien?.anhDaiDien ??
                         record?.nhanVien?.anh_dai_dien ??
                         "",
-
                     soLanDangNhap:
                         record?.soLanDangNhap ??
                         record?.so_lan_dang_nhap ??
                         0,
-
                     soLanDangNhapSai:
                         record?.soLanDangNhapSai ??
                         record?.so_lan_dang_nhap_sai ??
                         0,
-
                     khoaDen: formatDateTime(
                         record?.khoaDen ??
                         record?.khoa_den
                     ),
-
                     lanDangNhapCuoi: formatDateTime(
                         record?.lanDangNhapCuoi ??
                         record?.lan_dang_nhap_cuoi
                     ),
-
                     doiMatKhauLanCuoi: formatDateTime(
                         record?.doiMatKhauLanCuoi ??
                         record?.doi_mat_khau_lan_cuoi
                     ),
-
                     createdAt: formatDateTime(
                         record?.createdAt ??
                         record?.created_at
                     ),
-
                     updatedAt: formatDateTime(
                         record?.updatedAt ??
                         record?.updated_at
                     ),
-
                     doiMatKhauLanDau:
                         (
                             record?.doiMatKhauLanDau ??
                             record?.doi_mat_khau_lan_dau
                         ) === true,
-
                     biKhoa:
                         (
                             record?.biKhoa ??
                             record?.bi_khoa
                         ) === true,
-
                     dsVaiTroId: normalizeNumberArray(
                         record?.dsVaiTroId ??
                         record?.ds_vai_tro_id
                     ),
-
-                    active:
-                        record?.active === true
+                    active: record?.active === true
                 };
             },
 
             transformPayload(formData) {
                 return {
-                    tenDangNhap: String(
-                        formData.tenDangNhap ||
-                        ""
-                    ).trim(),
-
-                    nhanVienId: toNullableNumber(
-                        formData.nhanVienId
-                    ),
-
-                    anhDaiDien:
-                        formData.anhDaiDien,
-
+                    tenDangNhap: String(formData.tenDangNhap || "").trim(),
+                    nhanVienId: toNullableNumber(formData.nhanVienId),
+                    anhDaiDien: formData.anhDaiDien,
                     dsVaiTroId: Array
                         .from(dsVaiTroDaChon)
                         .map(Number)
                         .filter(Number.isInteger),
-
-                    biKhoa:
-                        formData.biKhoa === true,
-
-                    active:
-                        formData.active === true
+                    biKhoa: formData.biKhoa === true,
+                    active: formData.active === true
                 };
             },
 
@@ -308,33 +270,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 return record?.tenDangNhap || "";
             },
 
-            onRecordLoaded(
-                record,
-                mode
-            ) {
-                currentMode =
-                    mode ||
-                    "view";
+            onRecordLoaded(record, mode) {
+                currentMode = mode || "view";
 
                 dsVaiTroDaChon = new Set(
-                    normalizeNumberArray(
-                        record?.dsVaiTroId
-                    )
+                    normalizeNumberArray(record?.dsVaiTroId)
                 );
 
-                dsVaiTroTamChon = new Set(
-                    dsVaiTroDaChon
-                );
-
+                dsVaiTroTamChon = new Set(dsVaiTroDaChon);
                 detailTrangThai = "selected";
 
-                renderNhanVienSelect(
-                    record?.nhanVienId
-                );
+                const selectedNhanVienId =
+                    record?.nhanVienId ??
+                    record?.nhanVien?.id ??
+                    "";
 
-                syncNhanVienImage(
-                    record
-                );
+                if (currentMode === "update") {
+                    loadNhanVienKhaDung(
+                        record?.id,
+                        selectedNhanVienId
+                    );
+                } else {
+                    renderNhanVienHienTai(record);
+                }
+
+                syncNhanVienImage(record);
 
                 lockFirstLoginCheckbox(
                     (
@@ -381,34 +341,47 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function lockFirstLoginCheckbox(value) {
-        const checkbox = document.getElementById(
-            "doiMatKhauLanDau"
-        );
+        const checkbox = document.getElementById("doiMatKhauLanDau");
 
         if (!checkbox) {
             return;
         }
 
-        checkbox.checked =
-            value === true;
-
-        checkbox.disabled =
-            true;
-
-        checkbox.setAttribute(
-            "disabled",
-            ""
-        );
+        checkbox.checked = value === true;
+        checkbox.disabled = true;
+        checkbox.setAttribute("disabled", "");
     }
 
-    async function loadNhanVien() {
+    async function loadNhanVienKhaDung(
+        taiKhoanId = null,
+        selectedId = ""
+    ) {
         try {
-            const response = await window.MCS.api.request(
-                API_NHAN_VIEN
-            );
+            const params = new URLSearchParams();
+            const accountId = Number(taiKhoanId);
 
-            const data =
-                response?.data;
+            if (
+                Number.isInteger(accountId) &&
+                accountId > 0
+            ) {
+                params.set(
+                    "taiKhoanId",
+                    String(accountId)
+                );
+            }
+
+            const queryString = params.toString();
+
+            const url =
+                queryString
+                    ? (
+                        API_NHAN_VIEN_KHA_DUNG +
+                        `?${queryString}`
+                    )
+                    : API_NHAN_VIEN_KHA_DUNG;
+
+            const response = await window.MCS.api.request(url);
+            const data = response?.data;
 
             dsNhanVien = Array.isArray(data)
                 ? data
@@ -418,30 +391,61 @@ document.addEventListener("DOMContentLoaded", () => {
                     []
                 );
 
-            dsNhanVien = dsNhanVien.filter(
-                item =>
-                    item?.active !== false
-            );
-
-            renderNhanVienSelect();
+            renderNhanVienSelect(selectedId);
         } catch (error) {
             dsNhanVien = [];
 
-            window.MCS?.toast?.error(
-                error?.message ||
-                "Không thể tải danh sách nhân viên."
-            );
+            renderNhanVienSelect(selectedId);
+
+            window.MCS
+                ?.toast
+                ?.error?.(
+                    error?.message ||
+                    "Không thể tải danh sách nhân viên khả dụng."
+                );
         }
+    }
+
+    function renderNhanVienHienTai(record) {
+        const nhanVien = record?.nhanVien || {};
+
+        const nhanVienId =
+            record?.nhanVienId ??
+            nhanVien?.id ??
+            "";
+
+        if (!nhanVienId) {
+            dsNhanVien = [];
+            renderNhanVienSelect("");
+            return;
+        }
+
+        dsNhanVien = [
+            {
+                id: nhanVienId,
+                maNhanVien:
+                    nhanVien?.maNhanVien ??
+                    record?.maNhanVien ??
+                    "",
+                hoTen:
+                    nhanVien?.hoTen ??
+                    record?.hoTenNhanVien ??
+                    "",
+                anhDaiDien:
+                    nhanVien?.anhDaiDien ??
+                    record?.anhDaiDien ??
+                    "",
+                active: nhanVien?.active !== false
+            }
+        ];
+
+        renderNhanVienSelect(nhanVienId);
     }
 
     async function loadVaiTro() {
         try {
-            const response = await window.MCS.api.request(
-                API_VAI_TRO
-            );
-
-            const data =
-                response?.data;
+            const response = await window.MCS.api.request(API_VAI_TRO);
+            const data = response?.data;
 
             dsVaiTro = Array.isArray(data)
                 ? data
@@ -452,8 +456,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
             dsVaiTro = dsVaiTro.filter(
-                item =>
-                    item?.active !== false
+                item => item?.active !== false
             );
         } catch (error) {
             dsVaiTro = [];
@@ -465,12 +468,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function renderNhanVienSelect(
-        selectedId = ""
-    ) {
-        const select = document.getElementById(
-            "nhanVienId"
-        );
+    function renderNhanVienSelect(selectedId = "") {
+        const select = document.getElementById("nhanVienId");
 
         if (!select) {
             return;
@@ -484,43 +483,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
         select.innerHTML = "";
 
-        const emptyOption = document.createElement(
-            "option"
-        );
+        const emptyOption = document.createElement("option");
 
         emptyOption.value = "";
         emptyOption.textContent = "";
-        emptyOption.selected =
-            currentValue === "";
+        emptyOption.selected = currentValue === "";
 
-        select.appendChild(
-            emptyOption
-        );
+        select.appendChild(emptyOption);
 
-        dsNhanVien.forEach(
-            item => {
-                const option = document.createElement(
-                    "option"
-                );
+        dsNhanVien.forEach(item => {
+            const option = document.createElement("option");
 
-                option.value = String(
-                    item.id
-                );
+            option.value = String(item.id);
+            option.textContent = `${item.maNhanVien || ""} - ${item.hoTen || ""}`;
+            option.selected = String(item.id) === currentValue;
 
-                option.textContent =
-                    `${item.maNhanVien || ""} - ${item.hoTen || ""}`;
+            select.appendChild(option);
+        });
 
-                option.selected =
-                    String(item.id) === currentValue;
-
-                select.appendChild(
-                    option
-                );
-            }
-        );
-
-        select.value =
-            currentValue;
+        select.value = currentValue;
 
         select
             .closest("[data-smart-select]")
@@ -564,9 +545,7 @@ document.addEventListener("DOMContentLoaded", () => {
         options,
         selectedValue = ""
     ) {
-        const select = document.getElementById(
-            selectId
-        );
+        const select = document.getElementById(selectId);
 
         if (!select) {
             return;
@@ -574,27 +553,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         select.innerHTML = "";
 
-        options.forEach(
-            item => {
-                const option = document.createElement(
-                    "option"
-                );
+        options.forEach(item => {
+            const option = document.createElement("option");
 
-                option.value =
-                    item.value;
+            option.value = item.value;
+            option.textContent = item.label;
+            option.selected = String(item.value) === String(selectedValue);
 
-                option.textContent =
-                    item.label;
-
-                option.selected =
-                    String(item.value) ===
-                    String(selectedValue);
-
-                select.appendChild(
-                    option
-                );
-            }
-        );
+            select.appendChild(option);
+        });
 
         select
             .closest("[data-smart-select]")
@@ -606,9 +573,7 @@ document.addEventListener("DOMContentLoaded", () => {
         selectId,
         options
     ) {
-        const select = document.getElementById(
-            selectId
-        );
+        const select = document.getElementById(selectId);
 
         if (!select) {
             return;
@@ -616,37 +581,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         select.innerHTML = "";
 
-        const allOption = document.createElement(
-            "option"
-        );
+        const allOption = document.createElement("option");
 
-        allOption.value =
-            "__ALL__";
+        allOption.value = "__ALL__";
+        allOption.textContent = "Tất cả";
 
-        allOption.textContent =
-            "Tất cả";
+        select.appendChild(allOption);
 
-        select.appendChild(
-            allOption
-        );
+        options.forEach(item => {
+            const option = document.createElement("option");
 
-        options.forEach(
-            item => {
-                const option = document.createElement(
-                    "option"
-                );
+            option.value = String(item.value);
+            option.textContent = item.label;
 
-                option.value =
-                    String(item.value);
-
-                option.textContent =
-                    item.label;
-
-                select.appendChild(
-                    option
-                );
-            }
-        );
+            select.appendChild(option);
+        });
 
         select
             .closest("[data-smart-select]")
@@ -660,18 +609,13 @@ document.addEventListener("DOMContentLoaded", () => {
             ?.addEventListener(
                 "change",
                 event => {
-                    const id = Number(
-                        event.target.value
-                    );
+                    const id = Number(event.target.value);
 
                     const nhanVien = dsNhanVien.find(
-                        item =>
-                            Number(item.id) === id
+                        item => Number(item.id) === id
                     );
 
-                    syncNhanVienImage(
-                        nhanVien
-                    );
+                    syncNhanVienImage(nhanVien);
                 }
             );
 
@@ -684,14 +628,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document
             .querySelectorAll("[data-tai-khoan-role-close]")
-            .forEach(
-                button => {
-                    button.addEventListener(
-                        "click",
-                        cancelRolePopup
-                    );
-                }
-            );
+            .forEach(button => {
+                button.addEventListener(
+                    "click",
+                    cancelRolePopup
+                );
+            });
 
         document
             .querySelector("[data-tai-khoan-role-cancel]")
@@ -726,27 +668,19 @@ document.addEventListener("DOMContentLoaded", () => {
             ?.addEventListener(
                 "change",
                 event => {
-                    const visible =
-                        getPopupVisibleVaiTro();
+                    const visible = getPopupVisibleVaiTro();
 
                     const ids = visible.map(
-                        item =>
-                            Number(item.id)
+                        item => Number(item.id)
                     );
 
                     if (event.target.checked) {
                         ids.forEach(
-                            id =>
-                                dsVaiTroTamChon.add(
-                                    id
-                                )
+                            id => dsVaiTroTamChon.add(id)
                         );
                     } else {
                         ids.forEach(
-                            id =>
-                                dsVaiTroTamChon.delete(
-                                    id
-                                )
+                            id => dsVaiTroTamChon.delete(id)
                         );
                     }
 
@@ -772,12 +706,9 @@ document.addEventListener("DOMContentLoaded", () => {
             ?.addEventListener(
                 "input",
                 event => {
-                    popupSearchText = String(
-                        event.target.value ||
-                        ""
-                    )
-                        .trim()
-                        .toLowerCase();
+                    popupSearchText = normalizeSearchText(
+                        event.target.value
+                    );
 
                     renderPopupVaiTro();
                 }
@@ -787,19 +718,18 @@ document.addEventListener("DOMContentLoaded", () => {
             .querySelector("[data-catalog-create]")
             ?.addEventListener(
                 "click",
-                () => {
+                async () => {
                     currentMode = "create";
                     dsVaiTroDaChon = new Set();
                     dsVaiTroTamChon = new Set();
                     detailTrangThai = "selected";
 
-                    renderNhanVienSelect(
+                    await loadNhanVienKhaDung(
+                        null,
                         ""
                     );
 
-                    syncNhanVienImage(
-                        null
-                    );
+                    syncNhanVienImage(null);
 
                     lockFirstLoginCheckbox(true);
                     syncChooseButton();
@@ -822,27 +752,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 event.preventDefault();
                 event.stopPropagation();
 
-                const id = Number(
-                    button.dataset.id
-                );
+                const id = Number(button.dataset.id);
 
                 if (!Number.isInteger(id)) {
                     return;
                 }
 
-                confirmResetPassword(
-                    id
-                );
+                confirmResetPassword(id);
             }
         );
     }
 
     function confirmResetPassword(id) {
-        if (
-            !window.MCS
-                ?.confirm
-                ?.show
-        ) {
+        if (!window.MCS?.confirm?.show) {
             return;
         }
 
@@ -880,17 +802,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getDetailVaiTro() {
-        return dsVaiTro.filter(
-            vaiTro => {
-                const selected = dsVaiTroDaChon.has(
-                    Number(vaiTro.id)
-                );
+        return dsVaiTro.filter(vaiTro => {
+            const selected = dsVaiTroDaChon.has(
+                Number(vaiTro.id)
+            );
 
-                return detailTrangThai === "selected"
-                    ? selected
-                    : !selected;
-            }
-        );
+            return detailTrangThai === "selected"
+                ? selected
+                : !selected;
+        });
     }
 
     function renderDetailVaiTro() {
@@ -904,42 +824,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
         container.innerHTML = "";
 
-        const danhSach = getDetailVaiTro()
-            .sort(sortVaiTro);
+        const danhSach = getDetailVaiTro().sort(sortVaiTro);
 
-        danhSach.forEach(
-            vaiTro => {
-                container.appendChild(
-                    createRoleCheckbox(
-                        vaiTro,
-                        {
-                            checked:
-                                dsVaiTroDaChon.has(
-                                    Number(vaiTro.id)
-                                ),
-                            disabled: true
-                        }
-                    )
-                );
-            }
-        );
+        danhSach.forEach(vaiTro => {
+            container.appendChild(
+                createRoleCheckbox(
+                    vaiTro,
+                    {
+                        checked: dsVaiTroDaChon.has(
+                            Number(vaiTro.id)
+                        ),
+                        disabled: true
+                    }
+                )
+            );
+        });
 
         if (danhSach.length === 0) {
-            const empty = document.createElement(
-                "div"
-            );
+            const empty = document.createElement("div");
 
-            empty.className =
-                "tai-khoan-vai-tro__empty";
+            empty.className = "tai-khoan-vai-tro__empty";
 
             empty.textContent =
                 detailTrangThai === "selected"
                     ? "Tài khoản chưa được gán vai trò."
                     : "Không còn vai trò chưa được gán.";
 
-            container.appendChild(
-                empty
-            );
+            container.appendChild(empty);
         }
 
         const count = document.querySelector(
@@ -947,8 +858,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         if (count) {
-            count.textContent =
-                `${danhSach.length} vai trò`;
+            count.textContent = `${danhSach.length} vai trò`;
         }
     }
 
@@ -957,9 +867,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        dsVaiTroTamChon = new Set(
-            dsVaiTroDaChon
-        );
+        dsVaiTroTamChon = new Set(dsVaiTroDaChon);
 
         resetPopupFilters();
 
@@ -971,36 +879,25 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        if (
-            modal.parentElement !==
-            document.body
-        ) {
-            document.body.appendChild(
-                modal
-            );
+        if (modal.parentElement !== document.body) {
+            document.body.appendChild(modal);
         }
 
         modal.hidden = false;
 
-        document.body.classList.add(
-            "tai-khoan-role-open"
-        );
+        document.body.classList.add("tai-khoan-role-open");
 
         renderPopupVaiTro();
     }
 
     function cancelRolePopup() {
-        dsVaiTroTamChon = new Set(
-            dsVaiTroDaChon
-        );
+        dsVaiTroTamChon = new Set(dsVaiTroDaChon);
 
         closeRolePopup();
     }
 
     function saveRolePopup() {
-        dsVaiTroDaChon = new Set(
-            dsVaiTroTamChon
-        );
+        dsVaiTroDaChon = new Set(dsVaiTroTamChon);
 
         renderDetailVaiTro();
         closeRolePopup();
@@ -1015,47 +912,68 @@ document.addEventListener("DOMContentLoaded", () => {
             modal.hidden = true;
         }
 
-        document.body.classList.remove(
-            "tai-khoan-role-open"
-        );
+        document.body.classList.remove("tai-khoan-role-open");
+    }
+
+    function normalizeSearchText(value) {
+        return String(value ?? "")
+            .normalize("NFD")
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            )
+            .replace(
+                /đ/g,
+                "d"
+            )
+            .replace(
+                /Đ/g,
+                "D"
+            )
+            .toLowerCase()
+            .trim();
     }
 
     function getPopupVisibleVaiTro() {
-        return dsVaiTro.filter(
-            vaiTro => {
-                const selected = dsVaiTroTamChon.has(
-                    Number(vaiTro.id)
+        return dsVaiTro.filter(vaiTro => {
+            const selected = dsVaiTroTamChon.has(
+                Number(vaiTro.id)
+            );
+
+            if (popupTrangThai.length === 1) {
+                if (
+                    popupTrangThai.includes("selected") &&
+                    !selected
+                ) {
+                    return false;
+                }
+
+                if (
+                    popupTrangThai.includes("unselected") &&
+                    selected
+                ) {
+                    return false;
+                }
+            }
+
+            if (popupSearchText) {
+                const text = normalizeSearchText(
+                    [
+                        vaiTro.maVaiTro,
+                        vaiTro.tenVaiTro,
+                        vaiTro.moTa
+                    ]
+                        .filter(Boolean)
+                        .join(" ")
                 );
 
-                if (popupTrangThai.length === 1) {
-                    if (
-                        popupTrangThai.includes("selected") &&
-                        !selected
-                    ) {
-                        return false;
-                    }
-
-                    if (
-                        popupTrangThai.includes("unselected") &&
-                        selected
-                    ) {
-                        return false;
-                    }
+                if (!text.includes(popupSearchText)) {
+                    return false;
                 }
-
-                if (popupSearchText) {
-                    const text =
-                        `${vaiTro.maVaiTro || ""} ${vaiTro.tenVaiTro || ""}`
-                            .toLowerCase();
-
-                    if (!text.includes(popupSearchText)) {
-                        return false;
-                    }
-                }
-
-                return true;
             }
-        );
+
+            return true;
+        });
     }
 
     function renderPopupVaiTro() {
@@ -1069,61 +987,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
         container.innerHTML = "";
 
-        const visible = getPopupVisibleVaiTro()
-            .sort(sortVaiTro);
+        const visible = getPopupVisibleVaiTro().sort(sortVaiTro);
 
-        visible.forEach(
-            vaiTro => {
-                container.appendChild(
-                    createRoleCheckbox(
-                        vaiTro,
-                        {
-                            checked:
-                                dsVaiTroTamChon.has(
-                                    Number(vaiTro.id)
-                                ),
+        visible.forEach(vaiTro => {
+            container.appendChild(
+                createRoleCheckbox(
+                    vaiTro,
+                    {
+                        checked: dsVaiTroTamChon.has(
+                            Number(vaiTro.id)
+                        ),
 
-                            disabled: false,
+                        disabled: false,
 
-                            onChange(
-                                checked
-                            ) {
-                                const id = Number(
-                                    vaiTro.id
-                                );
+                        onChange(checked) {
+                            const id = Number(vaiTro.id);
 
-                                if (checked) {
-                                    dsVaiTroTamChon.add(
-                                        id
-                                    );
-                                } else {
-                                    dsVaiTroTamChon.delete(
-                                        id
-                                    );
-                                }
-
-                                renderPopupVaiTro();
+                            if (checked) {
+                                dsVaiTroTamChon.add(id);
+                            } else {
+                                dsVaiTroTamChon.delete(id);
                             }
+
+                            renderPopupVaiTro();
                         }
-                    )
-                );
-            }
-        );
+                    }
+                )
+            );
+        });
 
         if (visible.length === 0) {
-            const empty = document.createElement(
-                "div"
-            );
+            const empty = document.createElement("div");
 
-            empty.className =
-                "tai-khoan-vai-tro__empty";
+            empty.className = "tai-khoan-vai-tro__empty";
+            empty.textContent = "Không tìm thấy vai trò phù hợp.";
 
-            empty.textContent =
-                "Không tìm thấy vai trò phù hợp.";
-
-            container.appendChild(
-                empty
-            );
+            container.appendChild(empty);
         }
 
         syncPopupSelectAll();
@@ -1138,25 +1037,19 @@ document.addEventListener("DOMContentLoaded", () => {
             "taiKhoanVaiTroCheckboxTemplate"
         );
 
-        const fragment = template.content.cloneNode(
-            true
-        );
+        const fragment = template.content.cloneNode(true);
 
         const item = fragment.querySelector(
             "[data-tai-khoan-role-item]"
         );
 
-        const input = item.querySelector(
-            "input[type='checkbox']"
-        );
+        const input = item.querySelector("input[type='checkbox']");
 
         const label = item.querySelector(
             ".form-checkbox__label"
         );
 
-        const id = Number(
-            vaiTro.id
-        );
+        const id = Number(vaiTro.id);
 
         const inputId =
             `taiKhoanVaiTro_${id}_${Math.random()
@@ -1181,16 +1074,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 inputId
             );
 
-        if (
-            typeof options.onChange ===
-            "function"
-        ) {
+        if (typeof options.onChange === "function") {
             input.addEventListener(
                 "change",
                 () => {
-                    options.onChange(
-                        input.checked
-                    );
+                    options.onChange(input.checked);
                 }
             );
         }
@@ -1208,16 +1096,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const ids = getPopupVisibleVaiTro()
-            .map(
-                item =>
-                    Number(item.id)
-            );
+            .map(item => Number(item.id));
 
         const selected = ids.filter(
-            id =>
-                dsVaiTroTamChon.has(
-                    id
-                )
+            id => dsVaiTroTamChon.has(id)
         ).length;
 
         checkbox.checked =
@@ -1246,8 +1128,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         if (button) {
-            button.hidden =
-                currentMode === "view";
+            button.hidden = currentMode === "view";
         }
     }
 
@@ -1271,9 +1152,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getMultiSelectValues(selectId) {
-        const select = document.getElementById(
-            selectId
-        );
+        const select = document.getElementById(selectId);
 
         if (!select) {
             return [];
@@ -1284,23 +1163,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 select.selectedOptions ||
                 []
             )
-            .map(
-                option =>
-                    String(option.value)
-            )
-            .filter(
-                value =>
-                    value !== "__ALL__"
-            );
+            .map(option => String(option.value))
+            .filter(value => value !== "__ALL__");
     }
 
     function resetPopupFilters() {
         popupTrangThai = [];
         popupSearchText = "";
 
-        clearSmartSelect(
-            "taiKhoanPopupTrangThai"
-        );
+        clearSmartSelect("taiKhoanPopupTrangThai");
 
         const search = document.getElementById(
             "taiKhoanPopupTimVaiTro"
@@ -1308,13 +1179,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (search) {
             search.value = "";
+
+            search.dispatchEvent(
+                new Event(
+                    "input",
+                    {
+                        bubbles: true
+                    }
+                )
+            );
         }
     }
 
     function clearSmartSelect(selectId) {
-        const select = document.getElementById(
-            selectId
-        );
+        const select = document.getElementById(selectId);
 
         if (!select) {
             return;
@@ -1322,12 +1200,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         Array
             .from(select.options)
-            .forEach(
-                option => {
-                    option.selected =
-                        false;
-                }
-            );
+            .forEach(option => {
+                option.selected = false;
+            });
 
         select
             .closest("[data-smart-select]")
@@ -1337,12 +1212,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function syncNhanVienImage(record) {
         const root = document
-            .querySelector(
-                '[data-form-field="anhDaiDien"]'
-            )
-            ?.querySelector(
-                "[data-image-picker]"
-            );
+            .querySelector('[data-form-field="anhDaiDien"]')
+            ?.querySelector("[data-image-picker]");
 
         const imagePicker =
             root?.imagePicker ||
@@ -1360,20 +1231,12 @@ document.addEventListener("DOMContentLoaded", () => {
             record?.nhanVien?.anhDaiDien ||
             "";
 
-        if (
-            typeof imagePicker.setValue ===
-            "function"
-        ) {
-            imagePicker.setValue(
-                value
-            );
-
+        if (typeof imagePicker.setValue === "function") {
+            imagePicker.setValue(value);
             return;
         }
 
-        imagePicker.setExistingImage?.(
-            value
-        );
+        imagePicker.setExistingImage?.(value);
     }
 
     function formatDateTime(value) {
@@ -1381,15 +1244,9 @@ document.addEventListener("DOMContentLoaded", () => {
             return "";
         }
 
-        const date = new Date(
-            value
-        );
+        const date = new Date(value);
 
-        if (
-            Number.isNaN(
-                date.getTime()
-            )
-        ) {
+        if (Number.isNaN(date.getTime())) {
             return "";
         }
 
@@ -1412,8 +1269,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     result,
                     item
                 ) => {
-                    result[item.type] =
-                        item.value;
+                    result[item.type] = item.value;
 
                     return result;
                 },
@@ -1432,9 +1288,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return null;
         }
 
-        const number = Number(
-            value
-        );
+        const number = Number(value);
 
         return Number.isInteger(number)
             ? number
@@ -1447,9 +1301,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ...new Set(
                     value
                         .map(Number)
-                        .filter(
-                            Number.isInteger
-                        )
+                        .filter(Number.isInteger)
                 )
             ];
         }
@@ -1468,15 +1320,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     .replace(/^\[/, "")
                     .replace(/\]$/, "")
                     .split(",")
-                    .map(
-                        item =>
-                            Number(
-                                item.trim()
-                            )
-                    )
-                    .filter(
-                        Number.isInteger
-                    )
+                    .map(item => Number(item.trim()))
+                    .filter(Number.isInteger)
             )
         ];
     }
@@ -1528,23 +1373,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function importData(catalogInstance) {
-        const input = document.createElement(
-            "input"
-        );
+        const input = document.createElement("input");
 
         input.type = "file";
         input.accept = ".xlsx,.xls,.xlsm";
         input.hidden = true;
 
-        document.body.appendChild(
-            input
-        );
+        document.body.appendChild(input);
 
         input.addEventListener(
             "change",
             async () => {
-                const file =
-                    input.files?.[0];
+                const file = input.files?.[0];
 
                 if (!file) {
                     input.remove();

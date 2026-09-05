@@ -1171,47 +1171,47 @@ class BinhChonSuatAnRepository {
                 ON td.id =
                    tdn.thuc_don_id
 
-
             INNER JOIN dm_tai_khoan tk
                 ON tk.id = $1
 
+            INNER JOIN dm_nhan_vien nv
+                ON nv.id =
+                tk.nhan_vien_id
 
-            INNER JOIN ct_nha_an_nhan_vien nanv
-                ON nanv.nhan_vien_id =
-                   tk.nhan_vien_id
+            INNER JOIN dm_nha_an na
+                ON na.id =
+                td.nha_an_id
 
-               AND nanv.nha_an_id =
-                   td.nha_an_id
-
-               AND nanv.active = TRUE
-
+            AND na.co_so_id =
+                nv.co_so_id
 
             LEFT JOIN dm_co_so cs
                 ON cs.id =
-                   td.co_so_id
-
-
-            LEFT JOIN dm_nha_an na
-                ON na.id =
-                   td.nha_an_id
-
+                td.co_so_id
 
             LEFT JOIN dm_ca_an ca
                 ON ca.id =
-                   td.ca_an_id
-
+                td.ca_an_id
 
             WHERE dbc.trang_thai = 20
 
-              AND dbc.bat_dau_binh_chon
-                  <= LOCALTIMESTAMP
+            AND dbc.bat_dau_binh_chon
+                <= LOCALTIMESTAMP
 
-              AND dbc.han_binh_chon
-                  >= LOCALTIMESTAMP
+            AND dbc.han_binh_chon
+                >= LOCALTIMESTAMP
 
-              AND tdn.active = TRUE
+            AND tdn.active = TRUE
 
-              AND td.active = TRUE
+            AND td.active = TRUE
+
+            AND tk.active = TRUE
+
+            AND tk.bi_khoa = FALSE
+
+            AND nv.active = TRUE
+
+            AND na.active = TRUE
 
 
             ORDER BY
@@ -1289,31 +1289,24 @@ class BinhChonSuatAnRepository {
                 ON td.id =
                    tdn.thuc_don_id
 
-
             INNER JOIN dm_tai_khoan tk
                 ON tk.id = $1
 
+            INNER JOIN dm_nhan_vien nv
+                ON nv.id =
+                tk.nhan_vien_id
 
-            INNER JOIN ct_nha_an_nhan_vien nanv
-                ON nanv.nhan_vien_id =
-                   tk.nhan_vien_id
+            INNER JOIN dm_nha_an na
+                ON na.id =
+                td.nha_an_id
 
-               AND nanv.nha_an_id =
-                   td.nha_an_id
-
-               AND nanv.active = TRUE
-
+            AND na.co_so_id =
+                nv.co_so_id
 
             LEFT JOIN dm_co_so cs
                 ON cs.id =
-                   td.co_so_id
-
-
-            LEFT JOIN dm_nha_an na
-                ON na.id =
-                   td.nha_an_id
-
-
+                td.co_so_id
+            
             LEFT JOIN dm_ca_an ca
                 ON ca.id =
                    td.ca_an_id
@@ -1321,12 +1314,17 @@ class BinhChonSuatAnRepository {
 
             WHERE dbc.trang_thai = 20
 
-              AND dbc.bat_dau_binh_chon
-                  > LOCALTIMESTAMP
+                AND dbc.bat_dau_binh_chon
+                    > LOCALTIMESTAMP
 
-              AND tdn.active = TRUE
+                AND tdn.active = TRUE
 
-              AND td.active = TRUE
+                AND td.active = TRUE
+
+                AND tk.active = TRUE
+                AND tk.bi_khoa = FALSE
+                AND nv.active = TRUE
+                AND na.active = TRUE
 
 
             ORDER BY
@@ -1416,7 +1414,11 @@ class BinhChonSuatAnRepository {
             "dbc.trang_thai = 20",
             "dbc.han_binh_chon < LOCALTIMESTAMP",
             "tdn.active = TRUE",
-            "td.active = TRUE"
+            "td.active = TRUE",
+            "tk.active = TRUE",
+            "tk.bi_khoa = FALSE",
+            "nv.active = TRUE",
+            "na.active = TRUE"
         ];
 
 
@@ -1495,6 +1497,9 @@ class BinhChonSuatAnRepository {
                 ca.ma_ca_an,
                 ca.ten_ca_an,
 
+                nv.ma_nhan_vien,
+                nv.ho_ten,
+
                 bc.lua_chon,
                 bc.thoi_gian_binh_chon
 
@@ -1511,25 +1516,26 @@ class BinhChonSuatAnRepository {
             INNER JOIN dm_tai_khoan tk
                 ON tk.id = $1
 
-            INNER JOIN ct_nha_an_nhan_vien nanv
-                ON nanv.nhan_vien_id =
+            INNER JOIN dm_nhan_vien nv
+                ON nv.id =
                 tk.nhan_vien_id
-            AND nanv.nha_an_id =
+
+            INNER JOIN dm_nha_an na
+                ON na.id =
                 td.nha_an_id
-            AND nanv.active = TRUE
+
+            AND na.co_so_id =
+                nv.co_so_id
 
             LEFT JOIN ct_binh_chon_suat_an bc
                 ON bc.dot_binh_chon_id =
                 dbc.id
+
             AND bc.tai_khoan_id = $1
 
             LEFT JOIN dm_co_so cs
                 ON cs.id =
                 td.co_so_id
-
-            LEFT JOIN dm_nha_an na
-                ON na.id =
-                td.nha_an_id
 
             LEFT JOIN dm_ca_an ca
                 ON ca.id =
@@ -1566,6 +1572,12 @@ class BinhChonSuatAnRepository {
                     dotBinhChonId:
                         dot.id,
 
+                    maNhanVien:
+                        row.ma_nhan_vien,
+
+                    hoTen:
+                        row.ho_ten,
+
                     luaChon:
                         row.lua_chon,
 
@@ -1584,7 +1596,9 @@ class BinhChonSuatAnRepository {
         filters = {}
     ) {
 
-        const values = [];
+        const values =
+            [];
+
 
         const conditions = [
             "dbc.trang_thai = 20"
@@ -1599,8 +1613,40 @@ class BinhChonSuatAnRepository {
                 taiKhoanId
             );
 
+
             conditions.push(
                 `bc.tai_khoan_id = $${values.length}`
+            );
+
+        }
+
+
+        if (
+            Array.isArray(
+                filters.taiKhoanIds
+            ) &&
+            filters.taiKhoanIds.length >
+                0
+        ) {
+
+            const placeholders =
+                filters.taiKhoanIds
+                    .map(
+                        id => {
+
+                            values.push(
+                                id
+                            );
+
+
+                            return `$${values.length}`;
+
+                        }
+                    );
+
+
+            conditions.push(
+                `bc.tai_khoan_id IN (${placeholders.join(", ")})`
             );
 
         }
@@ -1613,6 +1659,7 @@ class BinhChonSuatAnRepository {
             values.push(
                 filters.dotBinhChonId
             );
+
 
             conditions.push(
                 `dbc.id = $${values.length}`
@@ -1630,6 +1677,7 @@ class BinhChonSuatAnRepository {
                 filters.luaChon
             );
 
+
             conditions.push(
                 `bc.lua_chon = $${values.length}`
             );
@@ -1644,6 +1692,7 @@ class BinhChonSuatAnRepository {
             values.push(
                 filters.tuNgay
             );
+
 
             conditions.push(
                 `tdn.ngay >= $${values.length}`
@@ -1660,6 +1709,7 @@ class BinhChonSuatAnRepository {
                 filters.denNgay
             );
 
+
             conditions.push(
                 `tdn.ngay <= $${values.length}`
             );
@@ -1668,95 +1718,85 @@ class BinhChonSuatAnRepository {
 
 
         const sql = `
-
             SELECT
-
                 bc.id,
-
                 bc.dot_binh_chon_id,
-
                 bc.tai_khoan_id,
-
                 bc.lua_chon,
-
                 bc.thoi_gian_binh_chon,
 
                 tdn.id AS thuc_don_ngay_id,
-
                 tdn.ngay,
 
-                td.id
-                    AS thuc_don_id,
-
+                td.id AS thuc_don_id,
                 td.ma_thuc_don,
-
                 td.ten_thuc_don,
-
                 td.nha_an_id,
 
                 na.ten_nha_an,
 
                 td.ca_an_id,
-
                 ca.ten_ca_an,
 
                 tk.nhan_vien_id,
 
                 nv.ma_nhan_vien,
+                nv.ho_ten,
 
-                nv.ho_ten
+                CASE
+                    WHEN dbc.han_binh_chon >=
+                        LOCALTIMESTAMP
+                    THEN 'DANG_DIEN_RA'
 
+                    ELSE 'DA_KET_THUC'
 
-            FROM ct_binh_chon_suat_an bc
+                END AS trang_thai_thoi_gian_value,
 
+                CASE
+                    WHEN dbc.han_binh_chon >=
+                        LOCALTIMESTAMP
+                    THEN 'Đang diễn ra'
+
+                    ELSE 'Đã kết thúc'
+
+                END AS trang_thai_thoi_gian_name
+
+                FROM ct_binh_chon_suat_an bc
 
             INNER JOIN nv_dot_binh_chon dbc
                 ON dbc.id =
-                   bc.dot_binh_chon_id
-
+                bc.dot_binh_chon_id
 
             INNER JOIN ct_thuc_don_ngay tdn
                 ON tdn.id =
-                   dbc.thuc_don_ngay_id
-
+                dbc.thuc_don_ngay_id
 
             INNER JOIN nv_thuc_don td
                 ON td.id =
-                   tdn.thuc_don_id
-
+                tdn.thuc_don_id
 
             INNER JOIN dm_tai_khoan tk
                 ON tk.id =
-                   bc.tai_khoan_id
-
+                bc.tai_khoan_id
 
             INNER JOIN dm_nhan_vien nv
                 ON nv.id =
-                   tk.nhan_vien_id
-
+                tk.nhan_vien_id
 
             LEFT JOIN dm_nha_an na
                 ON na.id =
-                   td.nha_an_id
-
+                td.nha_an_id
 
             LEFT JOIN dm_ca_an ca
                 ON ca.id =
-                   td.ca_an_id
-
+                td.ca_an_id
 
             WHERE
-                ${conditions.join(
-                    " AND "
-                )}
-
+                ${conditions.join(" AND ")}
 
             ORDER BY
-
                 tdn.ngay DESC,
-
                 bc.thoi_gian_binh_chon DESC
-
         `;
 
 
@@ -1793,8 +1833,9 @@ class BinhChonSuatAnRepository {
 
                 thucDonId:
                     row.thuc_don_id,
-                    
-                thucDonNgayId: row.thuc_don_ngay_id,
+
+                thucDonNgayId:
+                    row.thuc_don_ngay_id,
 
                 maThucDon:
                     row.ma_thuc_don,
@@ -1814,12 +1855,19 @@ class BinhChonSuatAnRepository {
                 tenCaAn:
                     row.ten_ca_an,
 
+                trangThaiThoiGian: {
+                    value:
+                        row.trang_thai_thoi_gian_value,
+
+                    name:
+                        row.trang_thai_thoi_gian_name
+                },
+
                 luaChon:
                     row.lua_chon,
 
                 thoiGianBinhChon:
                     row.thoi_gian_binh_chon
-
             })
         );
 
@@ -2153,31 +2201,31 @@ class BinhChonSuatAnRepository {
                         ON td.id =
                         tdn.thuc_don_id
 
-                    INNER JOIN ct_nha_an_nhan_vien nanv
-                        ON nanv.nha_an_id =
+                    INNER JOIN dm_nha_an na
+                        ON na.id =
                         td.nha_an_id
 
-                    AND nanv.active =
-                        TRUE
+                    INNER JOIN dm_nhan_vien nv
+                        ON nv.co_so_id =
+                        na.co_so_id
 
                     INNER JOIN dm_tai_khoan tk
                         ON tk.nhan_vien_id =
-                        nanv.nhan_vien_id
-
-                    INNER JOIN dm_nhan_vien nv
-                        ON nv.id =
-                        tk.nhan_vien_id
+                        nv.id
 
                     WHERE dbc.id = $1
+
+                    AND na.active =
+                        TRUE
+
+                    AND nv.active =
+                        TRUE
 
                     AND tk.active =
                         TRUE
 
                     AND tk.bi_khoa =
                         FALSE
-
-                    AND nv.active =
-                        TRUE
                 `,
                 [
                     dotBinhChonId
@@ -2295,40 +2343,43 @@ class BinhChonSuatAnRepository {
         const result =
             await pool.query(
                 `
-
                     SELECT 1
 
                     FROM nv_dot_binh_chon dbc
 
-
                     INNER JOIN ct_thuc_don_ngay tdn
                         ON tdn.id =
-                           dbc.thuc_don_ngay_id
-
+                        dbc.thuc_don_ngay_id
 
                     INNER JOIN nv_thuc_don td
                         ON td.id =
-                           tdn.thuc_don_id
-
+                        tdn.thuc_don_id
 
                     INNER JOIN dm_tai_khoan tk
                         ON tk.id = $2
 
+                    INNER JOIN dm_nhan_vien nv
+                        ON nv.id =
+                        tk.nhan_vien_id
 
-                    INNER JOIN ct_nha_an_nhan_vien nanv
-                        ON nanv.nhan_vien_id =
-                           tk.nhan_vien_id
+                    INNER JOIN dm_nha_an na
+                        ON na.id =
+                        td.nha_an_id
 
-                       AND nanv.nha_an_id =
-                           td.nha_an_id
-
-                       AND nanv.active = TRUE
-
+                    AND na.co_so_id =
+                        nv.co_so_id
 
                     WHERE dbc.id = $1
 
-                    LIMIT 1
+                    AND tk.active = TRUE
 
+                    AND tk.bi_khoa = FALSE
+
+                    AND nv.active = TRUE
+
+                    AND na.active = TRUE
+
+                    LIMIT 1
                 `,
                 [
                     dotBinhChonId,

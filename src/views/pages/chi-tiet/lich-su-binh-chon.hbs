@@ -123,6 +123,19 @@
 
                 <div class="vote-history-filter__field">
                     {{> forms/select
+                        id="historyVoters"
+                        name="historyVoters"
+                        label="Người bình chọn"
+                        mode="multiple"
+                        multiple=true
+                        allowAll=true
+                        allLabel="Tất cả"
+                        placeholder="Tất cả người bình chọn"
+                    }}
+                </div>
+
+                <div class="vote-history-filter__field">
+                    {{> forms/select
                         id="historyChoice"
                         name="historyChoice"
                         label="Lựa chọn"
@@ -171,7 +184,15 @@
                     <thead>
                         <tr>
                             <th>
+                                Trạng thái
+                            </th>
+
+                            <th>
                                 Ngày ăn
+                            </th>
+
+                            <th>
+                                Người bình chọn
                             </th>
 
                             <th>

@@ -157,9 +157,7 @@ class TaiKhoanService {
 
     async getMatKhauMacDinh() {
         const matKhauMacDinh = await thietLapRepository
-            .getGiaTriTheoMa(
-                "MAT_KHAU_MAC_DINH"
-            );
+            .getGiaTriTheoMa("MAT_KHAU_MAC_DINH");
 
         if (
             matKhauMacDinh === null ||
@@ -176,8 +174,21 @@ class TaiKhoanService {
     }
 
     async getTongHop(query) {
-        return await taiKhoanRepository
-            .getTongHop(query);
+        return await taiKhoanRepository.getTongHop(query);
+    }
+
+    async getNhanVienKhaDung(taiKhoanId = null) {
+        let idTaiKhoan = null;
+
+        if (
+            taiKhoanId !== undefined &&
+            taiKhoanId !== null &&
+            String(taiKhoanId).trim() !== ""
+        ) {
+            idTaiKhoan = this.parseId(taiKhoanId);
+        }
+
+        return await taiKhoanRepository.getNhanVienKhaDung(idTaiKhoan);
     }
 
     async getChiTiet(id) {
@@ -279,7 +290,13 @@ class TaiKhoanService {
 
             duLieu.nhanVienId = Number(nhanVien.id);
             duLieu.maNhanVien = nhanVien.maNhanVien;
-        } else if (taiKhoanHienTai) {
+        } else if (
+            (
+                duLieu.nhanVienId === undefined ||
+                duLieu.nhanVienId === null
+            ) &&
+            taiKhoanHienTai
+        ) {
             duLieu.nhanVienId = Number(
                 taiKhoanHienTai.nhanVienId
             );
@@ -471,11 +488,10 @@ class TaiKhoanService {
             );
         }
 
-        const daCoTaiKhoan = await taiKhoanRepository
-            .existsNhanVien(
-                id,
-                excludeId
-            );
+        const daCoTaiKhoan = await taiKhoanRepository.existsNhanVien(
+            id,
+            excludeId
+        );
 
         if (daCoTaiKhoan) {
             throw new ApiError(
@@ -489,11 +505,10 @@ class TaiKhoanService {
         tenDangNhap,
         excludeId = null
     ) {
-        const trungTenDangNhap = await taiKhoanRepository
-            .existsTenDangNhap(
-                tenDangNhap,
-                excludeId
-            );
+        const trungTenDangNhap = await taiKhoanRepository.existsTenDangNhap(
+            tenDangNhap,
+            excludeId
+        );
 
         if (trungTenDangNhap) {
             throw new ApiError(
@@ -525,7 +540,6 @@ class TaiKhoanService {
         let duLieu = await this.chuanHoaNhanVien(data);
 
         duLieu = await this.chuanHoaLienKet(duLieu);
-
         duLieu = await this.chuanHoaTrangThaiKhoa(duLieu);
 
         if (!duLieu.nhanVienId) {
@@ -571,9 +585,7 @@ class TaiKhoanService {
         try {
             if (file) {
                 const nhanVien = await taiKhoanRepository
-                    .getNhanVienById(
-                        duLieuTao.nhanVienId
-                    );
+                    .getNhanVienById(duLieuTao.nhanVienId);
 
                 if (!nhanVien) {
                     throw new ApiError(
@@ -582,16 +594,14 @@ class TaiKhoanService {
                     );
                 }
 
-                fileMoi = await nhanVienFileService
-                    .saveFile(
-                        nhanVien.maNhanVien,
-                        nhanVien.hoTen,
-                        file
-                    );
+                fileMoi = await nhanVienFileService.saveFile(
+                    nhanVien.maNhanVien,
+                    nhanVien.hoTen,
+                    file
+                );
             }
 
-            const ketQua = await taiKhoanRepository
-                .create(duLieuTao);
+            const ketQua = await taiKhoanRepository.create(duLieuTao);
 
             if (!ketQua) {
                 throw new ApiError(
@@ -601,33 +611,26 @@ class TaiKhoanService {
             }
 
             if (fileMoi) {
-                await taiKhoanRepository
-                    .updateAnhDaiDien(
-                        duLieuTao.nhanVienId,
-                        fileMoi.relativePath
-                    );
+                await taiKhoanRepository.updateAnhDaiDien(
+                    duLieuTao.nhanVienId,
+                    fileMoi.relativePath
+                );
 
                 const nhanVien = await taiKhoanRepository
-                    .getNhanVienById(
-                        duLieuTao.nhanVienId
-                    );
+                    .getNhanVienById(duLieuTao.nhanVienId);
 
-                await nhanVienFileService
-                    .cleanupOldFiles(
-                        nhanVien.maNhanVien,
-                        3
-                    );
+                await nhanVienFileService.cleanupOldFiles(
+                    nhanVien.maNhanVien,
+                    3
+                );
             }
 
-            return await taiKhoanRepository
-                .getChiTiet(ketQua.id);
+            return await taiKhoanRepository.getChiTiet(ketQua.id);
         } catch (error) {
             if (fileMoi) {
                 try {
                     await nhanVienFileService
-                        .deletePhysicalFile(
-                            fileMoi.fullPath
-                        );
+                        .deletePhysicalFile(fileMoi.fullPath);
                 } catch (deleteError) {
                     console.error(
                         "Không thể xóa ảnh tài khoản mới:",
@@ -636,8 +639,7 @@ class TaiKhoanService {
                 }
             } else {
                 try {
-                    await nhanVienFileService
-                        .deleteTempFile(file);
+                    await nhanVienFileService.deleteTempFile(file);
                 } catch (deleteTempError) {
                     console.error(
                         "Không thể xóa file temp tài khoản:",
@@ -672,7 +674,9 @@ class TaiKhoanService {
                 ? data.maNhanVien
                 : undefined,
 
-            nhanVienId: taiKhoan.nhanVienId,
+            nhanVienId: data.nhanVienId !== undefined
+                ? Number(data.nhanVienId)
+                : taiKhoan.nhanVienId,
 
             tenDangNhap: data.tenDangNhap !== undefined
                 ? String(data.tenDangNhap).trim()
@@ -708,9 +712,7 @@ class TaiKhoanService {
             taiKhoan
         );
 
-        duLieuCapNhat = await this.chuanHoaLienKet(
-            duLieuCapNhat
-        );
+        duLieuCapNhat = await this.chuanHoaLienKet(duLieuCapNhat);
 
         duLieuCapNhat = await this.chuanHoaTrangThaiKhoa(
             duLieuCapNhat,
@@ -724,9 +726,7 @@ class TaiKhoanService {
             );
         }
 
-        await this.validateLienKet(
-            duLieuCapNhat
-        );
+        await this.validateLienKet(duLieuCapNhat);
 
         await this.validateTrungDuLieu(
             duLieuCapNhat,
@@ -737,9 +737,7 @@ class TaiKhoanService {
 
         try {
             const nhanVien = await taiKhoanRepository
-                .getNhanVienById(
-                    duLieuCapNhat.nhanVienId
-                );
+                .getNhanVienById(duLieuCapNhat.nhanVienId);
 
             if (!nhanVien) {
                 throw new ApiError(
@@ -749,19 +747,17 @@ class TaiKhoanService {
             }
 
             if (file) {
-                fileMoi = await nhanVienFileService
-                    .saveFile(
-                        nhanVien.maNhanVien,
-                        nhanVien.hoTen,
-                        file
-                    );
+                fileMoi = await nhanVienFileService.saveFile(
+                    nhanVien.maNhanVien,
+                    nhanVien.hoTen,
+                    file
+                );
             }
 
-            const ketQua = await taiKhoanRepository
-                .update(
-                    taiKhoanId,
-                    duLieuCapNhat
-                );
+            const ketQua = await taiKhoanRepository.update(
+                taiKhoanId,
+                duLieuCapNhat
+            );
 
             if (!ketQua) {
                 throw new ApiError(
@@ -771,28 +767,23 @@ class TaiKhoanService {
             }
 
             if (fileMoi) {
-                await taiKhoanRepository
-                    .updateAnhDaiDien(
-                        duLieuCapNhat.nhanVienId,
-                        fileMoi.relativePath
-                    );
+                await taiKhoanRepository.updateAnhDaiDien(
+                    duLieuCapNhat.nhanVienId,
+                    fileMoi.relativePath
+                );
 
-                await nhanVienFileService
-                    .cleanupOldFiles(
-                        nhanVien.maNhanVien,
-                        3
-                    );
+                await nhanVienFileService.cleanupOldFiles(
+                    nhanVien.maNhanVien,
+                    3
+                );
             }
 
-            return await taiKhoanRepository
-                .getChiTiet(taiKhoanId);
+            return await taiKhoanRepository.getChiTiet(taiKhoanId);
         } catch (error) {
             if (fileMoi) {
                 try {
                     await nhanVienFileService
-                        .deletePhysicalFile(
-                            fileMoi.fullPath
-                        );
+                        .deletePhysicalFile(fileMoi.fullPath);
                 } catch (deleteError) {
                     console.error(
                         "Không thể xóa ảnh tài khoản mới:",
@@ -801,8 +792,7 @@ class TaiKhoanService {
                 }
             } else {
                 try {
-                    await nhanVienFileService
-                        .deleteTempFile(file);
+                    await nhanVienFileService.deleteTempFile(file);
                 } catch (deleteTempError) {
                     console.error(
                         "Không thể xóa file temp tài khoản:",
@@ -887,15 +877,12 @@ class TaiKhoanService {
             );
         }
 
-        const matKhauHashMoi = this.hashMatKhau(
-            matKhauMoi
-        );
+        const matKhauHashMoi = this.hashMatKhau(matKhauMoi);
 
-        const ketQua = await taiKhoanRepository
-            .doiMatKhau(
-                taiKhoanId,
-                matKhauHashMoi
-            );
+        const ketQua = await taiKhoanRepository.doiMatKhau(
+            taiKhoanId,
+            matKhauHashMoi
+        );
 
         if (!ketQua) {
             throw new ApiError(
@@ -926,11 +913,10 @@ class TaiKhoanService {
             matKhauMacDinh
         );
 
-        const ketQua = await taiKhoanRepository
-            .datLaiMatKhau(
-                taiKhoanId,
-                matKhauHash
-            );
+        const ketQua = await taiKhoanRepository.datLaiMatKhau(
+            taiKhoanId,
+            matKhauHash
+        );
 
         if (!ketQua) {
             throw new ApiError(

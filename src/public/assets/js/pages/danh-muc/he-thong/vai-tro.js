@@ -144,33 +144,33 @@ document.addEventListener("DOMContentLoaded", () => {
             },
 
             toolbarActions: [
-                    {
-                        action: "filter",
-                        label: "Tìm kiếm chi tiết",
-                        icon: "search"
-                    },
-                    {
-                        action: "export-vai-tro",
-                        label: "Xuất danh mục vai trò",
-                        icon: "download"
-                    },
-                    {
-                        action: "import-vai-tro",
-                        label: "Nhập danh mục vai trò",
-                        icon: "upload"
-                    }
-                ],
-
-                onAction(action, id, catalogInstance) {
-                    if (action === "export-vai-tro") {
-                        exportData();
-                        return;
-                    }
-
-                    if (action === "import-vai-tro") {
-                        importData(catalogInstance);
-                    }
+                {
+                    action: "filter",
+                    label: "Tìm kiếm chi tiết",
+                    icon: "search"
+                },
+                {
+                    action: "export-vai-tro",
+                    label: "Xuất danh mục vai trò",
+                    icon: "download"
+                },
+                {
+                    action: "import-vai-tro",
+                    label: "Nhập danh mục vai trò",
+                    icon: "upload"
                 }
+            ],
+
+            onAction(action, id, catalogInstance) {
+                if (action === "export-vai-tro") {
+                    exportData();
+                    return;
+                }
+
+                if (action === "import-vai-tro") {
+                    importData(catalogInstance);
+                }
+            }
         });
     }
 
@@ -458,6 +458,25 @@ document.addEventListener("DOMContentLoaded", () => {
         closePermissionPopup();
     }
 
+    function normalizeSearchText(value) {
+        return String(value ?? "")
+            .normalize("NFD")
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            )
+            .replace(
+                /đ/g,
+                "d"
+            )
+            .replace(
+                /Đ/g,
+                "D"
+            )
+            .toLowerCase()
+            .trim();
+    }
+
     function getPopupVisibleQuyen() {
         return dsQuyen.filter(quyen => {
             const id = Number(quyen.id);
@@ -492,8 +511,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (popupSearchText) {
-                const text = `${quyen.maQuyen || ""} ${quyen.tenQuyen || ""}`
-                    .toLowerCase();
+                const text = normalizeSearchText(
+                    [
+                        quyen.maQuyen,
+                        quyen.tenQuyen
+                    ]
+                        .filter(Boolean)
+                        .join(" ")
+                );
 
                 if (!text.includes(popupSearchText)) {
                     return false;
@@ -698,13 +723,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document
             .getElementById("vaiTroPopupTimQuyen")
-            ?.addEventListener("input", event => {
-                popupSearchText = String(event.target.value || "")
-                    .trim()
-                    .toLowerCase();
-
-                renderPopupQuyen();
-            });
+            ?.addEventListener(
+                "input",
+                event => {
+                    popupSearchText = normalizeSearchText(event.target.value);
+                    renderPopupQuyen();
+                }
+            );
 
         document
             .querySelector("[data-catalog-create]")
@@ -1056,6 +1081,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (search) {
             search.value = "";
+
+            search.dispatchEvent(
+                new Event(
+                    "input",
+                    {
+                        bubbles: true
+                    }
+                )
+            );
         }
     }
 

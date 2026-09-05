@@ -473,6 +473,40 @@ class BinhChonSuatAnController {
 
     }
 
+    async getChiTietCuaToi(
+        req,
+        res,
+        next
+    ) {
+
+        try {
+
+            const data =
+                await binhChonService
+                    .getChiTietCuaToi(
+                        req.params.id,
+                        req.user?.taiKhoanId
+                    );
+
+
+            return successResponse(
+                res,
+                "Lấy chi tiết đợt bình chọn của bạn thành công.",
+                data,
+                200
+            );
+
+        } catch (
+            error
+        ) {
+
+            next(
+                error
+            );
+
+        }
+
+    }
 
     async getThongKe(
         req,

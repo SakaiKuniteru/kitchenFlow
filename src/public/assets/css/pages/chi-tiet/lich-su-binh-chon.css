@@ -123,7 +123,8 @@
 }
 
 .vote-history-card {
-    overflow: hidden;
+    position: relative;
+    overflow: visible;
     border: 1px solid var(--color-border-light);
     border-radius: 15px;
     background: var(--color-surface);
@@ -131,18 +132,24 @@
 }
 
 .vote-history-filter {
+    position: relative;
+    z-index: 20;
     display: grid;
     grid-template-columns:
         minmax(
-            180px,
-            1fr
+            160px,
+            0.85fr
         )
         minmax(
-            180px,
-            1fr
+            160px,
+            0.85fr
         )
         minmax(
             220px,
+            1.15fr
+        )
+        minmax(
+            200px,
             1fr
         )
         auto;
@@ -207,6 +214,8 @@
 }
 
 .vote-history-table-wrapper {
+    position: relative;
+    z-index: 1;
     width: 100%;
     overflow-x: auto;
 }
@@ -355,6 +364,60 @@
         700ms
         linear
         infinite;
+}
+
+.vote-history-choice--pending {
+    color: var(--color-text-muted);
+    background: var(--color-surface-secondary);
+}
+
+.vote-history-status {
+    display: inline-flex;
+    min-height: 27px;
+    padding: 0 9px;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.vote-history-status i {
+    font-size: 6px;
+}
+
+.vote-history-status--active {
+    color: #15803d;
+    background: #dcfce7;
+}
+
+.vote-history-status--ended {
+    color: #64748b;
+    background: #f1f5f9;
+}
+
+.vote-history-voter {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.vote-history-voter strong {
+    overflow: hidden;
+    color: var(--color-text-primary);
+    font-size: 12px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.vote-history-voter span {
+    overflow: hidden;
+    color: var(--color-text-muted);
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 @keyframes vote-history-spin {

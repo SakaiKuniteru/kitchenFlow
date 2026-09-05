@@ -53,6 +53,13 @@ router.get(
 );
 
 router.get(
+    "/nhan-vien-kha-dung",
+    authenticate,
+    authorize("Q000530", "Q000531"),
+    controller.getNhanVienKhaDung
+);
+
+router.get(
     "/xuat-du-lieu",
     authenticate,
     authorize("Q100001"),

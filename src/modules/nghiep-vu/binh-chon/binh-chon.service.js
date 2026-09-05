@@ -642,6 +642,90 @@ class BinhChonSuatAnService {
 
     }
 
+    chuanHoaTaiKhoanIds(
+        value
+    ) {
+
+        if (
+            value ===
+                undefined ||
+            value ===
+                null ||
+            value ===
+                "" ||
+            String(
+                value
+            ) ===
+                "__ALL__"
+        ) {
+
+            return [];
+
+        }
+
+
+        const rawValues =
+            (
+                Array.isArray(
+                    value
+                )
+                    ? value
+                    : [
+                        value
+                    ]
+            )
+                .flatMap(
+                    item =>
+                        String(
+                            item
+                        )
+                            .split(
+                                ","
+                            )
+                )
+                .map(
+                    item =>
+                        item.trim()
+                )
+                .filter(
+                    Boolean
+                );
+
+
+        const ids =
+            [
+                ...new Set(
+                    rawValues.map(
+                        Number
+                    )
+                )
+            ];
+
+
+        if (
+            ids.length ===
+                0 ||
+            ids.some(
+                id =>
+                    !Number.isInteger(
+                        id
+                    ) ||
+                    id <= 0
+            )
+        ) {
+
+            throw new ApiError(
+                400,
+                "Tài khoản bình chọn không hợp lệ."
+            );
+
+        }
+
+
+        return ids;
+
+    }
+
     async validateThucDonNgay(
         thucDonNgayId
     ) {
@@ -2183,12 +2267,17 @@ class BinhChonSuatAnService {
 
         }
 
-
         if (
             query.luaChon !==
-            undefined &&
+                undefined &&
             query.luaChon !==
-            ""
+                "" &&
+            String(
+                query.luaChon
+            )
+                .trim()
+                .toUpperCase() !==
+                "__ALL__"
         ) {
 
             const value =
@@ -2241,16 +2330,25 @@ class BinhChonSuatAnService {
 
     }
 
-
     async getLichSuTong(
         query = {}
     ) {
 
+        const filters =
+            this.chuanHoaFilterLichSu(
+                query
+            );
+
+
+        filters.taiKhoanIds =
+            this.chuanHoaTaiKhoanIds(
+                query.taiKhoanIds
+            );
+
+
         return await binhChonRepository
             .getLichSuTong(
-                this.chuanHoaFilterLichSu(
-                    query
-                )
+                filters
             );
 
     }
@@ -2331,6 +2429,119 @@ class BinhChonSuatAnService {
 
 
         return data;
+    }
+
+    async getChiTietCuaToi(
+        id,
+        taiKhoanId
+    ) {
+
+        const dotId =
+            this.parseId(
+                id
+            );
+
+
+        const accountId =
+            this.parseTaiKhoanId(
+                taiKhoanId
+            );
+
+
+        const dot =
+            await binhChonRepository
+                .getChiTiet(
+                    dotId
+                );
+
+
+        if (
+            !dot ||
+            Number(
+                dot.trangThai
+            ) !==
+                20
+        ) {
+
+            throw new ApiError(
+                404,
+                "Đợt bình chọn không tồn tại hoặc không còn hiệu lực."
+            );
+
+        }
+
+
+        const duocXem =
+            await binhChonRepository
+                .kiemTraDuocBinhChon(
+                    dotId,
+                    accountId
+                );
+
+
+        if (
+            !duocXem
+        ) {
+
+            throw new ApiError(
+                403,
+                "Bạn không thuộc phạm vi nhà ăn của đợt bình chọn này."
+            );
+
+        }
+
+
+        const [
+            luaChon,
+            dsNhomMonAn,
+            thongKe
+        ] =
+            await Promise.all([
+
+                binhChonRepository
+                    .getLuaChonCuaTaiKhoan(
+                        dotId,
+                        accountId
+                    ),
+
+                binhChonRepository
+                    .getDanhSachMonAn(
+                        dotId
+                    ),
+
+                binhChonRepository
+                    .getThongKe(
+                        dotId
+                    )
+
+            ]);
+
+
+        return {
+
+            ...this.mapResponse(
+                dot
+            ),
+
+            dotBinhChonId:
+                dot.id,
+
+            luaChonCuaToi:
+                luaChon
+                    ?.luaChon ??
+                null,
+
+            thoiGianBinhChon:
+                luaChon
+                    ?.thoiGianBinhChon ??
+                null,
+
+            dsNhomMonAn,
+
+            thongKe
+
+        };
+
     }
 
     async getThongKe(

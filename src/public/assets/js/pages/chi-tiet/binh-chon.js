@@ -1,32 +1,14 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const root =
-        document.querySelector(
-            "[data-meal-vote-page]"
-        );
+    const root = document.querySelector("[data-meal-vote-page]");
 
     if (!root) {
         return;
     }
 
-    const thucDonId =
-        String(
-            root.dataset
-                .thucDonId ||
-            ""
-        )
-            .trim();
-
-
-    const dotBinhChonId =
-        String(
-            root.dataset
-                .dotBinhChonId ||
-            ""
-        )
-            .trim();
-
+    const thucDonId = String(root.dataset.thucDonId || "").trim();
+    const dotBinhChonId = String(root.dataset.dotBinhChonId || "").trim();
 
     if (
         !thucDonId ||
@@ -40,266 +22,100 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const API = {
-        current:
-            "/api/mcs/v1/binh-chon/cua-toi/hien-tai",
+        current: "/api/mcs/v1/binh-chon/cua-toi/hien-tai",
+        upcoming: "/api/mcs/v1/binh-chon/cua-toi/sap-toi",
+        history: "/api/mcs/v1/binh-chon/cua-toi/lich-su",
 
-        upcoming:
-            "/api/mcs/v1/binh-chon/cua-toi/sap-toi",
-
-        history:
-            "/api/mcs/v1/binh-chon/cua-toi/lich-su",
-
-        vote(
-            id
-        ) {
+        detail(id) {
             return (
                 "/api/mcs/v1/binh-chon/cua-toi/" +
-                encodeURIComponent(
-                    id
-                ) +
+                encodeURIComponent(id)
+            );
+        },
+
+        vote(id) {
+            return (
+                "/api/mcs/v1/binh-chon/cua-toi/" +
+                encodeURIComponent(id) +
                 "/binh-chon"
             );
         }
     };
 
     const elements = {
-        content:
-            root.querySelector(
-                "[data-meal-vote-content]"
-            ),
-
-        loading:
-            root.querySelector(
-                "[data-meal-vote-loading]"
-            ),
-
-        noPermission:
-            root.querySelector(
-                "[data-catalog-no-permission]"
-            ),
-
-        history:
-            root.querySelector(
-                "[data-meal-vote-history]"
-            ),
-
-        current:
-            root.querySelector(
-                "[data-meal-vote-current]"
-            ),
-
-        currentEmpty:
-            root.querySelector(
-                "[data-meal-vote-current-empty]"
-            ),
-
-        currentStatus:
-            root.querySelector(
-                "[data-current-status]"
-            ),
-
-        currentDate:
-            root.querySelector(
-                "[data-current-date]"
-            ),
-
-        currentMeal:
-            root.querySelector(
-                "[data-current-meal]"
-            ),
-
-        currentDeadline:
-            root.querySelector(
-                "[data-current-deadline]"
-            ),
-
-        currentFoodList:
-            root.querySelector(
-                "[data-current-food-list]"
-            ),
-
-        currentMenuLink:
-            root.querySelector(
-                "[data-current-menu-link]"
-            ),
-
-        voteButtons:
-            root.querySelectorAll(
-                "[data-vote-choice]"
-            ),
-
-        voteSelected:
-            root.querySelector(
-                "[data-vote-selected]"
-            ),
-
-        voteSelectedLabel:
-            root.querySelector(
-                "[data-vote-selected-label]"
-            ),
-
-        voteChange:
-            root.querySelector(
-                "[data-vote-change]"
-            ),
-
-        resultTotal:
-            root.querySelector(
-                "[data-result-total]"
-            ),
-
-        resultYes:
-            root.querySelector(
-                "[data-result-yes]"
-            ),
-
-        resultNo:
-            root.querySelector(
-                "[data-result-no]"
-            ),
-
-        resultYesPercent:
-            root.querySelector(
-                "[data-result-yes-percent]"
-            ),
-
-        resultNoPercent:
-            root.querySelector(
-                "[data-result-no-percent]"
-            ),
-
-        resultYesCount:
-            root.querySelector(
-                "[data-result-yes-count]"
-            ),
-
-        resultNoCount:
-            root.querySelector(
-                "[data-result-no-count]"
-            ),
-
-        resultYesPercentRow:
-            root.querySelector(
-                "[data-result-yes-percent-row]"
-            ),
-
-        resultNoPercentRow:
-            root.querySelector(
-                "[data-result-no-percent-row]"
-            ),
-
-        resultYesBar:
-            root.querySelector(
-                "[data-result-yes-bar]"
-            ),
-
-        resultNoBar:
-            root.querySelector(
-                "[data-result-no-bar]"
-            ),
-
-        resultUpdated:
-            root.querySelector(
-                "[data-result-updated]"
-            ),
-
-        upcomingList:
-            root.querySelector(
-                "[data-upcoming-list]"
-            ),
-
-        upcomingEmpty:
-            root.querySelector(
-                "[data-upcoming-empty]"
-            ),
-
-        relatedTabs:
-            root.querySelectorAll(
-                "[data-related-tab]"
-            ),
-
-        relatedEmptyTitle:
-            root.querySelector(
-                "[data-related-empty-title]"
-            ),
-
-        relatedEmptyDescription:
-            root.querySelector(
-                "[data-related-empty-description]"
-            )
+        content: root.querySelector("[data-meal-vote-content]"),
+        loading: root.querySelector("[data-meal-vote-loading]"),
+        noPermission: root.querySelector("[data-catalog-no-permission]"),
+        history: root.querySelector("[data-meal-vote-history]"),
+        current: root.querySelector("[data-meal-vote-current]"),
+        currentEmpty: root.querySelector("[data-meal-vote-current-empty]"),
+        currentStatus: root.querySelector("[data-current-status]"),
+        currentDate: root.querySelector("[data-current-date]"),
+        currentMeal: root.querySelector("[data-current-meal]"),
+        currentDeadline: root.querySelector("[data-current-deadline]"),
+        currentFoodList: root.querySelector("[data-current-food-list]"),
+        currentMenuLink: root.querySelector("[data-current-menu-link]"),
+        voteButtons: root.querySelectorAll("[data-vote-choice]"),
+        voteSelected: root.querySelector("[data-vote-selected]"),
+        voteSelectedLabel: root.querySelector("[data-vote-selected-label]"),
+        voteChange: root.querySelector("[data-vote-change]"),
+        resultTotal: root.querySelector("[data-result-total]"),
+        resultYes: root.querySelector("[data-result-yes]"),
+        resultNo: root.querySelector("[data-result-no]"),
+        resultYesPercent: root.querySelector("[data-result-yes-percent]"),
+        resultNoPercent: root.querySelector("[data-result-no-percent]"),
+        resultYesCount: root.querySelector("[data-result-yes-count]"),
+        resultNoCount: root.querySelector("[data-result-no-count]"),
+        resultYesPercentRow: root.querySelector("[data-result-yes-percent-row]"),
+        resultNoPercentRow: root.querySelector("[data-result-no-percent-row]"),
+        resultYesBar: root.querySelector("[data-result-yes-bar]"),
+        resultNoBar: root.querySelector("[data-result-no-bar]"),
+        resultUpdated: root.querySelector("[data-result-updated]"),
+        upcomingList: root.querySelector("[data-upcoming-list]"),
+        upcomingEmpty: root.querySelector("[data-upcoming-empty]"),
+        relatedTabs: root.querySelectorAll("[data-related-tab]"),
+        relatedEmptyTitle: root.querySelector("[data-related-empty-title]"),
+        relatedEmptyDescription: root.querySelector("[data-related-empty-description]")
     };
 
     const state = {
-        current:
-            null,
-
-        upcoming:
-            [],
-
-        relatedFilter:
-            "all",
-
-        changingVote:
-            false,
-
-        voting:
-            false,
-
-        refreshTimer:
-            null
+        current: null,
+        upcoming: [],
+        relatedFilter: "all",
+        changingVote: false,
+        voting: false,
+        refreshTimer: null
     };
 
-    const permissions =
-        getPermissionSet();
+    const permissions = getPermissionSet();
 
     const canViewCurrent =
-        permissions.has(
-            "Q001023"
-        ) ||
-        permissions.has(
-            "Q001025"
-        );
+        permissions.has("Q001023") ||
+        permissions.has("Q001025");
 
-    const canVote =
-        permissions.has(
-            "Q001025"
-        );
-
-    const canViewUpcoming =
-        permissions.has(
-            "Q001024"
-        );
+    const canVote = permissions.has("Q001025");
+    const canViewUpcoming = permissions.has("Q001024");
 
     const canViewHistory =
-        permissions.has(
-            "Q001027"
-        ) ||
-        permissions.has(
-            "Q001026"
-        );
+        permissions.has("Q001027") ||
+        permissions.has("Q001026");
 
     if (
         !canViewCurrent &&
         !canViewUpcoming
     ) {
         showNoPermission();
-
         return;
     }
 
     hideNoPermission();
 
-    if (
-        elements.history
-    ) {
-        elements.history.hidden =
-            !canViewHistory;
+    if (elements.history) {
+        elements.history.hidden = !canViewHistory;
     }
 
     bindEvents();
-
     await load();
-
     startAutoRefresh();
 
     async function load(
@@ -307,17 +123,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             silent = false
         } = {}
     ) {
+        const detailResult = await window.MCS.api.request(
+            API.detail(dotBinhChonId),
+            {
+                method: "GET"
+            }
+        );
+
+        const currentRecord = detailResult?.data ?? detailResult;
+
         if (!silent) {
-            setLoading(
-                true
-            );
+            setLoading(true);
         }
 
-
         try {
-            const requests =
-                [];
-
+            const requests = [];
 
             if (canViewCurrent) {
                 requests.push(
@@ -325,21 +145,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                         .request(
                             API.current,
                             {
-                                method:
-                                    "GET"
+                                method: "GET"
                             }
                         )
                         .then(
                             result => ({
-                                type:
-                                    "current",
-
+                                type: "current",
                                 result
                             })
                         )
                 );
             }
-
 
             if (canViewUpcoming) {
                 requests.push(
@@ -347,21 +163,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                         .request(
                             API.upcoming,
                             {
-                                method:
-                                    "GET"
+                                method: "GET"
                             }
                         )
                         .then(
                             result => ({
-                                type:
-                                    "upcoming",
-
+                                type: "upcoming",
                                 result
                             })
                         )
                 );
             }
-
 
             if (canViewHistory) {
                 requests.push(
@@ -369,80 +181,45 @@ document.addEventListener("DOMContentLoaded", async () => {
                         .request(
                             API.history,
                             {
-                                method:
-                                    "GET"
+                                method: "GET"
                             }
                         )
                         .then(
                             result => ({
-                                type:
-                                    "history",
-
+                                type: "history",
                                 result
                             })
                         )
                 );
             }
 
+            const responses = await Promise.all(requests);
+            const records = [];
 
-            const responses =
-                await Promise.all(
-                    requests
-                );
+            responses.forEach(response => {
+                const data =
+                    response.result?.data ??
+                    response.result;
 
-
-            const records =
-                [];
-
-
-            responses.forEach(
-                response => {
-                    const data =
-                        response.result
-                            ?.data ??
-                        response.result;
-
-
-                    if (
-                        !Array.isArray(
-                            data
-                        )
-                    ) {
-                        return;
-                    }
-
-
-                    data.forEach(
-                        item => {
-                            records.push(
-                                {
-                                    ...item,
-
-                                    source:
-                                        response.type
-                                }
-                            );
-                        }
-                    );
+                if (!Array.isArray(data)) {
+                    return;
                 }
-            );
 
+                data.forEach(item => {
+                    records.push({
+                        ...item,
+                        source: response.type
+                    });
+                });
+            });
 
-            const record =
-                findTargetRecord(
-                    records
-                );
-
+            const record = currentRecord;
 
             if (!record) {
-                state.current =
-                    null;
-
-                state.upcoming =
-                    [];
+                state.current = null;
+                state.upcoming = [];
 
                 render();
-
 
                 if (!silent) {
                     window.MCS
@@ -452,27 +229,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                         );
                 }
 
-
                 return;
             }
 
-
-            state.current =
-                record;
-
-            state.upcoming =
-                buildRelatedRecords(
-                    records
-                );
+            state.current = record;
+            state.upcoming = buildRelatedRecords(records);
 
             render();
-
         } catch (error) {
             console.error(
                 "Không thể tải bình chọn:",
                 error
             );
-
 
             if (!silent) {
                 window.MCS
@@ -482,157 +250,100 @@ document.addEventListener("DOMContentLoaded", async () => {
                         "Không thể tải thông tin bình chọn."
                     );
             }
-
         } finally {
             if (!silent) {
-                setLoading(
-                    false
-                );
+                setLoading(false);
             }
         }
     }
 
-    function findTargetRecord(
-        records
-    ) {
-        if (
-            !Array.isArray(
-                records
-            )
-        ) {
+    function findTargetRecord(records) {
+        if (!Array.isArray(records)) {
             return null;
         }
 
-
         return (
-            records.find(
-                record => {
+            records.find(record => {
+                const recordId = String(
+                    record.dotBinhChonId ??
+                    record.id ??
+                    ""
+                );
 
-                    const recordId =
-                        String(
-                            record.dotBinhChonId ??
-                            record.id ??
-                            ""
-                        );
+                const recordThucDonId = String(
+                    record.thucDonId ??
+                    ""
+                );
 
-
-                    const recordThucDonId =
-                        String(
-                            record.thucDonId ??
-                            ""
-                        );
-
-
-                    return (
-                        recordId ===
-                            dotBinhChonId &&
-                        recordThucDonId ===
-                            thucDonId
-                    );
-
-                }
-            ) ||
+                return (
+                    recordId === dotBinhChonId &&
+                    recordThucDonId === thucDonId
+                );
+            }) ||
             null
         );
     }
 
-    function buildRelatedRecords(
-        records
-    ) {
-        if (
-            !Array.isArray(
-                records
-            )
-        ) {
+    function buildRelatedRecords(records) {
+        if (!Array.isArray(records)) {
             return [];
         }
 
+        const map = new Map();
 
-        const map =
-            new Map();
-
-
-        records.forEach(
-            record => {
-                if (
-                    record.source !==
-                        "current" &&
-                    record.source !==
-                        "upcoming"
-                ) {
-                    return;
-                }
-
-                const recordId =
-                    String(
-                        record.dotBinhChonId ??
-                        record.id ??
-                        ""
-                    );
-
-                const recordThucDonId =
-                    String(
-                        record.thucDonId ??
-                        ""
-                    );
-
-
-                /*
-                * Không hiển thị lại chính
-                * đợt đang xem ở phía trên.
-                */
-                if (
-                    recordId ===
-                        dotBinhChonId &&
-                    recordThucDonId ===
-                        thucDonId
-                ) {
-                    return;
-                }
-
-
-                if (!recordId) {
-                    return;
-                }
-
-
-                map.set(
-                    recordId,
-                    record
-                );
+        records.forEach(record => {
+            if (
+                record.source !== "current" &&
+                record.source !== "upcoming"
+            ) {
+                return;
             }
-        );
 
+            const recordId = String(
+                record.dotBinhChonId ??
+                record.id ??
+                ""
+            );
+
+            const recordThucDonId = String(
+                record.thucDonId ??
+                ""
+            );
+
+            if (
+                recordId === dotBinhChonId &&
+                recordThucDonId === thucDonId
+            ) {
+                return;
+            }
+
+            if (!recordId) {
+                return;
+            }
+
+            map.set(
+                recordId,
+                record
+            );
+        });
 
         return Array
-            .from(
-                map.values()
-            )
+            .from(map.values())
             .sort(
                 (
                     a,
                     b
                 ) => {
-                    const dateA =
-                        normalizeDate(
-                            a.batDauBinhChon
-                        );
-
-                    const dateB =
-                        normalizeDate(
-                            b.batDauBinhChon
-                        );
-
+                    const dateA = normalizeDate(a.batDauBinhChon);
+                    const dateB = normalizeDate(b.batDauBinhChon);
 
                     return (
                         (
-                            dateA
-                                ?.getTime() ??
+                            dateA?.getTime() ??
                             0
                         ) -
                         (
-                            dateB
-                                ?.getTime() ??
+                            dateB?.getTime() ??
                             0
                         )
                     );
@@ -642,82 +353,47 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function render() {
         renderCurrent();
-
         renderUpcoming();
     }
 
     function renderCurrent() {
-        const record =
-            state.current;
+        const record = state.current;
 
-        elements.current.hidden =
-            !record;
-
-        elements.currentEmpty.hidden =
-            !!record;
+        elements.current.hidden = !record;
+        elements.currentEmpty.hidden = !!record;
 
         if (!record) {
             return;
         }
 
-        renderCurrentStatus(
-            record
-        );
+        renderCurrentStatus(record);
 
-        const date =
-            normalizeDate(
-                record.ngay
-            );
+        const date = normalizeDate(record.ngay);
 
         elements.currentDate.textContent =
-            `${getWeekday(
-                date
-            )}, ${formatDate(
-                date
-            )}`;
+            `${getWeekday(date)}, ${formatDate(date)}`;
 
         elements.currentMeal.textContent =
             record.tenCaAn ||
             "Ca ăn";
 
         elements.currentDeadline.textContent =
-            formatDateTimeShort(
-                record.hanBinhChon
-            );
+            formatDateTimeShort(record.hanBinhChon);
 
         elements.currentMenuLink.href =
-            buildMenuDetailUrl(
-                record
-            );
+            buildMenuDetailUrl(record);
 
-        renderFoods(
-            record
-        );
-
-        renderVoteSelection(
-            record
-        );
-
-        renderStatistics(
-            record
-        );
+        renderFoods(record);
+        renderVoteSelection(record);
+        renderStatistics(record);
     }
 
-    function renderCurrentStatus(
-        record
-    ) {
-        if (
-            !elements.currentStatus
-        ) {
+    function renderCurrentStatus(record) {
+        if (!elements.currentStatus) {
             return;
         }
 
-
-        const status =
-            getRelatedStatus(
-                record
-            );
-
+        const status = getRelatedStatus(record);
 
         elements.currentStatus
             .classList.remove(
@@ -726,14 +402,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "meal-vote-status--ended"
             );
 
-
-        if (
-            status ===
-            "ended"
-        ) {
-            elements.currentStatus
-                .textContent =
-                "Đã kết thúc";
+        if (status === "ended") {
+            elements.currentStatus.textContent = "Đã kết thúc";
 
             elements.currentStatus
                 .classList.add(
@@ -743,14 +413,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-
-        if (
-            status ===
-            "upcoming"
-        ) {
-            elements.currentStatus
-                .textContent =
-                "Sắp diễn ra";
+        if (status === "upcoming") {
+            elements.currentStatus.textContent = "Sắp diễn ra";
 
             elements.currentStatus
                 .classList.add(
@@ -760,10 +424,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-
-        elements.currentStatus
-            .textContent =
-            "Đang diễn ra";
+        elements.currentStatus.textContent = "Đang diễn ra";
 
         elements.currentStatus
             .classList.add(
@@ -771,21 +432,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
     }
 
-    function renderFoods(
-        record
-    ) {
-        const foods =
-            flattenFoods(
-                record
-                    ?.dsNhomMonAn ||
-                []
-            );
+    function renderFoods(record) {
+        const foods = flattenFoods(
+            record?.dsNhomMonAn ||
+            []
+        );
 
-        if (
-            !foods.length
-        ) {
-            elements.currentFoodList
-                .innerHTML = `
+        if (!foods.length) {
+            elements.currentFoodList.innerHTML = `
                     <span
                         class="
                             meal-vote-food-empty
@@ -797,8 +451,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        elements.currentFoodList
-            .innerHTML =
+        elements.currentFoodList.innerHTML =
             foods
                 .map(
                     food => `
@@ -817,87 +470,59 @@ document.addEventListener("DOMContentLoaded", async () => {
                 .join("");
     }
 
-    function renderVoteSelection(
-        record
-    ) {
-        const status =
-            getRelatedStatus(
-                record
-            );
+    function renderVoteSelection(record) {
+        const status = getRelatedStatus(record);
 
         const canInteract =
             canVote &&
-            status ===
-                "active";
-                
-        const selected =
-            record
-                ?.luaChonCuaToi;
+            status === "active";
+
+        const selected = record?.luaChonCuaToi;
 
         const hasSelected =
-            selected ===
-                true ||
-            selected ===
-                false;
+            selected === true ||
+            selected === false;
 
         const allowChange =
-            record
-                ?.choPhepThayDoi !==
-            false;
+            record?.choPhepThayDoi !== false;
 
-        elements.voteButtons
-            .forEach(
-                button => {
-                    const value =
-                        button.dataset
-                            .voteChoice ===
-                        "true";
+        elements.voteButtons.forEach(button => {
+            const value =
+                button.dataset.voteChoice === "true";
 
-                    button.classList
-                        .toggle(
-                            "is-selected",
-                            hasSelected &&
-                            selected ===
-                            value
-                        );
-
-                    button.disabled =
-                        !canInteract ||
-                        state.voting ||
-                        (
-                            hasSelected &&
-                            !state.changingVote
-                        );
-                }
+            button.classList.toggle(
+                "is-selected",
+                hasSelected &&
+                selected === value
             );
 
-        elements.voteSelected.hidden =
-            !hasSelected;
+            button.disabled =
+                !canInteract ||
+                state.voting ||
+                (
+                    hasSelected &&
+                    !state.changingVote
+                );
+        });
 
-        if (
-            !hasSelected
-        ) {
-            state.changingVote =
-                false;
+        elements.voteSelected.hidden = !hasSelected;
 
+        if (!hasSelected) {
+            state.changingVote = false;
             return;
         }
 
-        elements.voteSelectedLabel
-            .textContent =
+        elements.voteSelectedLabel.textContent =
             selected
                 ? "Có tham gia"
                 : "Không tham gia";
 
-        elements.voteSelectedLabel
-            .className =
+        elements.voteSelectedLabel.className =
             selected
                 ? "is-positive"
                 : "is-negative";
 
-        if (
-            elements.voteChange
-        ) {
+        if (elements.voteChange) {
             elements.voteChange.hidden =
                 !allowChange ||
                 !canInteract;
@@ -908,36 +533,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    function renderStatistics(
-        record
-    ) {
+    function renderStatistics(record) {
         const statistics =
             record?.thongKe ||
             {};
 
-        const total =
-            toNumber(
-                statistics
-                    .tongBinhChon ??
-                record
-                    ?.tongBinhChon
-            );
+        const total = toNumber(
+            statistics.tongBinhChon ??
+            record?.tongBinhChon
+        );
 
-        const yes =
-            toNumber(
-                statistics
-                    .coThamGia ??
-                record
-                    ?.coThamGia
-            );
+        const yes = toNumber(
+            statistics.coThamGia ??
+            record?.coThamGia
+        );
 
-        const no =
-            toNumber(
-                statistics
-                    .khongThamGia ??
-                record
-                    ?.khongThamGia
-            );
+        const no = toNumber(
+            statistics.khongThamGia ??
+            record?.khongThamGia
+        );
 
         const yesPercent =
             total > 0
@@ -957,59 +571,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 )
                 : 0;
 
-        elements.resultTotal
-            .textContent =
-            String(
-                total
-            );
-
-        elements.resultYes
-            .textContent =
-            String(
-                yes
-            );
-
-        elements.resultNo
-            .textContent =
-            String(
-                no
-            );
-
-        elements.resultYesPercent
-            .textContent =
-            String(
-                yesPercent
-            );
-
-        elements.resultNoPercent
-            .textContent =
-            String(
-                noPercent
-            );
-
-        elements.resultYesCount
-            .textContent =
-            String(
-                yes
-            );
-
-        elements.resultNoCount
-            .textContent =
-            String(
-                no
-            );
-
-        elements.resultYesPercentRow
-            .textContent =
-            String(
-                yesPercent
-            );
-
-        elements.resultNoPercentRow
-            .textContent =
-            String(
-                noPercent
-            );
+        elements.resultTotal.textContent = String(total);
+        elements.resultYes.textContent = String(yes);
+        elements.resultNo.textContent = String(no);
+        elements.resultYesPercent.textContent = String(yesPercent);
+        elements.resultNoPercent.textContent = String(noPercent);
+        elements.resultYesCount.textContent = String(yes);
+        elements.resultNoCount.textContent = String(no);
+        elements.resultYesPercentRow.textContent = String(yesPercent);
+        elements.resultNoPercentRow.textContent = String(noPercent);
 
         elements.resultYesBar.style.width =
             `${yesPercent}%`;
@@ -1017,247 +587,142 @@ document.addEventListener("DOMContentLoaded", async () => {
         elements.resultNoBar.style.width =
             `${noPercent}%`;
 
-        elements.resultUpdated
-            .textContent =
-            `Cập nhật lúc ${formatTime(
-                new Date()
-            )}`;
+        elements.resultUpdated.textContent =
+            `Cập nhật lúc ${formatTime(new Date())}`;
     }
 
     function renderUpcoming() {
-        const records =
-            Array.isArray(
-                state.upcoming
-            )
-                ? state.upcoming
-                : [];
+        const records = Array.isArray(state.upcoming)
+            ? state.upcoming
+            : [];
 
+        const filtered = records.filter(record => {
+            const status = getRelatedStatus(record);
 
-        const filtered =
-            records.filter(
-                record => {
-                    const status =
-                        getRelatedStatus(
-                            record
-                        );
+            if (state.relatedFilter === "active") {
+                return (
+                    status === "active"
+                );
+            }
 
+            if (state.relatedFilter === "upcoming") {
+                return (
+                    status === "upcoming"
+                );
+            }
 
-                    if (
-                        state.relatedFilter ===
-                        "active"
-                    ) {
-                        return (
-                            status ===
-                            "active"
-                        );
-                    }
-
-
-                    if (
-                        state.relatedFilter ===
-                        "upcoming"
-                    ) {
-                        return (
-                            status ===
-                            "upcoming"
-                        );
-                    }
-
-
-                    return (
-                        status ===
-                            "active" ||
-                        status ===
-                            "upcoming"
-                    );
-                }
+            return (
+                status === "active" ||
+                status === "upcoming"
             );
+        });
 
-
-        elements.upcomingList
-            .innerHTML =
+        elements.upcomingList.innerHTML =
             filtered
-                .map(
-                    renderUpcomingCard
-                )
+                .map(renderUpcomingCard)
                 .join("");
 
-
         elements.upcomingEmpty.hidden =
-            filtered.length >
-            0;
-
+            filtered.length > 0;
 
         renderRelatedEmpty();
     }
 
-    function getRelatedStatus(
-        record
-    ) {
-        const now =
-            Date.now();
+    function getRelatedStatus(record) {
+        const now = Date.now();
 
-        const startDate =
-            normalizeDate(
-                record
-                    ?.batDauBinhChon
-            );
+        const startDate = normalizeDate(
+            record?.batDauBinhChon
+        );
 
-        const endDate =
-            normalizeDate(
-                record
-                    ?.hanBinhChon
-            );
+        const endDate = normalizeDate(
+            record?.hanBinhChon
+        );
 
-        const start =
-            startDate
-                ?.getTime();
-
-        const end =
-            endDate
-                ?.getTime();
-
+        const start = startDate?.getTime();
+        const end = endDate?.getTime();
 
         if (
-            Number.isFinite(
-                end
-            ) &&
-            now >
-                end
+            Number.isFinite(end) &&
+            now > end
         ) {
             return "ended";
         }
 
-
         if (
-            Number.isFinite(
-                start
-            ) &&
-            now <
-                start
+            Number.isFinite(start) &&
+            now < start
         ) {
             return "upcoming";
         }
 
-
         if (
-            Number.isFinite(
-                start
-            ) &&
-            Number.isFinite(
-                end
-            ) &&
-            now >=
-                start &&
-            now <=
-                end
+            Number.isFinite(start) &&
+            Number.isFinite(end) &&
+            now >= start &&
+            now <= end
         ) {
             return "active";
         }
 
-
-        if (
-            record.source ===
-            "upcoming"
-        ) {
+        if (record.source === "upcoming") {
             return "upcoming";
         }
 
-
-        if (
-            record.source ===
-            "current"
-        ) {
+        if (record.source === "current") {
             return "active";
         }
-
 
         return "other";
     }
 
     function renderRelatedEmpty() {
         if (
-            !elements
-                .relatedEmptyTitle ||
-            !elements
-                .relatedEmptyDescription
+            !elements.relatedEmptyTitle ||
+            !elements.relatedEmptyDescription
         ) {
             return;
         }
 
-
-        if (
-            state.relatedFilter ===
-            "active"
-        ) {
-            elements
-                .relatedEmptyTitle
-                .textContent =
+        if (state.relatedFilter === "active") {
+            elements.relatedEmptyTitle.textContent =
                 "Chưa có bình chọn đang diễn ra";
 
-            elements
-                .relatedEmptyDescription
-                .textContent =
+            elements.relatedEmptyDescription.textContent =
                 "Hiện chưa có đợt bình chọn nào đang diễn ra.";
 
             return;
         }
 
-
-        if (
-            state.relatedFilter ===
-            "upcoming"
-        ) {
-            elements
-                .relatedEmptyTitle
-                .textContent =
+        if (state.relatedFilter === "upcoming") {
+            elements.relatedEmptyTitle.textContent =
                 "Chưa có bình chọn sắp tới";
 
-            elements
-                .relatedEmptyDescription
-                .textContent =
+            elements.relatedEmptyDescription.textContent =
                 "Hiện chưa có đợt bình chọn nào được lên lịch.";
 
             return;
         }
 
-
-        elements
-            .relatedEmptyTitle
-            .textContent =
+        elements.relatedEmptyTitle.textContent =
             "Chưa có bình chọn";
 
-        elements
-            .relatedEmptyDescription
-            .textContent =
+        elements.relatedEmptyDescription.textContent =
             "Hiện chưa có đợt bình chọn đang diễn ra hoặc sắp diễn ra.";
     }
 
-    function renderUpcomingCard(
-        record
-    ) {
-        const status =
-            getRelatedStatus(
-                record
-            );
-
-        const isActive =
-            status ===
-            "active";
+    function renderUpcomingCard(record) {
+        const status = getRelatedStatus(record);
+        const isActive = status === "active";
 
         const participated =
-            record?.luaChonCuaToi ===
-                true ||
-            record?.luaChonCuaToi ===
-                false;
+            record?.luaChonCuaToi === true ||
+            record?.luaChonCuaToi === false;
 
-        const foods =
-            flattenFoods(
-                record
-                    ?.dsNhomMonAn ||
-                []
-            );
-
+        const foods = flattenFoods(
+            record?.dsNhomMonAn ||
+            []
+        );
 
         const foodHtml =
             foods.length
@@ -1287,21 +752,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                             vote-list-card__food
                         ">
                         ${escapeHtml(
-                            record
-                                ?.tenThucDon ||
+                            record?.tenThucDon ||
                             "Thực đơn"
                         )}
                     </span>
                 `;
 
-
         let informationHtml = "";
 
-
-        if (
-            status ===
-            "upcoming"
-        ) {
+        if (status === "upcoming") {
             informationHtml = `
                 <div
                     class="
@@ -1326,8 +785,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                             <strong>
                                 ${escapeHtml(
                                     formatDateTimeShort(
-                                        record
-                                            ?.batDauBinhChon
+                                        record?.batDauBinhChon
                                     )
                                 )}
                             </strong>
@@ -1354,8 +812,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                             <strong>
                                 ${escapeHtml(
                                     formatDateTimeShort(
-                                        record
-                                            ?.hanBinhChon
+                                        record?.hanBinhChon
                                     )
                                 )}
                             </strong>
@@ -1365,13 +822,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 </div>
             `;
-        } else if (
-            participated
-        ) {
+        } else if (participated) {
             const yes =
-                record
-                    .luaChonCuaToi ===
-                true;
+                record.luaChonCuaToi === true;
 
             informationHtml = `
                 <div
@@ -1429,8 +882,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <strong>
                             ${escapeHtml(
                                 formatDateTimeShort(
-                                    record
-                                        ?.hanBinhChon
+                                    record?.hanBinhChon
                                 )
                             )}
                         </strong>
@@ -1439,7 +891,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 </div>
             `;
         }
-
 
         const statistics =
             record?.thongKe ||
@@ -1470,8 +921,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                             <strong>
                                 ${Number(
-                                    statistics
-                                        .coThamGia ||
+                                    statistics.coThamGia ||
                                     0
                                 )}
                             </strong>
@@ -1496,8 +946,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                             <strong>
                                 ${Number(
-                                    statistics
-                                        .khongThamGia ||
+                                    statistics.khongThamGia ||
                                     0
                                 )}
                             </strong>
@@ -1508,39 +957,21 @@ document.addEventListener("DOMContentLoaded", async () => {
                 `
                 : "";
 
-
-        let statusClass =
-            "vote-list-status--upcoming";
-
-        let statusText =
-            "Sắp diễn ra";
-
+        let statusClass = "vote-list-status--upcoming";
+        let statusText = "Sắp diễn ra";
 
         if (
             isActive &&
             participated
         ) {
-            statusClass =
-                "vote-list-status--participated";
-
-            statusText =
-                "Đã tham gia";
-        } else if (
-            isActive
-        ) {
-            statusClass =
-                "vote-list-status--active";
-
-            statusText =
-                "Đang diễn ra";
+            statusClass = "vote-list-status--participated";
+            statusText = "Đã tham gia";
+        } else if (isActive) {
+            statusClass = "vote-list-status--active";
+            statusText = "Đang diễn ra";
         }
 
-
-        const href =
-            buildVoteDetailUrl(
-                record
-            );
-
+        const href = buildVoteDetailUrl(record);
 
         return `
             <article
@@ -1602,8 +1033,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                         <span>
                             ${escapeHtml(
-                                record
-                                    ?.tenCaAn ||
+                                record?.tenCaAn ||
                                 "Ca ăn"
                             )}
                         </span>
@@ -1620,8 +1050,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     <h2>
                         ${escapeHtml(
-                            record
-                                ?.tenThucDon ||
+                            record?.tenThucDon ||
                             "Bình chọn tham gia ăn"
                         )}
                     </h2>
@@ -1719,75 +1148,52 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function bindEvents() {
-        elements.relatedTabs
-            .forEach(
-                button => {
-                    button.addEventListener(
-                        "click",
-                        () => {
-                            const filter =
-                                button.dataset
-                                    .relatedTab;
+        elements.relatedTabs.forEach(button => {
+            button.addEventListener(
+                "click",
+                () => {
+                    const filter = button.dataset.relatedTab;
 
+                    if (
+                        !filter ||
+                        state.relatedFilter === filter
+                    ) {
+                        return;
+                    }
 
-                            if (
-                                !filter ||
-                                state.relatedFilter ===
-                                    filter
-                            ) {
-                                return;
-                            }
+                    state.relatedFilter = filter;
 
+                    elements.relatedTabs.forEach(item => {
+                        item.classList.toggle(
+                            "is-active",
+                            item === button
+                        );
+                    });
 
-                            state.relatedFilter =
-                                filter;
-
-
-                            elements.relatedTabs
-                                .forEach(
-                                    item => {
-                                        item.classList
-                                            .toggle(
-                                                "is-active",
-                                                item ===
-                                                    button
-                                            );
-                                    }
-                                );
-
-
-                            renderUpcoming();
-                        }
-                    );
+                    renderUpcoming();
                 }
             );
-            
-        elements.voteButtons
-            .forEach(
-                button => {
-                    button.addEventListener(
-                        "click",
-                        () => {
-                            if (
-                                !canVote ||
-                                state.voting ||
-                                !state.current
-                            ) {
-                                return;
-                            }
+        });
 
-                            const value =
-                                button.dataset
-                                    .voteChoice ===
-                                "true";
+        elements.voteButtons.forEach(button => {
+            button.addEventListener(
+                "click",
+                () => {
+                    if (
+                        !canVote ||
+                        state.voting ||
+                        !state.current
+                    ) {
+                        return;
+                    }
 
-                            submitVote(
-                                value
-                            );
-                        }
-                    );
+                    const value =
+                        button.dataset.voteChoice === "true";
+
+                    submitVote(value);
                 }
             );
+        });
 
         elements.voteChange
             ?.addEventListener(
@@ -1795,98 +1201,58 @@ document.addEventListener("DOMContentLoaded", async () => {
                 () => {
                     if (
                         !state.current ||
-                        state.current
-                            .choPhepThayDoi ===
-                        false
+                        state.current.choPhepThayDoi === false
                     ) {
                         return;
                     }
 
-                    state.changingVote =
-                        true;
+                    state.changingVote = true;
 
-                    renderVoteSelection(
-                        state.current
-                    );
+                    renderVoteSelection(state.current);
                 }
             );
 
         document.addEventListener(
             "visibilitychange",
             () => {
-                if (
-                    document.visibilityState !==
-                    "visible"
-                ) {
+                if (document.visibilityState !== "visible") {
                     return;
                 }
 
                 load({
-                    silent:
-                        true
+                    silent: true
                 });
             }
         );
     }
 
-    async function submitVote(
-        luaChon
-    ) {
+    async function submitVote(luaChon) {
+        const record = state.current;
 
-        const record =
-            state.current;
-
-
-        if (
-            !record?.id
-        ) {
-
+        if (!record?.id) {
             return;
-
         }
 
-
-        if (
-            state.voting
-        ) {
-
+        if (state.voting) {
             return;
-
         }
 
+        state.voting = true;
 
-        state.voting =
-            true;
-
-
-        renderVoteSelection(
-            record
-        );
-
+        renderVoteSelection(record);
 
         try {
+            const result = await window.MCS.api.request(
+                API.vote(record.id),
+                {
+                    method: "PUT",
+                    body: JSON.stringify({
+                        luaChon
+                    })
+                }
+            );
 
-            const result =
-                await window.MCS.api
-                    .request(
-                        API.vote(
-                            record.id
-                        ),
-                        {
-                            method:
-                                "PUT",
-
-                            body:
-                                JSON.stringify({
-                                    luaChon
-                                })
-                        }
-                    );
-
-
-            state.changingVote =
-                false;
-
+            state.changingVote = false;
 
             window.MCS
                 ?.toast
@@ -1895,21 +1261,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                     "Bình chọn thành công."
                 );
 
-
             await load({
-                silent:
-                    true
+                silent: true
             });
-
-        } catch (
-            error
-        ) {
-
+        } catch (error) {
             console.error(
                 "Không thể bình chọn:",
                 error
             );
-
 
             window.MCS
                 ?.toast
@@ -1917,169 +1276,105 @@ document.addEventListener("DOMContentLoaded", async () => {
                     error?.message ||
                     "Không thể thực hiện bình chọn."
                 );
-
         } finally {
+            state.voting = false;
 
-            state.voting =
-                false;
-
-
-            if (
-                state.current
-            ) {
-
-                renderVoteSelection(
-                    state.current
-                );
-
+            if (state.current) {
+                renderVoteSelection(state.current);
             }
-
         }
-
     }
 
     function startAutoRefresh() {
         stopAutoRefresh();
 
-        state.refreshTimer =
-            window.setInterval(
-                () => {
-                    if (
-                        document.visibilityState !==
-                        "visible" ||
-                        state.voting
-                    ) {
-                        return;
-                    }
+        state.refreshTimer = window.setInterval(
+            () => {
+                if (
+                    document.visibilityState !== "visible" ||
+                    state.voting
+                ) {
+                    return;
+                }
 
-                    load({
-                        silent:
-                            true
-                    });
-                },
-                30000
-            );
+                load({
+                    silent: true
+                });
+            },
+            30000
+        );
     }
 
     function stopAutoRefresh() {
-        if (
-            !state.refreshTimer
-        ) {
+        if (!state.refreshTimer) {
             return;
         }
 
-        window.clearInterval(
-            state.refreshTimer
-        );
+        window.clearInterval(state.refreshTimer);
 
-        state.refreshTimer =
-            null;
+        state.refreshTimer = null;
     }
 
-    function flattenFoods(
-        groups
-    ) {
-        if (
-            !Array.isArray(
-                groups
-            )
-        ) {
+    function flattenFoods(groups) {
+        if (!Array.isArray(groups)) {
             return [];
         }
 
-        return groups
-            .flatMap(
-                group => {
-                    const foods =
-                        Array.isArray(
-                            group
-                                ?.dsMonAn
-                        )
-                            ? group.dsMonAn
-                            : [];
+        return groups.flatMap(group => {
+            const foods = Array.isArray(group?.dsMonAn)
+                ? group.dsMonAn
+                : [];
 
-                    return foods.map(
-                        food => ({
-                            ...food,
-                            _group:
-                                group
-                        })
-                    );
-                }
+            return foods.map(
+                food => ({
+                    ...food,
+                    _group: group
+                })
             );
+        });
     }
 
-    function getFoodName(
-        food
-    ) {
+    function getFoodName(food) {
         const record =
             food?.monAn ||
             food ||
             {};
 
         return (
-            record
-                ?.tenMonAn ||
-            record
-                ?.tenMon ||
-            record
-                ?.name ||
+            record?.tenMonAn ||
+            record?.tenMon ||
+            record?.name ||
             "Món ăn"
         );
     }
 
-    function buildMenuDetailUrl(
-        record
-    ) {
-        const thucDonId =
-            Number(
-                record
-                    ?.thucDonId
-            );
-
-        const thucDonNgayId =
-            Number(
-                record
-                    ?.thucDonNgayId
-            );
+    function buildMenuDetailUrl(record) {
+        const thucDonId = Number(record?.thucDonId);
+        const thucDonNgayId = Number(record?.thucDonNgayId);
 
         if (
-            !Number.isInteger(
-                thucDonId
-            ) ||
-            thucDonId <=
-            0 ||
-            !Number.isInteger(
-                thucDonNgayId
-            ) ||
-            thucDonNgayId <=
-            0
+            !Number.isInteger(thucDonId) ||
+            thucDonId <= 0 ||
+            !Number.isInteger(thucDonNgayId) ||
+            thucDonNgayId <= 0
         ) {
             return "#";
         }
 
         return (
             "/thong-tin-chi-tiet-thuc-don/" +
-            encodeURIComponent(
-                thucDonId
-            ) +
+            encodeURIComponent(thucDonId) +
             "/" +
-            encodeURIComponent(
-                thucDonNgayId
-            )
+            encodeURIComponent(thucDonNgayId)
         );
     }
 
-    function buildVoteDetailUrl(
-        record
-    ) {
-        const recordThucDonId =
-            record?.thucDonId;
+    function buildVoteDetailUrl(record) {
+        const recordThucDonId = record?.thucDonId;
 
         const recordId =
             record?.id ??
             record?.dotBinhChonId;
-
 
         if (
             !recordThucDonId ||
@@ -2088,22 +1383,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             return "#";
         }
 
-
         return (
             "/binh-chon/chi-tiet-binh-chon/" +
-            encodeURIComponent(
-                recordThucDonId
-            ) +
+            encodeURIComponent(recordThucDonId) +
             "/" +
-            encodeURIComponent(
-                recordId
-            )
+            encodeURIComponent(recordId)
         );
     }
 
     function getPermissionSet() {
-        let currentUser =
-            null;
+        let currentUser = null;
 
         try {
             currentUser =
@@ -2111,74 +1400,49 @@ document.addEventListener("DOMContentLoaded", async () => {
                     ?.storage
                     ?.getCurrentUser?.() ||
                 JSON.parse(
-                    localStorage
-                        .getItem(
-                            "currentUser"
-                        ) ||
+                    localStorage.getItem("currentUser") ||
                     "null"
                 );
-        } catch (
-            error
-        ) {
-            currentUser =
-                null;
+        } catch (error) {
+            currentUser = null;
         }
 
-        const permissions =
-            Array.isArray(
-                currentUser
-                    ?.dsQuyen
-            )
-                ? currentUser.dsQuyen
-                : [];
+        const permissions = Array.isArray(currentUser?.dsQuyen)
+            ? currentUser.dsQuyen
+            : [];
 
         return new Set(
             permissions
                 .map(
                     item =>
-                        typeof item ===
-                        "string"
+                        typeof item === "string"
                             ? item
                             : (
-                                item
-                                    ?.maQuyen ||
-                                item
-                                    ?.ma_quyen ||
+                                item?.maQuyen ||
+                                item?.ma_quyen ||
                                 ""
                             )
                 )
                 .map(
                     item =>
-                        String(
-                            item
-                        )
+                        String(item)
                             .trim()
                             .toUpperCase()
                 )
-                .filter(
-                    Boolean
-                )
+                .filter(Boolean)
         );
     }
 
     function showNoPermission() {
-        setLoading(
-            false
-        );
+        setLoading(false);
 
         const pageContent =
-            root.closest(
-                ".page-content"
-            ) ||
-            document.querySelector(
-                ".page-content"
-            );
+            root.closest(".page-content") ||
+            document.querySelector(".page-content");
 
         const noPermission =
             elements.noPermission ||
-            document.querySelector(
-                "[data-catalog-no-permission]"
-            );
+            document.querySelector("[data-catalog-no-permission]");
 
         if (
             !pageContent ||
@@ -2187,223 +1451,136 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        if (
-            !noPermission
-                ._mcsOriginalParent
-        ) {
-            noPermission
-                ._mcsOriginalParent =
-                noPermission
-                    .parentElement;
+        if (!noPermission._mcsOriginalParent) {
+            noPermission._mcsOriginalParent =
+                noPermission.parentElement;
         }
 
-        if (
-            noPermission.parentElement !==
-            pageContent
-        ) {
-            pageContent
-                .appendChild(
-                    noPermission
-                );
+        if (noPermission.parentElement !== pageContent) {
+            pageContent.appendChild(noPermission);
         }
 
-        root.classList.add(
-            "is-permission-hidden"
-        );
+        root.classList.add("is-permission-hidden");
 
-        noPermission.hidden =
-            false;
+        noPermission.hidden = false;
 
         document
             .documentElement
             .classList
-            .add(
-                "catalog-permission-denied"
-            );
+            .add("catalog-permission-denied");
 
         document
             .body
             .classList
-            .add(
-                "catalog-permission-denied"
-            );
+            .add("catalog-permission-denied");
     }
 
     function hideNoPermission() {
-        root.classList.remove(
-            "is-permission-hidden"
-        );
+        root.classList.remove("is-permission-hidden");
 
         const noPermission =
             elements.noPermission ||
-            document.querySelector(
-                "[data-catalog-no-permission]"
-            );
+            document.querySelector("[data-catalog-no-permission]");
 
-        if (
-            noPermission
-        ) {
-            noPermission.hidden =
-                true;
+        if (noPermission) {
+            noPermission.hidden = true;
         }
 
         document
             .documentElement
             .classList
-            .remove(
-                "catalog-permission-denied"
-            );
+            .remove("catalog-permission-denied");
 
         document
             .body
             .classList
-            .remove(
-                "catalog-permission-denied"
-            );
+            .remove("catalog-permission-denied");
     }
 
-    function setLoading(
-        loading
-    ) {
-        elements.loading.hidden =
-            !loading;
-
-        elements.content.hidden =
-            loading;
+    function setLoading(loading) {
+        elements.loading.hidden = !loading;
+        elements.content.hidden = loading;
     }
 
-    function normalizeDate(
-        value
-    ) {
+    function normalizeDate(value) {
         if (!value) {
             return null;
         }
 
-        const date =
-            new Date(
-                value
-            );
+        const date = new Date(value);
 
-        return Number.isNaN(
-            date.getTime()
-        )
+        return Number.isNaN(date.getTime())
             ? null
             : date;
     }
 
-    function formatDate(
-        value
-    ) {
+    function formatDate(value) {
         const date =
-            value instanceof
-            Date
+            value instanceof Date
                 ? value
-                : normalizeDate(
-                    value
-                );
+                : normalizeDate(value);
 
         if (!date) {
             return "—";
         }
 
-        return new Intl
-            .DateTimeFormat(
-                "vi-VN",
-                {
-                    day:
-                        "2-digit",
-
-                    month:
-                        "2-digit",
-
-                    year:
-                        "numeric"
-                }
-            )
-            .format(
-                date
-            );
+        return new Intl.DateTimeFormat(
+            "vi-VN",
+            {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+            }
+        ).format(date);
     }
 
-    function formatTime(
-        value
-    ) {
+    function formatTime(value) {
         const date =
-            value instanceof
-            Date
+            value instanceof Date
                 ? value
-                : normalizeDate(
-                    value
-                );
+                : normalizeDate(value);
 
         if (!date) {
             return "—";
         }
 
-        return new Intl
-            .DateTimeFormat(
-                "vi-VN",
-                {
-                    hour:
-                        "2-digit",
-
-                    minute:
-                        "2-digit"
-                }
-            )
-            .format(
-                date
-            );
+        return new Intl.DateTimeFormat(
+            "vi-VN",
+            {
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        ).format(date);
     }
 
-    function formatDateTimeShort(
-        value
-    ) {
-        const date =
-            normalizeDate(
-                value
-            );
+    function formatDateTimeShort(value) {
+        const date = normalizeDate(value);
 
         if (!date) {
             return "—";
         }
 
         return (
-            `${formatTime(
-                date
-            )} - ${formatDate(
-                date
-            )}`
+            `${formatTime(date)} - ${formatDate(date)}`
         );
     }
 
-    function getWeekday(
-        value
-    ) {
+    function getWeekday(value) {
         const date =
-            value instanceof
-            Date
+            value instanceof Date
                 ? value
-                : normalizeDate(
-                    value
-                );
+                : normalizeDate(value);
 
         if (!date) {
             return "—";
         }
 
-        const result =
-            new Intl
-                .DateTimeFormat(
-                    "vi-VN",
-                    {
-                        weekday:
-                            "long"
-                    }
-                )
-                .format(
-                    date
-                );
+        const result = new Intl.DateTimeFormat(
+            "vi-VN",
+            {
+                weekday: "long"
+            }
+        ).format(date);
 
         return result
             .charAt(0)
@@ -2411,51 +1588,28 @@ document.addEventListener("DOMContentLoaded", async () => {
             result.slice(1);
     }
 
-    function roundPercent(
-        value
-    ) {
-        const number =
-            Number(
-                value
-            );
+    function roundPercent(value) {
+        const number = Number(value);
 
-        if (
-            !Number.isFinite(
-                number
-            )
-        ) {
+        if (!Number.isFinite(number)) {
             return 0;
         }
 
         return Number(
-            number.toFixed(
-                1
-            )
+            number.toFixed(1)
         );
     }
 
-    function toNumber(
-        value
-    ) {
-        const number =
-            Number(
-                value
-            );
+    function toNumber(value) {
+        const number = Number(value);
 
-        return Number.isFinite(
-            number
-        )
+        return Number.isFinite(number)
             ? number
             : 0;
     }
 
-    function escapeHtml(
-        value
-    ) {
-        return String(
-            value ??
-            ""
-        )
+    function escapeHtml(value) {
+        return String(value ?? "")
             .replaceAll(
                 "&",
                 "&amp;"
@@ -2478,11 +1632,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
     }
 
-    function escapeAttribute(
-        value
-    ) {
-        return escapeHtml(
-            value
-        );
+    function escapeAttribute(value) {
+        return escapeHtml(value);
     }
 });

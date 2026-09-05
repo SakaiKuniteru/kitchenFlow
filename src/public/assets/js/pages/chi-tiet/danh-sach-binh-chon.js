@@ -54,6 +54,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     };
 
+    const permissions = getPermissionSet();
+
+    const canViewCurrent =
+        permissions.has("Q001023") ||
+        permissions.has("Q001025");
+
+    const canViewUpcoming = permissions.has("Q001024");
+
+    const canViewHistory =
+        permissions.has("Q001027") ||
+        permissions.has("Q001026");
+
     initializePagination();
     bindEvents();
     await load();
@@ -69,11 +81,26 @@ document.addEventListener("DOMContentLoaded", async () => {
                 nhaAnResult,
                 caAnResult
             ] = await Promise.all([
-                request(API.current),
-                request(API.upcoming),
-                request(API.history),
-                request(API.nhaAn),
-                request(API.caAn)
+                safeRequest(
+                    API.current,
+                    canViewCurrent
+                ),
+                safeRequest(
+                    API.upcoming,
+                    canViewUpcoming
+                ),
+                safeRequest(
+                    API.history,
+                    canViewHistory
+                ),
+                safeRequest(
+                    API.nhaAn,
+                    true
+                ),
+                safeRequest(
+                    API.caAn,
+                    true
+                )
             ]);
 
             const current = extractArray(currentResult);
@@ -110,6 +137,69 @@ document.addEventListener("DOMContentLoaded", async () => {
         } finally {
             setLoading(false);
         }
+    }
+
+    async function safeRequest(
+        url,
+        enabled = true
+    ) {
+        if (!enabled) {
+            return null;
+        }
+
+        try {
+            return await request(url);
+        } catch (error) {
+            console.warn(
+                `Không thể tải API ${url}:`,
+                error
+            );
+
+            return null;
+        }
+    }
+
+    function getPermissionSet() {
+        let currentUser = null;
+
+        try {
+            currentUser =
+                window.MCS
+                    ?.storage
+                    ?.getCurrentUser
+                    ?.() ||
+                JSON.parse(
+                    localStorage.getItem("currentUser") ||
+                    "null"
+                );
+        } catch (error) {
+            currentUser = null;
+        }
+
+        const permissions = Array.isArray(currentUser?.dsQuyen)
+            ? currentUser.dsQuyen
+            : [];
+
+        return new Set(
+            permissions
+                .map(
+                    item =>
+                        typeof item === "string"
+                            ? item
+                            : (
+                                item?.maQuyen ||
+                                item?.ma_quyen ||
+                                ""
+                            )
+                )
+                .map(
+                    item =>
+                        String(item)
+                            .trim()
+                            .toUpperCase()
+                )
+                .filter(Boolean)
+        );
     }
 
     async function request(url) {
@@ -361,9 +451,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         if (state.filters.tuNgay) {
-            const from = getDateTime(
-                state.filters.tuNgay
-            );
+            const from = getDateTime(state.filters.tuNgay);
 
             if (
                 Number.isFinite(from) &&
@@ -374,9 +462,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         if (state.filters.denNgay) {
-            const to = getDateTime(
-                state.filters.denNgay
-            );
+            const to = getDateTime(state.filters.denNgay);
 
             if (
                 Number.isFinite(to) &&
@@ -875,54 +961,34 @@ document.addEventListener("DOMContentLoaded", async () => {
         record,
         status
     ) {
-        const thucDonId =
-            record.thucDonId;
+        const thucDonId = record.thucDonId;
+        const dotBinhChonId = record.id;
 
-        const dotBinhChonId =
-            record.id;
-
-
-        const href =
-            buildVoteDetailUrl(
-                thucDonId,
-                dotBinhChonId
-            );
-
+        const href = buildVoteDetailUrl(
+            thucDonId,
+            dotBinhChonId
+        );
 
         if (status === "active") {
             return {
-                label:
-                    "Vào bình chọn",
-
+                label: "Vào bình chọn",
                 href,
-
-                primary:
-                    true
+                primary: true
             };
         }
-
 
         if (status === "ended") {
             return {
-                label:
-                    "Xem kết quả",
-
+                label: "Xem kết quả",
                 href,
-
-                primary:
-                    false
+                primary: false
             };
         }
 
-
         return {
-            label:
-                "Xem chi tiết",
-
+            label: "Xem chi tiết",
             href,
-
-            primary:
-                false
+            primary: false
         };
     }
 
@@ -937,16 +1003,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             return "#";
         }
 
-
         return (
             "/binh-chon/chi-tiet-binh-chon/" +
-            encodeURIComponent(
-                thucDonId
-            ) +
+            encodeURIComponent(thucDonId) +
             "/" +
-            encodeURIComponent(
-                dotBinhChonId
-            )
+            encodeURIComponent(dotBinhChonId)
         );
     }
 
@@ -1038,21 +1099,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function getDateValue(id) {
-        const input = root.querySelector(
-            `#${id}`
-        );
+        const input = root.querySelector(`#${id}`);
 
         return input?.value || null;
     }
 
     function clearDate(id) {
-        const value = root.querySelector(
-            `#${id}`
-        );
-
-        const display = root.querySelector(
-            `#${id}Display`
-        );
+        const value = root.querySelector(`#${id}`);
+        const display = root.querySelector(`#${id}Display`);
 
         if (value) {
             value.value = "";
@@ -1084,9 +1138,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function clearSelect(id) {
-        const select = root.querySelector(
-            `#${id}`
-        );
+        const select = root.querySelector(`#${id}`);
 
         if (!select) {
             return;
@@ -1154,9 +1206,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function getMultiValues(id) {
-        const select = root.querySelector(
-            `#${id}`
-        );
+        const select = root.querySelector(`#${id}`);
 
         if (!select) {
             return [];
@@ -1176,9 +1226,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function resetMultiSelectToAll(id) {
-        const select = root.querySelector(
-            `#${id}`
-        );
+        const select = root.querySelector(`#${id}`);
 
         if (!select) {
             return;
@@ -1191,9 +1239,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     option.value === "__ALL__";
             });
 
-        const wrapper = select.closest(
-            "[data-smart-select]"
-        );
+        const wrapper = select.closest("[data-smart-select]");
 
         wrapper
             ?.smartSelect
@@ -1253,9 +1299,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         id,
         options
     ) {
-        const select = root.querySelector(
-            `#${id}`
-        );
+        const select = root.querySelector(`#${id}`);
 
         if (!select) {
             return;
@@ -1286,9 +1330,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             select.appendChild(option);
         });
 
-        const wrapper = select.closest(
-            "[data-smart-select]"
-        );
+        const wrapper = select.closest("[data-smart-select]");
 
         const smartSelect =
             wrapper?.smartSelect ||
@@ -1327,9 +1369,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function bindAllOption(id) {
-        const select = root.querySelector(
-            `#${id}`
-        );
+        const select = root.querySelector(`#${id}`);
 
         if (
             !select ||
@@ -1346,8 +1386,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const options = Array.from(select.options);
 
                 const allOption = options.find(
-                    option =>
-                        option.value === "__ALL__"
+                    option => option.value === "__ALL__"
                 );
 
                 if (!allOption) {
@@ -1386,9 +1425,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     allOption.selected = true;
                 }
 
-                const wrapper = select.closest(
-                    "[data-smart-select]"
-                );
+                const wrapper = select.closest("[data-smart-select]");
 
                 wrapper
                     ?.smartSelect
@@ -1587,26 +1624,24 @@ document.addEventListener("DOMContentLoaded", async () => {
             return "-";
         }
 
-        const dateText =
-            new Intl.DateTimeFormat(
-                "vi-VN",
-                {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric"
-                }
-            ).format(date);
+        const dateText = new Intl.DateTimeFormat(
+            "vi-VN",
+            {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+            }
+        ).format(date);
 
-        const timeText =
-            new Intl.DateTimeFormat(
-                "vi-VN",
-                {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                    hour12: false
-                }
-            ).format(date);
+        const timeText = new Intl.DateTimeFormat(
+            "vi-VN",
+            {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false
+            }
+        ).format(date);
 
         return (
             timeText +
