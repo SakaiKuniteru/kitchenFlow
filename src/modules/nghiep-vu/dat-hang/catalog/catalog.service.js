@@ -51,13 +51,20 @@ class CatalogService {
             throw new ApiError(400, 'Không xác định được nhân viên hoặc cơ sở đặt hàng.');
         }
 
-        const ngayNhan =
-            query.ngayNhan || new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
         const [checkout, slots] = await Promise.all([
             repository.getThongTinCheckout(coSoId, user.nhanVienId),
-            slotService.getKhungGioKhaDung({ coSoId, ngayNhan })
+            slotService.getKhungGioKhaDung({ coSoId, ngayNhan: query.ngayNhan }, { tuDongChuyenNgay: true })
         ]);
-        return { ...checkout, ngayNhan, khungGioNhanHang: slots.items, soPhutDatTruoc: slots.soPhutDatTruoc };
+        return {
+            ...checkout,
+            ngayNhan: slots.ngayNhan,
+            ngayNhanSomNhat: slots.ngayNhanSomNhat,
+            ngayNhanDaDieuChinh: slots.ngayNhanDaDieuChinh,
+            thoiGianMayChu: slots.thoiGianMayChu,
+            thoiGianNhanSomNhat: slots.thoiGianNhanSomNhat,
+            khungGioNhanHang: slots.items,
+            soPhutDatTruoc: slots.soPhutDatTruoc
+        };
     }
 
     tinhGioHang(body, user) {

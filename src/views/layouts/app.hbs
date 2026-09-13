@@ -6,46 +6,47 @@
 
     {{> common/head}}
 
-    <link rel="stylesheet" href="/assets/css/common/reset.css">
-    <link rel="stylesheet" href="/assets/css/common/variables.css">
-    <link rel="stylesheet" href="/assets/css/common/layout.css">
-    <link rel="stylesheet" href="/assets/css/common/header.css">
-    <link rel="stylesheet" href="/assets/css/common/sidebar.css">
-    <link rel="stylesheet" href="/assets/css/common/footer.css">
-    <link rel="stylesheet" href="/assets/css/common/modal.css">
-    <link rel="stylesheet" href="/assets/css/common/toast.css">
-    <link rel="stylesheet" href="/assets/css/common/loading.css">
-    <link rel="stylesheet" href="/assets/css/common/data-list-page.css">
-    <link rel="stylesheet" href="/assets/css/components/date-picker.css">
-    <link rel="stylesheet" href="/assets/css/components/smart-select.css">
-    <link rel="stylesheet" href="/assets/css/components/date-time-range.css">
-    <link rel="stylesheet" href="/assets/css/components/file-picker.css">
-    <link rel="stylesheet" href="/assets/css/components/image-picker.css">
-    <link rel="stylesheet" href="/assets/css/components/time-picker.css">
-    <link rel="stylesheet" href="/assets/css/components/search-picker.css">
-    <link rel="stylesheet" href="/assets/css/components/rich-text-editor.css">
+    <link rel="stylesheet" href="{{asset "/assets/css/common/reset.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/common/variables.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/common/layout.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/common/header.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/common/sidebar.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/common/footer.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/common/modal.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/common/toast.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/common/loading.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/common/data-list-page.css"}}">
 
-    <link rel="stylesheet" href="/assets/css/catalog/form.css">
-    <link rel="stylesheet" href="/assets/css/catalog/permission.css">
-    <link rel="stylesheet" href="/assets/css/catalog/pagination.css">
+    <link rel="stylesheet" href="{{asset "/assets/css/components/date-picker.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/components/smart-select.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/components/date-time-range.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/components/file-picker.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/components/image-picker.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/components/time-picker.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/components/search-picker.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/components/rich-text-editor.css"}}">
+
+    <link rel="stylesheet" href="{{asset "/assets/css/catalog/form.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/catalog/permission.css"}}">
+    <link rel="stylesheet" href="{{asset "/assets/css/catalog/pagination.css"}}">
 
     {{#if isCatalogPage}}
-        <link rel="stylesheet" href="/assets/css/catalog/catalog.css">
-        <link rel="stylesheet" href="/assets/css/catalog/validation.css">
-        <link rel="stylesheet" href="/assets/css/catalog/toolbar.css">
-        <link rel="stylesheet" href="/assets/css/catalog/table.css">
-        <link rel="stylesheet" href="/assets/css/catalog/detail-panel.css">
-        <link rel="stylesheet" href="/assets/css/catalog/mobile.css">
+        <link rel="stylesheet" href="{{asset "/assets/css/catalog/catalog.css"}}">
+        <link rel="stylesheet" href="{{asset "/assets/css/catalog/validation.css"}}">
+        <link rel="stylesheet" href="{{asset "/assets/css/catalog/toolbar.css"}}">
+        <link rel="stylesheet" href="{{asset "/assets/css/catalog/table.css"}}">
+        <link rel="stylesheet" href="{{asset "/assets/css/catalog/detail-panel.css"}}">
+        <link rel="stylesheet" href="{{asset "/assets/css/catalog/mobile.css"}}">
     {{/if}}
 
     {{#if orderFlowPage}}
-        <link rel="stylesheet" href="/assets/css/pages/dat-hang/order-flow.css">
-        <link rel="stylesheet" href="/assets/css/pages/dat-hang/order-detail.css">
-        <link rel="stylesheet" href="/assets/css/pages/dat-hang/index.css">
+        <link rel="stylesheet" href="{{asset "/assets/css/pages/dat-hang/order-flow.css"}}">
+        <link rel="stylesheet" href="{{asset "/assets/css/pages/dat-hang/order-detail.css"}}">
+        <link rel="stylesheet" href="{{asset "/assets/css/pages/dat-hang/index.css"}}">
     {{/if}}
 
     {{#if (eq orderPage "catalog")}}
-        <link rel="stylesheet" href="/assets/css/pages/dat-hang/catalog.css">
+        <link rel="stylesheet" href="{{asset "/assets/css/pages/dat-hang/catalog.css"}}">
     {{/if}}
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
@@ -82,31 +83,52 @@
     {{> modals/change-password}}
     {{> modals/employee-profile formOptions=formOptions}}
 
-    <script defer src="/assets/js/common/app.js"></script>
-    <script defer src="/assets/js/common/report-print.js"></script>
-    <script defer src="/assets/js/common/session-timeout.js"></script>
-    <script defer src="/assets/js/common/data-list-page.js"></script>
-    <script defer src="/assets/js/components/date-picker.js"></script>
-    <script defer src="/assets/js/components/date-time-range.js"></script>
-    <script defer src="/assets/js/components/smart-select.js"></script>
-    <script defer src="/assets/js/components/file-picker.js"></script>
-    <script defer src="/assets/js/components/image-picker.js"></script>
-    <script defer src="/assets/js/components/time-picker.js"></script>
-    <script defer src="/assets/js/components/number-picker.js"></script>
-    <script defer src="/assets/js/components/search-picker.js"></script>
-    <script defer src="/assets/js/components/rich-text-editor.js"></script>
-    <script defer src="/assets/js/common/header.js"></script>
-    <script defer src="/assets/js/config/navigation.js"></script>
-    <script defer src="/assets/js/common/sidebar.js"></script>
-    <script defer src="/assets/js/common/modal.js"></script>
-    <script defer src="/assets/js/common/toast.js"></script>
-    <script defer src="/assets/js/common/loading.js"></script>
-    <script defer src="/assets/js/common/change-password.js"></script>
-    <script defer src="/assets/js/catalog/pagination.js"></script>
+    <script defer src="{{asset "/assets/js/common/app.js"}}"></script>
+    <script defer src="{{asset "/assets/js/common/report-print.js"}}"></script>
+    <script defer src="{{asset "/assets/js/common/session-timeout.js"}}"></script>
+    <script defer src="{{asset "/assets/js/common/data-list-page.js"}}"></script>
+
+    <script defer src="{{asset "/assets/js/components/date-picker.js"}}"></script>
+    <script defer src="{{asset "/assets/js/components/date-time-range.js"}}"></script>
+    <script defer src="{{asset "/assets/js/components/smart-select.js"}}"></script>
+    <script defer src="{{asset "/assets/js/components/file-picker.js"}}"></script>
+    <script defer src="{{asset "/assets/js/components/image-picker.js"}}"></script>
+    <script defer src="{{asset "/assets/js/components/time-picker.js"}}"></script>
+    <script defer src="{{asset "/assets/js/components/number-picker.js"}}"></script>
+    <script defer src="{{asset "/assets/js/components/search-picker.js"}}"></script>
+    <script defer src="{{asset "/assets/js/components/rich-text-editor.js"}}"></script>
+
+    <script defer src="{{asset "/assets/js/common/header.js"}}"></script>
+    <script defer src="{{asset "/assets/js/config/navigation.js"}}"></script>
+    <script defer src="{{asset "/assets/js/common/sidebar.js"}}"></script>
+    <script defer src="{{asset "/assets/js/common/modal.js"}}"></script>
+    <script defer src="{{asset "/assets/js/common/toast.js"}}"></script>
+    <script defer src="{{asset "/assets/js/common/loading.js"}}"></script>
+    <script defer src="{{asset "/assets/js/common/change-password.js"}}"></script>
+
+    <script defer src="{{asset "/assets/js/catalog/pagination.js"}}"></script>
+
     {{#if orderScript}}
-        <script defer src="/assets/js/pages/dat-hang/templates.js"></script>
-        <script defer src="/assets/js/pages/dat-hang/core.js"></script>
-        <script defer src="{{orderScript}}"></script>
+        <div
+            hidden
+            data-order-flow-assets
+            data-page-catalog="{{asset "/assets/js/pages/dat-hang/dat-mon.js"}}"
+            data-page-delivery="{{asset "/assets/js/pages/dat-hang/thong-tin-nhan-hang.js"}}"
+            data-page-confirmation="{{asset "/assets/js/pages/dat-hang/xac-nhan-don-hang.js"}}"
+            data-page-completed="{{asset "/assets/js/pages/dat-hang/hoan-tat-don-hang.js"}}"
+            data-page-my-orders="{{asset "/assets/js/pages/dat-hang/danh-sach-don-hang-cua-toi.js"}}"
+            data-page-my-order-detail="{{asset "/assets/js/pages/dat-hang/chi-tiet-don-hang-cua-toi.js"}}"
+            data-page-management="{{asset "/assets/js/pages/dat-hang/nhan-don-hang.js"}}"
+            data-page-management-detail="{{asset "/assets/js/pages/dat-hang/chi-tiet-xu-ly-don-hang.js"}}"
+            data-common-checkout="{{asset "/assets/js/pages/dat-hang/common/checkout-common.js"}}"
+            data-common-detail="{{asset "/assets/js/pages/dat-hang/common/order-detail.js"}}"
+            data-common-list="{{asset "/assets/js/pages/dat-hang/common/order-list.factory.js"}}"
+            data-common-pagination="{{asset "/assets/js/catalog/pagination.js"}}">
+        </div>
+
+        <script defer src="{{asset "/assets/js/pages/dat-hang/templates.js"}}"></script>
+        <script defer src="{{asset "/assets/js/pages/dat-hang/core.js"}}"></script>
+        <script defer src="{{asset orderScript}}"></script>
     {{/if}}
 </body>
 

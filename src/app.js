@@ -35,7 +35,93 @@ app.use(
 
 app.use(cookieParser());
 
-app.use(express.static(path.join(process.cwd(), 'src/public')));
+const publicDir =
+    path.join(
+        process.cwd(),
+        'src/public'
+    );
+
+
+const isProduction =
+    process.env.NODE_ENV ===
+    'production';
+
+
+if (
+    isProduction
+) {
+    /*
+     * PRODUCT:
+     *
+     * Cấm truy cập source frontend.
+     *
+     * Browser chỉ được sử dụng
+     * file đã build trong /assets/dist.
+     */
+    app.use(
+        '/assets/js',
+        (
+            req,
+            res
+        ) => {
+            return res
+                .status(404)
+                .end();
+        }
+    );
+
+
+    app.use(
+        '/assets/css',
+        (
+            req,
+            res
+        ) => {
+            return res
+                .status(404)
+                .end();
+        }
+    );
+}
+
+
+/*
+ * Vẫn public:
+ *
+ * /assets/dist
+ * /assets/images
+ * /uploads
+ * ...
+ */
+app.use(
+    express.static(
+        publicDir,
+        {
+            index:
+                false,
+
+            setHeaders:
+                (
+                    res,
+                    filePath
+                ) => {
+
+                    if (
+                        isProduction &&
+                        filePath.includes(
+                            `${path.sep}assets${path.sep}dist${path.sep}`
+                        )
+                    ) {
+                        res.setHeader(
+                            'Cache-Control',
+                            'public, max-age=31536000, immutable'
+                        );
+                    }
+
+                }
+        }
+    )
+);
 
 setupView(app);
 

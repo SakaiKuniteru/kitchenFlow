@@ -5,8 +5,22 @@ const ApiError = require('../../../../utils/api-error');
 const cauHinhService = require('../../../cau-hinh/cau-hinh.service');
 
 const khungGioNhanHangRepository = require('./khung-gio-nhan-hang.repository');
+const { formatDateTimeVietNam } = require('../../../../utils/date-time.util');
 
 class KhungGioNhanHangService {
+    getThoiGianHienTai() {
+        return new Date();
+    }
+
+    tinhMocNhanSomNhat(soPhutDatTruoc, now = this.getThoiGianHienTai()) {
+        const earliest = new Date(now.getTime() + soPhutDatTruoc * 60000);
+        return {
+            thoiGianMayChu: formatDateTimeVietNam(now),
+            thoiGianNhanSomNhat: formatDateTimeVietNam(earliest),
+            ngayNhanSomNhat: formatDateTimeVietNam(earliest).slice(0, 10)
+        };
+    }
+
     parseId(id) {
         const khungGioNhanHangId = Number(id);
 
@@ -34,9 +48,9 @@ class KhungGioNhanHangService {
             throw new ApiError(400, 'Ngày nhận phải có định dạng YYYY-MM-DD.');
         }
 
-        const ngay = new Date(`${giaTri}T00:00:00`);
+        const ngay = new Date(`${giaTri}T00:00:00Z`);
 
-        if (Number.isNaN(ngay.getTime())) {
+        if (Number.isNaN(ngay.getTime()) || ngay.toISOString().slice(0, 10) !== giaTri) {
             throw new ApiError(400, 'Ngày nhận không hợp lệ.');
         }
 
@@ -77,10 +91,8 @@ class KhungGioNhanHangService {
         }));
     }
 
-    async getKhungGioKhaDung(query) {
+    async getKhungGioKhaDung(query, { tuDongChuyenNgay = false } = {}) {
         const coSoId = this.parseCoSoId(query.coSoId);
-
-        const ngayNhan = this.parseNgayNhan(query.ngayNhan);
 
         const coSoTonTai = await khungGioNhanHangRepository.existsCoSo(coSoId);
 
@@ -89,18 +101,27 @@ class KhungGioNhanHangService {
         }
 
         const soPhutDatTruoc = await cauHinhService.getSoPhutDatHangTruoc();
+        const now = this.getThoiGianHienTai();
+        const mocNhan = this.tinhMocNhanSomNhat(soPhutDatTruoc, now);
+        const ngayYeuCau = this.parseNgayNhan(query.ngayNhan || (tuDongChuyenNgay ? mocNhan.ngayNhanSomNhat : ''));
+        const ngayNhan = tuDongChuyenNgay && ngayYeuCau < mocNhan.ngayNhanSomNhat
+            ? mocNhan.ngayNhanSomNhat
+            : ngayYeuCau;
 
         const danhSach = await khungGioNhanHangRepository.getKhungGioKhaDung(
             coSoId,
             ngayNhan,
             soPhutDatTruoc,
-            this.getDanhSachTrangThaiLoaiTru()
+            this.getDanhSachTrangThaiLoaiTru(),
+            now
         );
 
         return {
             coSoId,
 
             ngayNhan,
+            ...mocNhan,
+            ngayNhanDaDieuChinh: ngayNhan !== ngayYeuCau,
 
             soPhutDatTruoc,
 
@@ -145,7 +166,9 @@ class KhungGioNhanHangService {
     }
 
     async validateDuLieu(data, excludeId = null) {
-        if (data.gioBatDau >= data.gioKetThuc) {
+        // Cùng quy tắc với constraint DB: khung cuối ngày 23:45–00:00 kết thúc vào hôm sau.
+        const khungCuoiNgay = data.gioBatDau === '23:45:00' && data.gioKetThuc === '00:00:00';
+        if (data.gioBatDau >= data.gioKetThuc && !khungCuoiNgay) {
             throw new ApiError(400, 'Giờ bắt đầu phải nhỏ hơn giờ kết thúc.');
         }
 
@@ -244,7 +267,8 @@ class KhungGioNhanHangService {
             ngayNhan,
             soPhutDatTruoc,
             this.getDanhSachTrangThaiLoaiTru(),
-            client
+            client,
+            this.getThoiGianHienTai()
         );
 
         if (!khungGio) {

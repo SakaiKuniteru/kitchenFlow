@@ -1,51 +1,74 @@
 'use strict';
 
 (() => {
-    const base =
-        '/assets/js/pages/dat-hang';
+    const assetRoot =
+        document.querySelector(
+            '[data-order-flow-assets]'
+        );
+
+
+    if (!assetRoot) {
+        throw new Error(
+            'Không tìm thấy cấu hình asset cho luồng đặt hàng.'
+        );
+    }
+
 
     const pageScripts = {
         catalog:
-            `${base}/dat-mon.js`,
+            assetRoot.dataset
+                .pageCatalog,
 
         delivery:
-            `${base}/thong-tin-nhan-hang.js`,
+            assetRoot.dataset
+                .pageDelivery,
 
         confirmation:
-            `${base}/xac-nhan-don-hang.js`,
+            assetRoot.dataset
+                .pageConfirmation,
 
         completed:
-            `${base}/hoan-tat-don-hang.js`,
+            assetRoot.dataset
+                .pageCompleted,
 
         'my-orders':
-            `${base}/danh-sach-don-hang-cua-toi.js`,
+            assetRoot.dataset
+                .pageMyOrders,
 
         'my-order-detail':
-            `${base}/chi-tiet-don-hang-cua-toi.js`,
+            assetRoot.dataset
+                .pageMyOrderDetail,
 
         management:
-            `${base}/nhan-don-hang.js`,
+            assetRoot.dataset
+                .pageManagement,
 
         'management-detail':
-            `${base}/chi-tiet-xu-ly-don-hang.js`
+            assetRoot.dataset
+                .pageManagementDetail
     };
+
 
     const commonScripts = {
         checkout:
-            `${base}/common/checkout-common.js`,
+            assetRoot.dataset
+                .commonCheckout,
 
         detail:
-            `${base}/common/order-detail.js`,
+            assetRoot.dataset
+                .commonDetail,
 
         list:
-            `${base}/common/order-list.factory.js`,
+            assetRoot.dataset
+                .commonList,
 
         pagination:
-            '/assets/js/catalog/pagination.js'
+            assetRoot.dataset
+                .commonPagination
     };
 
-    const loading =
-        new Map();
+
+    const loading = new Map();
 
     function loadScript(src) {
         if (loading.has(src)) {
@@ -59,10 +82,24 @@
                         return false;
                     }
 
-                    return new URL(
-                        script.src,
-                        location.origin
-                    ).pathname === src;
+                    const currentPath =
+                        new URL(
+                            script.src,
+                            location.origin
+                        ).pathname;
+
+
+                    const targetPath =
+                        new URL(
+                            src,
+                            location.origin
+                        ).pathname;
+
+
+                    return (
+                        currentPath ===
+                        targetPath
+                    );
                 });
 
         if (existing) {

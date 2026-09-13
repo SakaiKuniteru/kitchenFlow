@@ -1,33 +1,47 @@
-# # Environment
-# .env
-# .env.*
-# !.env.example
+# =====================================================
+# NODE
+# =====================================================
+node_modules/
 
-# # Dependencies
-# node_modules/
 
-# # macOS
-# .DS_Store
-# **/.DS_Store
+# =====================================================
+# ENV / SECRET
+# Không bao giờ commit môi trường thật
+# =====================================================
+.env
+.env.*
+!.env.example
 
-# # Runtime data
-# src/public/uploads/
-# src/public/dl-bao-cao/
-# src/public/bao-cao/
-# dl-bao-cao/
 
-# # Logs
-# *.log
-# logs/
+# =====================================================
+# PRODUCTION BUILD
+# Sinh lại bằng npm run build:productX
+# =====================================================
+src/public/assets/dist/
 
-# # Coverage and temporary files
-# coverage/
-# tmp/
-# temp/
 
-# database/
+# =====================================================
+# GENERATED CLIENT TEMPLATE
+# Sinh lại bằng npm run build:templates
+# =====================================================
+src/public/assets/js/pages/dat-hang/templates.js
 
-# docs/
-# scripts/
 
-# kitchenflow_schemas.sql
+# =====================================================
+# LOG
+# =====================================================
+*.log
+logs/
+
+
+# =====================================================
+# MAC
+# =====================================================
+.DS_Store
+
+
+# =====================================================
+# EDITOR
+# =====================================================
+.vscode/
+.idea/

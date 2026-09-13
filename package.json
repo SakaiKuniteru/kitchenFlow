@@ -1,8 +1,16 @@
 {
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "node --watch src/server.js",
-    "format": "prettier --write \"src/**/*.{js,hbs,json,css}\""
+    "build:templates": "node src/scripts/build-client-templates.js",
+    "start": "npm run build:templates && APP_ENV=dev node src/server.js",
+    "dev": "npm run build:templates && APP_ENV=dev node --watch src/server.js",
+    "format": "prettier --write \"src/**/*.{js,hbs,json,css}\"",
+    "migrate:assets": "node src/scripts/migrate-assets.js",
+    "build:product1": "npm run build:templates && APP_ENV=product1 node src/scripts/build-production.js",
+    "build:product2": "npm run build:templates && APP_ENV=product2 node src/scripts/build-production.js",
+    "start:product1": "APP_ENV=product1 node src/server.js",
+    "start:product2": "APP_ENV=product2 node src/server.js",
+    "product1": "npm run build:product1 && npm run start:product1",
+    "product2": "npm run build:product2 && npm run start:product2"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -27,6 +35,10 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/morgan": "^1.9.10",
+    "esbuild": "^0.28.2",
+    "handlebars": "^4.7.9",
+    "html-minifier-terser": "^7.2.0",
+    "javascript-obfuscator": "^5.7.0",
     "js-beautify": "^2.0.3",
     "prettier": "^3.9.6",
     "prettier-plugin-handlebars": "^0.0.1"

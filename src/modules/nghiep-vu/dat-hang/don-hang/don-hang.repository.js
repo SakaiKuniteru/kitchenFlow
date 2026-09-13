@@ -31,7 +31,9 @@ class DonHangRepository {
                 ten_dia_diem_nhan_snapshot
             ) VALUES (
                 $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,
-                $12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22
+                $12::timestamptz AT TIME ZONE 'Asia/Ho_Chi_Minh',
+                $13::timestamptz AT TIME ZONE 'Asia/Ho_Chi_Minh',
+                $14,$15,$16,$17,$18,$19,$20,$21,$22
             ) RETURNING id`,            [
                 data.maDonHang,
                 data.nguoiDatId,
@@ -131,7 +133,18 @@ class DonHangRepository {
 
     async getById(id, client = pool, lock = false) {
         const result = await client.query(
-            `SELECT dh.*, nd.ho_ten AS ten_nguoi_dat, pb.ten_phong_ban, cs.ten_co_so, nx.ho_ten AS ten_nguoi_xu_ly, dd.ten_dia_diem, kg.ten_khung_gio FROM nv_don_hang dh JOIN dm_nhan_vien nd ON nd.id = dh.nguoi_dat_id LEFT JOIN dm_phong_ban pb ON pb.id = dh.phong_ban_id LEFT JOIN dm_co_so cs ON cs.id = dh.co_so_id LEFT JOIN dm_nhan_vien nx ON nx.id = dh.nguoi_xu_ly_id LEFT JOIN dm_dia_diem_nhan_hang dd ON dd.id = dh.dia_diem_nhan_id LEFT JOIN dm_khung_gio_nhan_hang kg ON kg.id = dh.khung_gio_nhan_id WHERE dh.id = $1 ${lock ? 'FOR UPDATE OF dh' : ''}`,
+            `SELECT dh.*,
+                dh.thoi_gian_nhan_tu AT TIME ZONE 'Asia/Ho_Chi_Minh' AS thoi_gian_nhan_tu,
+                dh.thoi_gian_nhan_den AT TIME ZONE 'Asia/Ho_Chi_Minh' AS thoi_gian_nhan_den,
+                nd.ho_ten AS ten_nguoi_dat, pb.ten_phong_ban, cs.ten_co_so, nx.ho_ten AS ten_nguoi_xu_ly,
+                dd.ten_dia_diem, kg.ten_khung_gio FROM nv_don_hang dh
+                JOIN dm_nhan_vien nd ON nd.id = dh.nguoi_dat_id
+                LEFT JOIN dm_phong_ban pb ON pb.id = dh.phong_ban_id
+                LEFT JOIN dm_co_so cs ON cs.id = dh.co_so_id
+                LEFT JOIN dm_nhan_vien nx ON nx.id = dh.nguoi_xu_ly_id
+                LEFT JOIN dm_dia_diem_nhan_hang dd ON dd.id = dh.dia_diem_nhan_id
+                LEFT JOIN dm_khung_gio_nhan_hang kg ON kg.id = dh.khung_gio_nhan_id
+                WHERE dh.id = $1 ${lock ? 'FOR UPDATE OF dh' : ''}`,
             [id]
         );
         return result.rows[0] || null;

@@ -27,6 +27,7 @@
 
         let checkoutSequence = 0;
         let checkoutLoading = false;
+        let continueBusy = false;
 
         const value = (id) =>
             $(`#${id}`)?.value?.trim() || '';
@@ -211,6 +212,10 @@
                 }
 
                 state.checkout = data;
+                const dateChanged = value('orderNgayNhan') !== data.ngayNhan;
+                if (dateChanged) {
+                    $('#orderNgayNhan').closest('[data-date-picker]').datePicker.setValue(data.ngayNhan, false);
+                }
 
                 C.setOptions(
                     $('#orderKhungGio'),
@@ -223,6 +228,7 @@
                                 `${slot.tenKhungGio} · ` +
                                 `${slot.gioBatDau.slice(0, 5)}–` +
                                 `${slot.gioKetThuc.slice(0, 5)}` +
+                                `${slot.gioKetThuc <= slot.gioBatDau ? ' (ngày hôm sau)' : ''}` +
                                 `${
                                     slot.soChoConLai == null
                                         ? ''
@@ -231,7 +237,7 @@
                         })
                     ),
 
-                    selectedSlot
+                    dateChanged ? '' : selectedSlot
                 );
 
                 C.setOptions(
@@ -272,13 +278,16 @@
                     }
                 }
 
-                $('[data-slot-hint]')
-                    .textContent =
-                        data
-                            .khungGioNhanHang
-                            .length
-                            ? `Đặt trước tối thiểu ${data.soPhutDatTruoc} phút. Khung giờ được kiểm tra lại khi gửi đơn.`
-                            : 'Ngày này không còn khung giờ có thể đặt. Vui lòng chọn ngày nhận khác.';
+                const minimumTime = new Intl.DateTimeFormat('vi-VN', {
+                    timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'
+                }).format(new Date(data.thoiGianNhanSomNhat));
+                $('[data-slot-hint]').textContent =
+                    (data.ngayNhanDaDieuChinh ? 'Đã chuyển ngày nhận theo thời gian đặt trước. Vui lòng chọn lại khung giờ. ' : '') +
+                    `Đặt trước tối thiểu ${data.soPhutDatTruoc} phút. Sớm nhất: ${minimumTime}. ` +
+                    (data.khungGioNhanHang.length
+                        ? 'Khung giờ được kiểm tra lại khi gửi đơn.'
+                        : 'Ngày này không còn khung giờ có thể đặt. Vui lòng chọn ngày nhận khác.');
 
                 collect();
 
@@ -568,6 +577,14 @@
                 async (event) => {
                     event.preventDefault();
 
+                    if (continueBusy || checkoutLoading) return;
+                    continueBusy = true;
+                    try {
+                        // Trang có thể đã mở từ ngày trước hoặc khung giờ vừa hết chỗ.
+                        await loadCheckout();
+                    } finally {
+                        continueBusy = false;
+                    }
                     collect();
 
                     const errors = {};
@@ -666,5 +683,17 @@
 
         C.checkout.renderSummary();
         C.checkout.renderVoucherBadge();
+
+        const refreshAvailability = () => {
+            // Không đóng Smart Select/Date Picker chung trong lúc người dùng đang chọn.
+            const pickerOpen = form.querySelector('[data-smart-select].is-open, [data-date-picker].is-open');
+            if (!document.hidden && !checkoutLoading && !continueBusy && !pickerOpen) void loadCheckout();
+        };
+        const refreshTimer = setInterval(refreshAvailability, 60000);
+        document.addEventListener('visibilitychange', refreshAvailability);
+        window.addEventListener('pagehide', () => {
+            clearInterval(refreshTimer);
+            document.removeEventListener('visibilitychange', refreshAvailability);
+        }, { once: true });
     };
 })();

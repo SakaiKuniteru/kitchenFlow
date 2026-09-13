@@ -245,8 +245,8 @@ class KhungGioNhanHangRepository {
                 WHERE co_so_id = $1
                     AND active = TRUE
 
-                    AND gio_bat_dau < $3::TIME
-                    AND gio_ket_thuc > $2::TIME
+                    AND gio_bat_dau < CASE WHEN $3::TIME = TIME '00:00' THEN TIME '24:00' ELSE $3::TIME END
+                    AND CASE WHEN gio_ket_thuc <= gio_bat_dau THEN TIME '24:00' ELSE gio_ket_thuc END > $2::TIME
         `;
 
         if (excludeId) {
@@ -266,232 +266,50 @@ class KhungGioNhanHangRepository {
         return result.rows[0].exists;
     }
 
-    async getKhungGioKhaDung(coSoId, ngayNhan, soPhutDatTruoc, dsTrangThaiLoaiTru) {
-        const sql = `
-
-            SELECT
-
-                kg.id,
-                kg.ma_khung_gio,
-                kg.ten_khung_gio,
-                kg.co_so_id,
-                kg.gio_bat_dau,
-                kg.gio_ket_thuc,
-                kg.so_don_toi_da,
-                kg.active,
-                kg.created_at,
-                kg.updated_at,
-
-                cs.ma_co_so,
-                cs.ten_co_so,
-
-                COALESCE(
-                    thong_ke.so_don_da_dat,
-                    0
-                ) AS so_don_da_dat,
-
-                (
-                    $2::DATE +
-                    kg.gio_bat_dau
-                ) AS thoi_gian_nhan_tu,
-
-                (
-                    $2::DATE +
-                    kg.gio_ket_thuc
-                ) AS thoi_gian_nhan_den,
-
-                (
-                    $2::DATE +
-                    kg.gio_bat_dau -
-                    (
-                        $3 *
-                        INTERVAL '1 minute'
-                    )
-                ) AS thoi_gian_dat_muon_nhat,
-
-                (
-                    (
-                        $2::DATE +
-                        kg.gio_bat_dau
-                    ) >= (
-                        CURRENT_TIMESTAMP +
-                        (
-                            $3 *
-                            INTERVAL '1 minute'
-                        )
-                    )
-                ) AS con_thoi_gian_dat
-
+    // Dùng cùng một công thức cho danh sách và lúc khóa/kiểm tra trước khi tạo đơn.
+    // timestamp lưu trong DB là giờ Việt Nam; API trả timestamptz để không lệch theo TZ của Node/PostgreSQL.
+    getAvailabilityQuery(single = false) {
+        return `
+            SELECT kg.*, cs.ma_co_so, cs.ten_co_so,
+                COALESCE(thong_ke.so_don_da_dat, 0) AS so_don_da_dat,
+                tg.tu AS thoi_gian_nhan_tu,
+                tg.den AS thoi_gian_nhan_den,
+                tg.tu - $3 * INTERVAL '1 minute' AS thoi_gian_dat_muon_nhat,
+                tg.tu >= $5::timestamptz + $3 * INTERVAL '1 minute' AS con_thoi_gian_dat
             FROM dm_khung_gio_nhan_hang kg
-
-            JOIN dm_co_so cs
-                ON cs.id =
-                    kg.co_so_id
-
+            JOIN dm_co_so cs ON cs.id = kg.co_so_id AND cs.active = TRUE
+            CROSS JOIN LATERAL (
+                SELECT ($2::date + kg.gio_bat_dau) AT TIME ZONE 'Asia/Ho_Chi_Minh' AS tu,
+                    ($2::date + kg.gio_ket_thuc +
+                        CASE WHEN kg.gio_ket_thuc <= kg.gio_bat_dau THEN INTERVAL '1 day' ELSE INTERVAL '0 day' END
+                    ) AT TIME ZONE 'Asia/Ho_Chi_Minh' AS den
+            ) tg
             LEFT JOIN LATERAL (
-
-                SELECT
-                    COUNT(*)::INTEGER
-                        AS so_don_da_dat
-
+                SELECT COUNT(*)::integer AS so_don_da_dat
                 FROM nv_don_hang dh
-
-                WHERE dh.khung_gio_nhan_id =
-                    kg.id
-
-                    AND dh.thoi_gian_nhan_tu::DATE =
-                        $2::DATE
-
-                    AND NOT (
-                        dh.trang_thai =
-                        ANY(
-                            $4::INTEGER[]
-                        )
-                    )
-
-            ) thong_ke
-                ON TRUE
-
-            WHERE kg.co_so_id = $1
-                AND kg.active = TRUE
-
-                AND (
-                    $2::DATE +
-                    kg.gio_bat_dau
-                ) >= (
-                    CURRENT_TIMESTAMP +
-                    (
-                        $3 *
-                        INTERVAL '1 minute'
-                    )
-                )
-
-                AND (
-                    kg.so_don_toi_da IS NULL
-
-                    OR COALESCE(
-                        thong_ke.so_don_da_dat,
-                        0
-                    ) < kg.so_don_toi_da
-                )
-
-            ORDER BY
-                kg.gio_bat_dau ASC,
-                kg.gio_ket_thuc ASC
-
+                WHERE dh.khung_gio_nhan_id = kg.id
+                    AND dh.thoi_gian_nhan_tu::date = $2::date
+                    AND NOT (dh.trang_thai = ANY($4::integer[]))
+            ) thong_ke ON TRUE
+            WHERE kg.co_so_id = $1 AND kg.active = TRUE
+                ${single ? 'AND kg.id = $6' : `
+                    AND tg.tu >= $5::timestamptz + $3 * INTERVAL '1 minute'
+                    AND (kg.so_don_toi_da IS NULL OR thong_ke.so_don_da_dat < kg.so_don_toi_da)
+                `}
+            ORDER BY kg.gio_bat_dau, kg.gio_ket_thuc
+            ${single ? 'FOR UPDATE OF kg' : ''}
         `;
-
-        const values = [coSoId, ngayNhan, soPhutDatTruoc, dsTrangThaiLoaiTru];
-
-        const result = await pool.query(sql, values);
-
-        return result.rows.map((row) => this.mapKhungGioNhanHang(row));
     }
 
-    async getKhungGioDeDat(id, coSoId, ngayNhan, soPhutDatTruoc, dsTrangThaiLoaiTru, client = pool) {
-        const sql = `
+    async getKhungGioKhaDung(coSoId, ngayNhan, soPhutDatTruoc, dsTrangThaiLoaiTru, now = new Date()) {
+        const result = await pool.query(this.getAvailabilityQuery(),
+            [coSoId, ngayNhan, soPhutDatTruoc, dsTrangThaiLoaiTru, now]);
+        return result.rows.map(row => this.mapKhungGioNhanHang(row));
+    }
 
-            SELECT
-
-                kg.id,
-                kg.ma_khung_gio,
-                kg.ten_khung_gio,
-                kg.co_so_id,
-                kg.gio_bat_dau,
-                kg.gio_ket_thuc,
-                kg.so_don_toi_da,
-                kg.active,
-                kg.created_at,
-                kg.updated_at,
-
-                cs.ma_co_so,
-                cs.ten_co_so,
-
-                COALESCE(
-                    thong_ke.so_don_da_dat,
-                    0
-                ) AS so_don_da_dat,
-
-                (
-                    $3::DATE +
-                    kg.gio_bat_dau
-                ) AS thoi_gian_nhan_tu,
-
-                (
-                    $3::DATE +
-                    kg.gio_ket_thuc
-                ) AS thoi_gian_nhan_den,
-
-                (
-                    $3::DATE +
-                    kg.gio_bat_dau -
-                    (
-                        $4 *
-                        INTERVAL '1 minute'
-                    )
-                ) AS thoi_gian_dat_muon_nhat,
-
-                (
-                    (
-                        $3::DATE +
-                        kg.gio_bat_dau
-                    ) >= (
-                        CURRENT_TIMESTAMP +
-                        (
-                            $4 *
-                            INTERVAL '1 minute'
-                        )
-                    )
-                ) AS con_thoi_gian_dat
-
-            FROM dm_khung_gio_nhan_hang kg
-
-            JOIN dm_co_so cs
-                ON cs.id =
-                    kg.co_so_id
-
-            LEFT JOIN LATERAL (
-
-                SELECT
-                    COUNT(*)::INTEGER
-                        AS so_don_da_dat
-
-                FROM nv_don_hang dh
-
-                WHERE dh.khung_gio_nhan_id =
-                    kg.id
-
-                    AND dh.thoi_gian_nhan_tu::DATE =
-                        $3::DATE
-
-                    AND NOT (
-                        dh.trang_thai =
-                        ANY(
-                            $5::INTEGER[]
-                        )
-                    )
-
-            ) thong_ke
-                ON TRUE
-
-            WHERE kg.id = $1
-                AND kg.co_so_id = $2
-                AND kg.active = TRUE
-
-            LIMIT 1
-
-            FOR UPDATE OF kg
-
-        `;
-
-        const values = [id, coSoId, ngayNhan, soPhutDatTruoc, dsTrangThaiLoaiTru];
-
-        const result = await client.query(sql, values);
-
-        if (result.rows.length === 0) {
-            return null;
-        }
-
+    async getKhungGioDeDat(id, coSoId, ngayNhan, soPhutDatTruoc, dsTrangThaiLoaiTru, client = pool, now = new Date()) {
+        const result = await client.query(this.getAvailabilityQuery(true),
+            [coSoId, ngayNhan, soPhutDatTruoc, dsTrangThaiLoaiTru, now, id]);
         return this.mapKhungGioNhanHang(result.rows[0]);
     }
 

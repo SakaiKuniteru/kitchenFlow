@@ -1,7 +1,7 @@
 'use strict';
 
 // Chỉ chạy trên bản sao database dùng riêng cho kiểm thử, KHÔNG chạy trên DB ứng dụng.
-// KITCHENFLOW_TEST_DB=kitchenflow_codex_order_test_20260912 node --test tests/order-flow.integration.test.js
+// KITCHENFLOW_TEST_DB=kitchenflow_codex_order_test_20260913 node --test tests/order-flow.integration.test.js
 const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const { randomUUID } = require('node:crypto');
@@ -58,9 +58,12 @@ before(async () => {
             SELECT $1,id FROM dm_quyen WHERE active=TRUE AND ($2::boolean OR ma_quyen NOT IN ('Q002031','Q002032','Q002033'))
             ON CONFLICT (vai_tro_id,quyen_id) DO UPDATE SET active=TRUE`, [id, code !== 'CODEX_TEST_BUYER']);
     }
-    await pool.query(`INSERT INTO dm_thiet_lap (ma_thiet_lap,ten_thiet_lap,gia_tri)
-        VALUES ('VAI_TRO_NHAN_VIEN_NHAN_MON','Kiểm thử vai trò nhận đơn','CODEX_TEST_KITCHEN_A, codex_test_kitchen_b, CODEX_TEST_KITCHEN_A')
-        ON CONFLICT (ma_thiet_lap) DO UPDATE SET gia_tri=EXCLUDED.gia_tri,active=TRUE`);
+    const settingId = (await pool.query(`INSERT INTO dm_thiet_lap (ma_thiet_lap,ten_thiet_lap)
+        VALUES ('VAI_TRO_NHAN_VIEN_NHAN_MON','Kiểm thử vai trò nhận đơn')
+        ON CONFLICT (ma_thiet_lap) DO UPDATE SET active=TRUE RETURNING id`)).rows[0].id;
+    await pool.query('UPDATE dm_thiet_lap_gia_tri SET active=FALSE WHERE thiet_lap_id=$1', [settingId]);
+    await pool.query(`INSERT INTO dm_thiet_lap_gia_tri (thiet_lap_id,gia_tri)
+        VALUES ($1,'CODEX_TEST_KITCHEN_A, codex_test_kitchen_b, CODEX_TEST_KITCHEN_A')`, [settingId]);
     slotId = (await pool.query(`INSERT INTO dm_khung_gio_nhan_hang (ma_khung_gio,ten_khung_gio,co_so_id,gio_bat_dau,gio_ket_thuc)
         VALUES ('CODEX_TEST_SLOT','Khung giờ kiểm thử',$1,'12:00','13:00')
         ON CONFLICT (co_so_id,ma_khung_gio) DO UPDATE SET active=TRUE RETURNING id`, [coSoId])).rows[0].id;
@@ -93,6 +96,87 @@ const detail = id => request(`/nv-don-hang/${id}`, buyer);
 const action = (order, name, status = 200) => request(`/nv-don-hang/${order.id}/${name}`, manager, { version: order.version }, 'PATCH', status);
 
 test('Order/payment/notification integration on an isolated PostgreSQL database', { skip: !enabled }, async t => {
+    await t.test('all eight order pages render the shared shell and load their local assets', async () => {
+        const routes = require('../src/routes/web/config').filter(route => route.path.startsWith('/dat-hang/'));
+        assert.equal(routes.length, 8);
+        const assets = new Set();
+        for (const route of routes) {
+            const url = route.path.replace(/:[A-Za-z]+/g, String(buyer.id));
+            const response = await fetch(`${base}${url}`);
+            assert.equal(response.status, 200, url);
+            const html = await response.text();
+            assert.match(html, /id="appHeader"/);
+            assert.match(html, /id="appSidebar"/);
+            assert.match(html, /id="appFooter"/);
+            assert.match(html, /data-order-page=/);
+            for (const match of html.matchAll(/<(?:script|link)\b[^>]*(?:src|href)="(\/assets\/[^\"]+)"/g)) assets.add(match[1]);
+        }
+        for (const path of assets) {
+            const response = await fetch(`${base}${path}`);
+            assert.equal(response.status, 200, path);
+            await response.text();
+        }
+    });
+
+    await t.test('23:50 rolls checkout to the next date; seconds, timezones and capacity stay correct', async () => {
+        const slots = require('../src/modules/danh-muc/dat-hang/khung-gio-nhan-hang/khung-gio-nhan-hang.service');
+        const settings = require('../src/modules/cau-hinh/cau-hinh.service');
+        const oldClock = slots.getThoiGianHienTai;
+        const oldLead = settings.getSoPhutDatHangTruoc;
+        slots.getThoiGianHienTai = () => new Date('2026-12-31T23:50:30+07:00');
+        settings.getSoPhutDatHangTruoc = async () => 20;
+        let midnightSlot;
+        try {
+            for (const [code, start, end] of [['CODEX_MIDNIGHT_EARLY','00:10','00:14'],['CODEX_MIDNIGHT_OK','00:15','00:30']]) {
+                const row = await pool.query(`INSERT INTO dm_khung_gio_nhan_hang
+                    (co_so_id,ma_khung_gio,ten_khung_gio,gio_bat_dau,gio_ket_thuc,so_don_toi_da)
+                    VALUES ($1,$2,$2,$3,$4,NULL) ON CONFLICT (co_so_id,ma_khung_gio)
+                    DO UPDATE SET active=TRUE,so_don_toi_da=NULL RETURNING id`, [coSoId,code,start,end]);
+                if (code === 'CODEX_MIDNIGHT_OK') midnightSlot = row.rows[0].id;
+            }
+            const checkout = await request('/dat-hang/catalog/thong-tin-checkout?ngayNhan=2026-12-31', buyer);
+            assert.equal(checkout.ngayNhan, '2027-01-01');
+            assert.equal(checkout.ngayNhanDaDieuChinh, true);
+            assert.equal(checkout.thoiGianNhanSomNhat, '2027-01-01T00:10:30.000+07:00');
+            assert.ok(!checkout.khungGioNhanHang.some(row => row.maKhungGio === 'CODEX_MIDNIGHT_EARLY'));
+            for (const row of checkout.khungGioNhanHang) {
+                assert.ok(new Date(row.thoiGianNhanDen) > new Date(row.thoiGianNhanTu), `Invalid range: ${row.maKhungGio}`);
+            }
+            const finalSlot = checkout.khungGioNhanHang.find(row => row.gioBatDau === '23:45:00' && row.gioKetThuc === '00:00:00');
+            if (finalSlot) {
+                assert.equal(new Date(finalSlot.thoiGianNhanDen).toISOString(), '2027-01-01T17:00:00.000Z');
+                await slots.validateDuLieu(finalSlot, finalSlot.id);
+                const finalOrder = await create({ ...payload(), khungGioNhanId: Number(finalSlot.id),
+                    thoiGianNhanTu: finalSlot.thoiGianNhanTu, thoiGianNhanDen: finalSlot.thoiGianNhanDen });
+                assert.equal(new Date(finalOrder.khungGioNhan.den).toISOString(), '2027-01-01T17:00:00.000Z');
+            }
+            const slot = checkout.khungGioNhanHang.find(row => row.maKhungGio === 'CODEX_MIDNIGHT_OK');
+            assert.ok(slot);
+            assert.equal(new Date(slot.thoiGianNhanTu).toISOString(), '2026-12-31T17:15:00.000Z');
+            const data = { ...payload(), khungGioNhanId: Number(slot.id),
+                thoiGianNhanTu: slot.thoiGianNhanTu, thoiGianNhanDen: slot.thoiGianNhanDen };
+            const order = await create(data);
+            assert.equal(new Date(order.khungGioNhan.tu).toISOString(), '2026-12-31T17:15:00.000Z');
+            const saved = (await pool.query("SELECT to_char(thoi_gian_nhan_tu,'YYYY-MM-DD HH24:MI:SS') AS local FROM nv_don_hang WHERE id=$1", [order.id])).rows[0];
+            assert.equal(saved.local, '2027-01-01 00:15:00');
+            const used = (await pool.query('SELECT COUNT(*)::integer AS n FROM nv_don_hang WHERE khung_gio_nhan_id=$1 AND thoi_gian_nhan_tu::date=$2 AND trang_thai>0', [slot.id,'2027-01-01'])).rows[0].n;
+            await pool.query('UPDATE dm_khung_gio_nhan_hang SET so_don_toi_da=$2 WHERE id=$1', [slot.id,used]);
+            await request('/nv-don-hang/tao-moi', buyer, { ...data, clientRequestId: randomUUID() }, 'POST', 409);
+            const future = await request('/dat-hang/catalog/thong-tin-checkout?ngayNhan=2027-01-02', buyer);
+            assert.equal(future.ngayNhan, '2027-01-02');
+            assert.equal(future.ngayNhanDaDieuChinh, false);
+            await request('/dat-hang/catalog/thong-tin-checkout?ngayNhan=2026-02-30', buyer, undefined, 'GET', 400);
+            slots.getThoiGianHienTai = () => new Date('2027-01-01T00:00:01+07:00');
+            const rollover = await request('/dat-hang/catalog/thong-tin-checkout?ngayNhan=2026-12-31', buyer);
+            assert.equal(rollover.ngayNhan, '2027-01-01');
+            assert.equal(rollover.thoiGianNhanSomNhat, '2027-01-01T00:20:01.000+07:00');
+        } finally {
+            slots.getThoiGianHienTai = oldClock;
+            settings.getSoPhutDatHangTruoc = oldLead;
+            if (midnightSlot) await pool.query('UPDATE dm_khung_gio_nhan_hang SET so_don_toi_da=NULL WHERE id=$1', [midnightSlot]);
+        }
+    });
+
     await t.test('concurrent retry creates one order, one kitchen alert, and only configured role recipients', async () => {
         const data = payload();
         const [a, b] = await Promise.all([create(data), create(data)]);
@@ -103,6 +187,28 @@ test('Order/payment/notification integration on an isolated PostgreSQL database'
             WHERE tb.tham_chieu_id=$1 AND tb.ma_su_kien='DON_HANG_MOI_NHA_AN'`, [a.id])).rows;
         assert.equal(new Set(rows.map(row => row.id)).size, 1);
         assert.deepEqual(rows.map(row => row.tai_khoan_id).sort((x,y)=>x-y), [manager.id,other.id].sort((x,y)=>x-y));
+    });
+
+    await t.test('two concurrent orders cannot both take the last available place', async () => {
+        const used = (await pool.query(`SELECT COUNT(*)::integer AS n FROM nv_don_hang
+            WHERE khung_gio_nhan_id=$1 AND thoi_gian_nhan_tu::date=$2 AND trang_thai>0`, [slotId,day])).rows[0].n;
+        await pool.query('UPDATE dm_khung_gio_nhan_hang SET so_don_toi_da=$2 WHERE id=$1', [slotId,used+1]);
+        try {
+            const results = await Promise.all([payload(),payload()].map(async body => {
+                const response = await fetch(`${base}/api/mcs/v1/nv-don-hang/tao-moi`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${buyer.accessToken}` },
+                    body: JSON.stringify(body)
+                });
+                await response.json();
+                return response.status;
+            }));
+            assert.deepEqual(results.sort(), [201,409]);
+            const count = (await pool.query(`SELECT COUNT(*)::integer AS n FROM nv_don_hang
+                WHERE khung_gio_nhan_id=$1 AND thoi_gian_nhan_tu::date=$2 AND trang_thai>0`, [slotId,day])).rows[0].n;
+            assert.equal(count, used+1);
+        } finally {
+            await pool.query('UPDATE dm_khung_gio_nhan_hang SET so_don_toi_da=NULL WHERE id=$1', [slotId]);
+        }
     });
 
     await t.test('QR requires paid status; pending QR is reused; expiry/retry and permissions are enforced', async () => {

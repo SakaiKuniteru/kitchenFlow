@@ -569,6 +569,13 @@ window.MCS.orders = window.MCS.orders || {};
             return 'Chưa chọn khung giờ';
         }
 
+        const dateFormatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' });
+        const start = new Date(from);
+        if (Number.isNaN(start.getTime())) return 'Chưa chọn khung giờ';
+        if (dateFormatter.format(start) !== dateFormatter.format(end)) {
+            return `${dateTime(from)} – ${dateTime(to)}`;
+        }
+
         return `${dateTime(from)} – ${new Intl.DateTimeFormat(
             'vi-VN',
             {
