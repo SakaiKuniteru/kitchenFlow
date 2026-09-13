@@ -94,77 +94,161 @@ class InBaoCaoRepository {
         };
     }
 
-    async getThietLapTheoMa(danhSachMa = []) {
+    async getThietLapTheoMa(
+        danhSachMa = []
+    ) {
         const danhSach = [
             ...new Set(
                 danhSachMa
-                    .map((item) =>
-                        String(item || '')
-                            .trim()
-                            .toUpperCase()
+                    .map(
+                        item =>
+                            String(
+                                item ||
+                                ""
+                            )
+                                .trim()
+                                .toUpperCase()
                     )
-                    .filter(Boolean)
+                    .filter(
+                        Boolean
+                    )
             )
         ];
 
-        if (danhSach.length === 0) {
+
+        if (
+            danhSach.length ===
+            0
+        ) {
             return [];
         }
+
 
         const sql = `
 
             SELECT DISTINCT ON (
                 UPPER(
                     TRIM(
-                        ma_thiet_lap
+                        tl.ma_thiet_lap
                     )
                 )
             )
 
                 UPPER(
                     TRIM(
-                        ma_thiet_lap
+                        tl.ma_thiet_lap
                     )
                 )
                     AS ma_thiet_lap,
 
-                gia_tri,
+                gt.gia_tri,
 
-                active
+                tl.active
 
-            FROM dm_thiet_lap
+
+            FROM dm_thiet_lap tl
+
+
+            LEFT JOIN LATERAL (
+
+                SELECT
+
+                    value.id,
+                    value.gia_tri,
+                    value.tu_ngay,
+                    value.den_ngay
+
+                FROM dm_thiet_lap_gia_tri value
+
+                WHERE
+
+                    value.thiet_lap_id =
+                        tl.id
+
+                    AND value.active =
+                        TRUE
+
+                    AND (
+                        value.tu_ngay IS NULL
+                        OR value.tu_ngay <=
+                            NOW()
+                    )
+
+                    AND (
+                        value.den_ngay IS NULL
+                        OR value.den_ngay >=
+                            NOW()
+                    )
+
+                ORDER BY
+
+                    value.tu_ngay
+                        DESC NULLS LAST,
+
+                    value.id
+                        DESC
+
+                LIMIT 1
+
+            ) gt
+                ON TRUE
+
 
             WHERE
+
                 UPPER(
                     TRIM(
-                        ma_thiet_lap
+                        tl.ma_thiet_lap
                     )
-                ) =
+                )
+                =
                 ANY(
                     $1::text[]
                 )
+
 
             ORDER BY
 
                 UPPER(
                     TRIM(
-                        ma_thiet_lap
+                        tl.ma_thiet_lap
                     )
                 ),
 
-                id DESC
+                tl.id DESC
 
         `;
 
-        const result = await pool.query(sql, [danhSach]);
 
-        return result.rows.map((row) => ({
-            maThietLap: row.ma_thiet_lap,
+        const result =
+            await pool.query(
+                sql,
+                [
+                    danhSach
+                ]
+            );
 
-            giaTri: row.active === true && row.gia_tri !== null && row.gia_tri !== undefined ? String(row.gia_tri) : '',
 
-            active: row.active === true
-        }));
+        return result.rows.map(
+            row => ({
+
+                maThietLap:
+                    row.ma_thiet_lap,
+
+                giaTri:
+                    row.active === true &&
+                    row.gia_tri !== null &&
+                    row.gia_tri !== undefined
+                        ? String(
+                            row.gia_tri
+                        )
+                        : "",
+
+                active:
+                    row.active === true
+
+            })
+        );
     }
 }
 

@@ -5,6 +5,7 @@ const thucDonWebController = require('../../controllers/thuc-don.controller');
 const chiTietWebController = require('../../controllers/chi-tiet.controller');
 const veAnWebController = require('../../controllers/ve-an.controller');
 const datHangWebController = require('../../controllers/dat-hang.controller');
+const baoCaoWebController = require('../../controllers/bao-cao.controller');
 
 const danhMucRoutes = [
     {
@@ -281,4 +282,19 @@ const datHangRoutes = [
     }
 ];
 
-module.exports = [...danhMucRoutes, ...thucDonRoutes, ...chiTietRoutes, ...veAnRoutes, ...datHangRoutes];
+const baoCaoRoutes = [
+    {
+        method: 'get',
+        path: '/bao-cao/tc01',
+        handler: baoCaoWebController.tc01
+    }
+];
+
+module.exports = [
+    ...danhMucRoutes, 
+    ...thucDonRoutes, 
+    ...chiTietRoutes, 
+    ...veAnRoutes, 
+    ...datHangRoutes,
+    ...baoCaoRoutes
+];

@@ -237,10 +237,7 @@ class CauHinhService {
         };
     }
 
-    async getGiaTriRaw(
-        maThietLap,
-        context = {}
-    ) {
+    async getGiaTriRaw(maThietLap, context = {}, client) {
         const ma =
             String(maThietLap || '')
                 .trim()
@@ -285,21 +282,13 @@ class CauHinhService {
                 context
             );
 
-        const thietLap =
-            await cauHinhRepository
-                .getGiaTriHieuLuc(
-                    ma,
-                    {
-                        coSoId,
-                        thoiDiem
-                    }
-                );
+        const thietLap = await cauHinhRepository.getGiaTriHieuLuc(
+            ma,
+            { coSoId, thoiDiem },
+            client
+        );
 
-        if (!thietLap) {
-            return null;
-        }
-
-        return thietLap.gia_tri;
+        return thietLap?.gia_tri ?? null;
     }
 
     async getGiaTriPublic(ma) {
@@ -972,28 +961,30 @@ class CauHinhService {
         return cauHinh.dinhDang;
     }
 
-    async getSoPhutDatHangTruoc() {
+    async getSoPhutDatHangTruoc(context = {}, client) {
         const MAC_DINH = 20;
 
-        const thietLap = await cauHinhRepository.getThietLapByMa(MA_THIET_LAP.SO_PHUT_DAT_HANG_TRUOC);
+        const raw = await this.getGiaTriRaw(
+            MA_THIET_LAP.SO_PHUT_DAT_HANG_TRUOC,
+            context,
+            client
+        );
 
-        if (!thietLap || thietLap.active !== true) {
+        if (raw === null || String(raw).trim() === '') {
             return MAC_DINH;
         }
 
-        const giaTri = String(thietLap.gia_tri ?? '').trim();
+        const text = String(raw).trim();
 
-        if (!/^\d+$/.test(giaTri)) {
+        if (!/^\d+$/.test(text)) {
             return MAC_DINH;
         }
 
-        const soPhut = Number(giaTri);
+        const value = Number(text);
 
-        if (!Number.isInteger(soPhut) || soPhut < 0 || soPhut > 1440) {
-            return MAC_DINH;
-        }
-
-        return soPhut;
+        return Number.isInteger(value) && value <= 1440
+            ? value
+            : MAC_DINH;
     }
 }
 

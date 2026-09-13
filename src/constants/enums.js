@@ -574,6 +574,75 @@ const LOAI_DIA_DIEM_NHAN_HANG = [
     }
 ];
 
+const LOAI_THOI_GIAN = [
+    {
+        value: 10,
+        name: 'Theo thời gian tạo'
+    },
+    {
+        value: 20,
+        name: 'Thời gian cập nhật'
+    },
+    {
+        value: 30,
+        name: 'Theo thời thanh toán'
+    },
+    {
+        value: 40,
+        name: 'Thời gian hoàn'
+    },
+    {
+        value: 50,
+        name: 'Thời gian đặt món'
+    },
+    {
+        value: 60,
+        name: 'Theo thời xác nhận đơn'
+    },
+    {
+        value: 70,
+        name: 'Thời gian giao đơn'
+    },
+    {
+        value: 80,
+        name: 'Theo thời gian tạo'
+    },
+    {
+        value: 90,
+        name: 'Thời gian hoàn thành đơn'
+    }
+]
+
+const NHOM_BAO_CAO = [
+    {
+        value: 10,
+        name: 'Tài chính'
+    },
+    {
+        value: 20,
+        name: 'Vé ăn'
+    },
+    {
+        value: 30,
+        name: 'Thực đơn'
+    },
+    {
+        value: 40,
+        name: 'Đặt món'
+    }
+]
+
+const THU_CHI = [
+    {
+        value: 10,
+        name: 'Thu'
+    },
+    {
+        value: 20,
+        name: 'Chi'
+    },
+]
+
 module.exports = {
     loaiSanPham: LOAI_SAN_PHAM,
     loaiGiamVoucherDonHang: LOAI_GIAM_VOUCHER_DON_HANG,
@@ -606,5 +675,8 @@ module.exports = {
     trangThaiPhieuNhapXuat: TRANG_THAI_PHIEU_NHAP_XUAT,
     trangThaiBinhChon: TRANG_THAI_BINH_CHON,
     loaiBinhChon: LOAI_BINH_CHON,
-    loaiDiaDiemNhanHang: LOAI_DIA_DIEM_NHAN_HANG
+    loaiDiaDiemNhanHang: LOAI_DIA_DIEM_NHAN_HANG,
+    loaiThoiGian: LOAI_THOI_GIAN,
+    nhomBaoCao: NHOM_BAO_CAO,
+    thuChi: THU_CHI
 };

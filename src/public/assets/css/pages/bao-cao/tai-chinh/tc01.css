@@ -1,0 +1,37 @@
+.tc01-page {
+    width: 100%;
+}
+
+
+.tc01-page [data-form-field] {
+    min-width: 0;
+}
+
+
+/*
+ * Đảm bảo smart select
+ * không làm vỡ grid 4 cột.
+ */
+.tc01-page [data-smart-select] {
+    width: 100%;
+    min-width: 0;
+}
+
+
+/*
+ * Đồng bộ chiều cao control.
+ */
+.tc01-page
+.form-field__control {
+    width: 100%;
+}
+
+
+/*
+ * Khoảng trống cuối vùng scroll
+ * để dropdown/date không sát footer.
+ */
+.tc01-page
+.report-frame__body {
+    scroll-padding-bottom: 40px;
+}

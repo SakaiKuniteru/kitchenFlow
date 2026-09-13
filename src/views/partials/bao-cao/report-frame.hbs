@@ -1,0 +1,106 @@
+<section
+    class="report-frame"
+    data-report-frame>
+
+    <header class="report-frame__header">
+
+        <h1 class="report-frame__title">
+            {{maBaoCao}}. {{tenBaoCao}}
+        </h1>
+
+    </header>
+
+
+    <div
+        class="report-frame__body"
+        data-report-scroll>
+
+        <form
+            class="report-frame__form"
+            data-report-form
+            novalidate>
+
+            <div class="report-frame__grid">
+
+                {{> @partial-block}}
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <footer class="report-frame__footer">
+
+        <button
+            type="button"
+            class="
+                report-frame__button
+                report-frame__button--cancel
+            "
+            data-report-cancel>
+
+            <i class="fa-solid fa-xmark"></i>
+
+            <span>
+                Hủy
+            </span>
+
+        </button>
+
+
+        <button
+            type="button"
+            class="
+                report-frame__button
+                report-frame__button--download
+            "
+            data-report-download>
+
+            <i class="fa-solid fa-download"></i>
+
+            <span>
+                Tải về
+            </span>
+
+        </button>
+
+
+        <button
+            type="button"
+            class="
+                report-frame__button
+                report-frame__button--view
+            "
+            data-report-view>
+
+            <i class="fa-regular fa-eye"></i>
+
+            <span>
+                Xem báo cáo
+            </span>
+
+        </button>
+
+    </footer>
+
+
+    <div
+        class="report-frame__loading"
+        data-report-loading
+        hidden>
+
+        <div class="report-frame__loading-box">
+
+            <i class="fa-solid fa-spinner fa-spin"></i>
+
+            <span>
+                Đang tạo báo cáo...
+            </span>
+
+        </div>
+
+    </div>
+
+</section>

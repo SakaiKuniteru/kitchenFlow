@@ -94,7 +94,14 @@ const routes = [
 
     ['/nv-thanh-toan-ve-an', require('../../modules/nghiep-vu/lay-ve-an/thanh-toan-ve-an/thanh-toan-ve-an.route')],
 
-    ['/ct-ve-an', require('../../modules/nghiep-vu/lay-ve-an/ve-an/ve-an.route')]
+    ['/ct-ve-an', require('../../modules/nghiep-vu/lay-ve-an/ve-an/ve-an.route')],
+
+    // BÁO CÁO
+
+    [
+        '/bao-cao',
+        require('../../modules/bao-cao/bao-cao.route')
+    ]
 ];
 
 module.exports = routes;
