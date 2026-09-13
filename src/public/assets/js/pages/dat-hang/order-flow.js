@@ -50,6 +50,7 @@
 
 
     const commonScripts = {
+        core: assetRoot.dataset.commonCore,
         checkout:
             assetRoot.dataset
                 .commonCheckout,
@@ -159,7 +160,7 @@
                 ?.initialize
         ) {
             await loadScript(
-                `${base}/core.js`
+                commonScripts.core
             );
         }
 

@@ -5,7 +5,7 @@
 const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const { randomUUID } = require('node:crypto');
-require('dotenv').config({ quiet: true });
+require('dotenv').config({ path: '.env.dev', quiet: true });
 const testDatabase = process.env.KITCHENFLOW_TEST_DB;
 const enabled = !!testDatabase;
 if (enabled && (!/^kitchenflow_codex_order_test_\d{8}$/.test(testDatabase) || testDatabase === process.env.DB_NAME)) {
@@ -97,7 +97,9 @@ const action = (order, name, status = 200) => request(`/nv-don-hang/${order.id}/
 
 test('Order/payment/notification integration on an isolated PostgreSQL database', { skip: !enabled }, async t => {
     await t.test('all eight order pages render the shared shell and load their local assets', async () => {
-        const routes = require('../src/routes/web/config').filter(route => route.path.startsWith('/dat-hang/'));
+        const controller = require('../src/controllers/dat-hang.controller');
+        const handlers = new Set(Object.getOwnPropertyNames(Object.getPrototypeOf(controller)).map(name => controller[name]));
+        const routes = require('../src/routes/web/config').filter(route => handlers.has(route.handler));
         assert.equal(routes.length, 8);
         const assets = new Set();
         for (const route of routes) {
@@ -105,16 +107,25 @@ test('Order/payment/notification integration on an isolated PostgreSQL database'
             const response = await fetch(`${base}${url}`);
             assert.equal(response.status, 200, url);
             const html = await response.text();
-            assert.match(html, /id="appHeader"/);
-            assert.match(html, /id="appSidebar"/);
-            assert.match(html, /id="appFooter"/);
+            assert.match(html, /id=['"]appHeader['"]/);
+            assert.match(html, /id=['"]appSidebar['"]/);
+            assert.match(html, /id=['"]appFooter['"]/);
             assert.match(html, /data-order-page=/);
-            for (const match of html.matchAll(/<(?:script|link)\b[^>]*(?:src|href)="(\/assets\/[^\"]+)"/g)) assets.add(match[1]);
+            for (const match of html.matchAll(/<(?:script|link)\b[^>]*(?:src|href)=['"](\/assets\/[^'"]+)['"]/g)) assets.add(match[1]);
+            for (const match of html.matchAll(/data-(?:page|common)-[\w-]+=['"](\/assets\/[^'"]+)['"]/g)) assets.add(match[1]);
+            if (process.env.NODE_ENV === 'production') {
+                assert.doesNotMatch(html, /(?:src|href|data-(?:page|common)-[\w-]+)="\/assets\/(?:js|css)\//);
+            }
         }
         for (const path of assets) {
             const response = await fetch(`${base}${path}`);
             assert.equal(response.status, 200, path);
             await response.text();
+        }
+        if (process.env.NODE_ENV === 'production') {
+            for (const path of ['/assets/js/pages/dat-hang/core.js', '/assets/css/common/layout.css']) {
+                assert.equal((await fetch(`${base}${path}`)).status, 404);
+            }
         }
     });
 

@@ -7,7 +7,6 @@ class ChiTietWebController {
         try {
             return renderPage(req, res, 'pages/chi-tiet/thong-bao', {
                 title: 'Thông báo',
-                pageDescription: 'Danh sách thông báo của tài khoản.'
             });
         } catch (error) {
             next(error);
@@ -19,7 +18,6 @@ class ChiTietWebController {
             const { thucDonId, thucDonNgayId } = req.params;
             return renderPage(req, res, 'pages/chi-tiet/thuc-don', {
                 title: 'Chi tiết thực đơn',
-                pageDescription: 'Thông tin chi tiết thực đơn.',
                 thucDonId: thucDonId,
                 thucDonNgayId: thucDonNgayId
             });
@@ -32,7 +30,6 @@ class ChiTietWebController {
         try {
             return renderPage(req, res, 'pages/chi-tiet/danh-sach-binh-chon', {
                 title: 'Danh sách bình chọn',
-                pageDescription: 'Bình chọn của tài khoản.'
             });
         } catch (error) {
             next(error);
@@ -54,7 +51,6 @@ class ChiTietWebController {
 
             return renderPage(req, res, 'pages/chi-tiet/binh-chon', {
                 title: 'Bình chọn',
-                pageDescription: 'Danh sách bình chọn của tài khoản.',
                 thucDonId,
                 dotBinhChonId,
 
@@ -77,7 +73,6 @@ class ChiTietWebController {
         try {
             return renderPage(req, res, 'pages/chi-tiet/lich-su-binh-chon', {
                 title: 'Lịch sử bình chọn',
-                pageDescription: 'Lịch sử bình chọn của tài khoản.',
                 breadcrumbs: [
                     {
                         label: 'Bình chọn',

@@ -91,7 +91,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/to-chuc/co-so/index',
                 title: 'Danh mục cơ sở',
-                description: 'Quản lý danh sách cơ sở trong hệ thống.',
                 page: 'Cơ sở',
                 activeSubmenu: 'co-so',
                 searchPlaceholder: 'Tìm theo mã, tên hoặc địa chỉ...',
@@ -135,7 +134,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/to-chuc/phong-ban/index',
                 title: 'Danh mục phòng ban',
-                description: 'Quản lý phòng ban theo từng cơ sở.',
                 page: 'Phòng ban',
                 activeSubmenu: 'phong-ban',
                 searchPlaceholder: 'Tìm theo mã hoặc tên phòng ban...',
@@ -172,7 +170,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/to-chuc/chuc-vu/index',
                 title: 'Danh mục chức vụ',
-                description: 'Quản lý các chức vụ của nhân viên.',
                 page: 'Chức vụ',
                 activeSubmenu: 'chuc-vu',
                 columns: [
@@ -204,7 +201,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/to-chuc/nha-an/index',
                 title: 'Danh mục nhà ăn',
-                description: 'Quản lý danh sách nhà ăn theo cơ sở.',
                 page: 'Nhà ăn',
                 activeSubmenu: 'nha-an',
                 columns: [
@@ -235,7 +231,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/to-chuc/kho/index',
                 title: 'Danh mục kho',
-                description: 'Quản lý kho theo từng nhà ăn.',
                 page: 'Kho',
                 activeSubmenu: 'kho',
                 columns: [
@@ -287,7 +282,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/dia-chi-hanh-chinh/tong-hop/index',
                 title: 'Tổng hợp địa chỉ hành chính',
-                description: 'Tra cứu tổng hợp quốc gia, tỉnh thành và xã phường.',
                 page: 'Tổng hợp',
                 activeSubmenu: 'tong-hop-dia-chi',
                 hideCreateButton: true,
@@ -347,7 +341,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/dia-chi-hanh-chinh/quoc-gia/index',
                 title: 'Danh mục quốc gia',
-                description: 'Quản lý danh sách quốc gia.',
                 page: 'Quốc gia',
                 activeSubmenu: 'quoc-gia',
                 columns: [
@@ -390,7 +383,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/dia-chi-hanh-chinh/tinh-thanh/index',
                 title: 'Danh mục tỉnh thành',
-                description: 'Quản lý tỉnh thành theo quốc gia.',
                 page: 'Tỉnh thành',
                 activeSubmenu: 'tinh-thanh',
                 columns: [
@@ -423,7 +415,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/dia-chi-hanh-chinh/xa-phuong/index',
                 title: 'Danh mục xã phường',
-                description: 'Quản lý xã phường theo tỉnh thành.',
                 page: 'Xã phường',
                 activeSubmenu: 'xa-phuong',
                 columns: [
@@ -463,7 +454,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/suat-an/ca-an/index',
                 title: 'Danh mục ca ăn',
-                description: 'Quản lý các ca ăn trong hệ thống.',
                 page: 'Ca ăn',
                 activeSubmenu: 'ca-an',
                 columns: [
@@ -498,7 +488,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/he-thong/nhom-mon-an/index',
                 title: 'Danh mục nhóm món ăn',
-                description: 'Quản lý các nhóm phân loại món ăn.',
                 page: 'Nhóm món ăn',
                 activeSubmenu: 'nhom-mon-an',
                 columns: [
@@ -528,7 +517,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/suat-an/mon-an/index',
                 title: 'Danh mục món ăn',
-                description: 'Quản lý danh sách món ăn.',
                 page: 'Món ăn',
                 activeSubmenu: 'mon-an',
                 columns: [
@@ -572,7 +560,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/suat-an/thuc-pham/index',
                 title: 'Danh mục thực phẩm',
-                description: 'Quản lý thực phẩm, đơn vị và quy cách.',
                 page: 'Thực phẩm',
                 activeSubmenu: 'thuc-pham',
                 columns: [
@@ -640,7 +627,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/suat-an/don-vi-tinh/index',
                 title: 'Danh mục đơn vị tính',
-                description: 'Quản lý đơn vị tính và loại đơn vị.',
                 page: 'Đơn vị tính',
                 activeSubmenu: 'don-vi-tinh',
                 columns: [
@@ -672,7 +658,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/suat-an/gia-ve-an/index',
                 title: 'Danh mục giá vé ăn',
-                description: 'Quản lý giá vé ăn.',
                 page: 'Giá vé ăn',
                 activeSubmenu: 'gia-ve-an',
                 columns: [
@@ -724,7 +709,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/nhan-su/nhan-vien/index',
                 title: 'Danh mục nhân viên',
-                description: 'Quản lý hồ sơ và thông tin nhân viên.',
                 page: 'Nhân viên',
                 activeSubmenu: 'nhan-vien',
                 columns: [
@@ -815,7 +799,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/nhan-su/tai-khoan/index',
                 title: 'Danh mục tài khoản',
-                description: 'Quản lý tài khoản đăng nhập và vai trò.',
                 page: 'Tài khoản',
                 activeSubmenu: 'tai-khoan',
                 columns: [
@@ -867,7 +850,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/he-thong/vai-tro/index',
                 title: 'Danh mục vai trò',
-                description: 'Quản lý vai trò và danh sách quyền.',
                 page: 'Vai trò',
                 activeSubmenu: 'vai-tro',
                 columns: [
@@ -896,7 +878,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/he-thong/quyen/index',
                 title: 'Danh mục quyền',
-                description: 'Quản lý quyền truy cập chức năng.',
                 page: 'Quyền',
                 activeSubmenu: 'quyen',
                 columns: [
@@ -932,7 +913,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/he-thong/nhom-tinh-nang/index',
                 title: 'Danh mục nhóm tính năng',
-                description: 'Phân nhóm các quyền và chức năng hệ thống.',
                 page: 'Nhóm tính năng',
                 activeSubmenu: 'nhom-tinh-nang',
                 columns: [
@@ -961,7 +941,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/chinh-sach/voucher/index',
                 title: 'Danh mục voucher',
-                description: 'Quản lý voucher và giá trị miễn giảm.',
                 page: 'Voucher',
                 activeSubmenu: 'voucher',
                 columns: [
@@ -1013,7 +992,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/chinh-sach/chinh-sach/index',
                 title: 'Danh mục chính sách',
-                description: 'Quản lý các chính sách trong hệ thống.',
                 page: 'Chính sách',
                 activeSubmenu: 'chinh-sach',
                 columns: [
@@ -1053,7 +1031,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/he-thong/thiet-lap/index',
                 title: 'Thiết lập hệ thống',
-                description: 'Quản lý các tham số cấu hình của MCS KitchenFlow.',
                 page: 'Thiết lập',
                 activeSubmenu: 'thiet-lap',
                 columns: [
@@ -1093,7 +1070,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/he-thong/bao-cao/index',
                 title: 'Danh mục báo cáo',
-                description: 'Quản lý các báo cáo trong hệ thống.',
                 page: 'Báo cáo',
                 activeSubmenu: 'bao-cao',
                 columns: [
@@ -1129,7 +1105,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/he-thong/thong-bao/index',
                 title: 'Quản lý thông báo',
-                description: 'Quản lý các thông báo trong hệ thống.',
                 page: 'Thông báo',
                 activeSubmenu: 'thong-bao',
                 columns: [
@@ -1177,7 +1152,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/binh-chon/binh-chon',
                 title: 'Quản lý bình chọn',
-                description: 'Quản lý các bình chọn trong hệ thống.',
                 page: 'Bình chọn',
                 activeSubmenu: 'binh-chon',
                 columns: [
@@ -1233,7 +1207,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/dat-hang/dia-diem-nhan-hang/index',
                 title: 'Danh mục địa điểm nhận hàng',
-                description: 'Quản lý các địa điểm nhận hàng đã ghi nhớ.',
                 page: 'Địa điểm nhận hàng',
                 activeSubmenu: 'dia-diem-nhan-hang',
                 columns: [
@@ -1281,7 +1254,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/dat-hang/khung-gio-nhan-hang/index',
                 title: 'Danh mục khung giờ nhận hàng',
-                description: 'Quản lý khung giờ nhận hàng theo cơ sở.',
                 page: 'Khung giờ nhận hàng',
                 activeSubmenu: 'khung-gio-nhan-hang',
                 columns: [
@@ -1329,7 +1301,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/dat-hang/nhom-san-pham/index',
                 title: 'Danh mục nhóm sản phẩm',
-                description: 'Quản lý nhóm sản phẩm, loại sản phẩm và thứ tự hiển thị.',
                 page: 'Nhóm sản phẩm',
                 activeSubmenu: 'nhom-san-pham',
                 columns: [
@@ -1369,7 +1340,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/dat-hang/san-pham/index',
                 title: 'Danh mục sản phẩm',
-                description: 'Quản lý sản phẩm',
                 page: 'Sản phẩm',
                 activeSubmenu: 'san-pham',
                 columns: [
@@ -1409,7 +1379,6 @@ class DanhMucWebController {
             return renderDanhMuc(req, res, {
                 view: 'pages/danh-muc/dat-hang/vouchet-don-hang/index',
                 title: 'Danh mục voucher đơn hàng',
-                description: 'Quản lý voucher đơn hàng',
                 page: 'Voucher đơn hàng',
                 activeSubmenu: 'voucher-don-hang',
                 columns: [

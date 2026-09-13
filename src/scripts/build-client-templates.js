@@ -139,7 +139,7 @@ function shouldBuildPartial(
         ) ||
         partialName.startsWith(
             'forms/'
-        )
+        ) || partialName === 'catalog/pagination'
     );
 }
 

@@ -239,7 +239,6 @@ class VeAnWebController {
             const listPage = {
                 moduleName: 'danh-sach-lay-ve',
                 title: 'Danh sách lấy vé',
-                description: 'Theo dõi danh sách vé ăn đã tạo và trạng thái thanh toán.',
                 listEndpoint: '/api/mcs/v1/nv-phieu-lay-ve-an/tong-hop',
                 showIndex: true,
                 showSearch: true,
@@ -295,7 +294,6 @@ class VeAnWebController {
 
             return renderPage(req, res, 'pages/ve-an/danh-sach-lay-ve', {
                 title: 'Danh sách lấy vé',
-                pageDescription: 'Danh sách lấy vé ăn.',
                 listPage,
                 breadcrumbs: [{ label: 'Danh sách lấy vé' }]
             });
@@ -608,25 +606,14 @@ class VeAnWebController {
 
             const listPage = {
                 moduleName: 'xac-nhan-su-dung-ve',
-
                 title: 'Xác nhận sử dụng vé',
-
-                description: 'Kiểm tra và xác nhận vé ăn khi người dùng sử dụng vé.',
-
                 listEndpoint: '/api/mcs/v1/ct-ve-an/tong-hop',
-
                 showIndex: true,
-
                 showSearch: true,
-
                 selectable: true,
-
                 showRowActions: true,
-
                 searchId: 'xacNhanSuDungVeSearch',
-
                 searchPlaceholder: 'Tìm theo mã vé, mã phiếu, người lấy vé...',
-
                 actions: [
                     {
                         action: 'filter',
@@ -734,11 +721,7 @@ class VeAnWebController {
 
             return renderPage(req, res, 'pages/ve-an/xac-nhan-su-dung-ve', {
                 title: 'Xác nhận sử dụng vé',
-
-                pageDescription: 'Danh sách xác nhận sử dụng vé ăn.',
-
                 listPage,
-
                 breadcrumbs: [
                     {
                         label: 'Xác nhận sử dụng vé'
@@ -754,7 +737,6 @@ class VeAnWebController {
         try {
             return renderPage(req, res, 'pages/ve-an/lay-ve-an', {
                 title: 'Lấy vé ăn',
-                pageDescription: 'Lấy vé ăn.',
                 pageId: String(req.params.id || ''),
                 breadcrumbs: [
                     {
