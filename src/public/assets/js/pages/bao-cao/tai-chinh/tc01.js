@@ -16,6 +16,12 @@ document.addEventListener(
         }
 
 
+        /*
+         * ==========================================
+         * API RIÊNG TC01
+         * ==========================================
+         */
+
         const API = {
 
             baoCao:
@@ -53,6 +59,13 @@ document.addEventListener(
 
         };
 
+
+        /*
+         * ==========================================
+         * DEFAULT RIÊNG TC01
+         * ==========================================
+         */
+
         const MULTI_SELECT_DEFAULTS =
             Object.freeze({
 
@@ -65,10 +78,6 @@ document.addEventListener(
                 doiTuong:
                     true,
 
-                /*
-                * Người tạo / Thu ngân
-                * để trống để người dùng tự chọn.
-                */
                 nguoiTaoIds:
                     false,
 
@@ -93,6 +102,12 @@ document.addEventListener(
             });
 
 
+        /*
+         * ==========================================
+         * STATE RIÊNG TC01
+         * ==========================================
+         */
+
         const state = {
 
             coSo:
@@ -105,49 +120,37 @@ document.addEventListener(
                 [],
 
             taiKhoan:
-                [],
-
-
-            lastReport:
-                null,
-
-            lastPayloadKey:
-                null,
-
-            loading:
-                false
+                []
 
         };
 
 
-        const elements = {
+        /*
+         * ==========================================
+         * KHỞI TẠO ENGINE BÁO CÁO CHUNG
+         * ==========================================
+         */
 
-            form:
-                root.querySelector(
-                    '[data-report-form]'
-                ),
+        const report =
+            window.MCS
+                .baoCao
+                .create({
 
-            cancel:
-                root.querySelector(
-                    '[data-report-cancel]'
-                ),
+                    root,
 
-            download:
-                root.querySelector(
-                    '[data-report-download]'
-                ),
+                    api:
+                        API.baoCao,
 
-            view:
-                root.querySelector(
-                    '[data-report-view]'
-                ),
+                    fileName:
+                        'tc01',
 
-            loading:
-                root.querySelector(
-                    '[data-report-loading]'
-                )
+                    getPayload:
+                        getFilters,
 
-        };
+                    onReset:
+                        resetFilters
+
+                });
 
 
         initialize();
@@ -155,18 +158,15 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * INIT
+         * INIT TC01
          * ==========================================
          */
 
         async function initialize() {
 
-            bindEvents();
-
-
             try {
 
-                setLoading(
+                report.setLoading(
                     true
                 );
 
@@ -185,43 +185,43 @@ document.addEventListener(
                 ] =
                     await Promise.all([
 
-                        loadList(
+                        report.loadList(
                             API.loaiThoiGian
                         ),
 
-                        loadList(
+                        report.loadList(
                             API.coSo
                         ),
 
-                        loadList(
+                        report.loadList(
                             API.nhaAn
                         ),
 
-                        loadList(
+                        report.loadList(
                             API.doiTuong
                         ),
 
-                        loadList(
+                        report.loadList(
                             API.taiKhoan
                         ),
 
-                        loadList(
+                        report.loadList(
                             API.hinhThucThanhToan
                         ),
 
-                        loadList(
+                        report.loadList(
                             API.thuChi
                         ),
 
-                        loadList(
+                        report.loadList(
                             API.trangThaiThanhToan
                         ),
 
-                        loadList(
+                        report.loadList(
                             API.caAn
                         ),
 
-                        loadList(
+                        report.loadList(
                             API.trangThaiSuDung
                         )
 
@@ -242,30 +242,83 @@ document.addEventListener(
 
 
                 /*
-                 * Loại thời gian TC01
-                 * chỉ lấy:
+                 * Loại thời gian TC01:
                  *
-                 * 10 = thời gian tạo
-                 * 30 = thời gian thanh toán
-                 * 40 = thời gian hoàn
+                 * 10 = tạo
+                 * 30 = thanh toán
+                 * 40 = hoàn
                  */
-                setSingleSelectOptions(
-                    'loaiThoiGian',
+                report
+                    .setSingleSelectOptions(
+                        'loaiThoiGian',
 
-                    loaiThoiGian
-                        .filter(
-                            item =>
-                                [
-                                    10,
-                                    30,
-                                    40
-                                ].includes(
-                                    Number(
-                                        item.value
+                        loaiThoiGian
+                            .filter(
+                                item =>
+                                    [
+                                        10,
+                                        30,
+                                        40
+                                    ].includes(
+                                        Number(
+                                            item.value
+                                        )
                                     )
-                                )
-                        )
-                        .map(
+                            )
+                            .map(
+                                item => ({
+                                    value:
+                                        item.value,
+
+                                    label:
+                                        item.name
+                                })
+                            ),
+
+                        30
+                    );
+
+
+                /*
+                 * Cơ sở
+                 */
+                report
+                    .setMultipleSelectOptions(
+                        'coSoIds',
+
+                        coSo.map(
+                            item => ({
+                                value:
+                                    item.id,
+
+                                label:
+                                    item.tenCoSo ||
+                                    item.ten ||
+                                    '-'
+                            })
+                        ),
+
+                        [],
+
+                        MULTI_SELECT_DEFAULTS
+                            .coSoIds
+                    );
+
+
+                /*
+                 * Nhà ăn phụ thuộc cơ sở.
+                 */
+                renderNhaAn();
+
+
+                /*
+                 * Đối tượng
+                 */
+                report
+                    .setMultipleSelectOptions(
+                        'doiTuong',
+
+                        doiTuong.map(
                             item => ({
                                 value:
                                     item.value,
@@ -275,52 +328,16 @@ document.addEventListener(
                             })
                         ),
 
-                    30
-                );
+                        [],
 
-                setMultipleSelectOptions(
-                    'coSoIds',
-
-                    coSo.map(
-                        item => ({
-                            value:
-                                item.id,
-
-                            label:
-                                item.tenCoSo ||
-                                item.ten ||
-                                '-'
-                        })
-                    ),
-
-                    [],
-
-                    MULTI_SELECT_DEFAULTS
-                        .coSoIds
-                );
-
-                renderNhaAn();
-
-                setMultipleSelectOptions(
-                    'doiTuong',
-
-                    doiTuong.map(
-                        item => ({
-                            value:
-                                item.value,
-
-                            label:
-                                item.name
-                        })
-                    ),
-
-                    [],
-
-                    MULTI_SELECT_DEFAULTS
-                        .doiTuong
-                );
+                        MULTI_SELECT_DEFAULTS
+                            .doiTuong
+                    );
 
 
+                /*
+                 * Người tạo / Thu ngân
+                 */
                 const taiKhoanOptions =
                     taiKhoan.map(
                         item => ({
@@ -335,127 +352,169 @@ document.addEventListener(
                     );
 
 
-                setMultipleSelectOptions(
-                    'nguoiTaoIds',
-                    taiKhoanOptions,
-                    [],
-                    MULTI_SELECT_DEFAULTS
-                        .nguoiTaoIds
-                );
+                report
+                    .setMultipleSelectOptions(
+                        'nguoiTaoIds',
+                        taiKhoanOptions,
+                        [],
+                        MULTI_SELECT_DEFAULTS
+                            .nguoiTaoIds
+                    );
 
 
-                setMultipleSelectOptions(
-                    'thuNganIds',
-                    taiKhoanOptions,
-                    [],
-                    MULTI_SELECT_DEFAULTS
-                        .thuNganIds
-                );
+                report
+                    .setMultipleSelectOptions(
+                        'thuNganIds',
+                        taiKhoanOptions,
+                        [],
+                        MULTI_SELECT_DEFAULTS
+                            .thuNganIds
+                    );
 
 
-                setMultipleSelectOptions(
-                    'hinhThucThanhToan',
+                /*
+                 * Hình thức thanh toán
+                 */
+                report
+                    .setMultipleSelectOptions(
+                        'hinhThucThanhToan',
 
-                    hinhThucThanhToan.map(
-                        item => ({
-                            value:
-                                item.value,
+                        hinhThucThanhToan.map(
+                            item => ({
+                                value:
+                                    item.value,
 
-                            label:
-                                item.name
-                        })
-                    ),
+                                label:
+                                    item.name
+                            })
+                        ),
 
-                    [],
+                        [],
 
-                    MULTI_SELECT_DEFAULTS
-                        .hinhThucThanhToan
-                );
-
-
-                setMultipleSelectOptions(
-                    'hienThiThuChi',
-
-                    thuChi.map(
-                        item => ({
-                            value:
-                                item.value,
-
-                            label:
-                                item.name
-                        })
-                    ),
-
-                    [],
-
-                    MULTI_SELECT_DEFAULTS
-                        .hienThiThuChi
-                );
+                        MULTI_SELECT_DEFAULTS
+                            .hinhThucThanhToan
+                    );
 
 
-                setMultipleSelectOptions(
-                    'trangThaiThanhToan',
+                /*
+                 * Thu / Chi
+                 */
+                report
+                    .setMultipleSelectOptions(
+                        'hienThiThuChi',
 
-                    trangThaiThanhToan.map(
-                        item => ({
-                            value:
-                                item.value,
+                        thuChi.map(
+                            item => ({
+                                value:
+                                    item.value,
 
-                            label:
-                                item.name
-                        })
-                    ),
+                                label:
+                                    item.name
+                            })
+                        ),
 
-                    [],
+                        [],
 
-                    MULTI_SELECT_DEFAULTS
-                        .trangThaiThanhToan
-                );
-
-
-                setMultipleSelectOptions(
-                    'caAnIds',
-
-                    caAn.map(
-                        item => ({
-                            value:
-                                item.id,
-
-                            label:
-                                item.tenCaAn ||
-                                item.ten ||
-                                '-'
-                        })
-                    ),
-
-                    [],
-
-                    MULTI_SELECT_DEFAULTS
-                        .caAnIds
-                );
+                        MULTI_SELECT_DEFAULTS
+                            .hienThiThuChi
+                    );
 
 
-                setMultipleSelectOptions(
-                    'trangThaiSuDung',
+                /*
+                 * Trạng thái thanh toán
+                 */
+                report
+                    .setMultipleSelectOptions(
+                        'trangThaiThanhToan',
 
-                    trangThaiSuDung.map(
-                        item => ({
-                            value:
-                                item.value,
+                        trangThaiThanhToan.map(
+                            item => ({
+                                value:
+                                    item.value,
 
-                            label:
-                                item.name
-                        })
-                    ),
+                                label:
+                                    item.name
+                            })
+                        ),
 
-                    [],
+                        [],
 
-                    MULTI_SELECT_DEFAULTS
-                        .trangThaiSuDung
-                );
+                        MULTI_SELECT_DEFAULTS
+                            .trangThaiThanhToan
+                    );
 
-                bindAllOptions();
-                setDefaultDates();
+
+                /*
+                 * Ca ăn
+                 */
+                report
+                    .setMultipleSelectOptions(
+                        'caAnIds',
+
+                        caAn.map(
+                            item => ({
+                                value:
+                                    item.id,
+
+                                label:
+                                    item.tenCaAn ||
+                                    item.ten ||
+                                    '-'
+                            })
+                        ),
+
+                        [],
+
+                        MULTI_SELECT_DEFAULTS
+                            .caAnIds
+                    );
+
+
+                /*
+                 * Trạng thái sử dụng
+                 */
+                report
+                    .setMultipleSelectOptions(
+                        'trangThaiSuDung',
+
+                        trangThaiSuDung.map(
+                            item => ({
+                                value:
+                                    item.value,
+
+                                label:
+                                    item.name
+                            })
+                        ),
+
+                        [],
+
+                        MULTI_SELECT_DEFAULTS
+                            .trangThaiSuDung
+                    );
+
+
+                /*
+                 * Quy tắc Tất cả
+                 * do bao-cao.js xử lý.
+                 */
+                report
+                    .bindAllOptions(
+                        MULTI_SELECT_DEFAULTS
+                    );
+
+
+                /*
+                 * Ngày mặc định hôm nay.
+                 */
+                report
+                    .setDefaultDateRange(
+                        'tuNgay',
+                        'denNgay'
+                    );
+
+
+                bindTc01Events();
 
             } catch (
                 error
@@ -470,12 +529,12 @@ document.addEventListener(
                     ?.toast
                     ?.error?.(
                         error?.message ||
-                        'Không thể tải dữ liệu bộ lọc báo cáo.'
+                        'Không thể tải dữ liệu bộ lọc TC01.'
                     );
 
             } finally {
 
-                setLoading(
+                report.setLoading(
                     false
                 );
 
@@ -485,32 +544,11 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * EVENTS
+         * EVENT RIÊNG TC01
          * ==========================================
          */
 
-        function bindEvents() {
-
-            elements.cancel
-                ?.addEventListener(
-                    'click',
-                    reset
-                );
-
-
-            elements.view
-                ?.addEventListener(
-                    'click',
-                    xemBaoCao
-                );
-
-
-            elements.download
-                ?.addEventListener(
-                    'click',
-                    taiBaoCao
-                );
-
+        function bindTc01Events() {
 
             root
                 .querySelector(
@@ -520,83 +558,14 @@ document.addEventListener(
                     'change',
                     () => {
 
-                        state.lastReport =
-                            null;
+                        report
+                            .invalidateReport();
 
-                        state.lastPayloadKey =
-                            null;
 
                         renderNhaAn();
 
                     }
                 );
-
-
-            elements.form
-                ?.addEventListener(
-                    'change',
-                    () => {
-
-                        state.lastReport =
-                            null;
-
-                        state.lastPayloadKey =
-                            null;
-
-                    }
-                );
-        }
-
-
-        /*
-         * ==========================================
-         * LOAD API
-         * ==========================================
-         */
-
-        async function loadList(
-            endpoint
-        ) {
-
-            const response =
-                await window.MCS
-                    .api
-                    .request(
-                        endpoint,
-                        {
-                            method:
-                                'GET'
-                        }
-                    );
-
-
-            return normalizeList(
-                response?.data ??
-                response
-            );
-        }
-
-
-        function normalizeList(
-            data
-        ) {
-
-            if (
-                Array.isArray(
-                    data
-                )
-            ) {
-                return data;
-            }
-
-
-            return (
-                data?.items ||
-                data?.rows ||
-                data?.data ||
-                data?.danhSach ||
-                []
-            );
         }
 
 
@@ -609,15 +578,17 @@ document.addEventListener(
         function renderNhaAn() {
 
             const coSoIds =
-                getMultiValues(
-                    'coSoIds'
-                );
+                report
+                    .getMultiValues(
+                        'coSoIds'
+                    );
 
 
             const selected =
-                getMultiValues(
-                    'nhaAnIds'
-                );
+                report
+                    .getMultiValues(
+                        'nhaAnIds'
+                    );
 
 
             let records =
@@ -626,7 +597,8 @@ document.addEventListener(
 
             /*
              * Không chọn cơ sở
-             * => hiển thị toàn bộ nhà ăn.
+             * hoặc "Tất cả"
+             * → lấy toàn bộ nhà ăn.
              */
             if (
                 coSoIds.length >
@@ -677,7 +649,9 @@ document.addEventListener(
                         )
                 );
 
-                setMultipleSelectOptions(
+
+            report
+                .setMultipleSelectOptions(
                     'nhaAnIds',
 
                     records.map(
@@ -694,7 +668,8 @@ document.addEventListener(
 
                     preserved,
 
-                    preserved.length === 0
+                    preserved.length ===
+                        0
                         ? MULTI_SELECT_DEFAULTS
                             .nhaAnIds
                         : false
@@ -704,28 +679,31 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * BUILD FILTER
+         * BUILD PAYLOAD TC01
          * ==========================================
          */
 
         function getFilters() {
 
             const loaiThoiGian =
-                getSingleNumber(
-                    'loaiThoiGian'
-                );
+                report
+                    .getSingleNumber(
+                        'loaiThoiGian'
+                    );
 
 
             const tuNgay =
-                getDateValue(
-                    'tuNgay'
-                );
+                report
+                    .getDateValue(
+                        'tuNgay'
+                    );
 
 
             const denNgay =
-                getDateValue(
-                    'denNgay'
-                );
+                report
+                    .getDateValue(
+                        'denNgay'
+                    );
 
 
             if (
@@ -737,35 +715,34 @@ document.addEventListener(
             }
 
 
-            if (
-                !tuNgay
-            ) {
+            if (!tuNgay) {
                 throw new Error(
                     'Vui lòng chọn từ ngày.'
                 );
             }
 
 
-            if (
-                !denNgay
-            ) {
+            if (!denNgay) {
                 throw new Error(
                     'Vui lòng chọn đến ngày.'
                 );
             }
 
+
             const tuNgayIso =
-                buildDateTime(
-                    tuNgay,
-                    false
-                );
+                report
+                    .buildDateTime(
+                        tuNgay,
+                        false
+                    );
 
 
             const denNgayIso =
-                buildDateTime(
-                    denNgay,
-                    true
-                );
+                report
+                    .buildDateTime(
+                        denNgay,
+                        true
+                    );
 
 
             if (
@@ -776,10 +753,13 @@ document.addEventListener(
                     denNgayIso
                 ).getTime()
             ) {
+
                 throw new Error(
                     'Từ ngày không được lớn hơn đến ngày.'
                 );
+
             }
+
 
             return {
 
@@ -792,613 +772,88 @@ document.addEventListener(
                     denNgayIso,
 
                 coSoIds:
-                    getMultiNumbers(
-                        'coSoIds'
-                    ),
+                    report
+                        .getMultiNumbers(
+                            'coSoIds'
+                        ),
 
                 nhaAnIds:
-                    getMultiNumbers(
-                        'nhaAnIds'
-                    ),
+                    report
+                        .getMultiNumbers(
+                            'nhaAnIds'
+                        ),
 
                 doiTuong:
-                    getMultiNumbers(
-                        'doiTuong'
-                    ),
+                    report
+                        .getMultiNumbers(
+                            'doiTuong'
+                        ),
 
                 nguoiTaoIds:
-                    getMultiNumbers(
-                        'nguoiTaoIds'
-                    ),
+                    report
+                        .getMultiNumbers(
+                            'nguoiTaoIds'
+                        ),
 
                 thuNganIds:
-                    getMultiNumbers(
-                        'thuNganIds'
-                    ),
+                    report
+                        .getMultiNumbers(
+                            'thuNganIds'
+                        ),
 
                 hinhThucThanhToan:
-                    getMultiNumbers(
-                        'hinhThucThanhToan'
-                    ),
+                    report
+                        .getMultiNumbers(
+                            'hinhThucThanhToan'
+                        ),
 
                 hienThiThuChi:
-                    getMultiNumbers(
-                        'hienThiThuChi'
-                    ),
+                    report
+                        .getMultiNumbers(
+                            'hienThiThuChi'
+                        ),
 
                 trangThaiThanhToan:
-                    getMultiNumbers(
-                        'trangThaiThanhToan'
-                    ),
+                    report
+                        .getMultiNumbers(
+                            'trangThaiThanhToan'
+                        ),
 
                 caAnIds:
-                    getMultiNumbers(
-                        'caAnIds'
-                    ),
+                    report
+                        .getMultiNumbers(
+                            'caAnIds'
+                        ),
 
                 trangThaiSuDung:
-                    getMultiNumbers(
-                        'trangThaiSuDung'
-                    )
+                    report
+                        .getMultiNumbers(
+                            'trangThaiSuDung'
+                        )
 
             };
         }
 
-        function buildDateTime(
-            value,
-            endOfDay
-        ) {
-            const text =
-                String(
-                    value ||
-                    ''
-                )
-                    .trim();
-
-
-            const match =
-                text.match(
-                    /^(\d{4}-\d{2}-\d{2})/
-                );
-
-
-            if (!match) {
-                throw new Error(
-                    'Ngày không hợp lệ.'
-                );
-            }
-
-
-            const date =
-                match[1];
-
-
-            return (
-                date +
-                (
-                    endOfDay
-                        ? 'T23:59:59+07:00'
-                        : 'T00:00:00+07:00'
-                )
-            );
-        }
 
         /*
          * ==========================================
-         * CALL TC01
+         * RESET RIÊNG TC01
          * ==========================================
          */
 
-        async function taoBaoCao(
-            payload
-        ) {
-
-            const response =
-                await window.MCS
-                    .api
-                    .request(
-                        API.baoCao,
-                        {
-                            method:
-                                'POST',
-
-                            body:
-                                JSON.stringify(
-                                    payload
-                                )
-                        }
-                    );
-
-
-            const report =
-                response?.data;
-
-
-            if (
-                !report
-            ) {
-                throw new Error(
-                    'API không trả về thông tin báo cáo.'
-                );
-            }
-
-
-            if (
-                !report.file
-            ) {
-                throw new Error(
-                    'Báo cáo không có thông tin file.'
-                );
-            }
-
-
-            state.lastReport =
-                report;
-
-            state.lastPayloadKey =
-                JSON.stringify(
-                    payload
-                );
-
-
-            return report;
-        }
-
-
-        /*
-         * ==========================================
-         * XEM BÁO CÁO
-         * ==========================================
-         */
-
-        async function xemBaoCao() {
-
-            let viewerWindow =
-                null;
-
-
-            try {
-
-                const payload =
-                    getFilters();
-
-
-                /*
-                 * Mở tab ngay từ click
-                 * để tránh popup blocker.
-                 */
-                viewerWindow =
-                    window.open(
-                        '',
-                        '_blank'
-                    );
-
-
-                setLoading(
-                    true
-                );
-
-
-                const report =
-                    await taoBaoCao(
-                        payload
-                    );
-
-
-                if (
-                    !report.file
-                        ?.pdf
-                ) {
-                    throw new Error(
-                        'Báo cáo không có file PDF.'
-                    );
-                }
-
-
-                const file =
-                    await window.MCS
-                        .api
-                        .requestFile(
-                            buildFileUrl(
-                                report.file.pdf
-                            ),
-                            {
-                                method:
-                                    'GET'
-                            }
-                        );
-
-
-                if (
-                    !file?.blob
-                ) {
-                    throw new Error(
-                        'Không tải được file PDF báo cáo.'
-                    );
-                }
-
-
-                const objectUrl =
-                    URL.createObjectURL(
-                        file.blob
-                    );
-
-
-                if (
-                    viewerWindow
-                ) {
-
-                    viewerWindow.location.href =
-                        objectUrl;
-
-                } else {
-
-                    window.open(
-                        objectUrl,
-                        '_blank'
-                    );
-
-                }
-
-
-                window.setTimeout(
-                    () => {
-
-                        URL.revokeObjectURL(
-                            objectUrl
-                        );
-
-                    },
-                    60000
-                );
-
-            } catch (
-                error
-            ) {
-
-                viewerWindow
-                    ?.close?.();
-
-
-                window.MCS
-                    ?.toast
-                    ?.error?.(
-                        error?.message ||
-                        'Không thể xem báo cáo.'
-                    );
-
-            } finally {
-
-                setLoading(
-                    false
-                );
-
-            }
-        }
-
-
-        /*
-         * ==========================================
-         * TẢI BÁO CÁO
-         * ==========================================
-         */
-
-        async function taiBaoCao() {
-
-            try {
-
-                const payload =
-                    getFilters();
-
-
-                const payloadKey =
-                    JSON.stringify(
-                        payload
-                    );
-
-
-                setLoading(
-                    true
-                );
-
-
-                /*
-                 * Nếu vừa Xem cùng bộ lọc
-                 * thì dùng luôn file đã sinh.
-                 *
-                 * Không gọi API lần thứ 2.
-                 */
-                let report =
-                    state.lastReport;
-
-
-                if (
-                    !report ||
-                    state.lastPayloadKey !==
-                        payloadKey
-                ) {
-
-                    report =
-                        await taoBaoCao(
-                            payload
-                        );
-
-                }
-
-
-                const filePath =
-                    getDownloadFilePath(
-                        report
-                    );
-
-
-                if (
-                    !filePath
-                ) {
-                    throw new Error(
-                        'Không xác định được file báo cáo để tải.'
-                    );
-                }
-
-
-                const file =
-                    await window.MCS
-                        .api
-                        .requestFile(
-                            buildFileUrl(
-                                filePath
-                            ),
-                            {
-                                method:
-                                    'GET'
-                            }
-                        );
-
-
-                if (
-                    !file?.blob
-                ) {
-                    throw new Error(
-                        'Không tải được file báo cáo.'
-                    );
-                }
-
-
-                downloadBlob(
-                    file.blob,
-                    getFileName(
-                        filePath
-                    )
-                );
-
-            } catch (
-                error
-            ) {
-
-                window.MCS
-                    ?.toast
-                    ?.error?.(
-                        error?.message ||
-                        'Không thể tải báo cáo.'
-                    );
-
-            } finally {
-
-                setLoading(
-                    false
-                );
-
-            }
-        }
-
-
-        function getDownloadFilePath(
-            report
-        ) {
-
-            const file =
-                report?.file ||
-                {};
-
+        function resetFilters() {
 
             /*
-             * Theo định dạng cấu hình:
-             *
-             * 10 = PDF
-             * 20 = Word
-             * 30 = Excel
+             * Loại thời gian mặc định:
+             * Theo thời gian thanh toán.
              */
-            switch (
-                Number(
-                    report?.dinhDang
-                )
-            ) {
-
-                case 10:
-                    return (
-                        file.pdf ||
-                        null
-                    );
-
-                case 20:
-                    return (
-                        file.docx ||
-                        file.pdf ||
-                        null
-                    );
-
-                case 30:
-                    return (
-                        file.xlsx ||
-                        file.pdf ||
-                        null
-                    );
-
-                default:
-                    return (
-                        file.xlsx ||
-                        file.docx ||
-                        file.pdf ||
-                        null
-                    );
-            }
-        }
-
-
-        /*
-         * ==========================================
-         * FILE
-         * ==========================================
-         */
-
-        function buildFileUrl(
-            filePath
-        ) {
-
-            if (
-                window.MCS
-                    ?.reportPrint
-                    ?.buildFileUrl
-            ) {
-
-                return window.MCS
-                    .reportPrint
-                    .buildFileUrl(
-                        filePath
-                    );
-
-            }
-
-
-            const normalized =
-                String(
-                    filePath ||
-                    ''
-                )
-                    .split(
-                        '/'
-                    )
-                    .filter(
-                        Boolean
-                    )
-                    .map(
-                        encodeURIComponent
-                    )
-                    .join(
-                        '/'
-                    );
-
-
-            if (
-                !normalized
-            ) {
-                throw new Error(
-                    'Đường dẫn file báo cáo không hợp lệ.'
-                );
-            }
-
-
-            return (
-                '/api/mcs/v1/files/' +
-                normalized
-            );
-        }
-
-
-        function downloadBlob(
-            blob,
-            fileName
-        ) {
-
-            const url =
-                URL.createObjectURL(
-                    blob
+            report
+                .setSingleSelectValue(
+                    'loaiThoiGian',
+                    30
                 );
 
 
-            const link =
-                document.createElement(
-                    'a'
-                );
-
-
-            link.href =
-                url;
-
-            link.download =
-                fileName ||
-                'tc01';
-
-
-            document.body.appendChild(
-                link
-            );
-
-
-            link.click();
-
-            link.remove();
-
-
-            window.setTimeout(
-                () =>
-                    URL.revokeObjectURL(
-                        url
-                    ),
-                1000
-            );
-        }
-
-
-        function getFileName(
-            filePath
-        ) {
-
-            return (
-                String(
-                    filePath ||
-                    ''
-                )
-                    .split(
-                        '/'
-                    )
-                    .filter(
-                        Boolean
-                    )
-                    .pop() ||
-                'tc01'
-            );
-        }
-
-
-        /*
-         * ==========================================
-         * RESET / HỦY
-         * ==========================================
-         */
-
-        function reset() {
-
-            state.lastReport =
-                null;
-
-            state.lastPayloadKey =
-                null;
-
-
-            /*
-            * Loại thời gian mặc định:
-            * 30 = Theo thời gian thanh toán.
-            */
-            setSingleSelectValue(
-                'loaiThoiGian',
-                30
-            );
-
-
-            /*
-            * Những field mặc định Tất cả.
-            */
             Object.entries(
                 MULTI_SELECT_DEFAULTS
             )
@@ -1413,821 +868,38 @@ document.addEventListener(
                             true
                         ) {
 
-                            resetMultiSelectToAll(
-                                id
-                            );
+                            report
+                                .resetMultiSelectToAll(
+                                    id
+                                );
 
                             return;
                         }
 
 
-                        clearMultiSelect(
-                            id
-                        );
+                        report
+                            .clearMultiSelect(
+                                id
+                            );
 
                     }
                 );
 
 
-            /*
-            * Ngày hiện tại.
-            */
-            setDefaultDates();
+            report
+                .setDefaultDateRange(
+                    'tuNgay',
+                    'denNgay'
+                );
 
 
-            /*
-            * Cơ sở thay đổi có thể
-            * ảnh hưởng danh sách Nhà ăn.
-            */
             renderNhaAn();
         }
 
-        /*
-         * ==========================================
-         * SELECT HELPERS
-         * ==========================================
-         */
-
-        function setSingleSelectOptions(
-            id,
-            options,
-            selectedValue = ''
-        ) {
-
-            const select =
-                root.querySelector(
-                    `#${id}`
-                );
-
-
-            if (!select) {
-                return;
-            }
-
-
-            select.innerHTML =
-                '';
-
-
-            const empty =
-                document.createElement(
-                    'option'
-                );
-
-
-            empty.value =
-                '';
-
-            empty.textContent =
-                '';
-
-
-            select.appendChild(
-                empty
-            );
-
-
-            options.forEach(
-                item => {
-
-                    const option =
-                        document.createElement(
-                            'option'
-                        );
-
-
-                    option.value =
-                        String(
-                            item.value
-                        );
-
-                    option.textContent =
-                        item.label ||
-                        '-';
-
-
-                    select.appendChild(
-                        option
-                    );
-                }
-            );
-
-
-            refreshSmartSelect(
-                select
-            );
-
-
-            setSingleSelectValue(
-                id,
-                selectedValue
-            );
-        }
-
-        function setMultipleSelectOptions(
-            id,
-            options,
-            selectedValues = [],
-            defaultAll = false
-        ) {
-
-            const select =
-                root.querySelector(
-                    `#${id}`
-                );
-
-
-            if (!select) {
-                return;
-            }
-
-
-            const selectedSet =
-                new Set(
-                    selectedValues.map(
-                        value =>
-                            String(
-                                value
-                            )
-                    )
-                );
-
-
-            select.innerHTML =
-                '';
-
-
-            /*
-            * Luôn có lựa chọn "Tất cả".
-            *
-            * defaultAll chỉ quyết định
-            * có chọn nó mặc định hay không.
-            */
-            const allOption =
-                document.createElement(
-                    'option'
-                );
-
-
-            allOption.value =
-                '__ALL__';
-
-            allOption.textContent =
-                'Tất cả';
-
-
-            select.appendChild(
-                allOption
-            );
-
-
-            options.forEach(
-                item => {
-
-                    if (
-                        item.value ===
-                            undefined ||
-                        item.value ===
-                            null
-                    ) {
-                        return;
-                    }
-
-
-                    const option =
-                        document.createElement(
-                            'option'
-                        );
-
-
-                    option.value =
-                        String(
-                            item.value
-                        );
-
-
-                    option.textContent =
-                        item.label ||
-                        '-';
-
-
-                    option.selected =
-                        selectedSet.has(
-                            String(
-                                item.value
-                            )
-                        );
-
-
-                    select.appendChild(
-                        option
-                    );
-
-                }
-            );
-
-
-            /*
-            * Chỉ chọn "Tất cả"
-            * khi field được cấu hình defaultAll.
-            */
-            if (
-                selectedSet.size ===
-                    0 &&
-                defaultAll ===
-                    true
-            ) {
-
-                allOption.selected =
-                    true;
-
-            } else {
-
-                allOption.selected =
-                    false;
-
-            }
-
-
-            const smartSelect =
-                refreshSmartSelect(
-                    select
-                );
-
-
-            if (
-                selectedSet.size >
-                0
-            ) {
-
-                smartSelect
-                    ?.setValue?.(
-                        Array.from(
-                            selectedSet
-                        ),
-                        false
-                    );
-
-                return;
-            }
-
-
-            if (
-                defaultAll ===
-                true
-            ) {
-
-                smartSelect
-                    ?.setValue?.(
-                        [
-                            '__ALL__'
-                        ],
-                        false
-                    );
-
-                return;
-            }
-
-
-            /*
-            * Không mặc định Tất cả.
-            * Smart select sẽ hiển thị placeholder.
-            */
-            smartSelect
-                ?.setValue?.(
-                    [],
-                    false
-                );
-        }
-
-        function bindAllOptions() {
-
-            [
-                'coSoIds',
-                'nhaAnIds',
-                'doiTuong',
-                'nguoiTaoIds',
-                'thuNganIds',
-                'hinhThucThanhToan',
-                'hienThiThuChi',
-                'trangThaiThanhToan',
-                'caAnIds',
-                'trangThaiSuDung'
-            ]
-                .forEach(
-                    bindAllOption
-                );
-        }
-
-
-        function bindAllOption(
-            id
-        ) {
-
-            const select =
-                root.querySelector(
-                    `#${id}`
-                );
-
-
-            if (
-                !select ||
-                select.dataset
-                    .allOptionBound ===
-                    'true'
-            ) {
-                return;
-            }
-
-
-            select.dataset
-                .allOptionBound =
-                'true';
-
-
-            select.addEventListener(
-                'change',
-                () => {
-
-                    const options =
-                        Array.from(
-                            select.options
-                        );
-
-
-                    const all =
-                        options.find(
-                            option =>
-                                option.value ===
-                                '__ALL__'
-                        );
-
-
-                    if (!all) {
-                        return;
-                    }
-
-
-                    const selectedSpecific =
-                        options.filter(
-                            option =>
-                                option.value !==
-                                    '__ALL__' &&
-                                option.selected
-                        );
-
-
-                    if (
-                        selectedSpecific.length >
-                        0
-                    ) {
-
-                        all.selected =
-                            false;
-
-                    }
-
-
-                    const selected =
-                        options.filter(
-                            option =>
-                                option.selected
-                        );
-
-
-                    if (
-                        selected.length ===
-                        0
-                    ) {
-
-                        all.selected =
-                            true;
-
-                    }
-
-
-                    if (
-                        all.selected &&
-                        selected.length >
-                            1
-                    ) {
-
-                        options.forEach(
-                            option => {
-
-                                option.selected =
-                                    option.value ===
-                                    '__ALL__';
-
-                            }
-                        );
-
-                    }
-
-
-                    refreshSmartSelect(
-                        select
-                    );
-                }
-            );
-        }
-
-
-        function refreshSmartSelect(
-            select
-        ) {
-
-            if (!select) {
-                return null;
-            }
-
-
-            const wrapper =
-                select.closest(
-                    '[data-smart-select]'
-                );
-
-
-            if (!wrapper) {
-                return null;
-            }
-
-
-            const smartSelect =
-                wrapper.smartSelect ||
-                window.MCS
-                    ?.smartSelect
-                    ?.initialize?.(
-                        wrapper
-                    );
-
-
-            smartSelect
-                ?.refresh?.();
-
-
-            return smartSelect;
-        }
-
-
-        function setSingleSelectValue(
-            id,
-            value
-        ) {
-
-            const select =
-                root.querySelector(
-                    `#${id}`
-                );
-
-
-            if (!select) {
-                return;
-            }
-
-
-            const normalized =
-                value ===
-                    undefined ||
-                value ===
-                    null
-                    ? ''
-                    : String(
-                        value
-                    );
-
-
-            select.value =
-                normalized;
-
-
-            const smartSelect =
-                refreshSmartSelect(
-                    select
-                );
-
-
-            smartSelect
-                ?.setValue?.(
-                    normalized,
-                    false
-                );
-        }
-
-
-        function resetMultiSelectToAll(
-            id
-        ) {
-
-            const select =
-                root.querySelector(
-                    `#${id}`
-                );
-
-
-            if (!select) {
-                return;
-            }
-
-
-            Array
-                .from(
-                    select.options
-                )
-                .forEach(
-                    option => {
-
-                        option.selected =
-                            option.value ===
-                            '__ALL__';
-
-                    }
-                );
-
-
-            const smartSelect =
-                refreshSmartSelect(
-                    select
-                );
-
-
-            smartSelect
-                ?.setValue?.(
-                    [
-                        '__ALL__'
-                    ],
-                    false
-                );
-        }
-
-        function clearMultiSelect(
-            id
-        ) {
-
-            const select =
-                root.querySelector(
-                    `#${id}`
-                );
-
-
-            if (!select) {
-                return;
-            }
-
-
-            Array
-                .from(
-                    select.options
-                )
-                .forEach(
-                    option => {
-
-                        option.selected =
-                            false;
-
-                    }
-                );
-
-
-            const smartSelect =
-                refreshSmartSelect(
-                    select
-                );
-
-
-            smartSelect
-                ?.setValue?.(
-                    [],
-                    false
-                );
-        }
-
-        function getSingleNumber(
-            id
-        ) {
-
-            const value =
-                root.querySelector(
-                    `#${id}`
-                )
-                    ?.value;
-
-
-            const number =
-                Number(
-                    value
-                );
-
-
-            return Number.isFinite(
-                number
-            )
-                ? number
-                : null;
-        }
-
-
-        function getMultiValues(
-            id
-        ) {
-
-            const select =
-                root.querySelector(
-                    `#${id}`
-                );
-
-
-            if (!select) {
-                return [];
-            }
-
-
-            return Array
-                .from(
-                    select.selectedOptions ||
-                    []
-                )
-                .map(
-                    option =>
-                        option.value
-                )
-                .filter(
-                    value =>
-                        value &&
-                        value !==
-                            '__ALL__'
-                );
-        }
-
-
-        function getMultiNumbers(
-            id
-        ) {
-
-            return getMultiValues(
-                id
-            )
-                .map(
-                    Number
-                )
-                .filter(
-                    Number.isFinite
-                );
-        }
-
-        function getTodayDate() {
-
-            const now =
-                new Date();
-
-
-            const parts =
-                new Intl.DateTimeFormat(
-                    'en-CA',
-                    {
-                        timeZone:
-                            'Asia/Ho_Chi_Minh',
-
-                        year:
-                            'numeric',
-
-                        month:
-                            '2-digit',
-
-                        day:
-                            '2-digit'
-                    }
-                )
-                    .formatToParts(
-                        now
-                    );
-
-
-            const map =
-                Object.fromEntries(
-                    parts.map(
-                        item => [
-                            item.type,
-                            item.value
-                        ]
-                    )
-                );
-
-
-            return (
-                `${map.year}-${map.month}-${map.day}`
-            );
-        }
-
-        function setDefaultDates() {
-
-            const today =
-                getTodayDate();
-
-
-            setDateValue(
-                'tuNgay',
-                `${today} 00:00:00`
-            );
-
-
-            setDateValue(
-                'denNgay',
-                `${today} 23:59:59`
-            );
-        }
 
         /*
          * ==========================================
-         * DATE
-         * ==========================================
-         */
-
-        function getDateValue(
-            fieldName
-        ) {
-
-            const field =
-                root.querySelector(
-                    `[data-form-field="${fieldName}"]`
-                );
-
-
-            return String(
-                field
-                    ?.querySelector(
-                        '[data-date-value]'
-                    )
-                    ?.value ||
-                ''
-            )
-                .trim();
-        }
-
-
-        function setDateValue(
-            fieldName,
-            value
-        ) {
-
-            const field =
-                root.querySelector(
-                    `[data-form-field="${fieldName}"]`
-                );
-
-
-            if (!field) {
-                return;
-            }
-
-
-            const hidden =
-                field.querySelector(
-                    '[data-date-value]'
-                );
-
-
-            const display =
-                field.querySelector(
-                    '[data-date-input]'
-                );
-
-
-            if (hidden) {
-                hidden.value =
-                    value;
-            }
-
-
-            if (
-                display &&
-                !value
-            ) {
-                display.value =
-                    '';
-            }
-
-
-            const picker =
-                field.datePicker ||
-                field
-                    .querySelector(
-                        '[data-date-picker]'
-                    )
-                    ?.datePicker;
-
-
-            picker
-                ?.setValue?.(
-                    value,
-                    false
-                );
-        }
-
-
-        /*
-         * ==========================================
-         * LABEL
+         * LABEL TÀI KHOẢN TC01
          * ==========================================
          */
 
@@ -2265,52 +937,6 @@ document.addEventListener(
                 tenDangNhap ||
                 `Tài khoản #${item.id}`
             );
-        }
-
-
-        /*
-         * ==========================================
-         * LOADING
-         * ==========================================
-         */
-
-        function setLoading(
-            value
-        ) {
-
-            state.loading =
-                Boolean(
-                    value
-                );
-
-
-            if (
-                elements.loading
-            ) {
-
-                elements.loading.hidden =
-                    !state.loading;
-
-            }
-
-
-            [
-                elements.cancel,
-                elements.download,
-                elements.view
-            ]
-                .forEach(
-                    button => {
-
-                        if (button) {
-
-                            button.disabled =
-                                state.loading;
-
-                        }
-
-                    }
-                );
         }
 
     }

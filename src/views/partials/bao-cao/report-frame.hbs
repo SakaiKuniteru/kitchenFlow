@@ -1,6 +1,9 @@
+<link rel="stylesheet" href="{{asset "/assets/css/pages/bao-cao/bao-cao.css" }}">
+
 <section
     class="report-frame"
-    data-report-frame>
+    data-report-frame
+>
 
     <header class="report-frame__header">
 
@@ -13,12 +16,14 @@
 
     <div
         class="report-frame__body"
-        data-report-scroll>
+        data-report-scroll
+    >
 
         <form
             class="report-frame__form"
             data-report-form
-            novalidate>
+            novalidate
+        >
 
             <div class="report-frame__grid">
 
@@ -39,7 +44,8 @@
                 report-frame__button
                 report-frame__button--cancel
             "
-            data-report-cancel>
+            data-report-cancel
+        >
 
             <i class="fa-solid fa-xmark"></i>
 
@@ -56,7 +62,8 @@
                 report-frame__button
                 report-frame__button--download
             "
-            data-report-download>
+            data-report-download
+        >
 
             <i class="fa-solid fa-download"></i>
 
@@ -73,7 +80,8 @@
                 report-frame__button
                 report-frame__button--view
             "
-            data-report-view>
+            data-report-view
+        >
 
             <i class="fa-regular fa-eye"></i>
 
@@ -85,22 +93,11 @@
 
     </footer>
 
-
-    <div
-        class="report-frame__loading"
-        data-report-loading
-        hidden>
-
-        <div class="report-frame__loading-box">
-
-            <i class="fa-solid fa-spinner fa-spin"></i>
-
-            <span>
-                Đang tạo báo cáo...
-            </span>
-
-        </div>
-
-    </div>
+    {{> common/loading
+        id="report"
+        message="Vui lòng chờ!"
+    }}
 
 </section>
+
+<script defer src="{{asset "/assets/js/pages/bao-cao/bao-cao.js" }}"></script>

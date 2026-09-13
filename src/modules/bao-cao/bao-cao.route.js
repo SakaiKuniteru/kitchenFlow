@@ -35,9 +35,13 @@ const {
     './tai-chinh/tc01/tc01.validation'
 );
 
-const QUYEN_TC01 =
-    'Qxxxxxx';
+const {
+    xemSchema: tc02XemSchema
+} = require('./tai-chinh/tc02/tc02.validation');
 
+const {
+    xemSchema: tc03XemSchema
+} = require('./tai-chinh/tc03/tc03.validation');
 
 router.post(
     '/tai-chinh/tc01',
@@ -52,6 +56,19 @@ router.post(
         .tc01
 );
 
+router.post(
+    '/tai-chinh/tc02',
+    authenticate,
+    validate(tc02XemSchema),
+    taiChinhController.tc02
+);
+
+router.post(
+    '/tai-chinh/tc03',
+    authenticate,
+    validate(tc03XemSchema),
+    taiChinhController.tc03
+);
 
 module.exports =
     router;

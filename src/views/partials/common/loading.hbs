@@ -1,14 +1,52 @@
-<div id='globalLoading' class='loading-overlay' role='status' aria-live='polite' aria-busy='true' hidden>
+<link rel="stylesheet" href="{{asset "/assets/css/components/loading.css" }}">
 
-    <div class='loading-overlay__content'>
 
-        <div class='loading-overlay__spinner' aria-hidden='true'>
+<div
+    class="form-loading"
+    data-form-loading
+    {{#if id}}
+        data-form-loading-id="{{id}}"
+    {{/if}}
+    hidden
+    role="status"
+    aria-live="polite"
+    aria-busy="true"
+>
+
+    <div class="form-loading__backdrop"></div>
+
+
+    <div class="form-loading__dialog">
+
+        <div
+            class="form-loading__spinner"
+            aria-hidden="true"
+        >
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
 
-        <p id='globalLoadingMessage' class='loading-overlay__message'>
-            Đang xử lý dữ liệu...
-        </p>
+
+        <strong
+            class="form-loading__message"
+            data-form-loading-message
+        >
+            {{#if message}}
+                {{message}}
+            {{else}}
+                Đang xử lý. Vui lòng chờ!
+            {{/if}}
+        </strong>
 
     </div>
 
 </div>
+
+
+<script defer src="{{asset "/assets/js/components/loading.js" }}"></script>
