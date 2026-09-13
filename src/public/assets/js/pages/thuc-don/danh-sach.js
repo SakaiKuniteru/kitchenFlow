@@ -2,7 +2,14 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE = '/api/mcs/v1/thuc-don';
-    const pageRoot = document.querySelector('[data-module-list-page="thuc-don"]');
+
+    const pageRoot = document.querySelector('[data-data-list-page][data-module="thuc-don"]');
+
+    if (
+        !pageRoot
+    ) {
+        return;
+    }
 
     const permission = window.ThucDon.permission;
 
@@ -40,7 +47,15 @@ document.addEventListener('DOMContentLoaded', () => {
         caAnId: [],
         trangThai: [],
         page: 1,
-        limit: 20
+        limit: 20,
+        /*
+        * Dữ liệu của page hiện tại.
+        */
+        items: [],
+        sort: {
+            key: null,
+            direction: 'none'
+        }
     };
     const lookupData = {
         loaiThucDon: [],
@@ -50,15 +65,51 @@ document.addEventListener('DOMContentLoaded', () => {
         caAn: []
     };
     const elements = {
-        search: document.querySelector('[data-list-search]'),
-        clearSearch: document.querySelector('[data-list-clear-search]'),
-        body: document.querySelector('[data-list-body]'),
-        empty: document.querySelector('[data-list-empty]'),
-        filterToggle: document.querySelector('[data-list-filter-toggle]'),
-        filterPanel: document.querySelector('[data-list-filter-panel]'),
-        applyFilter: document.querySelector('[data-list-filter-apply]'),
-        resetFilter: document.querySelector('[data-list-filter-reset]'),
-        pagination: document.querySelector('#thucDonPagination')
+        search:
+            document.getElementById(
+                'thucDonListSearch'
+            ) ||
+            pageRoot.querySelector(
+                '[data-list-search]'
+            ) ||
+            pageRoot.querySelector(
+                '.search-picker--data-list input'
+            ),
+
+        clearSearch:
+            pageRoot.querySelector(
+                '[data-list-clear-search]'
+            ),
+
+        body:
+            pageRoot.querySelector(
+                '[data-list-body]'
+            ),
+
+        filterToggle:
+            pageRoot.querySelector(
+                '[data-list-action="filter"]'
+            ),
+
+        filterPanel:
+            pageRoot.querySelector(
+                '[data-list-filter-panel]'
+            ),
+
+        applyFilter:
+            pageRoot.querySelector(
+                '[data-list-filter-apply]'
+            ),
+
+        resetFilter:
+            pageRoot.querySelector(
+                '[data-list-filter-reset]'
+            ),
+
+        pagination:
+            document.getElementById(
+                'thucDonPagination'
+            )
     };
     let pagination = null;
 
@@ -90,10 +141,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function applyPermissionUI() {
-        const createButton = document.querySelector('[data-list-create]');
+        const createButton =
+            pageRoot.querySelector(
+                '[data-list-action="create"]'
+            );
 
-        if (createButton) {
-            createButton.hidden = !permission.canCreate(permissions);
+
+        if (
+            createButton
+        ) {
+            createButton.hidden =
+                !permission.canCreate(
+                    permissions
+                );
         }
     }
 
@@ -238,10 +298,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function bindEvents() {
+        bindHeaderActions();
         bindFilter();
         bindSearch();
+        bindSort();
         bindTableActions();
         bindFilterDependencies();
+    }
+
+    function bindHeaderActions() {
+        const createButton =
+            pageRoot.querySelector(
+                '[data-list-action="create"]'
+            );
+
+
+        createButton?.addEventListener(
+            'click',
+            () => {
+
+                if (
+                    !permission.canCreate(
+                        permissions
+                    )
+                ) {
+                    return;
+                }
+
+
+                const url =
+                    createButton.dataset
+                        .listUrl ||
+                    '/thuc-don/them-moi-thuc-don';
+
+
+                window.location.href =
+                    url;
+
+            }
+        );
     }
 
     function openDetail(id) {
@@ -253,39 +348,165 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function bindFilter() {
-        elements.filterToggle?.addEventListener('click', () => {
-            const open = elements.filterPanel.hidden;
+        elements.filterToggle?.addEventListener(
+            'click',
+            event => {
+                event.preventDefault();
+                event.stopPropagation();
 
-            elements.filterPanel.hidden = !open;
 
-            elements.filterToggle.classList.toggle('is-active', open);
-        });
+                if (
+                    !elements.filterPanel
+                ) {
+                    return;
+                }
 
-        const filterSelectIds = ['loaiThucDon', 'coSoId', 'nhaAnId', 'caAnId', 'trangThai'];
 
-        filterSelectIds.forEach((id) => {
-            const select = document.getElementById(id);
+                const shouldOpen =
+                    elements.filterPanel.hidden;
 
-            if (!select) {
-                return;
+
+                elements.filterPanel.hidden =
+                    !shouldOpen;
+
+
+                elements.filterToggle
+                    .classList
+                    .toggle(
+                        'is-active',
+                        shouldOpen
+                    );
             }
+        );
 
-            select.addEventListener('change', async () => {
+
+        /*
+        * Áp dụng bộ lọc.
+        */
+        elements.applyFilter?.addEventListener(
+            'click',
+            async () => {
                 readFilterState();
 
-                state.page = 1;
+
+                state.page =
+                    1;
+
+
+                if (
+                    elements.filterPanel
+                ) {
+                    elements.filterPanel.hidden =
+                        true;
+                }
+
+
+                elements.filterToggle
+                    ?.classList
+                    .remove(
+                        'is-active'
+                    );
+
 
                 await loadData();
-            });
-        });
+            }
+        );
 
-        elements.resetFilter?.addEventListener('click', async () => {
-            resetFilters();
 
-            state.page = 1;
+        /*
+        * Đặt lại.
+        */
+        elements.resetFilter?.addEventListener(
+            'click',
+            async () => {
+                resetFilters();
 
-            await loadData();
-        });
+
+                state.page =
+                    1;
+
+
+                await loadData();
+            }
+        );
+
+
+        /*
+        * Click bên ngoài:
+        * đóng popup bộ lọc.
+        */
+        document.addEventListener(
+            'pointerdown',
+            event => {
+                if (
+                    !elements.filterPanel ||
+                    elements.filterPanel.hidden
+                ) {
+                    return;
+                }
+
+
+                const target =
+                    event.target;
+
+
+                if (
+                    elements.filterPanel.contains(
+                        target
+                    ) ||
+                    elements.filterToggle
+                        ?.contains(
+                            target
+                        )
+                ) {
+                    return;
+                }
+
+
+                elements.filterPanel.hidden =
+                    true;
+
+
+                elements.filterToggle
+                    ?.classList
+                    .remove(
+                        'is-active'
+                    );
+            }
+        );
+
+
+        /*
+        * ESC cũng đóng.
+        */
+        document.addEventListener(
+            'keydown',
+            event => {
+                if (
+                    event.key !==
+                        'Escape' ||
+                    !elements.filterPanel ||
+                    elements.filterPanel.hidden
+                ) {
+                    return;
+                }
+
+
+                elements.filterPanel.hidden =
+                    true;
+
+
+                elements.filterToggle
+                    ?.classList
+                    .remove(
+                        'is-active'
+                    );
+
+
+                elements.filterToggle
+                    ?.focus();
+            }
+        );
     }
 
     function bindFilterDependencies() {
@@ -358,6 +579,242 @@ document.addEventListener('DOMContentLoaded', () => {
         updateClearButton();
     }
 
+    function bindSort() {
+        pageRoot
+            .querySelectorAll(
+                '[data-list-sort]'
+            )
+            .forEach(
+                button => {
+                    button.addEventListener(
+                        'click',
+                        () => {
+                            const key =
+                                button.dataset
+                                    .listSort;
+
+
+                            if (
+                                state.sort.key !==
+                                key
+                            ) {
+                                state.sort = {
+                                    key,
+                                    direction:
+                                        'asc'
+                                };
+                            } else {
+                                const next = {
+                                    none:
+                                        'asc',
+
+                                    asc:
+                                        'desc',
+
+                                    desc:
+                                        'none'
+                                };
+
+
+                                state.sort.direction =
+                                    next[
+                                        state.sort
+                                            .direction
+                                    ];
+
+
+                                if (
+                                    state.sort
+                                        .direction ===
+                                    'none'
+                                ) {
+                                    state.sort.key =
+                                        null;
+                                }
+                            }
+
+
+                            updateSortIcons();
+
+
+                            renderRows(
+                                applySort(
+                                    state.items
+                                )
+                            );
+                        }
+                    );
+                }
+            );
+    }
+
+    function updateSortIcons() {
+        pageRoot
+            .querySelectorAll(
+                '[data-list-sort]'
+            )
+            .forEach(
+                button => {
+                    const icon =
+                        button.querySelector(
+                            '[data-sort-icon]'
+                        );
+
+
+                    if (
+                        !icon
+                    ) {
+                        return;
+                    }
+
+
+                    const key =
+                        button.dataset
+                            .listSort;
+
+
+                    icon.dataset.sortDirection =
+                        key ===
+                        state.sort.key
+                            ? state.sort
+                                .direction
+                            : 'none';
+                }
+            );
+    }
+
+    function applySort(
+        records
+    ) {
+        const {
+            key,
+            direction
+        } =
+            state.sort;
+
+
+        if (
+            !key ||
+            direction ===
+                'none'
+        ) {
+            return [
+                ...records
+            ];
+        }
+
+
+        return [
+            ...records
+        ].sort(
+            (
+                first,
+                second
+            ) => {
+                const firstValue =
+                    getSortValue(
+                        first,
+                        key
+                    );
+
+
+                const secondValue =
+                    getSortValue(
+                        second,
+                        key
+                    );
+
+
+                let result;
+
+
+                if (
+                    key ===
+                        'loaiThucDon' ||
+                    key ===
+                        'trangThai'
+                ) {
+                    result =
+                        Number(
+                            firstValue ||
+                            0
+                        ) -
+                        Number(
+                            secondValue ||
+                            0
+                        );
+                } else {
+                    result =
+                        String(
+                            firstValue ??
+                            ''
+                        )
+                            .localeCompare(
+                                String(
+                                    secondValue ??
+                                    ''
+                                ),
+                                'vi',
+                                {
+                                    numeric:
+                                        true,
+
+                                    sensitivity:
+                                        'base'
+                                }
+                            );
+                }
+
+
+                return direction ===
+                    'asc'
+                        ? result
+                        : -result;
+            }
+        );
+    }
+
+    function getSortValue(
+        record,
+        key
+    ) {
+        switch (
+            key
+        ) {
+            case 'tenCoSo':
+                return (
+                    record?.tenCoSo ||
+                    record?.coSo
+                        ?.tenCoSo ||
+                    ''
+                );
+
+
+            case 'tenNhaAn':
+                return (
+                    record?.tenNhaAn ||
+                    record?.nhaAn
+                        ?.tenNhaAn ||
+                    ''
+                );
+
+
+            case 'tenCaAn':
+                return (
+                    record?.tenCaAn ||
+                    record?.caAn
+                        ?.tenCaAn ||
+                    ''
+                );
+
+
+            default:
+                return record?.[
+                    key
+                ];
+        }
+    }
+
     function bindTableActions() {
         elements.body?.addEventListener('click', async (event) => {
             const button = event.target.closest('[data-action]');
@@ -404,29 +861,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadData() {
         try {
-            setLoading(true);
+            setLoading(
+                true
+            );
 
-            const query = buildQuery();
 
-            const response = await window.MCS.api.request(`${API_BASE}/tong-hop?${query}`);
+            const query =
+                buildQuery();
 
-            const result = normalizeListResponse(response);
 
-            renderRows(result.items);
+            const response =
+                await window.MCS
+                    .api
+                    .request(
+                        `${API_BASE}/tong-hop?${query}`
+                    );
+
+
+            const result =
+                normalizeListResponse(
+                    response
+                );
+
+
+            state.items =
+                Array.isArray(
+                    result.items
+                )
+                    ? result.items
+                    : [];
+
+
+            renderRows(
+                applySort(
+                    state.items
+                )
+            );
+
 
             pagination?.setData({
-                page: result.page,
-                pageSize: result.limit,
-                total: result.total
+                page:
+                    result.page,
+
+                pageSize:
+                    result.limit,
+
+                total:
+                    result.total
             });
-        } catch (error) {
-            console.error(error);
 
-            renderRows([]);
+        } catch (
+            error
+        ) {
+            console.error(
+                error
+            );
 
-            showError(error?.message || 'Không thể tải danh sách thực đơn.');
+
+            state.items =
+                [];
+
+
+            renderRows(
+                []
+            );
+
+
+            showError(
+                error?.message ||
+                'Không thể tải danh sách thực đơn.'
+            );
+
         } finally {
-            setLoading(false);
+            setLoading(
+                false
+            );
         }
     }
 
@@ -593,66 +1102,234 @@ document.addEventListener('DOMContentLoaded', () => {
 
         elements.body.innerHTML = '';
 
-        if (!Array.isArray(danhSach) || danhSach.length === 0) {
-            if (elements.empty) {
-                elements.empty.hidden = false;
-            }
+        if (
+            !Array.isArray(
+                danhSach
+            ) ||
+            danhSach.length ===
+                0
+        ) {
+            const row =
+                document.createElement(
+                    'tr'
+                );
+
+
+            const cell =
+                document.createElement(
+                    'td'
+                );
+
+            const columnCount =
+                pageRoot.querySelectorAll(
+                    '[data-list-column]'
+                ).length +
+                (
+                    pageRoot.querySelector(
+                        '.data-list-table__index'
+                    )
+                        ? 1
+                        : 0
+                ) +
+                (
+                    pageRoot.querySelector(
+                        '[data-list-row-actions-column]'
+                    )
+                        ? 1
+                        : 0
+                );
+
+            cell.className =
+                'catalog-table__cell data-list-table__empty';
+
+
+            cell.colSpan =
+                columnCount;
+
+
+            cell.textContent =
+                'Không có dữ liệu.';
+
+
+            row.appendChild(
+                cell
+            );
+
+
+            elements.body.appendChild(
+                row
+            );
+
 
             return;
         }
 
-        if (elements.empty) {
-            elements.empty.hidden = true;
-        }
+        danhSach.forEach(
+            (
+                item,
+                rowIndex
+            ) => {
+                const row =
+                    document.createElement(
+                        'tr'
+                    );
 
-        danhSach.forEach((item) => {
-            const row = document.createElement('tr');
 
-            row.dataset.recordId = String(item.id);
+                row.dataset.recordId =
+                    String(
+                        item.id
+                    );
 
-            row.innerHTML = `
-                        <td>
-                            <strong
-                                class="
-                                    thuc-don-list-code
-                                ">
-                                ${escapeHtml(item.maThucDon || '')}
-                            </strong>
-                        </td>
-                        <td>
-                            <span
-                                class="
-                                    thuc-don-list-name
-                                ">
-                                ${escapeHtml(item.tenThucDon || '')}
-                            </span>
-                        </td>
-                        <td>
-                            ${renderMenuType(item.loaiThucDon)}
-                        </td>
-                        <td>
-                            ${escapeHtml(item.tenCoSo || item.coSo?.tenCoSo || '-')}
-                        </td>
-                        <td>
-                            ${escapeHtml(item.tenNhaAn || item.nhaAn?.tenNhaAn || '-')}
-                        </td>
-                        <td>
-                            ${escapeHtml(item.tenCaAn || item.caAn?.tenCaAn || '-')}
-                        </td>
-                        <td>
-                            ${renderStatus(item)}
-                        </td>
-                        <td>
-                            <div
-                                class="
-                                    module-list-table__row-actions
-                                ">
-                                ${renderAction('view', item.id)}
-                                ${renderAction('print', item.id)}
-                                ${renderAction('delete', item.id)}
-                            </div>
-                        </td>
-                    `;
+
+                const index =
+                    (
+                        state.page -
+                        1
+                    ) *
+                        state.limit +
+                    rowIndex +
+                    1;
+
+
+                row.innerHTML = `
+                    <td
+                        class="
+                            catalog-table__cell
+                            catalog-table__cell--index
+                            catalog-table__cell--center
+                            data-list-table__index
+                        ">
+                        ${index}
+                    </td>
+
+                    <td
+                        class="
+                            catalog-table__cell
+                            catalog-table__cell--left
+                        ">
+
+                        <strong
+                            class="
+                                thuc-don-list-code
+                            ">
+                            ${escapeHtml(
+                                item.maThucDon ||
+                                ''
+                            )}
+                        </strong>
+
+                    </td>
+
+
+                <td
+                    class="
+                        catalog-table__cell
+                        catalog-table__cell--left
+                    ">
+                    <span
+                        class="
+                            thuc-don-list-name
+                        ">
+                        ${escapeHtml(
+                            item.tenThucDon ||
+                            ''
+                        )}
+                    </span>
+                </td>
+
+
+                <td
+                    class="
+                        catalog-table__cell
+                        catalog-table__cell--center
+                    ">
+                    ${renderMenuType(
+                        item.loaiThucDon
+                    )}
+                </td>
+
+
+                <td
+                    class="
+                        catalog-table__cell
+                        catalog-table__cell--left
+                    ">
+                    ${escapeHtml(
+                        item.tenCoSo ||
+                        item.coSo?.tenCoSo ||
+                        '-'
+                    )}
+                </td>
+
+
+                <td
+                    class="
+                        catalog-table__cell
+                        catalog-table__cell--left
+                    ">
+                    ${escapeHtml(
+                        item.tenNhaAn ||
+                        item.nhaAn?.tenNhaAn ||
+                        '-'
+                    )}
+                </td>
+
+
+                <td
+                    class="
+                        catalog-table__cell
+                        catalog-table__cell--center
+                    ">
+                    ${escapeHtml(
+                        item.tenCaAn ||
+                        item.caAn?.tenCaAn ||
+                        '-'
+                    )}
+                </td>
+
+
+                <td
+                    class="
+                        catalog-table__cell
+                        catalog-table__cell--center
+                    ">
+                    ${renderStatus(
+                        item
+                    )}
+                </td>
+
+
+                <td
+                    class="
+                        catalog-table__cell
+                        catalog-table__cell--center
+                        data-list-table__actions-sticky
+                    ">
+
+                    <div
+                        class="
+                            module-list-table__row-actions
+                        ">
+
+                        ${renderAction(
+                            'view',
+                            item.id
+                        )}
+
+                        ${renderAction(
+                            'print',
+                            item.id
+                        )}
+
+                        ${renderAction(
+                            'delete',
+                            item.id
+                        )}
+
+                    </div>
+
+                </td>
+            `;
 
             elements.body.appendChild(row);
         });

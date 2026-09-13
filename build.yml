@@ -1,0 +1,41 @@
+name: KitchenFlow Build
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Product 1
+        run: npm run build:product1
+
+      - name: Build Product 2
+        run: npm run build:product2
+
+      - name: Verify Product 1 manifest
+        run: |
+          test -f src/public/assets/dist/product1/manifest.json
+
+      - name: Verify Product 2 manifest
+        run: |
+          test -f src/public/assets/dist/product2/manifest.json

@@ -1,88 +1,103 @@
+/* =========================================================
+   PAGE LAYOUT
+   ========================================================= */
+
+.data-list-page[data-module='thuc-don'] {
+    /*
+     * Chừa chỗ cho:
+     * - app header
+     * - breadcrumb
+     * - padding page-content
+     * - app footer
+     */
+    height: calc(
+        100dvh -
+        var(--header-height) -
+        128px
+    );
+
+    min-height: 560px;
+}
+
+
+/* =========================================================
+   FILTER
+   ========================================================= */
+
+/*
+ * Không override width/height của .data-list-filter.
+ *
+ * Form chung đã cố định:
+ * width: 520px;
+ * height: 620px;
+ */
+.data-list-filter--thuc-don {
+    width: 520px;
+    height: 620px;
+
+    max-width:
+        calc(
+            100vw -
+            40px
+        );
+
+    max-height:
+        calc(
+            100dvh -
+            120px
+        );
+}
+
+
+.data-list-filter--thuc-don
+.data-list-filter__body {
+    padding: 16px;
+}
+
+
+/*
+ * 5 bộ lọc xếp dọc.
+ *
+ * Không bung thành 5 cột ngang.
+ */
 .thuc-don-list-filter {
     display: grid;
 
-    grid-template-columns: repeat(5, minmax(150px, 1fr));
+    grid-template-columns:
+        minmax(
+            0,
+            1fr
+        );
 
-    align-items: end;
+    align-content: start;
 
-    gap: 16px;
+    gap: 12px;
 
     width: 100%;
 }
 
-.module-list-table {
+
+.thuc-don-list-filter
+.data-list-filter__field {
     width: 100%;
-    min-width: 1100px;
 
-    border-collapse: collapse;
-
-    table-layout: fixed;
+    margin-bottom: 0;
 }
 
-.module-list-table thead {
-    background: #f8fafc;
+
+.thuc-don-list-filter > * {
+    min-width: 0;
 }
 
-.module-list-page__content::-webkit-scrollbar {
-    height: 8px;
-}
 
-.module-list-page__content::-webkit-scrollbar-track {
-    background: #f1f5f9;
-}
+.thuc-don-list-filter
+.form-field,
 
-.module-list-page__content::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 999px;
-}
+.thuc-don-list-filter
+.smart-select {
+    width: 100%;
 
-.module-list-page__content::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
-
-.module-list-table th {
-    height: 48px;
-
-    padding: 0 16px;
-
-    color: #58677f;
-
-    font-size: 11px;
-    font-weight: 700;
-
-    letter-spacing: 0.02em;
-
-    text-transform: uppercase;
-
-    border-bottom: 1px solid #edf1f6;
-}
-
-.module-list-table td {
-    height: 72px;
-
-    padding: 12px 16px;
-
-    color: #40516b;
-
-    font-size: 13px;
-
-    vertical-align: middle;
-
-    border-bottom: 1px solid #edf1f6;
-}
-
-.module-list-table tbody tr {
-    cursor: pointer;
-
-    transition: background 0.15s ease;
-}
-
-.module-list-table tbody tr:hover {
-    background: #fafcff;
-}
-
-.module-list-table tbody tr:last-child td {
-    border-bottom: 0;
+    min-width: 0;
 }
 
 /* =========================================================
@@ -185,14 +200,33 @@
     gap: 8px;
 }
 
+/* =========================================================
+   ACTION COLUMN
+   ========================================================= */
+
+.data-list-page[data-module='thuc-don']
+.data-list-table__actions-sticky {
+    width: 132px;
+    min-width: 132px;
+    max-width: 132px;
+
+    padding-right: 6px;
+    padding-left: 6px;
+}
+
+
+.module-list-table__row-actions {
+    gap: 6px;
+}
+
 .module-list-table__action {
     display: inline-flex;
 
     align-items: center;
     justify-content: center;
 
-    width: 36px;
-    height: 36px;
+    width: 30px;
+    height: 30px;
 
     padding: 0;
 
@@ -258,24 +292,6 @@
 .thuc-don-list-filter .smart-select {
     width: 100%;
     min-width: 0;
-}
-
-@media (max-width: 1200px) {
-    .thuc-don-list-filter {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
-@media (max-width: 800px) {
-    .thuc-don-list-filter {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-@media (max-width: 560px) {
-    .thuc-don-list-filter {
-        grid-template-columns: 1fr;
-    }
 }
 
 .thuc-don-general__status.is-new,

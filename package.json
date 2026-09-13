@@ -5,11 +5,23 @@
     "dev": "npm run build:templates && APP_ENV=dev node --watch src/server.js",
     "format": "prettier --write \"src/**/*.{js,hbs,json,css}\"",
     "migrate:assets": "node src/scripts/migrate-assets.js",
-    "build:product1": "npm run build:templates && APP_ENV=product1 node src/scripts/build-production.js",
-    "build:product2": "npm run build:templates && APP_ENV=product2 node src/scripts/build-production.js",
-    "start:product1": "APP_ENV=product1 node src/server.js",
-    "start:product2": "APP_ENV=product2 node src/server.js",
+
+    "build:dev": "node src/scripts/build-dev-stage.js",
+
+    "build:test": "node src/scripts/build-release-stage.js test",
+    "start:test": "cd .releases/test/current && APP_ENV=test node src/server.js",
+    "test": "npm run build:test && npm run start:test",
+
+    "build:stable": "node src/scripts/build-release-stage.js stable",
+    "start:stable": "cd .releases/stable/current && APP_ENV=stable node src/server.js",
+    "stable": "npm run build:stable && npm run start:stable",
+
+    "build:product1": "node src/scripts/build-release-stage.js product1",
+    "start:product1": "cd .releases/product1/current && APP_ENV=product1 node src/server.js",
     "product1": "npm run build:product1 && npm run start:product1",
+    
+    "build:product2": "node src/scripts/build-release-stage.js product2",
+    "start:product2": "cd .releases/product2/current && APP_ENV=product2 node src/server.js",
     "product2": "npm run build:product2 && npm run start:product2"
   },
   "dependencies": {

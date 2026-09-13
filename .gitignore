@@ -45,3 +45,6 @@ logs/
 # =====================================================
 .vscode/
 .idea/
+
+# Release worktrees
+.releases/

@@ -1,8 +1,12 @@
 {{#if listPage.filters.length}}
 
-    <div class="data-list-filter" data-list-filter-panel hidden>
+    <div
+        class="data-list-filter {{listPage.filterPanelClassName}}"
+        data-list-filter-panel
+        hidden>
 
-        <div class="data-list-filter__body">
+        <div
+            class="data-list-filter__body {{listPage.filterBodyClassName}}">
 
             {{#each listPage.filters}}
 

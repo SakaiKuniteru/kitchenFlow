@@ -72,13 +72,32 @@
                     {{/if}}
 
                     {{#each listPage.columns}}
-                        <th class="catalog-table__cell catalog-table__cell--center" data-list-column
-                            data-column-key="{{key}}" data-column-type="{{type}}"
-                            {{#if width}}style="width: {{width}}; min-width: {{width}};" {{/if}}>
+                        <th
+                            class="
+                                catalog-table__cell
+                                {{#if alignClass}}
+                                    {{alignClass}}
+                                {{else}}
+                                    catalog-table__cell--center
+                                {{/if}}
+                            "
+                            data-list-column
+                            data-column-key="{{key}}"
+                            data-column-type="{{type}}"
+                            data-column-align="{{align}}"
+                            {{#if width}}
+                                style="
+                                    width: {{width}};
+                                    min-width: {{width}};
+                                "
+                            {{/if}}>
 
                             {{#if sortable}}
 
-                                <button type="button" class="data-list-sort-button" data-list-sort="{{key}}"
+                                <button
+                                    type="button"
+                                    class="data-list-sort-button"
+                                    data-list-sort="{{key}}"
                                     aria-label="Sắp xếp theo {{label}}">
 
                                     <span class="data-list-sort-button__label">
@@ -129,7 +148,9 @@
     </div>
 
     <footer class="data-list-card__footer">
-        {{> catalog/pagination}}
+        {{> catalog/pagination
+            paginationId=listPage.paginationId
+        }}
     </footer>
 
     {{#if listPage.selectable}}

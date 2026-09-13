@@ -169,6 +169,52 @@
     text-align: center;
 }
 
+/* =========================================================
+   COLUMN ALIGNMENT
+   ========================================================= */
+
+.data-list-table
+.catalog-table__cell--left {
+    text-align: left;
+}
+
+
+.data-list-table
+.catalog-table__cell--center {
+    text-align: center;
+}
+
+
+.data-list-table
+.catalog-table__cell--right {
+    text-align: right;
+}
+
+
+/*
+ * Sort button phải đi theo alignment
+ * của chính column.
+ */
+.data-list-table
+.catalog-table__cell--left
+.data-list-sort-button {
+    justify-content: flex-start;
+}
+
+
+.data-list-table
+.catalog-table__cell--center
+.data-list-sort-button {
+    justify-content: center;
+}
+
+
+.data-list-table
+.catalog-table__cell--right
+.data-list-sort-button {
+    justify-content: flex-end;
+}
+
 .data-list-table tbody td {
     position: relative;
     z-index: 1;

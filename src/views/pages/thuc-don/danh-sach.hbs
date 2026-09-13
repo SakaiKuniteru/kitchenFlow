@@ -1,18 +1,28 @@
 <link rel="stylesheet" href="{{asset "/assets/css/pages/thuc-don/danh-sach.css"}}">
 <link rel="stylesheet" href="{{asset "/assets/css/catalog/pagination.css"}}">
-<link rel="stylesheet" href="{{asset "/assets/css/pages/thuc-don/module-list.css"}}">
 
-{{> thuc-don/module-list-page
-    moduleName="thuc-don"
-    title="Danh sách thực đơn"
-    createUrl="/thuc-don/them-moi-thuc-don"
-    showNoPermission=true
-    searchPlaceholder="Tìm theo mã hoặc tên thực đơn..."
-    filterPartial="thuc-don/filter-form"
-    footerPartial="thuc-don/status-legend"
-    paginationId="thucDonPagination"
-    columns=columns
-}}
+<main
+    class="data-list-page"
+    data-data-list-page
+    data-module="{{listPage.moduleName}}"
+    data-list-endpoint="{{listPage.listEndpoint}}">
+
+
+    {{> common/data-list/header
+        listPage=listPage
+    }}
+
+    {{> common/data-list/data-card
+        listPage=listPage
+    }}
+
+    {{> common/data-list/filter
+        listPage=listPage
+    }}
+
+</main>
+
+{{> catalog/no-permission}}
 
 <script src="{{asset "/assets/js/catalog/pagination.js"}}"></script>
 <script src="{{asset "/assets/js/pages/thuc-don/permission.js"}}"></script>
