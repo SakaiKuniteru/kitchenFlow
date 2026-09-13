@@ -25,6 +25,10 @@ node_modules/
 .env.*
 !.env.example
 
+src/public/dl-bao-cao/
+src/public/bao-cao/
+src/public/upload/
+
 
 # =====================================================
 # PRODUCTION BUILD
