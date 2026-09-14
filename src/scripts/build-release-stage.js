@@ -725,21 +725,26 @@ git([
  * CURRENT STAGE REF
  * ==========================================
  *
- * Giữ ref cũ để tiện kiểm tra:
+ * Không dùng:
  *
  * refs/kitchenflow/test
- * refs/kitchenflow/stable
- * refs/kitchenflow/product1
  *
- * Nó chỉ là version được build gần nhất.
+ * vì sẽ xung đột với:
  *
- * Promotion thật sử dụng versionRef phía trên.
+ * refs/kitchenflow/test/MCS_1.0.1
+ *
+ * Current stage được lưu riêng:
+ *
+ * refs/kitchenflow/current/test
+ * refs/kitchenflow/current/stable
+ * refs/kitchenflow/current/product1
+ * refs/kitchenflow/current/product2
  * ==========================================
  */
 
 git([
     'update-ref',
-    `refs/kitchenflow/${STAGE}`,
+    `refs/kitchenflow/current/${STAGE}`,
     sourceCommit
 ]);
 
