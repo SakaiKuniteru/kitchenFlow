@@ -19,8 +19,7 @@ const {
 
 const MA_BAO_CAO = 'tc_03';
 
-const TEN_BAO_CAO =
-    'Báo cáo các khoản vé ăn chưa thanh toán';
+const TEN_BAO_CAO = 'Báo cáo các khoản chưa thanh toán';
 
 class Tc03Service {
     getEnumItem(items, value) {

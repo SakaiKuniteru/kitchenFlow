@@ -125,6 +125,52 @@ class BaoCaoWebController {
         }
     }
 
+    async tc03(
+        req,
+        res,
+        next
+    ) {
+        try {
+
+            return renderBaoCaoPage(
+                req,
+                res,
+                'pages/bao-cao/tai-chinh/tc03',
+                {
+
+                    title:
+                        'TC03. Báo cáo các khoản chưa thanh toán',
+
+                    breadcrumbs: [
+                        {
+                            label:
+                                'Báo cáo'
+                        },
+                        {
+                            label:
+                                'TC03'
+                        }
+                    ],
+
+                    maBaoCao:
+                        'TC03',
+
+                    tenBaoCao:
+                        'Báo cáo các khoản chưa thanh toán'
+
+                }
+            );
+
+        } catch (
+            error
+        ) {
+
+            next(
+                error
+            );
+
+        }
+    }
 }
 
 

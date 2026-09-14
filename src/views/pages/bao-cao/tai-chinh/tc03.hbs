@@ -1,0 +1,178 @@
+<link
+    rel="stylesheet"
+    href="{{asset "/assets/css/pages/bao-cao/tai-chinh/tc03.css" }}"
+>
+
+
+<main
+    class="tc03-page"
+    data-tc03-page
+>
+
+    {{#> bao-cao/report-frame
+        maBaoCao=maBaoCao
+        tenBaoCao=tenBaoCao
+    }}
+
+
+        {{> forms/select
+            id="loaiThoiGian"
+            name="loaiThoiGian"
+            label="Loại thời gian"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn loại thời gian..."
+            options=null
+            required=true
+        }}
+
+
+        {{> forms/date
+            id="tuNgay"
+            name="tuNgay"
+            label="Từ ngày"
+            placeholder="Nhập từ ngày..."
+            defaultTime="00:00:00"
+            showTime=true
+            required=true
+        }}
+
+
+        {{> forms/date
+            id="denNgay"
+            name="denNgay"
+            label="Đến ngày"
+            placeholder="Nhập đến ngày..."
+            defaultTime="23:59:59"
+            showTime=true
+            required=true
+        }}
+
+
+        {{> forms/select
+            id="coSoIds"
+            name="coSoIds"
+            label="Cơ sở"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn cơ sở..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="nhaAnIds"
+            name="nhaAnIds"
+            label="Nhà ăn"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn nhà ăn..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="caAnIds"
+            name="caAnIds"
+            label="Ca ăn"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn ca ăn..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="doiTuong"
+            name="doiTuong"
+            label="Đối tượng"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn đối tượng..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="nguoiTaoIds"
+            name="nguoiTaoIds"
+            label="Người tạo"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn người tạo..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="nhanVienIds"
+            name="nhanVienIds"
+            label="Nhân viên lấy vé"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn nhân viên..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="hinhThucThanhToan"
+            name="hinhThucThanhToan"
+            label="Hình thức thanh toán"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn hình thức thanh toán..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="trangThaiPhieuThu"
+            name="trangThaiPhieuThu"
+            label="Trạng thái phiếu"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn trạng thái phiếu..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="trangThaiSuDung"
+            name="trangThaiSuDung"
+            label="Trạng thái sử dụng"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn trạng thái sử dụng..."
+            options=null
+        }}
+
+
+    {{/bao-cao/report-frame}}
+
+</main>
+
+
+<script
+    defer
+    src="{{asset "/assets/js/pages/bao-cao/tai-chinh/tc03.js" }}"
+></script>

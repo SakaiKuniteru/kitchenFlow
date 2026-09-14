@@ -184,7 +184,7 @@ document.addEventListener(
                 });
 
 
-        report.start(initialize());
+        report.start(initialize);
 
 
         /*

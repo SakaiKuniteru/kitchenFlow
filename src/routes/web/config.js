@@ -293,16 +293,16 @@ const baoCaoRoutes = [
         path: '/bao-cao/tc02',
         handler: baoCaoWebController.tc02
     },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/tc03',
-    //     handler: baoCaoWebController.tc03
-    // },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/tc04',
-    //     handler: baoCaoWebController.tc04
-    // },
+    {
+        method: 'get',
+        path: '/bao-cao/tc03',
+        handler: baoCaoWebController.tc03
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/tc04',
+        handler: baoCaoWebController.tc04
+    },
     // {
     //     method: 'get',
     //     path: '/bao-cao/tc05',
