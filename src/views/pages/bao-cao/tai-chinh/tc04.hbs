@@ -1,0 +1,140 @@
+<link
+    rel="stylesheet"
+    href="{{asset "/assets/css/pages/bao-cao/tai-chinh/tc04.css" }}"
+>
+
+
+<main
+    class="tc04-page"
+    data-tc04-page
+>
+
+    {{#> bao-cao/report-frame
+        maBaoCao=maBaoCao
+        tenBaoCao=tenBaoCao
+    }}
+
+
+        {{> forms/date
+            id="tuNgay"
+            name="tuNgay"
+            label="Từ ngày"
+            placeholder="Nhập từ ngày..."
+            defaultTime="00:00:00"
+            showTime=true
+            required=true
+        }}
+
+
+        {{> forms/date
+            id="denNgay"
+            name="denNgay"
+            label="Đến ngày"
+            placeholder="Nhập đến ngày..."
+            defaultTime="23:59:59"
+            showTime=true
+            required=true
+        }}
+
+
+        {{> forms/select
+            id="nguon"
+            name="nguon"
+            label="Nguồn"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn nguồn..."
+            options=null
+            required=true
+        }}
+
+
+        {{> forms/select
+            id="coSoIds"
+            name="coSoIds"
+            label="Cơ sở"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn cơ sở..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="nhaAnIds"
+            name="nhaAnIds"
+            label="Nhà ăn"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn nhà ăn..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="chinhSachIds"
+            name="chinhSachIds"
+            label="Chính sách"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn chính sách..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="voucherKeys"
+            name="voucherKeys"
+            label="Voucher"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn voucher..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="nhanVienIds"
+            name="nhanVienIds"
+            label="Nhân viên"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn nhân viên..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="phongBanIds"
+            name="phongBanIds"
+            label="Phòng ban"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn phòng ban..."
+            options=null
+        }}
+
+
+    {{/bao-cao/report-frame}}
+
+</main>
+
+
+<script
+    defer
+    src="{{asset "/assets/js/pages/bao-cao/tai-chinh/tc04.js" }}"
+></script>

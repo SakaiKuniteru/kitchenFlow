@@ -303,11 +303,11 @@ const baoCaoRoutes = [
         path: '/bao-cao/tc04',
         handler: baoCaoWebController.tc04
     },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/tc05',
-    //     handler: baoCaoWebController.tc05
-    // },
+    {
+        method: 'get',
+        path: '/bao-cao/tc05',
+        handler: baoCaoWebController.tc05
+    },
 
 
     // // BÁO CÁO THỤC ĐƠN //

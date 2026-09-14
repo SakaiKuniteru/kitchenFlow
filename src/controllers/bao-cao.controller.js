@@ -171,6 +171,53 @@ class BaoCaoWebController {
 
         }
     }
+
+    async tc04(
+        req,
+        res,
+        next
+    ) {
+        try {
+
+            return renderBaoCaoPage(
+                req,
+                res,
+                'pages/bao-cao/tai-chinh/tc04',
+                {
+
+                    title:
+                        'TC04. Báo cáo miễn giảm và ưu đãi',
+
+                    breadcrumbs: [
+                        {
+                            label:
+                                'Báo cáo'
+                        },
+                        {
+                            label:
+                                'TC04'
+                        }
+                    ],
+
+                    maBaoCao:
+                        'TC04',
+
+                    tenBaoCao:
+                        'Báo cáo miễn giảm và ưu đãi'
+
+                }
+            );
+
+        } catch (
+            error
+        ) {
+
+            next(
+                error
+            );
+
+        }
+    }
 }
 
 
