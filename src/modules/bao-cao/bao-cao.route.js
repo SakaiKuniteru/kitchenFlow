@@ -1,33 +1,12 @@
 'use strict';
-
-const express = require(
-    'express'
-);
-
-
-const router =
-    express.Router();
-
-
-const authenticate = require(
-    '../../middlewares/authenticate.middleware'
-);
-
-
-const authorize = require(
-    '../../middlewares/authorize.middleware'
-);
-
-
-const validate = require(
-    '../../middlewares/validate.middleware'
-);
-
-
-const taiChinhController = require(
-    './tai-chinh/tai-chinh.controller'
-);
-
+const express = require('express');
+const router = express.Router();
+const authenticate = require('../../middlewares/authenticate.middleware');
+const authorize = require('../../middlewares/authorize.middleware');
+const validate = require('../../middlewares/validate.middleware');
+const taiChinhController = require('./tai-chinh/tai-chinh.controller');
+const datMonController = require('./dat-mon/dat-mon.controller');
+const veAnController = require('./ve-an/ve-an.controller');
 
 const {
     xemSchema: tc01XemSchema
@@ -51,9 +30,6 @@ const {
     xemSchema: tc05XemSchema
 } = require('./tai-chinh/tc05/tc05.validation');
 
-
-const veAnController = require('./ve-an/ve-an.controller');
-
 const {
     xemSchema: va01XemSchema
 } = require('./ve-an/va01/va01.validation');
@@ -73,6 +49,28 @@ const {
 const {
     xemSchema: va05XemSchema
 } = require('./ve-an/va05/va05.validation');
+
+
+const {
+    xemSchema: dh01XemSchema
+} = require('./dat-mon/dh01/dh01.validation');
+
+const {
+    xemSchema: dh02XemSchema
+} = require('./dat-mon/dh02/dh02.validation');
+
+const {
+    xemSchema: dh03XemSchema
+} = require('./dat-mon/dh03/dh03.validation');
+
+const {
+    xemSchema: dh04XemSchema
+} = require('./dat-mon/dh04/dh04.validation');
+
+const {
+    xemSchema: dh05XemSchema
+} = require('./dat-mon/dh05/dh05.validation');
+
 
 router.post(
     '/tai-chinh/tc01',
@@ -150,5 +148,39 @@ router.post(
     veAnController.va05
 );
 
+router.post(
+    '/don-hang/dh01',
+    authenticate,
+    validate(va01XemSchema),
+    datMonController.dh01
+);
+
+router.post(
+    '/don-hang/dh02',
+    authenticate,
+    validate(va02XemSchema),
+    datMonController.dh02
+);
+
+router.post(
+    '/don-hang/dh03',
+    authenticate,
+    validate(va03XemSchema),
+    datMonController.dh03
+);
+
+router.post(
+    '/don-hang/dh04',
+    authenticate,
+    validate(va04XemSchema),
+    datMonController.dh04
+);
+
+router.post(
+    '/don-hang/dh05',
+    authenticate,
+    validate(va05XemSchema),
+    datMonController.dh05
+);
 module.exports =
     router;
