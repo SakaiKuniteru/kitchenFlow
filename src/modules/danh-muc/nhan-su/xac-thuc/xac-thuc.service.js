@@ -309,7 +309,7 @@ class XacThucService {
          * thu hồi TOÀN BỘ Refresh Token
          * còn sống của phiên tài khoản.
          */
-        await authRepository.revokeAllRefreshToken(tokenInDb.tai_khoan_id);
+        await authRepository.revokeRefreshToken(refreshToken);
 
         return;
     }

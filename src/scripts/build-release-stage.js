@@ -1,7 +1,12 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
+const fs = require(
+    'fs'
+);
+
+const path = require(
+    'path'
+);
 
 const {
     execFileSync
@@ -14,6 +19,12 @@ const ROOT =
     process.cwd();
 
 
+/*
+ * ==========================================
+ * STAGE
+ * ==========================================
+ */
+
 const STAGE =
     String(
         process.argv[2] ||
@@ -23,38 +34,136 @@ const STAGE =
         .toLowerCase();
 
 
-const CONFIG = {
-    test: {
-        sourceRef:
-            'refs/kitchenflow/dev',
+/*
+ * ==========================================
+ * VERSION
+ * ==========================================
+ *
+ * Hỗ trợ:
+ *
+ * 1.1.1
+ * MCS_1.1.1
+ *
+ * Luôn chuẩn hóa thành:
+ *
+ * MCS_1.1.1
+ * ==========================================
+ */
 
-        targetRef:
-            'refs/kitchenflow/test'
+function normalizeVersion(
+    value
+) {
+
+    const text =
+        String(
+            value ||
+            ''
+        )
+            .trim();
+
+
+    if (
+        !text
+    ) {
+
+        throw new Error(
+            [
+                '',
+                `Thiếu version khi build ${STAGE}.`,
+                '',
+                'Ví dụ:',
+                '',
+                `npm run build:${STAGE} -- MCS_1.1.1`,
+                '',
+                'hoặc:',
+                '',
+                `npm run build:${STAGE} -- 1.1.1`,
+                ''
+            ].join(
+                '\n'
+            )
+        );
+
+    }
+
+
+    const match =
+        text.match(
+            /^(?:MCS_)?(\d+)\.(\d+)\.(\d+)$/i
+        );
+
+
+    if (
+        !match
+    ) {
+
+        throw new Error(
+            [
+                '',
+                `Version không hợp lệ: ${text}`,
+                '',
+                'Định dạng hợp lệ:',
+                '',
+                '1.1.1',
+                'MCS_1.1.1',
+                ''
+            ].join(
+                '\n'
+            )
+        );
+
+    }
+
+
+    return (
+        `MCS_${match[1]}.${match[2]}.${match[3]}`
+    );
+}
+
+
+const VERSION =
+    normalizeVersion(
+        process.argv[3]
+    );
+
+
+/*
+ * ==========================================
+ * CẤU HÌNH LUỒNG PROMOTE
+ * ==========================================
+ *
+ * DEV
+ *   ↓
+ * TEST
+ *   ↓
+ * STABLE
+ *   ↓
+ * PRODUCT1 / PRODUCT2
+ * ==========================================
+ */
+
+const CONFIG = {
+
+    test: {
+        sourceStage:
+            'dev'
     },
 
     stable: {
-        sourceRef:
-            'refs/kitchenflow/test',
-
-        targetRef:
-            'refs/kitchenflow/stable'
+        sourceStage:
+            'test'
     },
 
     product1: {
-        sourceRef:
-            'refs/kitchenflow/stable',
-
-        targetRef:
-            'refs/kitchenflow/product1'
+        sourceStage:
+            'stable'
     },
 
     product2: {
-        sourceRef:
-            'refs/kitchenflow/stable',
-
-        targetRef:
-            'refs/kitchenflow/product2'
+        sourceStage:
+            'stable'
     }
+
 };
 
 
@@ -67,16 +176,25 @@ const stageConfig =
 if (
     !stageConfig
 ) {
+
     throw new Error(
         `Stage không hợp lệ: ${STAGE}`
     );
+
 }
 
+
+/*
+ * ==========================================
+ * GIT
+ * ==========================================
+ */
 
 function git(
     args,
     cwd = ROOT
 ) {
+
     return execFileSync(
         'git',
         args,
@@ -99,40 +217,241 @@ function git(
 function resolveRef(
     ref
 ) {
+
     try {
+
         return git([
             'rev-parse',
             '--verify',
             ref
         ]);
+
     } catch {
+
         return '';
+
     }
 }
 
 
-const sourceCommit =
-    resolveRef(
-        stageConfig.sourceRef
+/*
+ * ==========================================
+ * REF
+ * ==========================================
+ *
+ * Ví dụ:
+ *
+ * refs/kitchenflow/test/MCS_1.1.1
+ * refs/kitchenflow/stable/MCS_1.1.1
+ * refs/kitchenflow/product1/MCS_1.1.1
+ * ==========================================
+ */
+
+function buildVersionRef(
+    stage,
+    version
+) {
+
+    return (
+        `refs/kitchenflow/${stage}/${version}`
+    );
+}
+
+
+const targetVersionRef =
+    buildVersionRef(
+        STAGE,
+        VERSION
     );
 
+
+const existingTargetCommit =
+    resolveRef(
+        targetVersionRef
+    );
+
+
+let sourceRef =
+    '';
+
+let sourceCommit =
+    '';
+
+
+/*
+ * ==========================================
+ * TEST
+ * ==========================================
+ *
+ * TEST là nơi VERSION được tạo lần đầu.
+ *
+ * Nếu version chưa tồn tại:
+ *
+ * DEV hiện tại
+ *     ↓
+ * TEST/version
+ *
+ *
+ * Nếu version đã tồn tại:
+ *
+ * TEST/version cũ
+ *     ↓
+ * rebuild đúng commit cũ
+ *
+ * KHÔNG lấy DEV mới.
+ * ==========================================
+ */
+
+if (
+    STAGE ===
+    'test'
+) {
+
+    if (
+        existingTargetCommit
+    ) {
+
+        sourceRef =
+            targetVersionRef;
+
+
+        sourceCommit =
+            existingTargetCommit;
+
+    } else {
+
+        sourceRef =
+            'refs/kitchenflow/dev';
+
+
+        sourceCommit =
+            resolveRef(
+                sourceRef
+            );
+
+    }
+
+} else {
+
+    /*
+     * ======================================
+     * STABLE / PRODUCT
+     * ======================================
+     *
+     * Phải lấy đúng cùng VERSION
+     * của stage trước.
+     * ======================================
+     */
+
+    sourceRef =
+        buildVersionRef(
+            stageConfig.sourceStage,
+            VERSION
+        );
+
+
+    sourceCommit =
+        resolveRef(
+            sourceRef
+        );
+
+}
+
+
+/*
+ * ==========================================
+ * KIỂM TRA SOURCE VERSION
+ * ==========================================
+ */
 
 if (
     !sourceCommit
 ) {
+
     throw new Error(
         [
             '',
             `Không thể build ${STAGE}.`,
             '',
-            `Chưa có stage trước: ${stageConfig.sourceRef}`,
+            `Version: ${VERSION}`,
+            '',
+            'Chưa có phiên bản ở stage trước:',
+            '',
+            sourceRef,
             ''
         ].join(
             '\n'
         )
     );
+
 }
 
+
+/*
+ * ==========================================
+ * VERSION BẤT BIẾN
+ * ==========================================
+ *
+ * Một version không được đổi commit.
+ *
+ * Ví dụ:
+ *
+ * MCS_1.1.1 = commit A
+ *
+ * thì sau này không được biến
+ * MCS_1.1.1 thành commit B.
+ * ==========================================
+ */
+
+if (
+    existingTargetCommit &&
+    existingTargetCommit !==
+        sourceCommit
+) {
+
+    throw new Error(
+        [
+            '',
+            `Không thể build ${STAGE}.`,
+            '',
+            `Version ${VERSION} đã tồn tại.`,
+            '',
+            `Commit hiện tại của version:`,
+            existingTargetCommit,
+            '',
+            'Commit source mới:',
+            sourceCommit,
+            '',
+            'Một version không được thay đổi commit.',
+            ''
+        ].join(
+            '\n'
+        )
+    );
+
+}
+
+
+/*
+ * ==========================================
+ * RELEASE DIRECTORY
+ * ==========================================
+ *
+ * .releases/
+ *
+ * test/
+ *   MCS_1.1.1/
+ *     <commit>/
+ *
+ * stable/
+ *   MCS_1.1.1/
+ *     <commit>/
+ *
+ * product1/
+ *   MCS_1.1.1/
+ *     <commit>/
+ * ==========================================
+ */
 
 const releasesRoot =
     path.join(
@@ -148,15 +467,22 @@ const stageRoot =
     );
 
 
-const releaseDirectory =
+const versionRoot =
     path.join(
         stageRoot,
+        VERSION
+    );
+
+
+const releaseDirectory =
+    path.join(
+        versionRoot,
         sourceCommit
     );
 
 
 fs.mkdirSync(
-    stageRoot,
+    versionRoot,
     {
         recursive:
             true
@@ -165,14 +491,17 @@ fs.mkdirSync(
 
 
 /*
- * Nếu commit này chưa được materialize
- * thì tạo một Git worktree riêng.
+ * ==========================================
+ * MATERIALIZE COMMIT
+ * ==========================================
  */
+
 if (
     !fs.existsSync(
         releaseDirectory
     )
 ) {
+
     execFileSync(
         'git',
         [
@@ -190,15 +519,16 @@ if (
                 'inherit'
         }
     );
+
 }
 
 
 /*
- * Env không nằm trong Git.
- *
- * Tạo symlink từ release
- * về env private của repo chính.
+ * ==========================================
+ * ENV
+ * ==========================================
  */
+
 const sourceEnv =
     path.join(
         ROOT,
@@ -218,35 +548,26 @@ if (
         sourceEnv
     )
 ) {
+
     throw new Error(
         `Không tìm thấy ${sourceEnv}`
     );
+
 }
 
 
-if (
-    fs.existsSync(
-        releaseEnv
-    ) ||
-    fs.lstatSync?.(
+try {
+
+    fs.rmSync(
         releaseEnv,
         {
-            throwIfNoEntry:
-                false
+            force:
+                true
         }
-    )
-) {
-    try {
-        fs.rmSync(
-            releaseEnv,
-            {
-                force:
-                    true
-            }
-        );
-    } catch {
-        // bỏ qua
-    }
+    );
+
+} catch {
+    // bỏ qua
 }
 
 
@@ -257,9 +578,11 @@ fs.symlinkSync(
 
 
 /*
- * Cài dependency theo đúng package-lock
- * của commit được promote.
+ * ==========================================
+ * DEPENDENCY
+ * ==========================================
  */
+
 execFileSync(
     'npm',
     [
@@ -276,8 +599,11 @@ execFileSync(
 
 
 /*
- * Sinh Handlebars client templates.
+ * ==========================================
+ * CLIENT TEMPLATES
+ * ==========================================
  */
+
 execFileSync(
     'npm',
     [
@@ -295,8 +621,11 @@ execFileSync(
 
 
 /*
- * Build frontend production của stage.
+ * ==========================================
+ * PRODUCTION ASSETS
+ * ==========================================
  */
+
 execFileSync(
     'node',
     [
@@ -313,26 +642,114 @@ execFileSync(
             ...process.env,
 
             APP_ENV:
-                STAGE
+                STAGE,
+
+            APP_VERSION:
+                VERSION
         }
     }
 );
 
 
 /*
- * Chỉ sau khi build thành công
- * mới đánh dấu stage này đã duyệt commit.
+ * ==========================================
+ * RELEASE METADATA
+ * ==========================================
+ *
+ * File này KHÔNG nằm trong Git.
+ *
+ * Mỗi release tự biết:
+ *
+ * - stage
+ * - version
+ * - commit
+ * - source
+ * - thời gian build
+ * ==========================================
  */
+
+const releaseMetadata = {
+
+    stage:
+        STAGE,
+
+    version:
+        VERSION,
+
+    commit:
+        sourceCommit,
+
+    sourceRef,
+
+    builtAt:
+        new Date()
+            .toISOString()
+
+};
+
+
+fs.writeFileSync(
+    path.join(
+        releaseDirectory,
+        'release.json'
+    ),
+
+    JSON.stringify(
+        releaseMetadata,
+        null,
+        2
+    ),
+
+    'utf8'
+);
+
+
+/*
+ * ==========================================
+ * VERSION REF
+ * ==========================================
+ *
+ * Chỉ update sau khi build thành công.
+ * ==========================================
+ */
+
 git([
     'update-ref',
-    stageConfig.targetRef,
+    targetVersionRef,
     sourceCommit
 ]);
 
 
 /*
- * current -> release commit mới nhất
+ * ==========================================
+ * CURRENT STAGE REF
+ * ==========================================
+ *
+ * Giữ ref cũ để tiện kiểm tra:
+ *
+ * refs/kitchenflow/test
+ * refs/kitchenflow/stable
+ * refs/kitchenflow/product1
+ *
+ * Nó chỉ là version được build gần nhất.
+ *
+ * Promotion thật sử dụng versionRef phía trên.
+ * ==========================================
  */
+
+git([
+    'update-ref',
+    `refs/kitchenflow/${STAGE}`,
+    sourceCommit
+]);
+
+
+/*
+ * ==========================================
+ * CURRENT SYMLINK
+ * ==========================================
+ */
+
 const currentLink =
     path.join(
         stageRoot,
@@ -341,6 +758,7 @@ const currentLink =
 
 
 try {
+
     fs.rmSync(
         currentLink,
         {
@@ -351,6 +769,7 @@ try {
                 true
         }
     );
+
 } catch {
     // bỏ qua
 }
@@ -363,15 +782,34 @@ fs.symlinkSync(
 );
 
 
+/*
+ * ==========================================
+ * RESULT
+ * ==========================================
+ */
+
 console.log('');
+
 console.log(
     `${STAGE.toUpperCase()} build passed.`
 );
 
 console.log(
-    `Source commit: ${sourceCommit}`
+    `Version: ${VERSION}`
+);
+
+console.log(
+    `Source: ${sourceRef}`
+);
+
+console.log(
+    `Commit: ${sourceCommit}`
 );
 
 console.log(
     `Release: ${releaseDirectory}`
+);
+
+console.log(
+    `Ref: ${targetVersionRef}`
 );

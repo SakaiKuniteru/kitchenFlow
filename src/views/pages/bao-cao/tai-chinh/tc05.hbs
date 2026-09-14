@@ -1,0 +1,114 @@
+<link
+    rel="stylesheet"
+    href="{{asset "/assets/css/pages/bao-cao/tai-chinh/tc05.css" }}"
+>
+
+
+<main
+    class="tc05-page"
+    data-tc05-page
+>
+
+    {{#> bao-cao/report-frame
+        maBaoCao=maBaoCao
+        tenBaoCao=tenBaoCao
+    }}
+
+
+        {{> forms/date
+            id="tuNgay"
+            name="tuNgay"
+            label="Từ ngày thu"
+            placeholder="Nhập từ ngày thu..."
+            defaultTime="00:00:00"
+            showTime=true
+            required=true
+        }}
+
+
+        {{> forms/date
+            id="denNgay"
+            name="denNgay"
+            label="Đến ngày thu"
+            placeholder="Nhập đến ngày thu..."
+            defaultTime="23:59:59"
+            showTime=true
+            required=true
+        }}
+
+
+        {{> forms/select
+            id="coSoIds"
+            name="coSoIds"
+            label="Cơ sở"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn cơ sở..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="nhaAnIds"
+            name="nhaAnIds"
+            label="Nhà ăn"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn nhà ăn..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="nguoiThuIds"
+            name="nguoiThuIds"
+            label="Người thu tiền"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn người thu tiền..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="hinhThucThanhToan"
+            name="hinhThucThanhToan"
+            label="Phương thức thanh toán"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn phương thức thanh toán..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="nguon"
+            name="nguon"
+            label="Nguồn"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn nguồn..."
+            options=null
+            required=true
+        }}
+
+
+    {{/bao-cao/report-frame}}
+
+</main>
+
+
+<script
+    defer
+    src="{{asset "/assets/js/pages/bao-cao/tai-chinh/tc05.js" }}"
+></script>

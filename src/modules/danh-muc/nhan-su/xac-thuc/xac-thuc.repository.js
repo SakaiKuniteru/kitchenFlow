@@ -386,17 +386,20 @@ class XacThucRepository {
     }
 
     async findRefreshToken(refreshToken) {
+
         const sql = `
-            SELECT *
+            SELECT
+                *
             FROM nv_refresh_token
             WHERE
                 token = $1
-                AND revoked = FALSE
+            LIMIT 1
         `;
+
 
         const result = await pool.query(sql, [refreshToken]);
 
-        return result.rows[0];
+        return (result.rows[0] || null);
     }
 
     async deleteRefreshToken(refreshToken) {
