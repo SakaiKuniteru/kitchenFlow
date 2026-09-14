@@ -74,21 +74,17 @@ const {
 
 router.post(
     '/tai-chinh/tc01',
-
     authenticate,
-
-    validate(
-        tc01XemSchema
-    ),
-
-    taiChinhController
-        .tc01
+    validate(tc01XemSchema),
+    authorize('Q003001'),
+    taiChinhController.tc01
 );
 
 router.post(
     '/tai-chinh/tc02',
     authenticate,
     validate(tc02XemSchema),
+    authorize('Q003002'),
     taiChinhController.tc02
 );
 
@@ -96,6 +92,7 @@ router.post(
     '/tai-chinh/tc03',
     authenticate,
     validate(tc03XemSchema),
+    authorize('Q003003'),
     taiChinhController.tc03
 );
 
@@ -103,6 +100,7 @@ router.post(
     '/tai-chinh/tc04',
     authenticate,
     validate(tc04XemSchema),
+    authorize('Q003004'),
     taiChinhController.tc04
 );
 
@@ -110,6 +108,7 @@ router.post(
     '/tai-chinh/tc05',
     authenticate,
     validate(tc05XemSchema),
+    authorize('Q003005'),
     taiChinhController.tc05
 );
 
@@ -117,6 +116,7 @@ router.post(
     '/ve-an/va01',
     authenticate,
     validate(va01XemSchema),
+    authorize('Q003011'),
     veAnController.va01
 );
 
@@ -124,6 +124,7 @@ router.post(
     '/ve-an/va02',
     authenticate,
     validate(va02XemSchema),
+    authorize('Q003012'),
     veAnController.va02
 );
 
@@ -131,6 +132,7 @@ router.post(
     '/ve-an/va03',
     authenticate,
     validate(va03XemSchema),
+    authorize('Q003013'),
     veAnController.va03
 );
 
@@ -138,6 +140,7 @@ router.post(
     '/ve-an/va04',
     authenticate,
     validate(va04XemSchema),
+    authorize('Q003014'),
     veAnController.va04
 );
 
@@ -145,6 +148,7 @@ router.post(
     '/ve-an/va05',
     authenticate,
     validate(va05XemSchema),
+    authorize('Q003015'),
     veAnController.va05
 );
 
@@ -152,6 +156,7 @@ router.post(
     '/don-hang/dh01',
     authenticate,
     validate(va01XemSchema),
+    authorize('Q003016'),
     datMonController.dh01
 );
 
@@ -159,6 +164,7 @@ router.post(
     '/don-hang/dh02',
     authenticate,
     validate(va02XemSchema),
+    authorize('Q003017'),
     datMonController.dh02
 );
 
@@ -166,6 +172,7 @@ router.post(
     '/don-hang/dh03',
     authenticate,
     validate(va03XemSchema),
+    authorize('Q003018'),
     datMonController.dh03
 );
 
@@ -173,6 +180,7 @@ router.post(
     '/don-hang/dh04',
     authenticate,
     validate(va04XemSchema),
+    authorize('Q003019'),
     datMonController.dh04
 );
 
@@ -180,6 +188,7 @@ router.post(
     '/don-hang/dh05',
     authenticate,
     validate(va05XemSchema),
+    authorize('Q003020'),
     datMonController.dh05
 );
 module.exports =

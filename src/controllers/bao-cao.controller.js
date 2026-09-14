@@ -78,6 +78,53 @@ class BaoCaoWebController {
         }
     }
 
+    async tc02(
+        req,
+        res,
+        next
+    ) {
+        try {
+
+            return renderBaoCaoPage(
+                req,
+                res,
+                'pages/bao-cao/tai-chinh/tc02',
+                {
+
+                    title:
+                        'TC02. Báo cáo đối soát thanh toán',
+
+                    breadcrumbs: [
+                        {
+                            label:
+                                'Báo cáo'
+                        },
+                        {
+                            label:
+                                'TC02'
+                        }
+                    ],
+
+                    maBaoCao:
+                        'TC02',
+
+                    tenBaoCao:
+                        'Báo cáo đối soát thanh toán'
+
+                }
+            );
+
+        } catch (
+            error
+        ) {
+
+            next(
+                error
+            );
+
+        }
+    }
+
 }
 
 

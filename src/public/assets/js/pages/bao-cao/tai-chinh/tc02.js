@@ -7,7 +7,7 @@ document.addEventListener(
 
         const root =
             document.querySelector(
-                '[data-tc01-page]'
+                '[data-tc02-page]'
             );
 
 
@@ -18,14 +18,14 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * API RIÊNG TC01
+         * API RIÊNG TC02
          * ==========================================
          */
 
         const API = {
 
             baoCao:
-                '/api/mcs/v1/bao-cao/tai-chinh/tc01',
+                '/api/mcs/v1/bao-cao/tai-chinh/tc02',
 
             coSo:
                 '/api/mcs/v1/dm-co-so/tong-hop?active=true',
@@ -33,36 +33,88 @@ document.addEventListener(
             nhaAn:
                 '/api/mcs/v1/dm-nha-an/tong-hop?active=true',
 
-            caAn:
-                '/api/mcs/v1/dm-ca-an/tong-hop?active=true',
-
             taiKhoan:
                 '/api/mcs/v1/dm-tai-khoan/tong-hop?active=true',
 
-            loaiThoiGian:
-                '/api/mcs/v1/enums?name=loaiThoiGian',
-
-            doiTuong:
-                '/api/mcs/v1/enums?name=doiTuongLayVe',
-
-            hinhThucThanhToan:
-                '/api/mcs/v1/enums?name=phuongThucThanhToan',
-
-            thuChi:
-                '/api/mcs/v1/enums?name=thuChi',
-
             trangThaiThanhToan:
-                '/api/mcs/v1/enums?name=trangThaiThanhToan',
-
-            trangThaiSuDung:
-                '/api/mcs/v1/enums?name=trangThaiVe'
+                '/api/mcs/v1/enums?name=trangThaiThanhToan'
 
         };
 
 
         /*
          * ==========================================
-         * DEFAULT RIÊNG TC01
+         * NGUỒN TC02
+         * ==========================================
+         */
+
+        const NGUON_THANH_TOAN_OPTIONS = [
+
+            {
+                value:
+                    10,
+
+                label:
+                    'Vé ăn'
+            },
+
+            {
+                value:
+                    20,
+
+                label:
+                    'Đơn hàng'
+            }
+
+        ];
+
+
+        /*
+         * ==========================================
+         * PHƯƠNG THỨC ĐÃ CHUẨN HÓA CHO TC02
+         * ==========================================
+         */
+
+        const PHUONG_THUC_THANH_TOAN_OPTIONS = [
+
+            {
+                value:
+                    10,
+
+                label:
+                    'Tiền mặt'
+            },
+
+            {
+                value:
+                    20,
+
+                label:
+                    'Chuyển khoản'
+            },
+
+            {
+                value:
+                    30,
+
+                label:
+                    'QR Code'
+            },
+
+            {
+                value:
+                    40,
+
+                label:
+                    'Thanh toán nội bộ'
+            }
+
+        ];
+
+
+        /*
+         * ==========================================
+         * DEFAULT RIÊNG TC02
          * ==========================================
          */
 
@@ -75,51 +127,30 @@ document.addEventListener(
                 nhaAnIds:
                     false,
 
-                doiTuong:
+                nguonThanhToan:
                     true,
-
-                nguoiTaoIds:
-                    false,
-
-                thuNganIds:
-                    false,
 
                 hinhThucThanhToan:
-                    true,
-
-                hienThiThuChi:
                     true,
 
                 trangThaiThanhToan:
                     true,
 
-                caAnIds:
-                    true,
-
-                trangThaiSuDung:
-                    true
+                thuNganIds:
+                    false
 
             });
 
 
         /*
          * ==========================================
-         * STATE RIÊNG TC01
+         * STATE RIÊNG TC02
          * ==========================================
          */
 
         const state = {
 
-            coSo:
-                [],
-
             nhaAn:
-                [],
-
-            caAn:
-                [],
-
-            taiKhoan:
                 []
 
         };
@@ -127,7 +158,7 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * KHỞI TẠO ENGINE BÁO CÁO CHUNG
+         * REPORT ENGINE
          * ==========================================
          */
 
@@ -137,14 +168,12 @@ document.addEventListener(
                 .create({
 
                     root,
-
                     permission: 'Q003001',
-                    
                     api:
                         API.baoCao,
 
                     fileName:
-                        'tc01',
+                        'tc02',
 
                     getPayload:
                         getFilters,
@@ -160,7 +189,7 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * INIT TC01
+         * INIT TC02
          * ==========================================
          */
 
@@ -174,22 +203,12 @@ document.addEventListener(
 
 
                 const [
-                    loaiThoiGian,
                     coSo,
                     nhaAn,
-                    doiTuong,
                     taiKhoan,
-                    hinhThucThanhToan,
-                    thuChi,
-                    trangThaiThanhToan,
-                    caAn,
-                    trangThaiSuDung
+                    trangThaiThanhToan
                 ] =
                     await Promise.all([
-
-                        report.loadList(
-                            API.loaiThoiGian
-                        ),
 
                         report.loadList(
                             API.coSo
@@ -200,85 +219,18 @@ document.addEventListener(
                         ),
 
                         report.loadList(
-                            API.doiTuong
-                        ),
-
-                        report.loadList(
                             API.taiKhoan
                         ),
 
                         report.loadList(
-                            API.hinhThucThanhToan
-                        ),
-
-                        report.loadList(
-                            API.thuChi
-                        ),
-
-                        report.loadList(
                             API.trangThaiThanhToan
-                        ),
-
-                        report.loadList(
-                            API.caAn
-                        ),
-
-                        report.loadList(
-                            API.trangThaiSuDung
                         )
 
                     ]);
 
 
-                state.coSo =
-                    coSo;
-
                 state.nhaAn =
                     nhaAn;
-
-                state.caAn =
-                    caAn;
-
-                state.taiKhoan =
-                    taiKhoan;
-
-
-                /*
-                 * Loại thời gian TC01:
-                 *
-                 * 10 = tạo
-                 * 30 = thanh toán
-                 * 40 = hoàn
-                 */
-                report
-                    .setSingleSelectOptions(
-                        'loaiThoiGian',
-
-                        loaiThoiGian
-                            .filter(
-                                item =>
-                                    [
-                                        10,
-                                        30,
-                                        40
-                                    ].includes(
-                                        Number(
-                                            item.value
-                                        )
-                                    )
-                            )
-                            .map(
-                                item => ({
-                                    value:
-                                        item.value,
-
-                                    label:
-                                        item.name
-                                })
-                            ),
-
-                        30
-                    );
 
 
                 /*
@@ -290,6 +242,7 @@ document.addEventListener(
 
                         coSo.map(
                             item => ({
+
                                 value:
                                     item.id,
 
@@ -297,6 +250,7 @@ document.addEventListener(
                                     item.tenCoSo ||
                                     item.ten ||
                                     '-'
+
                             })
                         ),
 
@@ -308,117 +262,40 @@ document.addEventListener(
 
 
                 /*
-                 * Nhà ăn phụ thuộc cơ sở.
+                 * Nhà ăn
                  */
                 renderNhaAn();
 
 
                 /*
-                 * Đối tượng
+                 * Nguồn
                  */
                 report
                     .setMultipleSelectOptions(
-                        'doiTuong',
+                        'nguonThanhToan',
 
-                        doiTuong.map(
-                            item => ({
-                                value:
-                                    item.value,
-
-                                label:
-                                    item.name
-                            })
-                        ),
+                        NGUON_THANH_TOAN_OPTIONS,
 
                         [],
 
                         MULTI_SELECT_DEFAULTS
-                            .doiTuong
+                            .nguonThanhToan
                     );
 
 
                 /*
-                 * Người tạo / Thu ngân
-                 */
-                const taiKhoanOptions =
-                    taiKhoan.map(
-                        item => ({
-                            value:
-                                item.id,
-
-                            label:
-                                buildTaiKhoanLabel(
-                                    item
-                                )
-                        })
-                    );
-
-
-                report
-                    .setMultipleSelectOptions(
-                        'nguoiTaoIds',
-                        taiKhoanOptions,
-                        [],
-                        MULTI_SELECT_DEFAULTS
-                            .nguoiTaoIds
-                    );
-
-
-                report
-                    .setMultipleSelectOptions(
-                        'thuNganIds',
-                        taiKhoanOptions,
-                        [],
-                        MULTI_SELECT_DEFAULTS
-                            .thuNganIds
-                    );
-
-
-                /*
-                 * Hình thức thanh toán
+                 * Phương thức thanh toán
                  */
                 report
                     .setMultipleSelectOptions(
                         'hinhThucThanhToan',
 
-                        hinhThucThanhToan.map(
-                            item => ({
-                                value:
-                                    item.value,
-
-                                label:
-                                    item.name
-                            })
-                        ),
+                        PHUONG_THUC_THANH_TOAN_OPTIONS,
 
                         [],
 
                         MULTI_SELECT_DEFAULTS
                             .hinhThucThanhToan
-                    );
-
-
-                /*
-                 * Thu / Chi
-                 */
-                report
-                    .setMultipleSelectOptions(
-                        'hienThiThuChi',
-
-                        thuChi.map(
-                            item => ({
-                                value:
-                                    item.value,
-
-                                label:
-                                    item.name
-                            })
-                        ),
-
-                        [],
-
-                        MULTI_SELECT_DEFAULTS
-                            .hienThiThuChi
                     );
 
 
@@ -429,15 +306,18 @@ document.addEventListener(
                     .setMultipleSelectOptions(
                         'trangThaiThanhToan',
 
-                        trangThaiThanhToan.map(
-                            item => ({
-                                value:
-                                    item.value,
+                        trangThaiThanhToan
+                            .map(
+                                item => ({
 
-                                label:
-                                    item.name
-                            })
-                        ),
+                                    value:
+                                        item.value,
+
+                                    label:
+                                        item.name
+
+                                })
+                            ),
 
                         [],
 
@@ -447,58 +327,40 @@ document.addEventListener(
 
 
                 /*
-                 * Ca ăn
+                 * Người thu tiền
                  */
+                const taiKhoanOptions =
+                    taiKhoan.map(
+                        item => ({
+
+                            value:
+                                item.id,
+
+                            label:
+                                buildTaiKhoanLabel(
+                                    item
+                                )
+
+                        })
+                    );
+
+
                 report
                     .setMultipleSelectOptions(
-                        'caAnIds',
+                        'thuNganIds',
 
-                        caAn.map(
-                            item => ({
-                                value:
-                                    item.id,
-
-                                label:
-                                    item.tenCaAn ||
-                                    item.ten ||
-                                    '-'
-                            })
-                        ),
+                        taiKhoanOptions,
 
                         [],
 
                         MULTI_SELECT_DEFAULTS
-                            .caAnIds
+                            .thuNganIds
                     );
 
 
                 /*
-                 * Trạng thái sử dụng
-                 */
-                report
-                    .setMultipleSelectOptions(
-                        'trangThaiSuDung',
-
-                        trangThaiSuDung.map(
-                            item => ({
-                                value:
-                                    item.value,
-
-                                label:
-                                    item.name
-                            })
-                        ),
-
-                        [],
-
-                        MULTI_SELECT_DEFAULTS
-                            .trangThaiSuDung
-                    );
-
-
-                /*
-                 * Quy tắc Tất cả
-                 * do bao-cao.js xử lý.
+                 * Quy tắc "Tất cả"
+                 * nằm trong bao-cao.js.
                  */
                 report
                     .bindAllOptions(
@@ -507,7 +369,7 @@ document.addEventListener(
 
 
                 /*
-                 * Ngày mặc định hôm nay.
+                 * Mặc định hôm nay.
                  */
                 report
                     .setDefaultDateRange(
@@ -516,7 +378,7 @@ document.addEventListener(
                     );
 
 
-                bindTc01Events();
+                bindTc02Events();
 
             } catch (
                 error
@@ -531,7 +393,7 @@ document.addEventListener(
                     ?.toast
                     ?.error?.(
                         error?.message ||
-                        'Không thể tải dữ liệu bộ lọc TC01.'
+                        'Không thể tải dữ liệu bộ lọc TC02.'
                     );
 
             } finally {
@@ -546,11 +408,11 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * EVENT RIÊNG TC01
+         * EVENT RIÊNG TC02
          * ==========================================
          */
 
-        function bindTc01Events() {
+        function bindTc02Events() {
 
             root
                 .querySelector(
@@ -597,11 +459,6 @@ document.addEventListener(
                 state.nhaAn;
 
 
-            /*
-             * Không chọn cơ sở
-             * hoặc "Tất cả"
-             * → lấy toàn bộ nhà ăn.
-             */
             if (
                 coSoIds.length >
                 0
@@ -616,16 +473,17 @@ document.addEventListener(
 
 
                 records =
-                    state.nhaAn.filter(
-                        item =>
-                            set.has(
-                                String(
-                                    item.coSoId ??
-                                    item.co_so_id ??
-                                    ''
+                    state.nhaAn
+                        .filter(
+                            item =>
+                                set.has(
+                                    String(
+                                        item.coSoId ??
+                                        item.co_so_id ??
+                                        ''
+                                    )
                                 )
-                            )
-                    );
+                        );
 
             }
 
@@ -658,6 +516,7 @@ document.addEventListener(
 
                     records.map(
                         item => ({
+
                             value:
                                 item.id,
 
@@ -665,6 +524,7 @@ document.addEventListener(
                                 item.tenNhaAn ||
                                 item.ten ||
                                 '-'
+
                         })
                     ),
 
@@ -681,18 +541,11 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * BUILD PAYLOAD TC01
+         * BUILD PAYLOAD TC02
          * ==========================================
          */
 
         function getFilters() {
-
-            const loaiThoiGian =
-                report
-                    .getSingleNumber(
-                        'loaiThoiGian'
-                    );
-
 
             const tuNgay =
                 report
@@ -708,26 +561,21 @@ document.addEventListener(
                     );
 
 
-            if (
-                !loaiThoiGian
-            ) {
-                throw new Error(
-                    'Vui lòng chọn loại thời gian.'
-                );
-            }
-
-
             if (!tuNgay) {
+
                 throw new Error(
-                    'Vui lòng chọn từ ngày.'
+                    'Vui lòng chọn từ ngày thanh toán.'
                 );
+
             }
 
 
             if (!denNgay) {
+
                 throw new Error(
-                    'Vui lòng chọn đến ngày.'
+                    'Vui lòng chọn đến ngày thanh toán.'
                 );
+
             }
 
 
@@ -765,13 +613,12 @@ document.addEventListener(
 
             return {
 
-                loaiThoiGian,
-
                 tuNgay:
                     tuNgayIso,
 
                 denNgay:
                     denNgayIso,
+
 
                 coSoIds:
                     report
@@ -779,29 +626,20 @@ document.addEventListener(
                             'coSoIds'
                         ),
 
+
                 nhaAnIds:
                     report
                         .getMultiNumbers(
                             'nhaAnIds'
                         ),
 
-                doiTuong:
+
+                nguonThanhToan:
                     report
                         .getMultiNumbers(
-                            'doiTuong'
+                            'nguonThanhToan'
                         ),
 
-                nguoiTaoIds:
-                    report
-                        .getMultiNumbers(
-                            'nguoiTaoIds'
-                        ),
-
-                thuNganIds:
-                    report
-                        .getMultiNumbers(
-                            'thuNganIds'
-                        ),
 
                 hinhThucThanhToan:
                     report
@@ -809,11 +647,6 @@ document.addEventListener(
                             'hinhThucThanhToan'
                         ),
 
-                hienThiThuChi:
-                    report
-                        .getMultiNumbers(
-                            'hienThiThuChi'
-                        ),
 
                 trangThaiThanhToan:
                     report
@@ -821,16 +654,11 @@ document.addEventListener(
                             'trangThaiThanhToan'
                         ),
 
-                caAnIds:
-                    report
-                        .getMultiNumbers(
-                            'caAnIds'
-                        ),
 
-                trangThaiSuDung:
+                thuNganIds:
                     report
                         .getMultiNumbers(
-                            'trangThaiSuDung'
+                            'thuNganIds'
                         )
 
             };
@@ -839,22 +667,11 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * RESET RIÊNG TC01
+         * RESET TC02
          * ==========================================
          */
 
         function resetFilters() {
-
-            /*
-             * Loại thời gian mặc định:
-             * Theo thời gian thanh toán.
-             */
-            report
-                .setSingleSelectValue(
-                    'loaiThoiGian',
-                    30
-                );
-
 
             Object.entries(
                 MULTI_SELECT_DEFAULTS
@@ -901,7 +718,7 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * LABEL TÀI KHOẢN TC01
+         * LABEL NGƯỜI THU TIỀN
          * ==========================================
          */
 

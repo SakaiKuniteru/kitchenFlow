@@ -62,6 +62,12 @@
                 null,
 
             loading:
+                false,
+
+            permissionGranted:
+                false,
+
+            started:
                 false
 
         };
@@ -90,9 +96,6 @@
                 ),
 
         };
-
-
-        bindBaseEvents();
 
 
         /*
@@ -147,6 +150,395 @@
                 );
         }
 
+        /*
+         * ==========================================
+         * QUYỀN BÁO CÁO
+         * ==========================================
+         */
+
+        function normalizePermission(
+            value
+        ) {
+
+            return String(
+                value ||
+                ''
+            )
+                .trim()
+                .toUpperCase();
+        }
+
+
+        function getPermissionSet() {
+
+            const currentUser =
+                window.MCS
+                    ?.storage
+                    ?.getCurrentUser?.() ||
+                null;
+
+
+            const values =
+                [];
+
+
+            if (
+                Array.isArray(
+                    currentUser
+                        ?.dsQuyen
+                )
+            ) {
+
+                currentUser
+                    .dsQuyen
+                    .forEach(
+                        item => {
+
+                            values.push(
+                                typeof item ===
+                                    'string'
+                                    ? item
+                                    : (
+                                        item?.maQuyen ||
+                                        item?.ma_quyen
+                                    )
+                            );
+
+                        }
+                    );
+
+            }
+
+
+            if (
+                Array.isArray(
+                    currentUser
+                        ?.permissions
+                )
+            ) {
+
+                currentUser
+                    .permissions
+                    .forEach(
+                        item => {
+
+                            values.push(
+                                typeof item ===
+                                    'string'
+                                    ? item
+                                    : (
+                                        item?.maQuyen ||
+                                        item?.ma_quyen
+                                    )
+                            );
+
+                        }
+                    );
+
+            }
+
+
+            return new Set(
+                values
+                    .map(
+                        normalizePermission
+                    )
+                    .filter(
+                        Boolean
+                    )
+            );
+        }
+
+
+        function hasPermission() {
+
+            const code =
+                normalizePermission(
+                    options.permission
+                );
+
+
+            /*
+             * Báo cáo bắt buộc phải khai báo quyền.
+             */
+            if (!code) {
+
+                console.error(
+                    'Báo cáo chưa cấu hình mã quyền.'
+                );
+
+                return false;
+            }
+
+
+            /*
+             * Ưu tiên dùng navigation chung
+             * nếu đã được khởi tạo.
+             */
+            if (
+                typeof window.MCS
+                    ?.navigation
+                    ?.hasPermission ===
+                'function'
+            ) {
+
+                return window.MCS
+                    .navigation
+                    .hasPermission(
+                        code
+                    );
+            }
+
+
+            /*
+             * Fallback trực tiếp từ currentUser.
+             */
+            return getPermissionSet()
+                .has(
+                    code
+                );
+        }
+
+
+        function showNoPermission() {
+
+            setLoading(
+                false
+            );
+
+
+            const pageContent =
+                root.closest(
+                    '.page-content'
+                ) ||
+                document.querySelector(
+                    '.page-content'
+                );
+
+
+            const noPermission =
+                root.querySelector(
+                    '[data-catalog-no-permission]'
+                ) ||
+                document.querySelector(
+                    '[data-catalog-no-permission]'
+                );
+
+
+            if (
+                !pageContent ||
+                !noPermission
+            ) {
+
+                console.warn(
+                    'Không tìm thấy form không đủ quyền truy cập.'
+                );
+
+                return;
+            }
+
+
+            if (
+                !noPermission
+                    ._mcsOriginalParent
+            ) {
+
+                noPermission
+                    ._mcsOriginalParent =
+                    noPermission
+                        .parentElement;
+
+            }
+
+
+            /*
+             * Đưa form không quyền ra ngoài root
+             * trước khi ẩn root báo cáo.
+             */
+            if (
+                noPermission
+                    .parentElement !==
+                pageContent
+            ) {
+
+                pageContent
+                    .appendChild(
+                        noPermission
+                    );
+
+            }
+
+
+            root.hidden =
+                true;
+
+
+            noPermission.hidden =
+                false;
+
+
+            document
+                .documentElement
+                .classList
+                .add(
+                    'catalog-permission-denied'
+                );
+
+
+            document
+                .body
+                .classList
+                .add(
+                    'catalog-permission-denied'
+                );
+
+
+            root.dataset
+                .permissionDenied =
+                'true';
+        }
+
+
+        function hideNoPermission() {
+
+            const pageContent =
+                root.closest(
+                    '.page-content'
+                ) ||
+                document.querySelector(
+                    '.page-content'
+                );
+
+
+            const noPermission =
+                pageContent
+                    ?.querySelector(
+                        ':scope > [data-catalog-no-permission]'
+                    ) ||
+                document.querySelector(
+                    '[data-catalog-no-permission]'
+                );
+
+
+            if (
+                noPermission
+            ) {
+
+                noPermission.hidden =
+                    true;
+
+
+                const originalParent =
+                    noPermission
+                        ._mcsOriginalParent;
+
+
+                if (
+                    originalParent &&
+                    originalParent
+                        .isConnected
+                ) {
+
+                    originalParent
+                        .appendChild(
+                            noPermission
+                        );
+
+                }
+
+            }
+
+
+            root.hidden =
+                false;
+
+
+            document
+                .documentElement
+                .classList
+                .remove(
+                    'catalog-permission-denied'
+                );
+
+
+            document
+                .body
+                .classList
+                .remove(
+                    'catalog-permission-denied'
+                );
+
+
+            delete root.dataset
+                .permissionDenied;
+        }
+
+
+        async function start(
+            initializer
+        ) {
+
+            /*
+             * Chỉ start một lần.
+             */
+            if (
+                state.started
+            ) {
+
+                return state
+                    .permissionGranted;
+
+            }
+
+
+            state.started =
+                true;
+
+
+            state.permissionGranted =
+                hasPermission();
+
+
+            if (
+                !state
+                    .permissionGranted
+            ) {
+
+                showNoPermission();
+
+                return false;
+            }
+
+
+            hideNoPermission();
+
+
+            /*
+             * Chỉ khi có quyền
+             * mới bind nút báo cáo.
+             */
+            bindBaseEvents();
+
+
+            /*
+             * Chỉ khi có quyền
+             * mới chạy initialize riêng
+             * của TC01 / TC02 / ...
+             */
+            if (
+                typeof initializer ===
+                'function'
+            ) {
+
+                await initializer(
+                    api
+                );
+
+            }
+
+
+            return true;
+        }
 
         function invalidateReport() {
 
@@ -1642,6 +2034,11 @@
         const api = {
 
             state,
+            
+            start,
+            hasPermission,
+            showNoPermission,
+            hideNoPermission,
 
             loadList,
             normalizeList,

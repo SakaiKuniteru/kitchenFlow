@@ -265,6 +265,166 @@ window.MCS.navigationItems = [
         group: 'Đặt hàng',
         url: '/dat-hang/voucher-don-hang',
         permission: 'Q000034'
+    },
+    {
+        label: 'TC01. Báo cáo chi tiết thu chi',
+        group: 'Báo cáo',
+        url: '/bao-cao/tc01',
+        permission: 'Q003001'
+    },
+
+    {
+        label: 'TC02. Báo cáo đối soát thanh toán',
+        group: 'Báo cáo',
+        url: '/bao-cao/tc02',
+        permission: 'Q003002'
+    },
+
+    {
+        label: 'TC03. Báo cáo các khoản chưa thanh toán',
+        group: 'Báo cáo',
+        url: '/bao-cao/tc03',
+        permission: 'Q003003'
+    },
+
+    {
+        label: 'TC04. Báo cáo miễn giảm và ưu đãi',
+        group: 'Báo cáo',
+        url: '/bao-cao/tc04',
+        permission: 'Q003004'
+    },
+
+    {
+        label: 'TC05. Báo cáo tổng hợp tiền thu theo người thu',
+        group: 'Báo cáo',
+        url: '/bao-cao/tc05',
+        permission: 'Q003005'
+    },
+
+    {
+        label: 'TD01. Báo cáo thực đơn theo ngày, tuần, tháng',
+        group: 'Báo cáo',
+        url: '/bao-cao/td01',
+        permission: 'Q003006'
+    },
+
+    {
+        label: 'TD02. Báo cáo chi tiết món ăn trong thực đơn',
+        group: 'Báo cáo',
+        url: '/bao-cao/td02',
+        permission: 'Q003007'
+    },
+
+    {
+        label: 'TD03. Báo cáo tần suất và món ăn trùng lặp',
+        group: 'Báo cáo',
+        url: '/bao-cao/td03',
+        permission: 'Q003008'
+    },
+
+    {
+        label: 'TD04. Báo cáo nhu cầu nguyên liệu theo thực đơn',
+        group: 'Báo cáo',
+        url: '/bao-cao/td04',
+        permission: 'Q003009'
+    },
+
+    {
+        label: 'TD05. Báo cáo kết quả bình chọn suất ăn',
+        group: 'Báo cáo',
+        url: '/bao-cao/td05',
+        permission: 'Q003010'
+    },
+
+    {
+        label: 'TD06. Báo cáo tình trạng lập và duyệt thực đơn',
+        group: 'Báo cáo',
+        url: '/bao-cao/td06',
+        permission: 'Q0030XX'
+    },
+
+    {
+        label: 'VA01. Báo cáo tổng hợp vé ăn',
+        group: 'Báo cáo',
+        url: '/bao-cao/va01',
+        permission: 'Q003011'
+    },
+
+    {
+        label: 'VA02. Báo cáo chi tiết vé ăn',
+        group: 'Báo cáo',
+        url: '/bao-cao/va02',
+        permission: 'Q003012'
+    },
+
+    {
+        label: 'VA03. Báo cáo đăng ký và sử dụng vé ăn',
+        group: 'Báo cáo',
+        url: '/bao-cao/va03',
+        permission: 'Q003013'
+    },
+
+    {
+        label: 'VA04. Báo cáo suất ăn theo phòng ban',
+        group: 'Báo cáo',
+        url: '/bao-cao/va04',
+        permission: 'Q003014'
+    },
+
+    {
+        label: 'VA05. Báo cáo vé ăn hủy',
+        group: 'Báo cáo',
+        url: '/bao-cao/va05',
+        permission: 'Q003015'
+    },
+
+    {
+        label: 'DH01. Báo cáo tổng hợp đơn hàng',
+        group: 'Báo cáo',
+        url: '/bao-cao/dh01',
+        permission: 'Q003016'
+    },
+
+    {
+        label: 'DH02. Báo cáo chi tiết đơn hàng',
+        group: 'Báo cáo',
+        url: '/bao-cao/dh02',
+        permission: 'Q003017'
+    },
+
+    {
+        label: 'DH03. Báo cáo số lượng món và dịch vụ đã đặt',
+        group: 'Báo cáo',
+        url: '/bao-cao/dh03',
+        permission: 'Q003018'
+    },
+
+    {
+        label: 'DH04. Báo cáo đơn hàng cần chuẩn bị và giao',
+        group: 'Báo cáo',
+        url: '/bao-cao/dh04',
+        permission: 'Q003019'
+    },
+
+    {
+        label: 'DH05. Báo cáo tiến độ xử lý và giao hàng',
+        group: 'Báo cáo',
+        url: '/bao-cao/dh05',
+        permission: 'Q003020'
+    },
+
+    {
+        label: 'DH06. Báo cáo đơn hàng hủy và từ chối',
+        group: 'Báo cáo',
+        url: '/bao-cao/dh06',
+        permission: 'Q0030XX'
+    },
+
+    {
+        label: 'DH07. Báo cáo đặt hàng theo nhân viên và phòng ban',
+        group: 'Báo cáo',
+        url: '/bao-cao/dh07',
+        permission: 'Q0030XX'
     }
 ];
 
