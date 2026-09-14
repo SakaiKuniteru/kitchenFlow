@@ -226,23 +226,33 @@ class BaoCaoWebController {
     ) {
         try {
 
-            const data =
-                await tc05Service
-                    .taoBaoCao(
-                        req.body,
-
-                        req.user
-                            ?.taiKhoanId ||
-                        req.user
-                            ?.id
-                    );
-
-
-            return successResponse(
+            return renderBaoCaoPage(
+                req,
                 res,
-                'Lấy thông tin báo cáo tổng hợp tiền thu theo người thu thành công.',
-                data,
-                200
+                'pages/bao-cao/tai-chinh/tc05',
+                {
+
+                    title:
+                        'TC05. Báo cáo tổng hợp tiền thu theo người thu',
+
+                    breadcrumbs: [
+                        {
+                            label:
+                                'Báo cáo'
+                        },
+                        {
+                            label:
+                                'TC05'
+                        }
+                    ],
+
+                    maBaoCao:
+                        'TC05',
+
+                    tenBaoCao:
+                        'Báo cáo tổng hợp tiền thu theo người thu'
+
+                }
             );
 
         } catch (

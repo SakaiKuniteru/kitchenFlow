@@ -175,6 +175,9 @@ document.addEventListener(
 
                     root,
 
+                    permission:
+                        'Q003005',
+
                     api:
                         API.baoCao,
 
@@ -190,7 +193,9 @@ document.addEventListener(
                 });
 
 
-        initialize();
+        report.start(
+            initialize
+        );
 
 
         /*
