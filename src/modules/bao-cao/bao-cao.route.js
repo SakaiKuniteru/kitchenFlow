@@ -155,7 +155,7 @@ router.post(
 router.post(
     '/don-hang/dh01',
     authenticate,
-    validate(va01XemSchema),
+    validate(dh01XemSchema),
     authorize('Q003016'),
     datMonController.dh01
 );
@@ -163,7 +163,7 @@ router.post(
 router.post(
     '/don-hang/dh02',
     authenticate,
-    validate(va02XemSchema),
+    validate(dh02XemSchema),
     authorize('Q003017'),
     datMonController.dh02
 );
@@ -171,7 +171,7 @@ router.post(
 router.post(
     '/don-hang/dh03',
     authenticate,
-    validate(va03XemSchema),
+    validate(dh03XemSchema),
     authorize('Q003018'),
     datMonController.dh03
 );
@@ -179,7 +179,7 @@ router.post(
 router.post(
     '/don-hang/dh04',
     authenticate,
-    validate(va04XemSchema),
+    validate(dh04XemSchema),
     authorize('Q003019'),
     datMonController.dh04
 );
@@ -187,7 +187,7 @@ router.post(
 router.post(
     '/don-hang/dh05',
     authenticate,
-    validate(va05XemSchema),
+    validate(dh05XemSchema),
     authorize('Q003020'),
     datMonController.dh05
 );

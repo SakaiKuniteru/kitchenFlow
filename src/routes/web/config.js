@@ -309,87 +309,101 @@ const baoCaoRoutes = [
         handler: baoCaoWebController.tc05
     },
 
+    // BÁO CÁO THỤC ĐƠN //
+    {
+        method: 'get',
+        path: '/bao-cao/td01',
+        handler: baoCaoWebController.td01
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/td02',
+        handler: baoCaoWebController.td02
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/td03',
+        handler: baoCaoWebController.td03
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/td04',
+        handler: baoCaoWebController.td04
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/td05',
+        handler: baoCaoWebController.td05
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/td06',
+        handler: baoCaoWebController.td06
+    },
 
-    // // BÁO CÁO THỤC ĐƠN //
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/td01',
-    //     handler: baoCaoWebController.td01
-    // },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/td02',
-    //     handler: baoCaoWebController.td02
-    // },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/td03',
-    //     handler: baoCaoWebController.td03
-    // },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/td04',
-    //     handler: baoCaoWebController.td04
-    // },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/td05',
-    //     handler: baoCaoWebController.td05
-    // },
+    // BÁO CÁO VÉ ĂN //
+    {
+        method: 'get',
+        path: '/bao-cao/va01',
+        handler: baoCaoWebController.va01
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/va02',
+        handler: baoCaoWebController.va02
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/va03',
+        handler: baoCaoWebController.va03
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/td04',
+        handler: baoCaoWebController.va04
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/td05',
+        handler: baoCaoWebController.va05
+    },
 
-    // // BÁO CÁO VÉ ĂN //
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/va01',
-    //     handler: baoCaoWebController.va01
-    // },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/va02',
-    //     handler: baoCaoWebController.va02
-    // },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/va03',
-    //     handler: baoCaoWebController.va03
-    // },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/td04',
-    //     handler: baoCaoWebController.va04
-    // },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/td05',
-    //     handler: baoCaoWebController.va05
-    // },
-
-    // // BÁO CÁO ĐẶT MÓN //
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/dh01',
-    //     handler: baoCaoWebController.dh01
-    // },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/dh02',
-    //     handler: baoCaoWebController.dh02
-    // },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/dh03',
-    //     handler: baoCaoWebController.dh03
-    // },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/dh04',
-    //     handler: baoCaoWebController.dh04
-    // },
-    // {
-    //     method: 'get',
-    //     path: '/bao-cao/dh05',
-    //     handler: baoCaoWebController.dh05
-    // },
+    // BÁO CÁO ĐẶT MÓN //
+    {
+        method: 'get',
+        path: '/bao-cao/dh01',
+        handler: baoCaoWebController.dh01
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/dh02',
+        handler: baoCaoWebController.dh02
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/dh03',
+        handler: baoCaoWebController.dh03
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/dh04',
+        handler: baoCaoWebController.dh04
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/dh05',
+        handler: baoCaoWebController.dh05
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/dh06',
+        handler: baoCaoWebController.dh06
+    },
+    {
+        method: 'get',
+        path: '/bao-cao/dh07',
+        handler: baoCaoWebController.dh07
+    },
 ];
 
 module.exports = [

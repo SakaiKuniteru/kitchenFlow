@@ -1,12 +1,23 @@
 <main
-    class="tc04-page"
-    data-tc04-page
->
+    class="va02-page"
+    data-va02-page>
 
     {{#> bao-cao/report-frame
         maBaoCao=maBaoCao
         tenBaoCao=tenBaoCao
     }}
+
+        {{> forms/select
+            id="loaiThoiGian"
+            name="loaiThoiGian"
+            label="Loại thời gian"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn ngày tạo / ngày sử dụng..."
+            options=null
+            required=true
+        }}
 
 
         {{> forms/date
@@ -27,20 +38,6 @@
             placeholder="Nhập đến ngày..."
             defaultTime="23:59:59"
             showTime=true
-            required=true
-        }}
-
-
-        {{> forms/select
-            id="nguon"
-            name="nguon"
-            label="Nguồn"
-            mode="multiple"
-            multiple=true
-            allowAll=true
-            allLabel="Tất cả"
-            placeholder="Chọn nguồn..."
-            options=null
             required=true
         }}
 
@@ -72,28 +69,33 @@
 
 
         {{> forms/select
-            id="chinhSachIds"
-            name="chinhSachIds"
-            label="Chính sách"
+            id="caAnIds"
+            name="caAnIds"
+            label="Ca ăn"
             mode="multiple"
             multiple=true
             allowAll=true
             allLabel="Tất cả"
-            placeholder="Chọn chính sách..."
+            placeholder="Chọn ca ăn..."
             options=null
         }}
 
 
-        {{> forms/select
-            id="voucherKeys"
-            name="voucherKeys"
-            label="Voucher"
-            mode="multiple"
-            multiple=true
-            allowAll=true
-            allLabel="Tất cả"
-            placeholder="Chọn voucher..."
-            options=null
+        {{> forms/input
+            id="maVe"
+            name="maVe"
+            label="Mã vé"
+            placeholder="Nhập mã vé..."
+            maxlength=100
+        }}
+
+
+        {{> forms/input
+            id="soPhieu"
+            name="soPhieu"
+            label="Số phiếu"
+            placeholder="Nhập số phiếu..."
+            maxlength=100
         }}
 
 
@@ -123,6 +125,31 @@
         }}
 
 
+        {{> forms/select
+            id="trangThaiVe"
+            name="trangThaiVe"
+            label="Trạng thái vé"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn trạng thái vé..."
+            options=null
+        }}
+
+
+        {{> forms/select
+            id="trangThaiThanhToan"
+            name="trangThaiThanhToan"
+            label="Trạng thái thanh toán"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn trạng thái thanh toán..."
+            options=null
+        }}
+
     {{/bao-cao/report-frame}}
 
 </main>
@@ -130,5 +157,5 @@
 
 <script
     defer
-    src="{{asset "/assets/js/pages/bao-cao/tai-chinh/tc04.js" }}"
-></script>
+    src="{{asset "/assets/js/pages/bao-cao/ve-an/va02.js" }}">
+</script>

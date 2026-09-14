@@ -1,18 +1,16 @@
 <main
-    class="tc04-page"
-    data-tc04-page
->
+    class="dh05-page"
+    data-dh05-page>
 
     {{#> bao-cao/report-frame
         maBaoCao=maBaoCao
         tenBaoCao=tenBaoCao
     }}
 
-
         {{> forms/date
             id="tuNgay"
             name="tuNgay"
-            label="Từ ngày"
+            label="Từ ngày nhận dự kiến"
             placeholder="Nhập từ ngày..."
             defaultTime="00:00:00"
             showTime=true
@@ -23,24 +21,10 @@
         {{> forms/date
             id="denNgay"
             name="denNgay"
-            label="Đến ngày"
+            label="Đến ngày nhận dự kiến"
             placeholder="Nhập đến ngày..."
             defaultTime="23:59:59"
             showTime=true
-            required=true
-        }}
-
-
-        {{> forms/select
-            id="nguon"
-            name="nguon"
-            label="Nguồn"
-            mode="multiple"
-            multiple=true
-            allowAll=true
-            allLabel="Tất cả"
-            placeholder="Chọn nguồn..."
-            options=null
             required=true
         }}
 
@@ -72,56 +56,42 @@
 
 
         {{> forms/select
-            id="chinhSachIds"
-            name="chinhSachIds"
-            label="Chính sách"
+            id="trangThaiDon"
+            name="trangThaiDon"
+            label="Trạng thái đơn"
             mode="multiple"
             multiple=true
             allowAll=true
             allLabel="Tất cả"
-            placeholder="Chọn chính sách..."
+            placeholder="Chọn trạng thái đơn..."
             options=null
         }}
 
 
         {{> forms/select
-            id="voucherKeys"
-            name="voucherKeys"
-            label="Voucher"
+            id="nguoiXuLyIds"
+            name="nguoiXuLyIds"
+            label="Người xử lý"
             mode="multiple"
             multiple=true
             allowAll=true
             allLabel="Tất cả"
-            placeholder="Chọn voucher..."
+            placeholder="Chọn người xử lý..."
             options=null
         }}
 
 
         {{> forms/select
-            id="nhanVienIds"
-            name="nhanVienIds"
-            label="Nhân viên"
+            id="tienDo"
+            name="tienDo"
+            label="Tiến độ"
             mode="multiple"
             multiple=true
             allowAll=true
             allLabel="Tất cả"
-            placeholder="Chọn nhân viên..."
+            placeholder="Chọn đúng hạn / trễ hạn..."
             options=null
         }}
-
-
-        {{> forms/select
-            id="phongBanIds"
-            name="phongBanIds"
-            label="Phòng ban"
-            mode="multiple"
-            multiple=true
-            allowAll=true
-            allLabel="Tất cả"
-            placeholder="Chọn phòng ban..."
-            options=null
-        }}
-
 
     {{/bao-cao/report-frame}}
 
@@ -130,5 +100,5 @@
 
 <script
     defer
-    src="{{asset "/assets/js/pages/bao-cao/tai-chinh/tc04.js" }}"
-></script>
+    src="{{asset "/assets/js/pages/bao-cao/dat-mon/dh05.js" }}">
+</script>

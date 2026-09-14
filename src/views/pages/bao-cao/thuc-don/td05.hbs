@@ -1,11 +1,24 @@
 <main
-    class="td01-page"
-    data-td01-page>
+    class="td05-page"
+    data-td05-page>
 
     {{#> bao-cao/report-frame
         maBaoCao=maBaoCao
         tenBaoCao=tenBaoCao
     }}
+
+        {{> forms/select
+            id="dotBinhChonIds"
+            name="dotBinhChonIds"
+            label="Đợt bình chọn"
+            mode="multiple"
+            multiple=true
+            allowAll=true
+            allLabel="Tất cả"
+            placeholder="Chọn đợt bình chọn..."
+            options=null
+        }}
+
 
         {{> forms/date
             id="tuNgay"
@@ -56,27 +69,14 @@
 
 
         {{> forms/select
-            id="caAnIds"
-            name="caAnIds"
-            label="Ca ăn"
+            id="trangThaiDotBinhChon"
+            name="trangThaiDotBinhChon"
+            label="Trạng thái đợt bình chọn"
             mode="multiple"
             multiple=true
             allowAll=true
             allLabel="Tất cả"
-            placeholder="Chọn ca ăn..."
-            options=null
-        }}
-
-
-        {{> forms/select
-            id="trangThaiThucDon"
-            name="trangThaiThucDon"
-            label="Trạng thái thực đơn"
-            mode="multiple"
-            multiple=true
-            allowAll=true
-            allLabel="Tất cả"
-            placeholder="Chọn trạng thái thực đơn..."
+            placeholder="Chọn trạng thái..."
             options=null
         }}
 
@@ -87,5 +87,5 @@
 
 <script
     defer
-    src="{{asset "/assets/js/pages/bao-cao/thuc-don/td01.js" }}">
+    src="{{asset "/assets/js/pages/bao-cao/thuc-don/td05.js" }}">
 </script>

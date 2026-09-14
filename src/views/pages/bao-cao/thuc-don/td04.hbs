@@ -1,18 +1,16 @@
 <main
-    class="tc04-page"
-    data-tc04-page
->
+    class="td04-page"
+    data-td04-page>
 
     {{#> bao-cao/report-frame
         maBaoCao=maBaoCao
         tenBaoCao=tenBaoCao
     }}
 
-
         {{> forms/date
             id="tuNgay"
             name="tuNgay"
-            label="Từ ngày"
+            label="Từ ngày phục vụ"
             placeholder="Nhập từ ngày..."
             defaultTime="00:00:00"
             showTime=true
@@ -23,24 +21,10 @@
         {{> forms/date
             id="denNgay"
             name="denNgay"
-            label="Đến ngày"
+            label="Đến ngày phục vụ"
             placeholder="Nhập đến ngày..."
             defaultTime="23:59:59"
             showTime=true
-            required=true
-        }}
-
-
-        {{> forms/select
-            id="nguon"
-            name="nguon"
-            label="Nguồn"
-            mode="multiple"
-            multiple=true
-            allowAll=true
-            allLabel="Tất cả"
-            placeholder="Chọn nguồn..."
-            options=null
             required=true
         }}
 
@@ -72,56 +56,68 @@
 
 
         {{> forms/select
-            id="chinhSachIds"
-            name="chinhSachIds"
-            label="Chính sách"
+            id="caAnIds"
+            name="caAnIds"
+            label="Ca ăn"
             mode="multiple"
             multiple=true
             allowAll=true
             allLabel="Tất cả"
-            placeholder="Chọn chính sách..."
+            placeholder="Chọn ca ăn..."
             options=null
         }}
 
 
         {{> forms/select
-            id="voucherKeys"
-            name="voucherKeys"
-            label="Voucher"
+            id="thucDonIds"
+            name="thucDonIds"
+            label="Thực đơn"
             mode="multiple"
             multiple=true
             allowAll=true
             allLabel="Tất cả"
-            placeholder="Chọn voucher..."
+            placeholder="Chọn thực đơn..."
             options=null
         }}
 
 
         {{> forms/select
-            id="nhanVienIds"
-            name="nhanVienIds"
-            label="Nhân viên"
+            id="monAnIds"
+            name="monAnIds"
+            label="Món ăn"
             mode="multiple"
             multiple=true
             allowAll=true
             allLabel="Tất cả"
-            placeholder="Chọn nhân viên..."
+            placeholder="Chọn món ăn..."
             options=null
         }}
 
 
         {{> forms/select
-            id="phongBanIds"
-            name="phongBanIds"
-            label="Phòng ban"
+            id="thucPhamIds"
+            name="thucPhamIds"
+            label="Thực phẩm"
             mode="multiple"
             multiple=true
             allowAll=true
             allLabel="Tất cả"
-            placeholder="Chọn phòng ban..."
+            placeholder="Chọn thực phẩm..."
             options=null
         }}
 
+
+        {{> forms/select
+            id="nguonSoSuat"
+            name="nguonSoSuat"
+            label="Nguồn số suất"
+            mode="single"
+            multiple=false
+            allowAll=false
+            placeholder="Chọn dự kiến / đăng ký..."
+            options=null
+            required=true
+        }}
 
     {{/bao-cao/report-frame}}
 
@@ -130,5 +126,5 @@
 
 <script
     defer
-    src="{{asset "/assets/js/pages/bao-cao/tai-chinh/tc04.js" }}"
-></script>
+    src="{{asset "/assets/js/pages/bao-cao/thuc-don/td04.js" }}">
+</script>
