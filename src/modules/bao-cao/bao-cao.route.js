@@ -66,6 +66,14 @@ const {
     xemSchema: va03XemSchema
 } = require('./ve-an/va03/va03.validation');
 
+const {
+    xemSchema: va04XemSchema
+} = require('./ve-an/va04/va04.validation');
+
+const {
+    xemSchema: va05XemSchema
+} = require('./ve-an/va05/va05.validation');
+
 router.post(
     '/tai-chinh/tc01',
 
@@ -126,6 +134,20 @@ router.post(
     authenticate,
     validate(va03XemSchema),
     veAnController.va03
+);
+
+router.post(
+    '/ve-an/va04',
+    authenticate,
+    validate(va04XemSchema),
+    veAnController.va04
+);
+
+router.post(
+    '/ve-an/va05',
+    authenticate,
+    validate(va05XemSchema),
+    veAnController.va05
 );
 
 module.exports =
