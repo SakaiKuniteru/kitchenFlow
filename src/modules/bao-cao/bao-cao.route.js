@@ -43,6 +43,29 @@ const {
     xemSchema: tc03XemSchema
 } = require('./tai-chinh/tc03/tc03.validation');
 
+const {
+    xemSchema: tc04XemSchema
+} = require('./tai-chinh/tc04/tc04.validation');
+
+const {
+    xemSchema: tc05XemSchema
+} = require('./tai-chinh/tc05/tc05.validation');
+
+
+const veAnController = require('./ve-an/ve-an.controller');
+
+const {
+    xemSchema: va01XemSchema
+} = require('./ve-an/va01/va01.validation');
+
+const {
+    xemSchema: va02XemSchema
+} = require('./ve-an/va02/va02.validation');
+
+const {
+    xemSchema: va03XemSchema
+} = require('./ve-an/va03/va03.validation');
+
 router.post(
     '/tai-chinh/tc01',
 
@@ -68,6 +91,41 @@ router.post(
     authenticate,
     validate(tc03XemSchema),
     taiChinhController.tc03
+);
+
+router.post(
+    '/tai-chinh/tc04',
+    authenticate,
+    validate(tc04XemSchema),
+    taiChinhController.tc04
+);
+
+router.post(
+    '/tai-chinh/tc05',
+    authenticate,
+    validate(tc05XemSchema),
+    taiChinhController.tc05
+);
+
+router.post(
+    '/ve-an/va01',
+    authenticate,
+    validate(va01XemSchema),
+    veAnController.va01
+);
+
+router.post(
+    '/ve-an/va02',
+    authenticate,
+    validate(va02XemSchema),
+    veAnController.va02
+);
+
+router.post(
+    '/ve-an/va03',
+    authenticate,
+    validate(va03XemSchema),
+    veAnController.va03
 );
 
 module.exports =
