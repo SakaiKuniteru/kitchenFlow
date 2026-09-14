@@ -1,0 +1,134 @@
+<link
+    rel="stylesheet"
+    href="{{asset "/assets/css/pages/bao-cao/index.css" }}">
+
+
+<main
+    class="report-catalog-page"
+    data-report-catalog-page>
+
+
+    <div
+        class="report-catalog"
+        data-report-catalog-content>
+
+
+        {{!--
+        ==========================================
+        CỘT TRÁI - NHÓM BÁO CÁO
+        ==========================================
+        --}}
+
+        <aside
+            class="report-catalog__sidebar">
+
+            <div
+                class="report-catalog__sidebar-header">
+
+                <h2>
+                    Nhóm báo cáo
+                </h2>
+
+            </div>
+
+
+            <nav
+                class="report-catalog__group-navigation"
+                data-report-group-navigation
+                aria-label="Nhóm báo cáo">
+            </nav>
+
+        </aside>
+
+
+        {{!--
+        ==========================================
+        NỘI DUNG BÊN PHẢI
+        ==========================================
+        --}}
+
+        <section
+            class="report-catalog__main">
+
+
+            {{!--
+            ======================================
+            SEARCH
+            ======================================
+            --}}
+
+            <div
+                class="report-catalog__toolbar">
+
+                <div
+                    class="report-catalog__search">
+
+                    {{> forms/search
+                        inputId="reportCatalogSearch"
+                        className="search-picker--report-catalog"
+                        placeholder="Tìm báo cáo..."
+                        listSearch=true
+                        showClear=true
+                        hideDropdown=true
+                    }}
+
+                </div>
+
+            </div>
+
+
+            {{!--
+            ======================================
+            DANH SÁCH NHÓM
+            ======================================
+            --}}
+
+            <div
+                class="report-catalog__groups"
+                data-report-groups>
+            </div>
+
+
+            {{!--
+            ======================================
+            KHÔNG CÓ KẾT QUẢ SEARCH
+            ======================================
+            --}}
+
+            <div
+                class="report-catalog__empty"
+                data-report-empty
+                hidden>
+
+                <i
+                    class="fa-regular fa-folder-open"
+                    aria-hidden="true">
+                </i>
+
+                <strong>
+                    Không tìm thấy báo cáo
+                </strong>
+
+                <span>
+                    Thử tìm theo mã hoặc tên báo cáo.
+                </span>
+
+            </div>
+
+
+        </section>
+
+
+    </div>
+
+
+    {{> catalog/no-permission}}
+
+
+</main>
+
+
+<script
+    defer
+    src="{{asset "/assets/js/pages/bao-cao/index.js" }}">
+</script>

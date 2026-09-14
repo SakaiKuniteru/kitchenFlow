@@ -29,6 +29,48 @@ class BaoCaoWebController {
 
     /*
      * ==========================================
+     * DANH SÁCH BÁO CÁO
+     * ==========================================
+     */
+
+    async index(
+        req,
+        res,
+        next
+    ) {
+        try {
+
+            return renderBaoCaoPage(
+                req,
+                res,
+                'pages/bao-cao/index',
+                {
+
+                    title:
+                        'Báo cáo',
+
+                    breadcrumbs: [
+                        {
+                            label: 'Báo cáo'
+                        }
+                    ]
+
+                }
+            );
+
+        } catch (
+            error
+        ) {
+
+            next(
+                error
+            );
+
+        }
+    }
+
+    /*
+     * ==========================================
      * TÀI CHÍNH
      * ==========================================
      */
@@ -50,8 +92,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -96,8 +138,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -143,8 +185,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -190,8 +232,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -237,8 +279,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -290,8 +332,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -337,8 +379,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -384,8 +426,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -431,8 +473,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -478,8 +520,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -525,8 +567,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -572,8 +614,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -625,8 +667,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -672,8 +714,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -719,8 +761,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -766,8 +808,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -813,8 +855,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -866,8 +908,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -913,8 +955,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -960,8 +1002,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -1007,8 +1049,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -1054,8 +1096,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:
@@ -1101,8 +1143,8 @@ class BaoCaoWebController {
 
                     breadcrumbs: [
                         {
-                            label:
-                                'Báo cáo'
+                            label: 'Báo cáo',
+                            path: '/bao-cao'
                         },
                         {
                             label:

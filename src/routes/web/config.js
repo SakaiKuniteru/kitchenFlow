@@ -285,6 +285,11 @@ const datHangRoutes = [
 const baoCaoRoutes = [
     {
         method: 'get',
+        path: '/bao-cao',
+        handler: baoCaoWebController.index
+    },
+    {
+        method: 'get',
         path: '/bao-cao/tc01',
         handler: baoCaoWebController.tc01
     },

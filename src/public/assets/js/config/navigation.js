@@ -267,6 +267,12 @@ window.MCS.navigationItems = [
         permission: 'Q000034'
     },
     {
+        label: 'Báo cáo',
+        group: 'Báo cáo',
+        url: '/bao-cao',
+        permission: 'Q000037'
+    },
+    {
         label: 'TC01. Báo cáo chi tiết thu chi',
         group: 'Báo cáo - Tài chính',
         url: '/bao-cao/tc01',
@@ -373,8 +379,8 @@ window.MCS.navigationItems = [
 
     {
         label: 'VA05. Báo cáo vé ăn hủy',
-        group: 'Báo cáo',
-        url: '/bao-cao/va05 - Vé ăn',
+        group: 'Báo cáo - Vé ăn',
+        url: '/bao-cao/va05',
         permission: 'Q003015'
     },
 
