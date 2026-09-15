@@ -7,7 +7,7 @@ document.addEventListener(
 
         const root =
             document.querySelector(
-                '[data-td03-page]'
+                '[data-td06-page]'
             );
 
 
@@ -18,14 +18,14 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * API RIÊNG TD03
+         * API RIÊNG TD06
          * ==========================================
          */
 
         const API = {
 
             baoCao:
-                '/api/mcs/v1/bao-cao/thuc-don/td03',
+                '/api/mcs/v1/bao-cao/thuc-don/td06',
 
             coSo:
                 '/api/mcs/v1/dm-co-so/tong-hop?active=true',
@@ -33,36 +33,18 @@ document.addEventListener(
             nhaAn:
                 '/api/mcs/v1/dm-nha-an/tong-hop?active=true',
 
-            caAn:
-                '/api/mcs/v1/dm-ca-an/tong-hop?active=true',
+            loaiThucDon:
+                '/api/mcs/v1/enums?name=loaiThucDon',
 
-            nhomMonAn:
-                '/api/mcs/v1/dm-nhom-mon-an/tong-hop?active=true',
-
-            monAn:
-                '/api/mcs/v1/dm-mon-an/tong-hop?active=true'
+            trangThaiThucDon:
+                '/api/mcs/v1/enums?name=trangThaiThucDon'
 
         };
 
 
         /*
          * ==========================================
-         * SỐ LẦN XUẤT HIỆN MẶC ĐỊNH
-         * ==========================================
-         *
-         * Validation BE cũng default = 2.
-         *
-         * 2 trở lên mới thực sự mang ý nghĩa
-         * kiểm tra món xuất hiện lặp lại.
-         */
-
-        const SO_LAN_XUAT_HIEN_MAC_DINH =
-            2;
-
-
-        /*
-         * ==========================================
-         * DEFAULT MULTI SELECT TD03
+         * DEFAULT MULTI SELECT TD06
          * ==========================================
          */
 
@@ -79,13 +61,10 @@ document.addEventListener(
                 nhaAnIds:
                     false,
 
-                caAnIds:
+                loaiThucDon:
                     true,
 
-                nhomMonAnIds:
-                    true,
-
-                monAnIds:
+                trangThaiThucDon:
                     true
 
             });
@@ -93,7 +72,7 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * STATE RIÊNG TD03
+         * STATE RIÊNG TD06
          * ==========================================
          */
 
@@ -105,13 +84,10 @@ document.addEventListener(
             nhaAn:
                 [],
 
-            caAn:
+            loaiThucDon:
                 [],
 
-            nhomMonAn:
-                [],
-
-            monAn:
+            trangThaiThucDon:
                 []
 
         };
@@ -131,13 +107,13 @@ document.addEventListener(
                     root,
 
                     permission:
-                        'Q003008',
+                        'Q003021',
 
                     api:
                         API.baoCao,
 
                     fileName:
-                        'td03',
+                        'td06',
 
                     getPayload:
                         getFilters,
@@ -148,6 +124,16 @@ document.addEventListener(
                 });
 
 
+        /*
+         * Phải truyền function.
+         *
+         * Không:
+         *
+         * report.start(
+         *     initialize()
+         * );
+         */
+
         report.start(
             initialize
         );
@@ -155,7 +141,7 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * INIT TD03
+         * INIT TD06
          * ==========================================
          */
 
@@ -171,9 +157,8 @@ document.addEventListener(
                 const [
                     coSo,
                     nhaAn,
-                    caAn,
-                    nhomMonAn,
-                    monAn
+                    loaiThucDon,
+                    trangThaiThucDon
                 ] =
                     await Promise.all([
 
@@ -186,15 +171,11 @@ document.addEventListener(
                         ),
 
                         report.loadList(
-                            API.caAn
+                            API.loaiThucDon
                         ),
 
                         report.loadList(
-                            API.nhomMonAn
-                        ),
-
-                        report.loadList(
-                            API.monAn
+                            API.trangThaiThucDon
                         )
 
                     ]);
@@ -214,16 +195,12 @@ document.addEventListener(
                     nhaAn;
 
 
-                state.caAn =
-                    caAn;
+                state.loaiThucDon =
+                    loaiThucDon;
 
 
-                state.nhomMonAn =
-                    nhomMonAn;
-
-
-                state.monAn =
-                    monAn;
+                state.trangThaiThucDon =
+                    trangThaiThucDon;
 
 
                 /*
@@ -270,24 +247,22 @@ document.addEventListener(
 
                 /*
                  * ======================================
-                 * CA ĂN
+                 * LOẠI THỰC ĐƠN
                  * ======================================
                  */
 
                 report
                     .setMultipleSelectOptions(
-                        'caAnIds',
+                        'loaiThucDon',
 
-                        caAn.map(
+                        loaiThucDon.map(
                             item => ({
 
                                 value:
-                                    item.id,
+                                    item.value,
 
                                 label:
-                                    buildCaAnLabel(
-                                        item
-                                    )
+                                    item.name
 
                             })
                         ),
@@ -295,30 +270,28 @@ document.addEventListener(
                         [],
 
                         MULTI_SELECT_DEFAULTS
-                            .caAnIds
+                            .loaiThucDon
                     );
 
 
                 /*
                  * ======================================
-                 * NHÓM MÓN
+                 * TRẠNG THÁI THỰC ĐƠN
                  * ======================================
                  */
 
                 report
                     .setMultipleSelectOptions(
-                        'nhomMonAnIds',
+                        'trangThaiThucDon',
 
-                        nhomMonAn.map(
+                        trangThaiThucDon.map(
                             item => ({
 
                                 value:
-                                    item.id,
+                                    item.value,
 
                                 label:
-                                    buildNhomMonAnLabel(
-                                        item
-                                    )
+                                    item.name
 
                             })
                         ),
@@ -326,49 +299,7 @@ document.addEventListener(
                         [],
 
                         MULTI_SELECT_DEFAULTS
-                            .nhomMonAnIds
-                    );
-
-
-                /*
-                 * ======================================
-                 * MÓN ĂN
-                 * ======================================
-                 *
-                 * Không phụ thuộc cố định vào
-                 * dm_nhom_mon_an.
-                 *
-                 * TD03 kiểm tra quan hệ thực tế:
-                 *
-                 * ct_thuc_don_nhom_mon_an
-                 *          ↓
-                 * ct_thuc_don_mon_an
-                 *
-                 * nên để toàn bộ danh mục món ăn.
-                 */
-
-                report
-                    .setMultipleSelectOptions(
-                        'monAnIds',
-
-                        monAn.map(
-                            item => ({
-
-                                value:
-                                    item.id,
-
-                                label:
-                                    buildMonAnLabel(
-                                        item
-                                    )
-
-                            })
-                        ),
-
-                        [],
-
-                        MULTI_SELECT_DEFAULTS
-                            .monAnIds
+                            .trangThaiThucDon
                     );
 
 
@@ -399,20 +330,31 @@ document.addEventListener(
 
                 /*
                  * ======================================
-                 * SỐ LẦN XUẤT HIỆN TỐI THIỂU
+                 * NGƯỜI LẬP / NGƯỜI DUYỆT
                  * ======================================
+                 *
+                 * nv_thuc_don hiện chưa có:
+                 *
+                 * nguoi_lap_id
+                 * nguoi_duyet_id
+                 *
+                 * Repository TD06 cũng chưa filter
+                 * hai trường này.
+                 *
+                 * Vì vậy khóa field để tránh user
+                 * hiểu nhầm bộ lọc đang hoạt động.
                  */
 
-                setDefaultSoLanXuatHien();
+                disableUnsupportedUserFilters();
 
 
                 /*
                  * ======================================
-                 * EVENT RIÊNG TD03
+                 * EVENT RIÊNG TD06
                  * ======================================
                  */
 
-                bindTd03Events();
+                bindTd06Events();
 
             } catch (
                 error
@@ -427,7 +369,7 @@ document.addEventListener(
                     ?.toast
                     ?.error?.(
                         error?.message ||
-                        'Không thể tải dữ liệu bộ lọc TD03.'
+                        'Không thể tải dữ liệu bộ lọc TD06.'
                     );
 
             } finally {
@@ -443,15 +385,17 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * EVENT RIÊNG TD03
+         * EVENT RIÊNG TD06
          * ==========================================
          */
 
-        function bindTd03Events() {
+        function bindTd06Events() {
 
             /*
-             * Cơ sở thay đổi
-             * => cập nhật lại Nhà ăn.
+             * Cơ sở thay đổi:
+             *
+             * - report cũ không còn hợp lệ
+             * - render lại Nhà ăn
              */
 
             root
@@ -467,26 +411,6 @@ document.addEventListener(
 
 
                         renderNhaAn();
-
-                    }
-                );
-
-
-            /*
-             * Số lần xuất hiện thay đổi
-             * => kết quả báo cáo cũ không còn hợp lệ.
-             */
-
-            root
-                .querySelector(
-                    '#soLanXuatHienToiThieu'
-                )
-                ?.addEventListener(
-                    'input',
-                    () => {
-
-                        report
-                            .invalidateReport();
 
                     }
                 );
@@ -522,7 +446,7 @@ document.addEventListener(
 
             /*
              * Không chọn Cơ sở
-             * hoặc chọn "Tất cả":
+             * hoặc đang chọn "Tất cả":
              *
              * getMultiValues() trả [].
              *
@@ -569,7 +493,7 @@ document.addEventListener(
 
             /*
              * ======================================
-             * GIỮ NHÀ ĂN CÒN HỢP LỆ
+             * GIỮ LỰA CHỌN CÒN HỢP LỆ
              * ======================================
              */
 
@@ -627,36 +551,7 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * DEFAULT SỐ LẦN XUẤT HIỆN
-         * ==========================================
-         */
-
-        function setDefaultSoLanXuatHien() {
-
-            const input =
-                root.querySelector(
-                    '#soLanXuatHienToiThieu'
-                );
-
-
-            if (
-                !input
-            ) {
-                return;
-            }
-
-
-            input.value =
-                String(
-                    SO_LAN_XUAT_HIEN_MAC_DINH
-                );
-
-        }
-
-
-        /*
-         * ==========================================
-         * BUILD PAYLOAD TD03
+         * BUILD PAYLOAD TD06
          * ==========================================
          */
 
@@ -750,56 +645,16 @@ document.addEventListener(
 
             /*
              * ======================================
-             * SỐ LẦN XUẤT HIỆN TỐI THIỂU
-             * ======================================
-             */
-
-            const rawSoLan =
-                String(
-                    root
-                        .querySelector(
-                            '#soLanXuatHienToiThieu'
-                        )
-                        ?.value ||
-                    ''
-                )
-                    .trim();
-
-
-            const soLanXuatHienToiThieu =
-                rawSoLan ===
-                ''
-                    ? SO_LAN_XUAT_HIEN_MAC_DINH
-                    : Number(
-                        rawSoLan
-                    );
-
-
-            if (
-                !Number.isInteger(
-                    soLanXuatHienToiThieu
-                ) ||
-                soLanXuatHienToiThieu <
-                    1
-            ) {
-
-                throw new Error(
-                    'Số lần xuất hiện tối thiểu phải là số nguyên lớn hơn hoặc bằng 1.'
-                );
-
-            }
-
-
-            /*
-             * ======================================
-             * PAYLOAD TD03
+             * PAYLOAD TD06
              * ======================================
              */
 
             return {
 
                 /*
-                 * Khoảng ngày áp dụng.
+                 * ==================================
+                 * KHOẢNG NGÀY ÁP DỤNG
+                 * ==================================
                  */
 
                 tuNgay:
@@ -810,7 +665,9 @@ document.addEventListener(
 
 
                 /*
-                 * Cơ sở.
+                 * ==================================
+                 * CƠ SỞ
+                 * ==================================
                  */
 
                 coSoIds:
@@ -821,7 +678,9 @@ document.addEventListener(
 
 
                 /*
-                 * Nhà ăn.
+                 * ==================================
+                 * NHÀ ĂN
+                 * ==================================
                  */
 
                 nhaAnIds:
@@ -832,43 +691,54 @@ document.addEventListener(
 
 
                 /*
-                 * Ca ăn.
+                 * ==================================
+                 * LOẠI THỰC ĐƠN
+                 * ==================================
                  */
 
-                caAnIds:
+                loaiThucDon:
                     report
                         .getMultiNumbers(
-                            'caAnIds'
+                            'loaiThucDon'
                         ),
 
 
                 /*
-                 * Nhóm món.
+                 * ==================================
+                 * TRẠNG THÁI
+                 * ==================================
                  */
 
-                nhomMonAnIds:
+                trangThaiThucDon:
                     report
                         .getMultiNumbers(
-                            'nhomMonAnIds'
+                            'trangThaiThucDon'
                         ),
 
 
                 /*
-                 * Món ăn.
+                 * ==================================
+                 * NGƯỜI LẬP
+                 * ==================================
+                 *
+                 * Schema BE vẫn giữ field
+                 * để API ổn định.
+                 *
+                 * Nhưng DB chưa hỗ trợ filter.
                  */
 
-                monAnIds:
-                    report
-                        .getMultiNumbers(
-                            'monAnIds'
-                        ),
+                nguoiLapIds:
+                    [],
 
 
                 /*
-                 * Số lần xuất hiện tối thiểu.
+                 * ==================================
+                 * NGƯỜI DUYỆT
+                 * ==================================
                  */
 
-                soLanXuatHienToiThieu
+                nguoiDuyetIds:
+                    []
 
             };
 
@@ -877,7 +747,7 @@ document.addEventListener(
 
         /*
          * ==========================================
-         * RESET TD03
+         * RESET TD06
          * ==========================================
          */
 
@@ -938,23 +808,108 @@ document.addEventListener(
 
             /*
              * ======================================
-             * RESET SỐ LẦN
+             * RESET NHÀ ĂN
              * ======================================
+             *
+             * Cơ sở trở về Tất cả
+             * => hiển thị toàn bộ Nhà ăn.
              */
 
-            setDefaultSoLanXuatHien();
+            renderNhaAn();
 
 
             /*
              * ======================================
-             * RESET NHÀ ĂN
+             * FIELD CHƯA HỖ TRỢ
              * ======================================
-             *
-             * Cơ sở đã trở về "Tất cả"
-             * => hiển thị lại toàn bộ Nhà ăn.
              */
 
-            renderNhaAn();
+            disableUnsupportedUserFilters();
+
+        }
+
+
+        /*
+         * ==========================================
+         * NGƯỜI LẬP / NGƯỜI DUYỆT CHƯA HỖ TRỢ
+         * ==========================================
+         */
+
+        function disableUnsupportedUserFilters() {
+
+            disableField(
+                'nguoiLapIds'
+            );
+
+
+            disableField(
+                'nguoiDuyetIds'
+            );
+
+        }
+
+
+        /*
+         * ==========================================
+         * DISABLE FIELD
+         * ==========================================
+         */
+
+        function disableField(
+            id
+        ) {
+
+            const select =
+                root.querySelector(
+                    `#${id}`
+                );
+
+
+            if (
+                !select
+            ) {
+                return;
+            }
+
+
+            select.disabled =
+                true;
+
+
+            /*
+             * Smart select của forms/select.
+             */
+
+            const wrapper =
+                select.closest(
+                    '[data-smart-select]'
+                );
+
+
+            if (
+                !wrapper
+            ) {
+                return;
+            }
+
+
+            wrapper.classList.add(
+                'is-disabled'
+            );
+
+
+            wrapper
+                .querySelectorAll(
+                    'button, input, select'
+                )
+                .forEach(
+                    element => {
+
+                        element.disabled =
+                            true;
+
+                    }
+                );
 
         }
 
@@ -1042,138 +997,6 @@ document.addEventListener(
                 ten ||
                 ma ||
                 `Nhà ăn #${item.id}`
-            );
-
-        }
-
-
-        /*
-         * ==========================================
-         * LABEL CA ĂN
-         * ==========================================
-         */
-
-        function buildCaAnLabel(
-            item
-        ) {
-
-            const ma =
-                item.maCaAn ||
-                item.ma_ca_an ||
-                '';
-
-
-            const ten =
-                item.tenCaAn ||
-                item.ten_ca_an ||
-                item.ten ||
-                '';
-
-
-            if (
-                ma &&
-                ten
-            ) {
-
-                return (
-                    `${ma} - ${ten}`
-                );
-
-            }
-
-
-            return (
-                ten ||
-                ma ||
-                `Ca ăn #${item.id}`
-            );
-
-        }
-
-
-        /*
-         * ==========================================
-         * LABEL NHÓM MÓN
-         * ==========================================
-         */
-
-        function buildNhomMonAnLabel(
-            item
-        ) {
-
-            const ma =
-                item.maNhomMonAn ||
-                item.ma_nhom_mon_an ||
-                '';
-
-
-            const ten =
-                item.tenNhomMonAn ||
-                item.ten_nhom_mon_an ||
-                item.ten ||
-                '';
-
-
-            if (
-                ma &&
-                ten
-            ) {
-
-                return (
-                    `${ma} - ${ten}`
-                );
-
-            }
-
-
-            return (
-                ten ||
-                ma ||
-                `Nhóm món #${item.id}`
-            );
-
-        }
-
-
-        /*
-         * ==========================================
-         * LABEL MÓN ĂN
-         * ==========================================
-         */
-
-        function buildMonAnLabel(
-            item
-        ) {
-
-            const ma =
-                item.maMonAn ||
-                item.ma_mon_an ||
-                '';
-
-
-            const ten =
-                item.tenMonAn ||
-                item.ten_mon_an ||
-                item.ten ||
-                '';
-
-
-            if (
-                ma &&
-                ten
-            ) {
-
-                return (
-                    `${ma} - ${ten}`
-                );
-
-            }
-
-
-            return (
-                ten ||
-                ma ||
-                `Món ăn #${item.id}`
             );
 
         }
