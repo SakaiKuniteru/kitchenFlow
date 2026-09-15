@@ -19,12 +19,6 @@ const ROOT =
     process.cwd();
 
 
-/*
- * ==========================================
- * STAGE
- * ==========================================
- */
-
 const STAGE =
     String(
         process.argv[2] ||
@@ -32,23 +26,6 @@ const STAGE =
     )
         .trim()
         .toLowerCase();
-
-
-/*
- * ==========================================
- * VERSION
- * ==========================================
- *
- * Hỗ trợ:
- *
- * 1.1.1
- * MCS_1.1.1
- *
- * Luôn chuẩn hóa thành:
- *
- * MCS_1.1.1
- * ==========================================
- */
 
 function normalizeVersion(
     value
@@ -73,11 +50,10 @@ function normalizeVersion(
                 '',
                 'Ví dụ:',
                 '',
-                `npm run build:${STAGE} -- MCS_1.1.1`,
-                '',
-                'hoặc:',
-                '',
-                `npm run build:${STAGE} -- 1.1.1`,
+                `npm run build:${STAGE} -- 1.0`,
+                `npm run build:${STAGE} -- 1.0.10`,
+                `npm run build:${STAGE} -- 10.10.10.10`,
+                `npm run build:${STAGE} -- 10.1.10.0.11`,
                 ''
             ].join(
                 '\n'
@@ -86,10 +62,9 @@ function normalizeVersion(
 
     }
 
-
     const match =
         text.match(
-            /^(?:MCS_)?(\d+)\.(\d+)\.(\d+)$/i
+            /^(?:MCS_)?(\d+(?:\.\d+){1,4})$/i
         );
 
 
@@ -104,8 +79,17 @@ function normalizeVersion(
                 '',
                 'Định dạng hợp lệ:',
                 '',
-                '1.1.1',
-                'MCS_1.1.1',
+                '1.0',
+                '1.0.10',
+                '10.10.10.10',
+                '10.1.10.0.11',
+                '',
+                'Có thể thêm prefix:',
+                '',
+                'MCS_1.0',
+                'MCS_1.0.10',
+                'MCS_10.10.10.10',
+                'MCS_10.1.10.0.11',
                 ''
             ].join(
                 '\n'
@@ -114,33 +98,33 @@ function normalizeVersion(
 
     }
 
+    const version =
+        match[1]
+            .split(
+                '.'
+            )
+            .map(
+                segment =>
+                    segment.replace(
+                        /^0+(?=\d)/,
+                        ''
+                    )
+            )
+            .join(
+                '.'
+            );
+
 
     return (
-        `MCS_${match[1]}.${match[2]}.${match[3]}`
+        `MCS_${version}`
     );
-}
 
+}
 
 const VERSION =
     normalizeVersion(
         process.argv[3]
     );
-
-
-/*
- * ==========================================
- * CẤU HÌNH LUỒNG PROMOTE
- * ==========================================
- *
- * DEV
- *   ↓
- * TEST
- *   ↓
- * STABLE
- *   ↓
- * PRODUCT1 / PRODUCT2
- * ==========================================
- */
 
 const CONFIG = {
 
@@ -182,13 +166,6 @@ if (
     );
 
 }
-
-
-/*
- * ==========================================
- * GIT
- * ==========================================
- */
 
 function git(
     args,
@@ -234,19 +211,6 @@ function resolveRef(
 }
 
 
-/*
- * ==========================================
- * REF
- * ==========================================
- *
- * Ví dụ:
- *
- * refs/kitchenflow/test/MCS_1.1.1
- * refs/kitchenflow/stable/MCS_1.1.1
- * refs/kitchenflow/product1/MCS_1.1.1
- * ==========================================
- */
-
 function buildVersionRef(
     stage,
     version
@@ -277,30 +241,6 @@ let sourceRef =
 let sourceCommit =
     '';
 
-
-/*
- * ==========================================
- * TEST
- * ==========================================
- *
- * TEST là nơi VERSION được tạo lần đầu.
- *
- * Nếu version chưa tồn tại:
- *
- * DEV hiện tại
- *     ↓
- * TEST/version
- *
- *
- * Nếu version đã tồn tại:
- *
- * TEST/version cũ
- *     ↓
- * rebuild đúng commit cũ
- *
- * KHÔNG lấy DEV mới.
- * ==========================================
- */
 
 if (
     STAGE ===
@@ -333,16 +273,6 @@ if (
 
 } else {
 
-    /*
-     * ======================================
-     * STABLE / PRODUCT
-     * ======================================
-     *
-     * Phải lấy đúng cùng VERSION
-     * của stage trước.
-     * ======================================
-     */
-
     sourceRef =
         buildVersionRef(
             stageConfig.sourceStage,
@@ -356,13 +286,6 @@ if (
         );
 
 }
-
-
-/*
- * ==========================================
- * KIỂM TRA SOURCE VERSION
- * ==========================================
- */
 
 if (
     !sourceCommit
@@ -385,23 +308,6 @@ if (
     );
 
 }
-
-
-/*
- * ==========================================
- * VERSION BẤT BIẾN
- * ==========================================
- *
- * Một version không được đổi commit.
- *
- * Ví dụ:
- *
- * MCS_1.1.1 = commit A
- *
- * thì sau này không được biến
- * MCS_1.1.1 thành commit B.
- * ==========================================
- */
 
 if (
     existingTargetCommit &&
@@ -430,28 +336,6 @@ if (
     );
 
 }
-
-
-/*
- * ==========================================
- * RELEASE DIRECTORY
- * ==========================================
- *
- * .releases/
- *
- * test/
- *   MCS_1.1.1/
- *     <commit>/
- *
- * stable/
- *   MCS_1.1.1/
- *     <commit>/
- *
- * product1/
- *   MCS_1.1.1/
- *     <commit>/
- * ==========================================
- */
 
 const releasesRoot =
     path.join(
@@ -489,13 +373,6 @@ fs.mkdirSync(
     }
 );
 
-
-/*
- * ==========================================
- * MATERIALIZE COMMIT
- * ==========================================
- */
-
 if (
     !fs.existsSync(
         releaseDirectory
@@ -521,13 +398,6 @@ if (
     );
 
 }
-
-
-/*
- * ==========================================
- * ENV
- * ==========================================
- */
 
 const sourceEnv =
     path.join(
@@ -576,13 +446,6 @@ fs.symlinkSync(
     releaseEnv
 );
 
-
-/*
- * ==========================================
- * DEPENDENCY
- * ==========================================
- */
-
 execFileSync(
     'npm',
     [
@@ -596,13 +459,6 @@ execFileSync(
             'inherit'
     }
 );
-
-
-/*
- * ==========================================
- * CLIENT TEMPLATES
- * ==========================================
- */
 
 execFileSync(
     'npm',
@@ -618,13 +474,6 @@ execFileSync(
             'inherit'
     }
 );
-
-
-/*
- * ==========================================
- * PRODUCTION ASSETS
- * ==========================================
- */
 
 execFileSync(
     'node',
@@ -649,24 +498,6 @@ execFileSync(
         }
     }
 );
-
-
-/*
- * ==========================================
- * RELEASE METADATA
- * ==========================================
- *
- * File này KHÔNG nằm trong Git.
- *
- * Mỗi release tự biết:
- *
- * - stage
- * - version
- * - commit
- * - source
- * - thời gian build
- * ==========================================
- */
 
 const releaseMetadata = {
 
@@ -703,57 +534,17 @@ fs.writeFileSync(
     'utf8'
 );
 
-
-/*
- * ==========================================
- * VERSION REF
- * ==========================================
- *
- * Chỉ update sau khi build thành công.
- * ==========================================
- */
-
 git([
     'update-ref',
     targetVersionRef,
     sourceCommit
 ]);
 
-
-/*
- * ==========================================
- * CURRENT STAGE REF
- * ==========================================
- *
- * Không dùng:
- *
- * refs/kitchenflow/test
- *
- * vì sẽ xung đột với:
- *
- * refs/kitchenflow/test/MCS_1.0.1
- *
- * Current stage được lưu riêng:
- *
- * refs/kitchenflow/current/test
- * refs/kitchenflow/current/stable
- * refs/kitchenflow/current/product1
- * refs/kitchenflow/current/product2
- * ==========================================
- */
-
 git([
     'update-ref',
     `refs/kitchenflow/current/${STAGE}`,
     sourceCommit
 ]);
-
-
-/*
- * ==========================================
- * CURRENT SYMLINK
- * ==========================================
- */
 
 const currentLink =
     path.join(
@@ -785,13 +576,6 @@ fs.symlinkSync(
     currentLink,
     'dir'
 );
-
-
-/*
- * ==========================================
- * RESULT
- * ==========================================
- */
 
 console.log('');
 

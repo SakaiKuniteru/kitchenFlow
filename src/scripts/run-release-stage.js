@@ -102,17 +102,6 @@ function runNpm(
 
 }
 
-
-/*
- * ==========================================
- * CÓ VERSION
- * ==========================================
- *
- * Build đúng version trước,
- * sau đó start stage.
- * ==========================================
- */
-
 if (
     VERSION
 ) {
@@ -126,18 +115,30 @@ if (
 
 }
 
+if (
+    VERSION
+) {
 
-/*
- * ==========================================
- * KHÔNG CÓ VERSION
- * ==========================================
- *
- * Không build.
- *
- * Chỉ chạy release "current"
- * đã build gần nhất.
- * ==========================================
- */
+    runNpm([
+        'run',
+        `build:${STAGE}`,
+        '--',
+        VERSION
+    ]);
+
+
+    console.log('');
+
+    console.log(
+        `${STAGE.toUpperCase()} build completed.`
+    );
+
+    console.log(
+        'Nếu supervisor đang chạy, server sẽ tự reload release mới.'
+    );
+
+}
+
 
 if (
     !VERSION
@@ -167,7 +168,7 @@ if (
                 '',
                 `Ví dụ:`,
                 '',
-                `npm run ${STAGE} -- MCS_1.0.1`,
+                `npm run ${STAGE} -- 1.0.0`,
                 ''
             ].join(
                 '\n'
@@ -176,16 +177,10 @@ if (
 
     }
 
+
+    runNpm([
+        'run',
+        `start:${STAGE}`
+    ]);
+
 }
-
-
-/*
- * ==========================================
- * START STAGE
- * ==========================================
- */
-
-runNpm([
-    'run',
-    `start:${STAGE}`
-]);

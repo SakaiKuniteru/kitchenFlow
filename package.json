@@ -9,19 +9,19 @@
     "build:dev": "node src/scripts/build-dev-stage.js",
 
     "build:test": "node src/scripts/build-release-stage.js test",
-    "start:test": "cd .releases/test/current && APP_ENV=test node src/server.js",
+    "start:test": "node src/scripts/start-release-stage.js test",
     "test": "node src/scripts/run-release-stage.js test",
 
     "build:stable": "node src/scripts/build-release-stage.js stable",
-    "start:stable": "cd .releases/stable/current && APP_ENV=stable node src/server.js",
+    "start:stable": "node src/scripts/start-release-stage.js stable",
     "stable": "node src/scripts/run-release-stage.js stable",
 
     "build:product1": "node src/scripts/build-release-stage.js product1",
-    "start:product1": "cd .releases/product1/current && APP_ENV=product1 node src/server.js",
+    "start:product1": "node src/scripts/start-release-stage.js product1",
     "product1": "node src/scripts/run-release-stage.js product1",
 
     "build:product2": "node src/scripts/build-release-stage.js product2",
-    "start:product2": "cd .releases/product2/current && APP_ENV=product2 node src/server.js",
+    "start:product2": "node src/scripts/start-release-stage.js product2",
     "product2": "node src/scripts/run-release-stage.js product2"
   },
   "dependencies": {
