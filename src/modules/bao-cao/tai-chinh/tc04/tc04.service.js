@@ -87,7 +87,7 @@ class Tc04Service {
 
             tongHop: this.getTongHop(rows),
 
-            danhSach: rows.map((row, index) => ({
+            ds: rows.map((row, index) => ({
                 stt: index + 1,
                 ...row,
 

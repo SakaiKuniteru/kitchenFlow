@@ -494,6 +494,1060 @@ class InBaoCaoService {
         return result;
     }
 
+    /*
+     * ==========================================
+     * RENDER TEXT THUẦN
+     * ==========================================
+     */
+
+    renderTemplateText(
+        source,
+        data
+    ) {
+        const text =
+            String(
+                source ??
+                ''
+            );
+
+
+        const expressions =
+            this.parseTemplateExpressions(
+                text,
+                data
+            );
+
+
+        if (
+            expressions.length ===
+            0
+        ) {
+            return text;
+        }
+
+
+        let result =
+            text;
+
+
+        for (
+            let index =
+                expressions.length - 1;
+
+            index >= 0;
+
+            index--
+        ) {
+
+            const expression =
+                expressions[index];
+
+
+            result =
+                result.slice(
+                    0,
+                    expression.start
+                ) +
+                expression.value +
+                result.slice(
+                    expression.end
+                );
+
+        }
+
+
+        return result;
+    }
+
+
+    /*
+     * ==========================================
+     * XLSX - SHARED STRINGS
+     * ==========================================
+     */
+
+    getXlsxSharedStrings(
+        zip
+    ) {
+        const file =
+            zip.file(
+                'xl/sharedStrings.xml'
+            );
+
+
+        if (!file) {
+            return [];
+        }
+
+
+        const xml =
+            file.asText();
+
+
+        const items =
+            xml.match(
+                /<si\b[\s\S]*?<\/si>/g
+            ) ||
+            [];
+
+
+        return items.map(
+            item => {
+
+                const nodes =
+                    this.extractTextNodes(
+                        item,
+                        [
+                            't'
+                        ]
+                    );
+
+
+                return nodes
+                    .map(
+                        node =>
+                            node.content
+                    )
+                    .join('');
+
+            }
+        );
+    }
+
+
+    /*
+     * ==========================================
+     * XLSX - LẤY TEXT TRONG CELL
+     * ==========================================
+     */
+
+    getXlsxCellTemplateText(
+        cellXml,
+        sharedStrings
+    ) {
+        const openTag =
+            cellXml.match(
+                /^<c\b([^>]*)>/
+            );
+
+
+        if (!openTag) {
+            return '';
+        }
+
+
+        const attributes =
+            openTag[1] ||
+            '';
+
+
+        const typeMatch =
+            attributes.match(
+                /\bt="([^"]+)"/
+            );
+
+
+        const type =
+            typeMatch
+                ? typeMatch[1]
+                : '';
+
+
+        /*
+         * Shared string:
+         *
+         * <c t="s">
+         *     <v>10</v>
+         * </c>
+         */
+
+        if (
+            type ===
+            's'
+        ) {
+
+            const valueMatch =
+                cellXml.match(
+                    /<v\b[^>]*>([\s\S]*?)<\/v>/
+                );
+
+
+            if (!valueMatch) {
+                return '';
+            }
+
+
+            const sharedIndex =
+                Number(
+                    valueMatch[1]
+                );
+
+
+            if (
+                !Number.isInteger(
+                    sharedIndex
+                )
+            ) {
+                return '';
+            }
+
+
+            return (
+                sharedStrings[
+                    sharedIndex
+                ] ||
+                ''
+            );
+        }
+
+
+        /*
+         * Inline string:
+         *
+         * <c t="inlineStr">
+         *     <is>
+         *         <t>...</t>
+         *     </is>
+         * </c>
+         */
+
+        if (
+            type ===
+            'inlineStr'
+        ) {
+
+            const nodes =
+                this.extractTextNodes(
+                    cellXml,
+                    [
+                        't'
+                    ]
+                );
+
+
+            return nodes
+                .map(
+                    node =>
+                        node.content
+                )
+                .join('');
+        }
+
+
+        return '';
+    }
+
+
+    /*
+     * ==========================================
+     * XLSX - CELL CÓ DS.*
+     * ==========================================
+     */
+
+    isXlsxDanhSachTemplate(
+        value
+    ) {
+        return (
+            /\[\[\s*ds\.[A-Za-z_][A-Za-z0-9_.]*/u
+                .test(
+                    String(
+                        value ||
+                        ''
+                    )
+                )
+        );
+    }
+
+
+    /*
+     * ==========================================
+     * XLSX - ĐỔI CELL THÀNH INLINE STRING
+     * ==========================================
+     */
+
+    setXlsxCellInlineText(
+        cellXml,
+        value
+    ) {
+        const openTag =
+            cellXml.match(
+                /^<c\b([^>]*)>/
+            );
+
+
+        if (!openTag) {
+            return cellXml;
+        }
+
+
+        let attributes =
+            openTag[1] ||
+            '';
+
+
+        /*
+         * Xóa kiểu cũ:
+         *
+         * t="s"
+         * t="str"
+         * ...
+         */
+
+        attributes =
+            attributes.replace(
+                /\s+t="[^"]*"/g,
+                ''
+            );
+
+
+        const text =
+            String(
+                value ??
+                ''
+            );
+
+
+        const preserveSpace =
+            /^[\s]|[\s]$/u
+                .test(
+                    text
+                );
+
+
+        const xmlSpace =
+            preserveSpace
+                ? ' xml:space="preserve"'
+                : '';
+
+
+        return (
+            `<c${attributes} t="inlineStr">` +
+                '<is>' +
+                    `<t${xmlSpace}>` +
+                        this.encodeXmlText(
+                            text
+                        ) +
+                    '</t>' +
+                '</is>' +
+            '</c>'
+        );
+    }
+
+
+    /*
+     * ==========================================
+     * XLSX - ROW NUMBER
+     * ==========================================
+     */
+
+    getXlsxRowNumber(
+        rowXml,
+        fallback
+    ) {
+        const match =
+            rowXml.match(
+                /^<row\b[^>]*\br="(\d+)"/
+            );
+
+
+        if (!match) {
+            return fallback;
+        }
+
+
+        const number =
+            Number(
+                match[1]
+            );
+
+
+        return Number.isInteger(
+            number
+        )
+            ? number
+            : fallback;
+    }
+
+
+    setXlsxRowNumber(
+        rowXml,
+        rowNumber
+    ) {
+        let result =
+            rowXml;
+
+
+        /*
+         * row:
+         *
+         * <row r="15">
+         */
+
+        if (
+            /<row\b[^>]*\br="\d+"/
+                .test(
+                    result
+                )
+        ) {
+
+            result =
+                result.replace(
+                    /(<row\b[^>]*\br=")\d+(")/,
+                    `$1${rowNumber}$2`
+                );
+
+        } else {
+
+            result =
+                result.replace(
+                    /^<row\b/,
+                    `<row r="${rowNumber}"`
+                );
+
+        }
+
+
+        /*
+         * cell:
+         *
+         * <c r="A15">
+         */
+
+        result =
+            result.replace(
+                /(<c\b[^>]*\br=")([A-Z]{1,3})\d+(")/g,
+                (
+                    match,
+                    prefix,
+                    column,
+                    suffix
+                ) =>
+                    (
+                        prefix +
+                        column +
+                        rowNumber +
+                        suffix
+                    )
+            );
+
+
+        return result;
+    }
+
+
+    /*
+     * ==========================================
+     * XLSX - KIỂM TRA ROW CÓ DS.*
+     * ==========================================
+     */
+
+    isXlsxDanhSachRow(
+        rowXml,
+        sharedStrings
+    ) {
+        const cells =
+            rowXml.match(
+                /<c\b[\s\S]*?<\/c>|<c\b[^>]*\/>/g
+            ) ||
+            [];
+
+
+        return cells.some(
+            cellXml => {
+
+                const text =
+                    this.getXlsxCellTemplateText(
+                        cellXml,
+                        sharedStrings
+                    );
+
+
+                return this
+                    .isXlsxDanhSachTemplate(
+                        text
+                    );
+
+            }
+        );
+    }
+
+
+    /*
+     * ==========================================
+     * XLSX - RENDER 1 ROW DS
+     * ==========================================
+     */
+
+    renderXlsxDanhSachRow(
+        rowXml,
+        {
+            data,
+            item,
+            sharedStrings,
+            rowNumber
+        }
+    ) {
+
+        /*
+         * Root data vẫn giữ nguyên.
+         *
+         * ds chính là item hiện tại
+         * của data.danhSach.
+         */
+
+        const scope = {
+
+            ...data,
+
+            ds:
+                item
+
+        };
+
+
+        let result =
+            this.setXlsxRowNumber(
+                rowXml,
+                rowNumber
+            );
+
+
+        result =
+            result.replace(
+                /<c\b[\s\S]*?<\/c>|<c\b[^>]*\/>/g,
+                cellXml => {
+
+                    const templateText =
+                        this.getXlsxCellTemplateText(
+                            cellXml,
+                            sharedStrings
+                        );
+
+
+                    if (
+                        !this
+                            .isXlsxDanhSachTemplate(
+                                templateText
+                            )
+                    ) {
+                        return cellXml;
+                    }
+
+
+                    const renderedValue =
+                        this.renderTemplateText(
+                            templateText,
+                            scope
+                        );
+
+
+                    /*
+                     * Chuyển cell động sang
+                     * inlineStr.
+                     *
+                     * Nhờ vậy mỗi row clone
+                     * có giá trị riêng.
+                     */
+
+                    return this
+                        .setXlsxCellInlineText(
+                            cellXml,
+                            renderedValue
+                        );
+
+                }
+            );
+
+
+        return result;
+    }
+
+
+    /*
+     * ==========================================
+     * XLSX - MAP ROW SAU KHI INSERT
+     * ==========================================
+     */
+
+    mapXlsxRowAfterRepeat(
+        rowNumber,
+        events,
+        includeCurrent = false
+    ) {
+        let result =
+            Number(
+                rowNumber
+            );
+
+
+        for (
+            const event of events
+        ) {
+
+            if (
+                rowNumber >
+                    event.row ||
+                (
+                    includeCurrent &&
+                    rowNumber ===
+                        event.row
+                )
+            ) {
+
+                result +=
+                    event.delta;
+
+            }
+
+        }
+
+
+        return result;
+    }
+
+
+    /*
+     * ==========================================
+     * XLSX - SHIFT RANGE
+     * ==========================================
+     */
+
+    shiftXlsxCellReference(
+        value,
+        events,
+        includeCurrent = false
+    ) {
+        const match =
+            String(
+                value ||
+                ''
+            )
+                .match(
+                    /^(\$?[A-Z]{1,3})(\$?)(\d+)$/i
+                );
+
+
+        if (!match) {
+            return value;
+        }
+
+
+        const column =
+            match[1];
+
+
+        const rowAbsolute =
+            match[2];
+
+
+        const rowNumber =
+            Number(
+                match[3]
+            );
+
+
+        const nextRow =
+            this.mapXlsxRowAfterRepeat(
+                rowNumber,
+                events,
+                includeCurrent
+            );
+
+
+        return (
+            column +
+            rowAbsolute +
+            nextRow
+        );
+    }
+
+
+    shiftXlsxRangeReference(
+        value,
+        events
+    ) {
+        const text =
+            String(
+                value ||
+                ''
+            );
+
+
+        const parts =
+            text.split(
+                ':'
+            );
+
+
+        if (
+            parts.length ===
+            1
+        ) {
+
+            return this
+                .shiftXlsxCellReference(
+                    parts[0],
+                    events,
+                    false
+                );
+
+        }
+
+
+        if (
+            parts.length !==
+            2
+        ) {
+            return text;
+        }
+
+
+        return (
+            this.shiftXlsxCellReference(
+                parts[0],
+                events,
+                false
+            ) +
+            ':' +
+            this.shiftXlsxCellReference(
+                parts[1],
+                events,
+                true
+            )
+        );
+    }
+
+
+    shiftXlsxWorksheetReferences(
+        xml,
+        events
+    ) {
+        if (
+            !Array.isArray(
+                events
+            ) ||
+            events.length ===
+            0
+        ) {
+            return xml;
+        }
+
+
+        return xml.replace(
+            /\b(ref|sqref)="([^"]+)"/g,
+            (
+                match,
+                attribute,
+                value
+            ) => {
+
+                const shifted =
+                    String(
+                        value
+                    )
+                        .split(
+                            /\s+/
+                        )
+                        .map(
+                            item =>
+                                this
+                                    .shiftXlsxRangeReference(
+                                        item,
+                                        events
+                                    )
+                        )
+                        .join(' ');
+
+
+                return (
+                    attribute +
+                    '="' +
+                    shifted +
+                    '"'
+                );
+
+            }
+        );
+    }
+
+
+    /*
+     * ==========================================
+     * XLSX - AUTO LOOP data.danhSach
+     * ==========================================
+     */
+
+    expandXlsxDanhSachRows(
+        zip,
+        data
+    ) {
+        const ds =
+            Array.isArray(
+                data?.ds
+            )
+                ? data.ds
+                : (
+                    Array.isArray(
+                        data?.danhSach
+                    )
+                        ? data.danhSach
+                        : []
+                );
+
+        const sharedStrings =
+            this.getXlsxSharedStrings(
+                zip
+            );
+
+
+        const worksheetFiles =
+            Object
+                .keys(
+                    zip.files
+                )
+                .filter(
+                    fileName =>
+                        /^xl\/worksheets\/[^/]+\.xml$/
+                            .test(
+                                fileName
+                            )
+                );
+
+
+        for (
+            const fileName
+            of worksheetFiles
+        ) {
+
+            const file =
+                zip.file(
+                    fileName
+                );
+
+
+            if (!file) {
+                continue;
+            }
+
+
+            let xml =
+                file.asText();
+
+
+            const sheetDataMatch =
+                xml.match(
+                    /<sheetData\b[^>]*>([\s\S]*?)<\/sheetData>/
+                );
+
+
+            if (!sheetDataMatch) {
+                continue;
+            }
+
+
+            const originalBody =
+                sheetDataMatch[1];
+
+
+            const rows =
+                originalBody.match(
+                    /<row\b[\s\S]*?<\/row>|<row\b[^>]*\/>/g
+                ) ||
+                [];
+
+
+            if (
+                rows.length ===
+                0
+            ) {
+                continue;
+            }
+
+
+            const outputRows =
+                [];
+
+
+            const repeatEvents =
+                [];
+
+
+            let rowShift =
+                0;
+
+
+            let fallbackRow =
+                1;
+
+
+            let changed =
+                false;
+
+
+            for (
+                const rowXml
+                of rows
+            ) {
+
+                const originalRowNumber =
+                    this.getXlsxRowNumber(
+                        rowXml,
+                        fallbackRow
+                    );
+
+
+                fallbackRow =
+                    originalRowNumber +
+                    1;
+
+
+                const isRepeatRow =
+                    this.isXlsxDanhSachRow(
+                        rowXml,
+                        sharedStrings
+                    );
+
+
+                /*
+                 * ROW THƯỜNG
+                 */
+
+                if (!isRepeatRow) {
+
+                    outputRows.push(
+                        this.setXlsxRowNumber(
+                            rowXml,
+                            originalRowNumber +
+                                rowShift
+                        )
+                    );
+
+
+                    continue;
+                }
+
+
+                changed =
+                    true;
+
+
+                /*
+                 * Ví dụ:
+                 *
+                 * row mẫu = 15
+                 * danhSach = 33
+                 *
+                 * => tạo row:
+                 *
+                 * 15
+                 * 16
+                 * ...
+                 * 47
+                 */
+
+                const startRow =
+                    originalRowNumber +
+                    rowShift;
+
+                for (
+                    let index = 0;
+
+                    index <
+                        ds.length;
+
+                    index++
+                ) {
+
+                    outputRows.push(
+                        this
+                            .renderXlsxDanhSachRow(
+                                rowXml,
+                                {
+                                    data,
+
+                                    item:
+                                        ds[
+                                            index
+                                        ],
+
+                                    sharedStrings,
+
+                                    rowNumber:
+                                        startRow +
+                                        index
+                                }
+                            )
+                    );
+
+                }
+
+
+                const delta =
+                    ds.length -
+                    1;
+
+                repeatEvents.push({
+                    row:
+                        originalRowNumber,
+
+                    delta
+                });
+
+
+                rowShift +=
+                    delta;
+
+            }
+
+
+            if (!changed) {
+                continue;
+            }
+
+
+            const nextBody =
+                outputRows
+                    .join('');
+
+
+            xml =
+                xml.replace(
+                    sheetDataMatch[0],
+                    sheetDataMatch[0]
+                        .replace(
+                            originalBody,
+                            nextBody
+                        )
+                );
+
+
+            /*
+             * Shift:
+             *
+             * dimension
+             * mergeCell
+             * autoFilter
+             * hyperlink
+             * sqref
+             * ...
+             */
+
+            xml =
+                this
+                    .shiftXlsxWorksheetReferences(
+                        xml,
+                        repeatEvents
+                    );
+
+
+            zip.file(
+                fileName,
+                xml
+            );
+
+        }
+    }
+
     getOoxmlTemplateDefinitions(extension) {
         switch (extension) {
             case '.docx':
@@ -548,12 +1602,35 @@ class InBaoCaoService {
         let zip;
 
         try {
-            zip = new PizZip(buffer);
+            zip =
+                new PizZip(
+                    buffer
+                );
         } catch {
-            throw new ApiError(400, `File mẫu "${extension}" không hợp lệ.`);
+            throw new ApiError(
+                400,
+                `File mẫu "${extension}" không hợp lệ.`
+            );
         }
 
-        const fileNames = Object.keys(zip.files);
+        if (
+            extension ===
+            '.xlsx'
+        ) {
+
+            this
+                .expandXlsxDanhSachRows(
+                    zip,
+                    data
+                );
+
+        }
+
+
+        const fileNames =
+            Object.keys(
+                zip.files
+            );
 
         for (const definition of definitions) {
             const targetFiles = fileNames.filter((fileName) => definition.filePattern.test(fileName));

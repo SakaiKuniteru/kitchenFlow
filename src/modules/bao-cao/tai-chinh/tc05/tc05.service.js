@@ -482,7 +482,7 @@ class Tc05Service {
                      * + nhà ăn
                      * + phương thức
                      */
-                    danhSach:
+                    ds:
                         rows.map(
                             (
                                 row,

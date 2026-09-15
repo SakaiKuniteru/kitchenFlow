@@ -57,11 +57,11 @@ const NHOM_BAO_CAO_TAI_CHINH =
 class Tc01Service {
 
     getEnumItem(
-        danhSach,
+        ds,
         value
     ) {
         return (
-            danhSach.find(
+            ds.find(
                 item =>
                     Number(
                         item.value
@@ -76,7 +76,7 @@ class Tc01Service {
 
 
     getEnumItems(
-        danhSach,
+        ds,
         values = []
     ) {
         if (
@@ -92,7 +92,7 @@ class Tc01Service {
             .map(
                 value =>
                     this.getEnumItem(
-                        danhSach,
+                        ds,
                         value
                     )
             )
@@ -424,7 +424,7 @@ class Tc01Service {
 
                     tongHop,
 
-                    danhSach:
+                    ds:
                         rows.map(
                             (
                                 row,

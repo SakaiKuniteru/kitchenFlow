@@ -15,7 +15,9 @@ const services = {
     dh02: require('./dh02/dh02.service'),
     dh03: require('./dh03/dh03.service'),
     dh04: require('./dh04/dh04.service'),
-    dh05: require('./dh05/dh05.service')
+    dh05: require('./dh05/dh05.service'),
+    dh06: require('./dh06/dh06.service'),
+    dh07: require('./dh07/dh07.service'),
 };
 
 async function layBoLocTheoQuyen(req) {
@@ -71,5 +73,7 @@ module.exports = {
     dh02: taoHandler(services.dh02),
     dh03: taoHandler(services.dh03),
     dh04: taoHandler(services.dh04),
-    dh05: taoHandler(services.dh05)
+    dh05: taoHandler(services.dh05),
+    dh06: taoHandler(services.dh06),
+    dh07: taoHandler(services.dh07)
 };

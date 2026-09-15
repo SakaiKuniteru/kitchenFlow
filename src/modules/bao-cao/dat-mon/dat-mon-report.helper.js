@@ -145,7 +145,8 @@ function taoBoLoc(filters, timeExpression) {
     return {
         values,
         conditions,
-        addArray
+        addArray,
+        addText
     };
 }
 
@@ -196,6 +197,12 @@ function sqlChiTietDon(where, { kemMon = false } = {}) {
             dh.nguoi_xu_ly_id AS "nguoiXuLyId",
             nx.ho_ten AS "tenNguoiXuLy",
 
+            dh.nguoi_huy_id AS "nguoiHuyId",
+            nh.ma_nhan_vien AS "maNguoiHuy",
+            nh.ho_ten AS "tenNguoiHuy",
+
+            dh.thoi_gian_huy AT TIME ZONE 'Asia/Ho_Chi_Minh' AS "thoiGianHuy",
+
             dh.trang_thai AS "trangThaiDon",
             dh.phuong_thuc_thanh_toan AS "phuongThucThanhToan",
             dh.trang_thai_thanh_toan AS "trangThaiThanhToan",
@@ -225,6 +232,9 @@ function sqlChiTietDon(where, { kemMon = false } = {}) {
         LEFT JOIN dm_nhan_vien nx
             ON nx.id = dh.nguoi_xu_ly_id
 
+        LEFT JOIN dm_nhan_vien nh
+            ON nh.id = dh.nguoi_huy_id
+
         LEFT JOIN dm_phong_ban pb
             ON pb.id = dh.phong_ban_id
 
@@ -249,6 +259,7 @@ function sqlChiTietDon(where, { kemMon = false } = {}) {
                                 'thanhTien', ct.thanh_tien,
                                 'ghiChu', ct.ghi_chu,
                                 'trangThai', ct.trang_thai
+                                
                             )
                             ORDER BY ct.id
                         ) AS items
@@ -323,7 +334,7 @@ async function xuatBaoCao({
         tongSoBanGhi: rows.length,
         tongHop,
 
-        danhSach: rows.map((row, index) => ({
+        ds: rows.map((row, index) => ({
             stt: index + 1,
             ...row
         }))

@@ -103,13 +103,13 @@ const DS_PHUONG_THUC_THANH_TOAN = [
 class Tc02Service {
 
     getEnumItem(
-        danhSach,
+        ds,
         value
     ) {
 
         return (
             (
-                danhSach ||
+                ds ||
                 []
             ).find(
                 item =>
@@ -126,7 +126,7 @@ class Tc02Service {
 
 
     getEnumItems(
-        danhSach,
+        ds,
         values = []
     ) {
 
@@ -143,7 +143,7 @@ class Tc02Service {
             .map(
                 value =>
                     this.getEnumItem(
-                        danhSach,
+                        ds,
                         value
                     )
             )
@@ -347,7 +347,7 @@ class Tc02Service {
                         ),
 
 
-                    danhSach:
+                    ds:
                         rows.map(
                             (
                                 row,
