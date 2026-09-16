@@ -1,58 +1,79 @@
-<link rel="stylesheet" href="{{asset "/assets/css/catalog/pagination.css"}}">
+<link
+    rel="stylesheet"
+    href="{{asset "/assets/css/common/data-list-page.css" }}"
+>
+
+<link
+    rel="stylesheet"
+    href="{{asset "/assets/css/catalog/pagination.css" }}"
+>
+
+
 {{#> dat-hang/dung-chung
     type="page-shell"
     page="my-orders"
 }}
+
     <div class="order-heading-actions">
+
         {{> dat-hang/dung-chung
             type="page-header"
             title="Đơn hàng của tôi"
         }}
 
         <div class="order-action-row">
+
             <button
                 type="button"
                 class="order-button order-button--outline"
-                data-orders-refresh
-            >
+                data-orders-refresh>
+
                 <i class="fa-solid fa-rotate"></i>
+
                 Làm mới
+
             </button>
 
-            <a
-                class="order-button order-button--primary"
-                href="/dat-hang/dat-mon"
-            >
-                Đặt món mới
-            </a>
-        </div>
-    </div>
-
-    {{#> dat-hang/dung-chung
-        type="card"
-        title="Danh sách đơn hàng"
-        icon="fa-solid fa-receipt"
-    }}
-        <div class="order-search-row">
-            {{> forms/search
-                inputId="orderListSearch"
-                placeholder="Tìm theo mã đơn hoặc người nhận..."
-                showClear=true
-                hideDropdown=true
-            }}
 
             <button
                 type="button"
                 class="order-button order-button--outline"
                 data-toggle-filters
-                aria-expanded="false"
-            >
+                aria-expanded="false">
+
                 <i class="fa-solid fa-filter"></i>
+
                 Bộ lọc
+
             </button>
+
+
+            <a
+                class="order-button order-button--primary"
+                href="/dat-hang/dat-mon">
+
+                Đặt món mới
+
+            </a>
+
         </div>
 
-        {{> dat-hang/quan-ly-don type="filter"}}
-        {{> dat-hang/quan-ly-don type="table"}}
-    {{/dat-hang/dung-chung}}
+    </div>
+
+
+    <div
+        class="order-data-list"
+        data-order-list-common>
+
+        {{> common/data-list/data-card
+            listPage=listPage
+        }}
+
+
+        {{> common/data-list/filter
+            listPage=listPage
+        }}
+
+    </div>
+
 {{/dat-hang/dung-chung}}

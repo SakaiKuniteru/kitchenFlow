@@ -1,66 +1,99 @@
-<link rel="stylesheet" href="{{asset "/assets/css/catalog/pagination.css"}}">
+<link
+    rel="stylesheet"
+    href="{{asset "/assets/css/common/data-list-page.css" }}"
+>
+
+<link
+    rel="stylesheet"
+    href="{{asset "/assets/css/catalog/pagination.css" }}"
+>
+
+
 {{#> dat-hang/dung-chung
     type="page-shell"
     page="management"
 }}
+
     <div class="order-heading-actions">
+
         {{> dat-hang/dung-chung
             type="page-header"
             title="Nhận đơn hàng"
         }}
 
         <div class="order-action-row">
+
             <button
                 type="button"
                 class="order-button order-button--outline"
-                data-orders-refresh
-            >
+                data-orders-refresh>
+
                 <i class="fa-solid fa-rotate"></i>
+
                 Làm mới
+
             </button>
+
+
+            <button
+                type="button"
+                class="order-button order-button--outline"
+                data-toggle-filters
+                aria-expanded="false">
+
+                <i class="fa-solid fa-filter"></i>
+
+                Bộ lọc
+
+            </button>
+
 
             <button
                 type="button"
                 class="order-button order-button--primary"
-                data-management-export
-            >
+                data-management-export>
+
                 <i class="fa-solid fa-download"></i>
+
                 Xuất dữ liệu
+
             </button>
+
         </div>
+
     </div>
 
-    {{#> dat-hang/dung-chung type="management-layout"}}
-        <div class="order-stat-grid" data-management-stats></div>
 
-        {{#> dat-hang/dung-chung
-            type="card"
-            title="Danh sách đơn hàng"
-            icon="fa-solid fa-list"
-        }}
-            <div class="order-search-row">
-                {{> forms/search
-                    inputId="orderListSearch"
-                    placeholder="Tìm mã đơn, người đặt, người nhận..."
-                    showClear=true
-                    hideDropdown=true
-                }}
+    {{#> dat-hang/dung-chung
+        type="management-layout"
+    }}
 
-                <button
-                    type="button"
-                    class="order-button order-button--outline"
-                    data-toggle-filters
-                    aria-expanded="false"
-                >
-                    <i class="fa-solid fa-filter"></i>
-                    Bộ lọc
-                </button>
-            </div>
+        <div
+            class="order-stat-grid"
+            data-management-stats>
+        </div>
 
-            {{> dat-hang/quan-ly-don type="filter"}}
-            {{> dat-hang/quan-ly-don type="table" management=true}}
-        {{/dat-hang/dung-chung}}
+
+        <div
+            class="order-data-list"
+            data-order-list-common>
+
+            {{> common/data-list/data-card
+                listPage=listPage
+            }}
+
+
+            {{> common/data-list/filter
+                listPage=listPage
+            }}
+
+        </div>
+
     {{/dat-hang/dung-chung}}
 
-    {{> dat-hang/chi-tiet type="dialog"}}
+
+    {{> dat-hang/chi-tiet
+        type="dialog"
+    }}
+
 {{/dat-hang/dung-chung}}

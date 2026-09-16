@@ -76,6 +76,49 @@
 
                 {{/if}}
 
+                {{#if isInput}}
+
+                <div
+                    class="data-list-filter__field"
+                    data-list-filter-field
+                    data-filter-name="{{name}}"
+                    data-filter-type="input">
+
+                    {{> forms/input
+                        id=id
+                        name=name
+                        label=label
+                        placeholder=placeholder
+                        maxlength=maxlength
+                    }}
+
+                </div>
+
+            {{/if}}
+
+
+            {{#if isNumber}}
+
+                <div
+                    class="data-list-filter__field"
+                    data-list-filter-field
+                    data-filter-name="{{name}}"
+                    data-filter-type="number">
+
+                    {{> forms/number
+                        id=id
+                        name=name
+                        label=label
+                        placeholder=placeholder
+                        min=min
+                        max=max
+                        step=step
+                    }}
+
+                </div>
+
+            {{/if}}
+
             {{/each}}
 
         </div>

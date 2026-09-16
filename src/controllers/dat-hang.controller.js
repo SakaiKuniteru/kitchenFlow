@@ -12,6 +12,325 @@ function renderOrderPage(req, res, view, options = {}) {
     });
 }
 
+function column(
+    key,
+    label,
+    options = {}
+) {
+
+    return {
+
+        key,
+
+        label,
+
+        type:
+            options.type ||
+            'text',
+
+        width:
+            options.width ||
+            '',
+
+        /*
+         * List đặt hàng hiện chưa nối
+         * generic sorting.
+         */
+
+        sortable:
+            false
+
+    };
+
+}
+
+
+function buildOrderListPage(
+    management =
+        false
+) {
+
+    const columns = [
+
+        column(
+            'maDonHang',
+            'Mã đơn',
+            {
+                width:
+                    '140px'
+            }
+        ),
+
+        column(
+            'thoiGianDat',
+            'Thời gian đặt',
+            {
+                type:
+                    'datetime',
+
+                width:
+                    '170px'
+            }
+        ),
+
+        ...(management
+            ? [
+                column(
+                    'nguoiDat',
+                    'Người đặt',
+                    {
+                        width:
+                            '160px'
+                    }
+                )
+            ]
+            : []
+        ),
+
+        column(
+            'nguoiNhan',
+            'Người nhận',
+            {
+                width:
+                    '160px'
+            }
+        ),
+
+        column(
+            'soLoai',
+            'Số loại',
+            {
+                type:
+                    'number',
+
+                width:
+                    '90px'
+            }
+        ),
+
+        column(
+            'tongSoLuong',
+            'Tổng SL',
+            {
+                type:
+                    'number',
+
+                width:
+                    '90px'
+            }
+        ),
+
+        column(
+            'tongThanhToan',
+            'Tổng tiền',
+            {
+                type:
+                    'money',
+
+                width:
+                    '130px'
+            }
+        ),
+
+        ...(management
+            ? [
+                column(
+                    'phuongThucThanhToan',
+                    'PTTT',
+                    {
+                        width:
+                            '130px'
+                    }
+                )
+            ]
+            : []
+        ),
+
+        column(
+            'trangThai',
+            'Trạng thái',
+            {
+                width:
+                    '150px'
+            }
+        )
+
+    ];
+
+
+    const filters = [
+
+        {
+            type:
+                'select',
+
+            id:
+                'orderStatusFilter',
+
+            name:
+                'trangThai',
+
+            label:
+                'Trạng thái đơn',
+
+            mode:
+                'single',
+
+            multiple:
+                false,
+
+            allowAll:
+                false,
+
+            placeholder:
+                'Tất cả trạng thái'
+        },
+
+        {
+            type:
+                'select',
+
+            id:
+                'orderPaymentFilter',
+
+            name:
+                'trangThaiThanhToan',
+
+            label:
+                'Thanh toán',
+
+            mode:
+                'single',
+
+            multiple:
+                false,
+
+            allowAll:
+                false,
+
+            placeholder:
+                'Tất cả'
+        },
+
+        {
+            type:
+                'dateRange',
+
+            label:
+                'Thời gian đặt',
+
+            from: {
+
+                id:
+                    'orderFromDate',
+
+                name:
+                    'tuNgay',
+
+                label:
+                    'Từ ngày',
+
+                placeholder:
+                    'dd/mm/yyyy',
+
+                showTime:
+                    false,
+
+                defaultTime:
+                    '00:00:00'
+
+            },
+
+            to: {
+
+                id:
+                    'orderToDate',
+
+                name:
+                    'denNgay',
+
+                label:
+                    'Đến ngày',
+
+                placeholder:
+                    'dd/mm/yyyy',
+
+                showTime:
+                    false,
+
+                defaultTime:
+                    '23:59:59'
+
+            }
+
+        }
+
+    ];
+
+
+    const normalizedFilters =
+        filters.map(
+            filter => ({
+
+                ...filter,
+
+                isDateRange:
+                    filter.type ===
+                    'dateRange',
+
+                isSelect:
+                    filter.type ===
+                    'select',
+
+                isInput:
+                    filter.type ===
+                    'input',
+
+                isNumber:
+                    filter.type ===
+                    'number'
+
+            })
+        );
+
+
+    return {
+
+        moduleName:
+            management
+                ? 'nhan-don-hang'
+                : 'don-hang-cua-toi',
+
+        showIndex:
+            true,
+
+        showSearch:
+            true,
+
+        showFilters:
+            true,
+
+        searchId:
+            'orderListSearch',
+
+        searchPlaceholder:
+            management
+                ? 'Tìm mã đơn, người đặt, người nhận...'
+                : 'Tìm theo mã đơn hoặc người nhận...',
+
+        columns,
+
+        filters:
+            normalizedFilters,
+
+        colspan:
+            columns.length +
+            1
+
+    };
+
+}
+
 class DatHangWebController {
     datMon(req, res, next) {
         try {
@@ -49,6 +368,10 @@ class DatHangWebController {
                     { label: 'Đặt món', path: '/dat-hang/dat-mon' },
                     { label: 'Xác nhận đơn hàng' }
                 ],
+                listPage:
+                    buildOrderListPage(
+                        true
+                    ),
                 orderPage: 'confirmation',
                 taiKhoanId: req.params.taiKhoanId
             });
@@ -108,7 +431,11 @@ class DatHangWebController {
             return renderOrderPage(req, res, 'pages/dat-hang/danh-sach-don-hang-cua-toi', {
                 title: 'Đơn hàng của tôi',
                 breadcrumbs: [{ label: 'Đơn hàng của tôi' }],
-                orderPage: 'my-orders'
+                orderPage: 'my-orders',
+                listPage:
+                    buildOrderListPage(
+                        false
+                    ),
             });
         } catch (error) {
             next(error);

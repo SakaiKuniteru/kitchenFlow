@@ -22,21 +22,15 @@
 
         if (
             management &&
-            !C.can('Q002031')
+            !C.requirePermission(
+                C.permissions
+                    .MANAGEMENT_VIEW,
+                root
+            )
         ) {
-            mount(
-                root,
-                'dung-chung',
-                {
-                    type: 'empty',
-                    title:
-                        'Bạn chưa có quyền xem đơn nhà ăn',
-                    description:
-                        'Liên hệ quản trị viên để cấp quyền nhận và xử lý đơn hàng.'
-                }
-            );
 
             return null;
+
         }
 
         const endpoint =
@@ -51,8 +45,7 @@
         let sequence = 0;
         let selectedId = '';
 
-        const table =
-            $('[data-orders-table]');
+        const table = $('[data-list-body]');
 
         const detailTarget =
             management
@@ -61,7 +54,10 @@
 
         const pagination =
             C.createPagination(
-                $('[data-orders-pagination]'),
+                $(
+                    '.data-list-card__footer ' +
+                    '[data-catalog-pagination]'
+                ),
                 {
                     page: listPage,
                     pageSize,
@@ -260,29 +256,50 @@
                     .join('');
         }
 
+        function getTableColspan() {
+
+            return (
+                root
+                    .querySelectorAll(
+                        '.data-list-table thead th'
+                    )
+                    .length ||
+                (
+                    management
+                        ? 10
+                        : 8
+                )
+            );
+
+        }
+
+
         function renderLoading() {
+
+            table.replaceChildren();
+
+
             const row =
                 table.insertRow();
 
-            table.replaceChildren(
-                row
-            );
 
             const cell =
                 row.insertCell();
 
+
             cell.colSpan =
-                management
-                    ? 10
-                    : 8;
+                getTableColspan();
+
 
             mount(
                 cell,
                 'dung-chung',
                 {
-                    type: 'loading'
+                    type:
+                        'loading'
                 }
             );
+
         }
 
         function renderEmpty(
@@ -297,10 +314,7 @@
                     .insertRow()
                     .insertCell();
 
-            cell.colSpan =
-                management
-                    ? 10
-                    : 8;
+            cell.colSpan = getTableColspan();
 
             mount(
                 cell,
@@ -499,42 +513,6 @@
                     void load();
                 }
             );
-
-            $('[data-order-filters]')
-                ?.addEventListener(
-                    'submit',
-                    (event) => {
-                        event.preventDefault();
-
-                        const form =
-                            event.currentTarget;
-
-                        const values =
-                            Object.fromEntries(
-                                new FormData(
-                                    form
-                                )
-                            );
-
-                        if (
-                            values.tuNgay &&
-                            values.denNgay &&
-                            values.denNgay <
-                                values.tuNgay
-                        ) {
-                            MCS.toast.warning(
-                                'Ngày kết thúc phải từ ngày bắt đầu trở đi.'
-                            );
-
-                            return;
-                        }
-
-                        filters = values;
-                        listPage = 1;
-
-                        void load();
-                    }
-                );
         }
 
         function bindActions() {
@@ -623,51 +601,158 @@
                             'data-toggle-filters'
                         )
                     ) {
-                        const form =
-                            $('[data-order-filters]');
 
-                        form.hidden =
-                            !form.hidden;
+                        const panel =
+                            $(
+                                '[data-list-filter-panel]'
+                            );
+
+
+                        if (
+                            !panel
+                        ) {
+                            return;
+                        }
+
+
+                        panel.hidden =
+                            !panel.hidden;
+
 
                         button.setAttribute(
                             'aria-expanded',
                             String(
-                                !form.hidden
+                                !panel.hidden
                             )
                         );
 
+
                         return;
+
                     }
 
                     if (
                         button.hasAttribute(
-                            'data-reset-filters'
+                            'data-list-filter-apply'
                         )
                     ) {
-                        const form =
-                            $('[data-order-filters]');
 
-                        form.reset();
-                        form.querySelectorAll('[data-date-picker]').forEach((field) => {
-                            field.datePicker?.setValue('', false);
-                        });
+                        const panel =
+                            $(
+                                '[data-list-filter-panel]'
+                            );
+
+
+                        const tuNgay =
+                            $('#orderFromDate')
+                                ?.value || '';
+
+
+                        const denNgay =
+                            $('#orderToDate')
+                                ?.value || '';
+
+
+                        if (
+                            tuNgay &&
+                            denNgay &&
+                            denNgay <
+                                tuNgay
+                        ) {
+
+                            MCS.toast.warning(
+                                'Ngày kết thúc phải từ ngày bắt đầu trở đi.'
+                            );
+
+
+                            return;
+
+                        }
+
+
+                        filters = {
+
+                            trangThai:
+                                $('#orderStatusFilter')
+                                    ?.value || '',
+
+                            trangThaiThanhToan:
+                                $('#orderPaymentFilter')
+                                    ?.value || '',
+
+                            tuNgay,
+
+                            denNgay
+
+                        };
+
+
+                        listPage =
+                            1;
+
+
+                        await load();
+
+
+                        return;
+
+                    }
+
+
+                    if (
+                        button.hasAttribute(
+                            'data-list-filter-reset'
+                        )
+                    ) {
+
+                        const panel =
+                            $(
+                                '[data-list-filter-panel]'
+                            );
+
+
+                        panel
+                            ?.querySelectorAll(
+                                '[data-date-picker]'
+                            )
+                            .forEach(
+                                field => {
+
+                                    field.datePicker
+                                        ?.setValue(
+                                            '',
+                                            false
+                                        );
+
+                                }
+                            );
+
 
                         C.setSelectValue(
                             $('#orderStatusFilter'),
                             ''
                         );
 
+
                         C.setSelectValue(
                             $('#orderPaymentFilter'),
                             ''
                         );
 
-                        filters = {};
-                        listPage = 1;
+
+                        filters =
+                            {};
+
+
+                        listPage =
+                            1;
+
 
                         await load();
 
+
                         return;
+
                     }
 
                     if (

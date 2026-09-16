@@ -758,6 +758,143 @@ window.MCS.orders = window.MCS.orders || {};
         return initializePromise;
     }
 
+    /*
+    * ==========================================
+    * QUYỀN ĐẶT HÀNG
+    * ==========================================
+    */
+
+    const PERMISSIONS =
+        Object.freeze({
+
+            MANAGEMENT_VIEW:
+                'Q002031',
+
+            MANAGEMENT_UPDATE:
+                'Q002032',
+
+            MANAGEMENT_CONFIRM_PAYMENT:
+                'Q002033'
+
+        });
+
+    function showNoPermission(
+        root =
+            $(
+                '[data-order-page]'
+            )
+    ) {
+
+        if (
+            root
+        ) {
+
+            root.hidden =
+                true;
+
+        }
+
+
+        const noPermission =
+            document.querySelector(
+                '[data-catalog-no-permission]'
+            );
+
+
+        if (
+            noPermission
+        ) {
+
+            noPermission.hidden =
+                false;
+
+        }
+
+    }
+
+    function hideNoPermission(
+        root =
+            $(
+                '[data-order-page]'
+            )
+    ) {
+
+        if (
+            root
+        ) {
+
+            root.hidden =
+                false;
+
+        }
+
+
+        const noPermission =
+            document.querySelector(
+                '[data-catalog-no-permission]'
+            );
+
+
+        if (
+            noPermission
+        ) {
+
+            noPermission.hidden =
+                true;
+
+        }
+
+    }
+
+    function requirePermission(
+        code,
+        root =
+            $(
+                '[data-order-page]'
+            )
+    ) {
+
+        if (
+            !code
+        ) {
+
+            hideNoPermission(
+                root
+            );
+
+
+            return true;
+
+        }
+
+
+        const allowed =
+            can(
+                code
+            );
+
+
+        if (
+            allowed
+        ) {
+
+            hideNoPermission(
+                root
+            );
+
+        } else {
+
+            showNoPermission(
+                root
+            );
+
+        }
+
+
+        return allowed;
+
+    }
+
     Object.assign(C, {
         $,
         $$,
@@ -765,6 +902,11 @@ window.MCS.orders = window.MCS.orders || {};
         query,
         render,
         mount,
+
+        permissions: PERMISSIONS,
+        showNoPermission,
+        hideNoPermission,
+        requirePermission,
 
         state,
         paths,

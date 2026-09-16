@@ -79,7 +79,10 @@
 
         if (
             management &&
-            C.can('Q002032')
+            C.can(
+                C.permissions
+                    .MANAGEMENT_UPDATE
+            )
         ) {
             actions =
                 {
@@ -229,7 +232,7 @@
             progress,
 
             isPaid,
-            canConfirmPayment: management && C.can('Q002033') && isQr &&
+            canConfirmPayment: management && C.permissions.MANAGEMENT_CONFIRM_PAYMENT && isQr &&
                 !isPaid && status > 0 && Number(order.trangThaiThanhToan) !== 50 && !!pendingPayment,
             pendingPayment,
 

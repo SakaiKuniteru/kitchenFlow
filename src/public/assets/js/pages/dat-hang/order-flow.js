@@ -241,6 +241,16 @@
         const page =
             root.dataset.orderPage;
 
+        const PAGE_PERMISSIONS = {
+
+            management:
+                'Q002031',
+
+            'management-detail':
+                'Q002031'
+
+        };
+
         try {
             await loadDependencies(
                 page
@@ -261,6 +271,31 @@
 
             await MCS.orders
                 .initialize();
+
+            const pagePermission =
+                PAGE_PERMISSIONS[
+                    page
+                ];
+
+
+            if (
+                pagePermission &&
+                !MCS.orders
+                    .requirePermission(
+                        pagePermission,
+                        root
+                    )
+            ) {
+
+                return;
+
+            }
+
+
+            MCS.orders
+                .hideNoPermission(
+                    root
+                );
 
             const initializePage =
                 MCS.orders
