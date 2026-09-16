@@ -86,6 +86,8 @@ window.MCS.orders = window.MCS.orders || {};
     let storageKey = '';
     let quoteSequence = 0;
     let initializePromise = null;
+    let loadingDepth = 0;
+    let navigationLoadingBound = false;
 
     const $ = (selector, root = document) => root?.querySelector(selector) || null;
     const $$ = (selector, root = document) => root ? [...root.querySelectorAll(selector)] : [];
@@ -219,6 +221,156 @@ window.MCS.orders = window.MCS.orders || {};
                     value !== undefined
             )
         ).toString();
+    }
+
+    function createRequestId() {
+
+        const cryptoApi =
+            window.crypto;
+
+
+        /*
+        * Browser hỗ trợ UUID chuẩn.
+        */
+
+        if (
+            typeof cryptoApi
+                ?.randomUUID ===
+            'function'
+        ) {
+
+            return cryptoApi
+                .randomUUID();
+
+        }
+
+
+        /*
+        * Một số browser / HTTP context
+        * không có randomUUID nhưng vẫn có
+        * getRandomValues.
+        */
+
+        if (
+            typeof cryptoApi
+                ?.getRandomValues ===
+            'function'
+        ) {
+
+            const bytes =
+                new Uint8Array(
+                    16
+                );
+
+
+            cryptoApi
+                .getRandomValues(
+                    bytes
+                );
+
+
+            /*
+            * UUID v4.
+            */
+
+            bytes[6] =
+                (
+                    bytes[6] &
+                    0x0f
+                ) |
+                0x40;
+
+
+            bytes[8] =
+                (
+                    bytes[8] &
+                    0x3f
+                ) |
+                0x80;
+
+
+            const hex =
+                Array.from(
+                    bytes,
+                    value =>
+                        value
+                            .toString(
+                                16
+                            )
+                            .padStart(
+                                2,
+                                '0'
+                            )
+                );
+
+
+            return [
+                hex
+                    .slice(
+                        0,
+                        4
+                    )
+                    .join(
+                        ''
+                    ),
+
+                hex
+                    .slice(
+                        4,
+                        6
+                    )
+                    .join(
+                        ''
+                    ),
+
+                hex
+                    .slice(
+                        6,
+                        8
+                    )
+                    .join(
+                        ''
+                    ),
+
+                hex
+                    .slice(
+                        8,
+                        10
+                    )
+                    .join(
+                        ''
+                    ),
+
+                hex
+                    .slice(
+                        10,
+                        16
+                    )
+                    .join(
+                        ''
+                    )
+            ]
+                .join(
+                    '-'
+                );
+
+        }
+
+
+        /*
+        * Fallback cuối cùng.
+        *
+        * Request ID chỉ dùng để chống gửi
+        * trùng request, không dùng làm secret.
+        */
+
+        return (
+            `order-${Date.now().toString(36)}-` +
+            `${Math.random()
+                .toString(36)
+                .slice(2, 12)}`
+        );
+
     }
 
     function save() {
@@ -599,6 +751,229 @@ window.MCS.orders = window.MCS.orders || {};
         };
     }
 
+    function loadingStart() {
+
+        loadingDepth +=
+            1;
+
+
+        if (
+            loadingDepth !==
+            1
+        ) {
+            return;
+        }
+
+
+        window.MCS
+            ?.loading
+            ?.show
+            ?.();
+
+    }
+
+
+    function loadingEnd() {
+
+        loadingDepth =
+            Math.max(
+                0,
+                loadingDepth - 1
+            );
+
+
+        if (
+            loadingDepth !==
+            0
+        ) {
+            return;
+        }
+
+
+        window.MCS
+            ?.loading
+            ?.hide
+            ?.();
+
+    }
+
+
+    async function withLoading(
+        callback
+    ) {
+
+        loadingStart();
+
+
+        try {
+
+            return await callback();
+
+        } finally {
+
+            loadingEnd();
+
+        }
+
+    }
+
+
+    function navigate(
+        url,
+        {
+            replace = false
+        } = {}
+    ) {
+
+        if (!url) {
+            return;
+        }
+
+
+        /*
+        * Nếu operation hiện tại đã bật loading
+        * thì không tăng counter lần nữa.
+        */
+        if (
+            loadingDepth ===
+            0
+        ) {
+
+            loadingStart();
+
+        }
+
+
+        if (
+            replace
+        ) {
+
+            window.location
+                .replace(
+                    url
+                );
+
+            return;
+
+        }
+
+
+        window.location
+            .assign(
+                url
+            );
+
+    }
+
+
+    function bindNavigationLoading() {
+
+        if (
+            navigationLoadingBound
+        ) {
+            return;
+        }
+
+
+        navigationLoadingBound =
+            true;
+
+
+        document
+            .addEventListener(
+                'click',
+                event => {
+
+                    if (
+                        event.defaultPrevented ||
+                        event.button !== 0 ||
+                        event.ctrlKey ||
+                        event.metaKey ||
+                        event.shiftKey ||
+                        event.altKey
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const link =
+                        event.target
+                            .closest(
+                                '[data-order-page] a[href]'
+                            );
+
+
+                    if (!link) {
+                        return;
+                    }
+
+
+                    if (
+                        link.target ===
+                            '_blank' ||
+                        link.hasAttribute(
+                            'download'
+                        )
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const rawHref =
+                        link.getAttribute(
+                            'href'
+                        );
+
+
+                    if (
+                        !rawHref ||
+                        rawHref.startsWith(
+                            '#'
+                        ) ||
+                        rawHref.startsWith(
+                            'javascript:'
+                        ) ||
+                        rawHref.startsWith(
+                            'tel:'
+                        ) ||
+                        rawHref.startsWith(
+                            'mailto:'
+                        )
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const targetUrl =
+                        new URL(
+                            link.href,
+                            window.location.href
+                        );
+
+
+                    if (
+                        targetUrl.origin !==
+                        window.location.origin
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    loadingStart();
+
+                }
+            );
+
+    }
+
     function can(code) {
         return (state.user?.dsQuyen || [])
             .some(
@@ -684,11 +1059,20 @@ window.MCS.orders = window.MCS.orders || {};
                 state.draft = {};
             }
 
-            $$('[data-order-manager-link]')
-                .forEach((link) => {
-                    link.hidden =
-                        !can('Q002031');
-                });
+            $$(
+                '[data-order-manager-link]'
+            )
+                .forEach(
+                    link => {
+
+                        link.hidden =
+                            !can(
+                                PERMISSIONS
+                                    .MANAGEMENT_VIEW
+                            );
+
+                    }
+                );
 
             $$('.order-nav a')
                 .forEach((link) => {
@@ -746,9 +1130,8 @@ window.MCS.orders = window.MCS.orders || {};
                     }
                 }
             );
-
+            bindNavigationLoading();
             counters();
-
             return state.user;
         })().catch((error) => {
             initializePromise = null;
@@ -758,23 +1141,20 @@ window.MCS.orders = window.MCS.orders || {};
         return initializePromise;
     }
 
-    /*
-    * ==========================================
-    * QUYỀN ĐẶT HÀNG
-    * ==========================================
-    */
-
     const PERMISSIONS =
         Object.freeze({
 
+            ORDER_USE:
+                'Q002021',
+
             MANAGEMENT_VIEW:
-                'Q002031',
+                'Q002041',
 
             MANAGEMENT_UPDATE:
-                'Q002032',
+                'Q002042',
 
             MANAGEMENT_CONFIRM_PAYMENT:
-                'Q002033'
+                'Q002043'
 
         });
 
@@ -785,32 +1165,110 @@ window.MCS.orders = window.MCS.orders || {};
             )
     ) {
 
-        if (
-            root
-        ) {
-
-            root.hidden =
-                true;
-
+        if (!root) {
+            return;
         }
 
 
+        const pageContent =
+            root.closest(
+                '.page-content'
+            ) ||
+            document.querySelector(
+                '.page-content'
+            );
+
+
         const noPermission =
+            root.querySelector(
+                '[data-catalog-no-permission]'
+            ) ||
             document.querySelector(
                 '[data-catalog-no-permission]'
             );
 
 
         if (
-            noPermission
+            !pageContent ||
+            !noPermission
         ) {
 
-            noPermission.hidden =
-                false;
+            return;
 
         }
 
+
+        /*
+        * Nhớ vị trí ban đầu.
+        */
+
+        if (
+            !noPermission
+                ._mcsOriginalParent
+        ) {
+
+            noPermission
+                ._mcsOriginalParent =
+                noPermission
+                    .parentElement;
+
+        }
+
+
+        /*
+        * Đưa form thiếu quyền ra khỏi
+        * toàn bộ layout .order-page.
+        */
+
+        if (
+            noPermission.parentElement !==
+            pageContent
+        ) {
+
+            pageContent
+                .appendChild(
+                    noPermission
+                );
+
+        }
+
+
+        root.hidden =
+            true;
+
+
+        root.classList
+            .add(
+                'is-permission-hidden'
+            );
+
+
+        noPermission.hidden =
+            false;
+
+
+        document
+            .documentElement
+            .classList
+            .add(
+                'catalog-permission-denied'
+            );
+
+
+        document
+            .body
+            .classList
+            .add(
+                'catalog-permission-denied'
+            );
+
+
+        root.dataset
+            .permissionDenied =
+            'true';
+
     }
+
 
     function hideNoPermission(
         root =
@@ -819,17 +1277,25 @@ window.MCS.orders = window.MCS.orders || {};
             )
     ) {
 
-        if (
-            root
-        ) {
-
-            root.hidden =
-                false;
-
+        if (!root) {
+            return;
         }
 
 
+        const pageContent =
+            root.closest(
+                '.page-content'
+            ) ||
+            document.querySelector(
+                '.page-content'
+            );
+
+
         const noPermission =
+            pageContent
+                ?.querySelector(
+                    ':scope > [data-catalog-no-permission]'
+                ) ||
             document.querySelector(
                 '[data-catalog-no-permission]'
             );
@@ -842,7 +1308,56 @@ window.MCS.orders = window.MCS.orders || {};
             noPermission.hidden =
                 true;
 
+
+            const originalParent =
+                noPermission
+                    ._mcsOriginalParent;
+
+
+            if (
+                originalParent &&
+                originalParent
+                    .isConnected
+            ) {
+
+                originalParent
+                    .appendChild(
+                        noPermission
+                    );
+
+            }
+
         }
+
+
+        root.hidden =
+            false;
+
+
+        root.classList
+            .remove(
+                'is-permission-hidden'
+            );
+
+
+        document
+            .documentElement
+            .classList
+            .remove(
+                'catalog-permission-denied'
+            );
+
+
+        document
+            .body
+            .classList
+            .remove(
+                'catalog-permission-denied'
+            );
+
+
+        delete root.dataset
+            .permissionDenied;
 
     }
 
@@ -900,6 +1415,7 @@ window.MCS.orders = window.MCS.orders || {};
         $$,
         api,
         query,
+        createRequestId,
         render,
         mount,
 
@@ -935,7 +1451,10 @@ window.MCS.orders = window.MCS.orders || {};
         setSelectValue,
         deliveryTime,
         debounce,
-
+        loadingStart,
+        loadingEnd,
+        withLoading,
+        navigate,
         createPagination,
 
         initialize,

@@ -575,100 +575,184 @@
             form.addEventListener(
                 'submit',
                 async (event) => {
+
                     event.preventDefault();
 
-                    if (continueBusy || checkoutLoading) return;
-                    continueBusy = true;
-                    try {
-                        // Trang có thể đã mở từ ngày trước hoặc khung giờ vừa hết chỗ.
-                        await loadCheckout();
-                    } finally {
-                        continueBusy = false;
-                    }
-                    collect();
-
-                    const errors = {};
-                    const draft =
-                        state.draft;
 
                     if (
-                        !draft.ngayNhan ||
-                        draft.ngayNhan <
-                            C.today()
+                        continueBusy ||
+                        checkoutLoading
                     ) {
-                        errors.ngayNhan =
-                            'Chọn ngày nhận từ hôm nay.';
-                    }
 
-                    if (
-                        checkoutLoading ||
-                        !draft.khungGioNhanId
-                    ) {
-                        errors.khungGioNhanId =
-                            'Vui lòng chọn khung giờ còn chỗ.';
-                    }
-
-                    if (
-                        !draft.tenNguoiNhan
-                    ) {
-                        errors.tenNguoiNhan =
-                            'Nhập tên người nhận.';
-                    }
-
-                    if (
-                        !/^[+\d][\d\s().-]{7,19}$/.test(
-                            draft.soDienThoaiNguoiNhan
-                        )
-                    ) {
-                        errors[
-                            draft.datHo
-                                ? 'soDienThoaiNguoiNhan'
-                                : 'soDienThoai'
-                        ] =
-                            'Nhập số điện thoại hợp lệ (8–20 ký tự).';
-                    }
-
-                    if (
-                        !draft.diaChiNhan
-                    ) {
-                        errors.diaChiNhan =
-                            'Nhập địa chỉ nhận hàng chi tiết.';
-                    }
-
-                    if (
-                        C.cartView().blocked
-                    ) {
-                        errors._ =
-                            state.quoteError ||
-                            'Vui lòng đợi giỏ hàng được tính lại.';
-                    }
-
-                    if (
-                        !C.formErrors(
-                            form,
-                            errors
-                        )
-                    ) {
                         return;
+
                     }
 
-                    state.draft.confirmed =
+
+                    continueBusy =
                         true;
 
-                    state.draft
-                        .quoteSnapshot =
+
+                    C.loadingStart();
+
+
+                    let navigating =
+                        false;
+
+
+                    try {
+
+                        /*
+                        * Trang có thể đã mở từ ngày trước
+                        * hoặc khung giờ vừa hết chỗ.
+                        */
+                        await loadCheckout();
+
+
+                        collect();
+
+
+                        const errors =
+                            {};
+
+
+                        const draft =
+                            state.draft;
+
+
+                        if (
+                            !draft.ngayNhan ||
+                            draft.ngayNhan <
+                                C.today()
+                        ) {
+
+                            errors.ngayNhan =
+                                'Chọn ngày nhận từ hôm nay.';
+
+                        }
+
+
+                        if (
+                            checkoutLoading ||
+                            !draft.khungGioNhanId
+                        ) {
+
+                            errors.khungGioNhanId =
+                                'Vui lòng chọn khung giờ còn chỗ.';
+
+                        }
+
+
+                        if (
+                            !draft.tenNguoiNhan
+                        ) {
+
+                            errors.tenNguoiNhan =
+                                'Nhập tên người nhận.';
+
+                        }
+
+
+                        if (
+                            !/^[+\d][\d\s().-]{7,19}$/
+                                .test(
+                                    draft
+                                        .soDienThoaiNguoiNhan
+                                )
+                        ) {
+
+                            errors[
+                                draft.datHo
+                                    ? 'soDienThoaiNguoiNhan'
+                                    : 'soDienThoai'
+                            ] =
+                                'Nhập số điện thoại hợp lệ (8–20 ký tự).';
+
+                        }
+
+
+                        if (
+                            !draft.diaChiNhan
+                        ) {
+
+                            errors.diaChiNhan =
+                                'Nhập địa chỉ nhận hàng chi tiết.';
+
+                        }
+
+
+                        if (
+                            C.cartView()
+                                .blocked
+                        ) {
+
+                            errors._ =
+                                state.quoteError ||
+                                'Vui lòng đợi giỏ hàng được tính lại.';
+
+                        }
+
+
+                        if (
+                            !C.formErrors(
+                                form,
+                                errors
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        state.draft.confirmed =
+                            true;
+
+
+                        state.draft
+                            .quoteSnapshot =
                             JSON.stringify(
                                 state.quote
                             );
 
-                    C.save();
 
-                    location.assign(
-                        C.paths.confirmation(
-                            state.user
-                                .taiKhoanId
-                        )
-                    );
+                        C.save();
+
+
+                        navigating =
+                            true;
+
+
+                        C.navigate(
+                            C.paths.confirmation(
+                                state.user
+                                    .taiKhoanId
+                            )
+                        );
+
+                    } finally {
+
+                        continueBusy =
+                            false;
+
+
+                        /*
+                        * Nếu đang chuyển trang:
+                        * giữ loading tới khi browser unload.
+                        *
+                        * Nếu validate lỗi:
+                        * tắt loading để user sửa form.
+                        */
+                        if (
+                            !navigating
+                        ) {
+
+                            C.loadingEnd();
+
+                        }
+
+                    }
+
                 }
             );
         }

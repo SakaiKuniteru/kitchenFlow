@@ -39,6 +39,30 @@ const listSchema = Joi.object({
         .valid(...enums.trangThaiThanhToanDonHang.map((item) => item.value))
         .optional(),
     keyword: Joi.string().trim().max(255).allow('').optional(),
+    sortBy:
+        Joi.string()
+            .valid(
+                'maDonHang',
+                'thoiGianDat',
+                'nguoiDat',
+                'nguoiNhan',
+                'soLoai',
+                'tongSoLuong',
+                'tongThanhToan',
+                'phuongThucThanhToan',
+                'trangThai'
+            )
+            .allow('')
+            .optional(),
+
+    sortDir:
+        Joi.string()
+            .valid(
+                'asc',
+                'desc'
+            )
+            .allow('')
+            .optional(),
     tuNgay: Joi.date().iso().optional(),
     denNgay: Joi.date()
         .iso()

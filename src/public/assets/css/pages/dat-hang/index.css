@@ -5,6 +5,7 @@
     --order-muted: var(--color-text-muted);
     --order-line: var(--color-border);
     --order-bg: var(--color-background);
+    --order-detail-width: 550px;
 }
 
 .order-page-header {
@@ -109,22 +110,6 @@
 
 .order-cart__footer > .order-button + .order-button {
     margin-top: 9px;
-}
-
-.order-catalog-layout {
-    grid-template-columns: minmax(0, 1fr) 350px;
-}
-
-.order-catalog-heading {
-    display: flex;
-    gap: 20px;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 18px;
-}
-
-.order-catalog-heading .order-page-header {
-    flex: 1;
 }
 
 .order-promo {
@@ -444,10 +429,6 @@
     color: #168b49;
 }
 
-.order-checkout-layout {
-    grid-template-columns: minmax(0, 1.6fr) minmax(330px, 0.95fr);
-}
-
 .order-summary__body {
     padding-bottom: 4px;
 }
@@ -526,8 +507,51 @@
     gap: 20px;
 }
 
-.order-management-layout {
-    grid-template-columns: minmax(0, 1.65fr) minmax(420px, 1fr);
+.order-filter-anchor {
+    position: relative;
+
+    display: inline-flex;
+    align-items: center;
+
+    flex: 0 0 auto;
+}
+
+
+.order-filter-anchor
+> .data-list-filter {
+    position: absolute;
+
+    top: calc(100% + 8px);
+    right: 0;
+    left: auto;
+
+    z-index: 1200;
+
+    width:
+        min(
+            520px,
+            calc(
+                100vw -
+                40px
+            )
+        );
+
+    height:
+        min(
+            620px,
+            calc(
+                100dvh -
+                180px
+            )
+        );
+
+    max-height:
+        calc(
+            100dvh -
+            180px
+        );
+
+    margin: 0;
 }
 
 .order-management-detail {
@@ -664,49 +688,9 @@
     color: #6771a4;
 }
 
-.order-list-filters {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 12px;
-    margin-bottom: 15px;
-    background: #f6faff;
-    border-radius: 8px;
-}
-
-.order-list-filters .order-action-row {
-    grid-column: 1 / -1;
-    justify-content: flex-end;
-}
-
-.order-table {
-    font-size: 0.74rem;
-}
-
-.order-table th,
-.order-table td {
-    padding: 13px 7px;
-}
-
-.order-table th {
-    font-size: 0.71rem;
-    font-weight: 500;
-}
-
-.order-table td:nth-child(3) {
-    white-space: normal;
-    min-width: 90px;
-}
-
 .order-code {
     color: var(--order-blue);
     font-weight: 700;
-}
-
-.order-table .order-status {
-    font-size: 0.68rem;
-    padding: 4px 7px;
-    white-space: nowrap;
 }
 
 .order-detail-layout {
@@ -1022,16 +1006,8 @@
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .order-management-layout {
-        grid-template-columns: minmax(0, 1fr) 360px;
-    }
-
     .order-stat-grid {
         grid-template-columns: repeat(2, 1fr);
-    }
-
-    .order-catalog-heading {
-        display: block;
     }
 
     .order-promo {
@@ -1228,4 +1204,442 @@
     .order-list-filters {
         grid-template-columns: 1fr;
     }
+}
+
+/*
+ * ============================================================
+ * ORDER PAGE - FIXED VIEWPORT / INTERNAL SCROLL
+ * Desktop + Tablet
+ * ============================================================
+ */
+
+@media (min-width: 768px) {
+
+    /*
+     * Toàn bộ trang đặt hàng chỉ chiếm
+     * phần viewport còn lại của app.
+     *
+     * Không cho body của trang tự kéo dài.
+     */
+
+    .order-page {
+        display: flex;
+
+        height:
+            calc(
+                100vh -
+                var(--header-height, 64px) -
+                126px
+            );
+
+        height:
+            calc(
+                100dvh -
+                var(--header-height, 64px) -
+                126px
+            );
+
+        min-height: 0;
+
+        flex-direction: column;
+
+        overflow: hidden;
+    }
+
+
+    .order-page > .order-page-header,
+    .order-page > .order-heading-actions,
+    .order-page > .order-benefits {
+        flex: 0 0 auto;
+    }
+
+
+    /*
+     * ========================================================
+     * CATALOG
+     * ========================================================
+     */
+
+    .order-page[data-order-page='catalog']
+    .order-catalog-layout {
+        flex: 1 1 auto;
+
+        min-height: 0;
+
+        overflow: hidden;
+
+        align-items: stretch;
+
+        grid-template-columns:
+            minmax(0, 1fr)
+            var(--order-detail-width);
+    }
+
+
+    .order-page[data-order-page='catalog']
+    .order-catalog-main {
+        display: flex;
+
+        height: 100%;
+
+        min-width: 0;
+        min-height: 0;
+
+        flex-direction: column;
+
+        overflow: hidden;
+    }
+
+
+    /*
+     * Chính grid món ăn scroll.
+     *
+     * Pagination không scroll theo grid.
+     */
+
+    .order-page[data-order-page='catalog']
+    .order-product-grid {
+        flex: 1 1 auto;
+
+        min-height: 0;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        align-content: start;
+
+        overscroll-behavior: contain;
+
+        scrollbar-gutter: stable;
+    }
+
+
+    /*
+     * Pagination luôn nằm cuối vùng main.
+     */
+
+    .order-page[data-order-page='catalog']
+    .order-pagination-wrap {
+        width: 100%;
+
+        flex: 0 0 auto;
+
+        margin-top: auto;
+
+        padding-top: 12px;
+    }
+
+
+    /*
+     * Giỏ hàng không kéo dài cả page.
+     */
+
+    .order-page[data-order-page='catalog']
+    .order-cart-panel {
+        position: static;
+
+        top: auto;
+
+        height: 100%;
+
+        min-height: 0;
+        max-height: none;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        overscroll-behavior: contain;
+
+        scrollbar-gutter: stable;
+    }
+
+
+    /*
+     * ========================================================
+     * DELIVERY / CONFIRMATION
+     * ========================================================
+     */
+
+    .order-page[data-order-page='delivery']
+    .order-checkout-layout,
+
+    .order-page[data-order-page='confirmation']
+    .order-checkout-layout {
+        flex: 1 1 auto;
+
+        min-height: 0;
+
+        overflow: hidden;
+
+        align-items: stretch;
+
+        grid-template-columns:
+            minmax(0, 1fr)
+            var(--order-detail-width);
+    }
+
+
+    .order-page[data-order-page='delivery']
+    .order-checkout-main,
+
+    .order-page[data-order-page='confirmation']
+    .order-checkout-main,
+
+    .order-page[data-order-page='delivery']
+    .order-summary-panel,
+
+    .order-page[data-order-page='confirmation']
+    .order-summary-panel {
+        position: static;
+
+        top: auto;
+
+        height: 100%;
+
+        min-height: 0;
+        max-height: none;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        overscroll-behavior: contain;
+
+        scrollbar-gutter: stable;
+    }
+
+/*
+ * ========================================================
+ * COMMON DATA LIST
+ * Đơn hàng của tôi + Nhận đơn hàng
+ * ========================================================
+ */
+
+.order-data-list {
+    position: relative;
+
+    display: flex;
+
+    min-width: 0;
+    min-height: 0;
+
+    flex: 1 1 auto;
+    flex-direction: column;
+
+    overflow: visible;
+}
+
+
+.order-data-list > .data-list-card {
+    display: flex;
+
+    min-width: 0;
+    min-height: 0;
+
+    flex: 1 1 auto;
+    flex-direction: column;
+
+    overflow: hidden;
+}
+
+
+.order-data-list
+> .data-list-card
+> .data-list-card__toolbar {
+    flex: 0 0 auto;
+}
+
+
+.order-data-list
+> .data-list-card
+> .data-list-table-wrap {
+    flex: 1 1 auto;
+
+    min-width: 0;
+    min-height: 0;
+
+    overflow: auto;
+
+    overscroll-behavior: contain;
+
+    scrollbar-gutter: stable;
+}
+
+
+.order-data-list
+.data-list-table
+thead
+th {
+    position: sticky;
+
+    top: 0;
+
+    z-index: 2;
+}
+
+
+.order-data-list
+> .data-list-card
+> .data-list-card__footer {
+    flex: 0 0 auto;
+}
+
+.order-page[data-order-page='my-orders']
+> .order-data-list {
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    overflow: hidden;
+}
+
+.order-page[data-order-page='management']
+.order-management-layout {
+    flex: 1 1 auto;
+
+    min-width: 0;
+    min-height: 0;
+
+    overflow: hidden;
+
+    align-items: stretch;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        var(--order-detail-width);
+}
+
+
+.order-page[data-order-page='management']
+.order-management-main {
+    display: flex;
+
+    min-width: 0;
+    min-height: 0;
+
+    flex-direction: column;
+
+    overflow: hidden;
+}
+
+
+.order-page[data-order-page='management']
+.order-stat-grid {
+    flex: 0 0 auto;
+}
+
+.order-page[data-order-page='management']
+.order-management-main
+> .order-data-list {
+    flex: 1 1 auto;
+
+    min-width: 0;
+    min-height: 0;
+
+    overflow: hidden;
+}
+
+.order-page[data-order-page='management']
+.order-management-detail {
+    position: static;
+
+    top: auto;
+
+    width: 100%;
+    height: 100%;
+
+    min-width: 0;
+    min-height: 0;
+    max-height: none;
+
+    margin-top: 0;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    overscroll-behavior: contain;
+
+    scrollbar-gutter: stable;
+}
+
+    /*
+     * ========================================================
+     * MY DETAIL / COMPLETED
+     * ========================================================
+     */
+
+    .order-page[data-order-page='my-order-detail']
+    .order-detail-layout,
+
+    .order-page[data-order-page='completed']
+    .order-detail-layout {
+        height: 100%;
+
+        min-height: 0;
+
+        overflow: hidden;
+
+        align-items: stretch;
+
+        grid-template-columns:
+            minmax(0, 1fr)
+            var(--order-detail-width);
+    }
+
+    /*
+     * Main và aside detail scroll riêng.
+     */
+
+    .order-page[data-order-page='my-order-detail']
+    .order-detail-layout > main,
+
+    .order-page[data-order-page='my-order-detail']
+    .order-detail-layout > aside,
+
+    .order-page[data-order-page='completed']
+    .order-detail-layout > main,
+
+    .order-page[data-order-page='completed']
+    .order-detail-layout > aside {
+        min-width: 0;
+        min-height: 0;
+
+        max-height: 100%;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        overscroll-behavior: contain;
+
+        scrollbar-gutter: stable;
+    }
+
+
+    /*
+     * ========================================================
+     * MANAGEMENT DETAIL PAGE
+     * ========================================================
+     */
+
+    .order-page[data-order-page='management-detail']
+    .order-standalone-management {
+        width: 100%;
+
+        min-width: 0;
+        min-height: 0;
+
+        flex: 1 1 auto;
+
+        margin:
+            18px
+            0
+            0;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        overscroll-behavior: contain;
+
+        scrollbar-gutter: stable;
+    }
+
 }

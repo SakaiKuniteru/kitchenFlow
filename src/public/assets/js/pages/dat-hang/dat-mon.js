@@ -354,7 +354,7 @@
                         ) &&
                         !C.cartView().blocked
                     ) {
-                        location.assign(
+                        C.navigate(
                             C.paths.delivery(
                                 state.user
                                     .taiKhoanId

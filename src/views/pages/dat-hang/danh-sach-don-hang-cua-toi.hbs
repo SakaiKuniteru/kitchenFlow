@@ -21,39 +21,44 @@
             title="Đơn hàng của tôi"
         }}
 
+
         <div class="order-action-row">
 
             <button
                 type="button"
                 class="order-button order-button--outline"
-                data-orders-refresh>
-
+                data-orders-refresh
+            >
                 <i class="fa-solid fa-rotate"></i>
-
                 Làm mới
-
             </button>
 
 
-            <button
-                type="button"
-                class="order-button order-button--outline"
-                data-toggle-filters
-                aria-expanded="false">
+            <div class="order-filter-anchor">
 
-                <i class="fa-solid fa-filter"></i>
+                <button
+                    type="button"
+                    class="order-button order-button--outline"
+                    data-toggle-filters
+                    aria-expanded="false"
+                >
+                    <i class="fa-solid fa-filter"></i>
+                    Bộ lọc
+                </button>
 
-                Bộ lọc
 
-            </button>
+                {{> common/data-list/filter
+                    listPage=listPage
+                }}
+
+            </div>
 
 
             <a
                 class="order-button order-button--primary"
-                href="/dat-hang/dat-mon">
-
+                href="/dat-hang/dat-mon"
+            >
                 Đặt món mới
-
             </a>
 
         </div>
@@ -63,14 +68,10 @@
 
     <div
         class="order-data-list"
-        data-order-list-common>
+        data-order-list-common
+    >
 
         {{> common/data-list/data-card
-            listPage=listPage
-        }}
-
-
-        {{> common/data-list/filter
             listPage=listPage
         }}
 

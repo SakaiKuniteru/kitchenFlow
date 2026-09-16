@@ -24,30 +24,27 @@ function column(
 
         label,
 
+
         type:
             options.type ||
             'text',
+
 
         width:
             options.width ||
             '',
 
-        /*
-         * List đặt hàng hiện chưa nối
-         * generic sorting.
-         */
 
         sortable:
+            options.sortable !==
             false
 
     };
 
 }
 
-
 function buildOrderListPage(
-    management =
-        false
+    management = false
 ) {
 
     const columns = [
@@ -73,18 +70,19 @@ function buildOrderListPage(
             }
         ),
 
-        ...(management
-            ? [
-                column(
-                    'nguoiDat',
-                    'Người đặt',
-                    {
-                        width:
-                            '160px'
-                    }
-                )
-            ]
-            : []
+        ...(
+            management
+                ? [
+                    column(
+                        'nguoiDat',
+                        'Người đặt',
+                        {
+                            width:
+                                '160px'
+                        }
+                    )
+                ]
+                : []
         ),
 
         column(
@@ -132,18 +130,19 @@ function buildOrderListPage(
             }
         ),
 
-        ...(management
-            ? [
-                column(
-                    'phuongThucThanhToan',
-                    'PTTT',
-                    {
-                        width:
-                            '130px'
-                    }
-                )
-            ]
-            : []
+        ...(
+            management
+                ? [
+                    column(
+                        'phuongThucThanhToan',
+                        'PTTT',
+                        {
+                            width:
+                                '130px'
+                        }
+                    )
+                ]
+                : []
         ),
 
         column(
@@ -220,7 +219,6 @@ function buildOrderListPage(
                 'Thời gian đặt',
 
             from: {
-
                 id:
                     'orderFromDate',
 
@@ -231,18 +229,16 @@ function buildOrderListPage(
                     'Từ ngày',
 
                 placeholder:
-                    'dd/mm/yyyy',
+                    'dd/MM/yyyy HH:mm:ss',
 
                 showTime:
-                    false,
+                    true,
 
                 defaultTime:
                     '00:00:00'
-
             },
 
             to: {
-
                 id:
                     'orderToDate',
 
@@ -253,16 +249,14 @@ function buildOrderListPage(
                     'Đến ngày',
 
                 placeholder:
-                    'dd/mm/yyyy',
+                    'dd/MM/yyyy HH:mm:ss',
 
                 showTime:
-                    false,
+                    true,
 
                 defaultTime:
                     '23:59:59'
-
             }
-
         }
 
     ];
@@ -271,7 +265,6 @@ function buildOrderListPage(
     const normalizedFilters =
         filters.map(
             filter => ({
-
                 ...filter,
 
                 isDateRange:
@@ -289,7 +282,6 @@ function buildOrderListPage(
                 isNumber:
                     filter.type ===
                     'number'
-
             })
         );
 
@@ -307,8 +299,14 @@ function buildOrderListPage(
         showSearch:
             true,
 
-        showFilters:
-            true,
+        selectable:
+            false,
+
+        showRowActions:
+            false,
+
+        bulkActions:
+            [],
 
         searchId:
             'orderListSearch',
@@ -368,10 +366,6 @@ class DatHangWebController {
                     { label: 'Đặt món', path: '/dat-hang/dat-mon' },
                     { label: 'Xác nhận đơn hàng' }
                 ],
-                listPage:
-                    buildOrderListPage(
-                        true
-                    ),
                 orderPage: 'confirmation',
                 taiKhoanId: req.params.taiKhoanId
             });
@@ -397,15 +391,46 @@ class DatHangWebController {
         }
     }
 
-    nhanDonHang(req, res, next) {
+    nhanDonHang(
+        req,
+        res,
+        next
+    ) {
         try {
-            return renderOrderPage(req, res, 'pages/dat-hang/nhan-don-hang', {
-                title: 'Nhận đơn hàng',
-                breadcrumbs: [{ label: 'Nhận đơn hàng' }],
-                orderPage: 'management'
-            });
-        } catch (error) {
-            next(error);
+
+            return renderOrderPage(
+                req,
+                res,
+                'pages/dat-hang/nhan-don-hang',
+                {
+                    title:
+                        'Nhận đơn hàng',
+
+                    breadcrumbs: [
+                        {
+                            label:
+                                'Nhận đơn hàng'
+                        }
+                    ],
+
+                    orderPage:
+                        'management',
+
+                    listPage:
+                        buildOrderListPage(
+                            true
+                        )
+                }
+            );
+
+        } catch (
+            error
+        ) {
+
+            next(
+                error
+            );
+
         }
     }
 
@@ -435,7 +460,7 @@ class DatHangWebController {
                 listPage:
                     buildOrderListPage(
                         false
-                    ),
+                    )
             });
         } catch (error) {
             next(error);

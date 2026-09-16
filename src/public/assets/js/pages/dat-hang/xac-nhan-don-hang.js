@@ -21,10 +21,15 @@
             !state.draft.confirmed ||
             !state.draft.khungGioNhanId
         ) {
-            location.replace(
+            C.navigate(
                 C.paths.delivery(
-                    state.user.taiKhoanId
-                )
+                    state.user
+                        .taiKhoanId
+                ),
+                {
+                    replace:
+                        true
+                }
             );
 
             return;
@@ -115,9 +120,15 @@
                     return;
                 }
 
-                state.submitting = true;
+                state.submitting =
+                    true;
 
                 render();
+
+                C.loadingStart();
+
+                let navigating =
+                    false;
 
                 const previous =
                     JSON.stringify(
@@ -143,8 +154,7 @@
                         return;
                     }
 
-                    draft.requestId ||=
-                        crypto.randomUUID();
+                    draft.requestId ||= C.createRequestId();
 
                     C.save();
 
@@ -212,7 +222,10 @@
 
                     C.save();
 
-                    location.assign(
+                    navigating =
+                        true;
+
+                    C.navigate(
                         C.paths.completed(
                             taiKhoanId,
                             donHangId
@@ -223,9 +236,21 @@
                         error.message
                     );
                 } finally {
-                    state.submitting = false;
 
-                    render();
+                    state.submitting =
+                        false;
+
+
+                    if (
+                        !navigating
+                    ) {
+
+                        C.loadingEnd();
+
+                        render();
+
+                    }
+
                 }
             }
         );

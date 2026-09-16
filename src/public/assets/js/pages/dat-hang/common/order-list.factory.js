@@ -1,7 +1,11 @@
 'use strict';
 
 (() => {
-    const C = MCS.orders;
+
+    const C =
+        MCS.orders;
+
+
     const {
         $,
         state,
@@ -9,838 +13,1577 @@
         mount
     } = C;
 
-    C.createOrderListPage = async function createOrderListPage(
-        options = {}
-    ) {
-        const management =
-            options.management === true;
 
-        const root =
-            $('[data-order-page]');
-
-        if (!root) return null;
-
-        if (
-            management &&
-            !C.requirePermission(
-                C.permissions
-                    .MANAGEMENT_VIEW,
-                root
-            )
+    C.createOrderListPage =
+        async function createOrderListPage(
+            options = {}
         ) {
 
-            return null;
+            const management =
+                options.management ===
+                true;
 
-        }
 
-        const endpoint =
-            management
-                ? '/nv-don-hang/quan-ly'
-                : '/nv-don-hang/cua-toi';
-
-        let listPage = 1;
-        let pageSize = 20;
-        let filters = {};
-        let keyword = '';
-        let sequence = 0;
-        let selectedId = '';
-
-        const table = $('[data-list-body]');
-
-        const detailTarget =
-            management
-                ? $('[data-management-detail]')
-                : null;
-
-        const pagination =
-            C.createPagination(
+            const root =
                 $(
-                    '.data-list-card__footer ' +
-                    '[data-catalog-pagination]'
-                ),
-                {
-                    page: listPage,
-                    pageSize,
-                    total: 0,
+                    '[data-order-page]'
+                );
 
-                    onChange(state) {
-                        listPage =
-                            state.page;
 
-                        pageSize =
-                            state.pageSize;
-
-                        void load();
-                    }
-                }
-            );
-
-        const detailController =
-            management
-                ? C.createOrderDetailController({
-                      root,
-                      management: true,
-                      detailTarget,
-                      autoRefresh: false,
-
-                      async onChanged() {
-                          await load();
-                      }
-                  })
-                : null;
-
-        function setPagination(
-            result
-        ) {
-            pagination?.setData({
-                page:
-                    Number(
-                        result.pagination
-                            .page
-                    ),
-
-                pageSize:
-                    Number(
-                        result.pagination
-                            .limit ||
-                        pageSize
-                    ),
-
-                total:
-                    Number(
-                        result.pagination
-                            .total ||
-                        0
-                    )
-            });
-        }
-
-        function renderStatistics(
-            result
-        ) {
-            if (!management) return;
-
-            const counts =
-                result.thongKe;
-
-            mount(
-                '[data-management-stats]',
-                'quan-ly-don',
-                {
-                    type: 'statistics',
-
-                    statistics: [
-                        {
-                            label:
-                                'Chờ xác nhận',
-
-                            count:
-                                counts
-                                    .choXacNhan,
-
-                            theme:
-                                'warning',
-
-                            icon:
-                                'fa-clock'
-                        },
-
-                        {
-                            label:
-                                'Đang chuẩn bị',
-
-                            count:
-                                counts
-                                    .dangChuanBi,
-
-                            theme:
-                                'primary',
-
-                            icon:
-                                'fa-kitchen-set'
-                        },
-
-                        {
-                            label:
-                                'Sẵn sàng / đang giao',
-
-                            count:
-                                counts
-                                    .sanSangVaDangGiao,
-
-                            theme:
-                                'success',
-
-                            icon:
-                                'fa-truck'
-                        },
-
-                        {
-                            label:
-                                'Hoàn thành',
-
-                            count:
-                                counts
-                                    .hoanThanh,
-
-                            theme:
-                                'muted',
-
-                            icon:
-                                'fa-circle-check'
-                        }
-                    ]
-                }
-            );
-        }
-
-        function detailUrl(item) {
-            if (management) {
-                return C.paths
-                    .managementDetail(
-                        item.nguoiDatId,
-                        item.id
-                    );
+            if (!root) {
+                return null;
             }
 
-            return C.paths
-                .myDetail(
-                    state.user
-                        .taiKhoanId,
-                    item.id
+
+            const listRoot =
+                $(
+                    '[data-order-list-common]',
+                    root
                 );
-        }
-
-        function renderRows(
-            items
-        ) {
-            table.innerHTML =
-                items
-                    .map(
-                        (
-                            item,
-                            index
-                        ) =>
-                            C.render(
-                                'quan-ly-don',
-                                {
-                                    type:
-                                        'table-row',
-
-                                    ...item,
-
-                                    index:
-                                        (
-                                            listPage -
-                                            1
-                                        ) *
-                                            pageSize +
-                                        index +
-                                        1,
-
-                                    management,
-
-                                    selected:
-                                        String(
-                                            item.id
-                                        ) ===
-                                        selectedId,
-
-                                    detailUrl:
-                                        detailUrl(
-                                            item
-                                        )
-                                }
-                            )
-                    )
-                    .join('');
-        }
-
-        function getTableColspan() {
-
-            return (
-                root
-                    .querySelectorAll(
-                        '.data-list-table thead th'
-                    )
-                    .length ||
-                (
-                    management
-                        ? 10
-                        : 8
-                )
-            );
-
-        }
 
 
-        function renderLoading() {
+            if (!listRoot) {
 
-            table.replaceChildren();
+                throw new Error(
+                    'Không tìm thấy [data-order-list-common].'
+                );
 
-
-            const row =
-                table.insertRow();
-
-
-            const cell =
-                row.insertCell();
-
-
-            cell.colSpan =
-                getTableColspan();
-
-
-            mount(
-                cell,
-                'dung-chung',
-                {
-                    type:
-                        'loading'
-                }
-            );
-
-        }
-
-        function renderEmpty(
-            title,
-            description,
-            retry = false
-        ) {
-            table.replaceChildren();
-
-            const cell =
-                table
-                    .insertRow()
-                    .insertCell();
-
-            cell.colSpan = getTableColspan();
-
-            mount(
-                cell,
-                'dung-chung',
-                {
-                    type: 'empty',
-                    title,
-                    description,
-                    retry
-                }
-            );
-        }
-
-        async function load(
-            quiet = false
-        ) {
-            const current =
-                ++sequence;
-
-            if (!quiet) {
-                renderLoading();
             }
 
-            try {
-                const result =
-                    await api(
-                        `${endpoint}?${C.query({
-                            ...filters,
-                            keyword,
-                            page: listPage,
-                            limit: pageSize
-                        })}`
+
+            const table =
+                $(
+                    '[data-list-body]',
+                    listRoot
+                );
+
+                const filterPanel =
+                    $(
+                        '[data-list-filter-panel]',
+                        root
                     );
 
-                if (
-                    current !== sequence
-                ) {
-                    return;
-                }
 
-                if (
-                    listPage > 1 &&
-                    !result.items.length
-                ) {
-                    listPage =
-                        Math.max(
-                            1,
-                            result.pagination
-                                .totalPages
-                        );
-
-                    return load();
-                }
-
-                renderStatistics(
-                    result
-                );
-
-                renderRows(
-                    result.items
-                );
-
-                setPagination(
-                    result
-                );
-
-                if (
-                    !result.items.length
-                ) {
-                    renderEmpty(
-                        'Chưa có đơn hàng phù hợp',
-                        'Thử thay đổi từ khóa hoặc bộ lọc.'
+                const filterButton =
+                    $(
+                        '[data-toggle-filters]',
+                        root
                     );
-
-                    if (
-                        detailTarget
-                    ) {
-                        selectedId = '';
-
-                        mount(
-                            detailTarget,
-                            'dung-chung',
-                            {
-                                type:
-                                    'empty',
-
-                                title:
-                                    'Chưa chọn đơn hàng'
-                            }
-                        );
-                    }
-
-                    return;
-                }
-
-                if (management) {
-                    const item =
-                        result.items.find(
-                            (row) =>
-                                String(
-                                    row.id
-                                ) ===
-                                selectedId
-                        ) ||
-                        result.items[0];
-
-                    selectedId =
-                        String(item.id);
-
-                    await detailController
-                        .load(
-                            item.id,
-                            quiet
-                        );
-                }
-            } catch (error) {
-                if (
-                    current !== sequence
-                ) {
-                    return;
-                }
-
-                renderEmpty(
-                    'Không tải được danh sách đơn',
-                    error.message,
-                    true
-                );
-            }
-        }
-
-        function bindFilters() {
-            C.setOptions(
-                $('#orderStatusFilter'),
-
-                Object.entries(
-                    C.statuses
-                ).map(
-                    ([
-                        value,
-                        row
-                    ]) => ({
-                        value,
-                        label: row[0]
-                    })
-                )
-            );
-
-            C.setOptions(
-                $('#orderPaymentFilter'),
-
-                Object.entries(
-                    C.paymentStatuses
-                ).map(
-                    ([
-                        value,
-                        label
-                    ]) => ({
-                        value,
-                        label
-                    })
-                )
-            );
 
             const search =
-                $('#orderListSearch');
+                $(
+                    '#orderListSearch',
+                    listRoot
+                );
 
-            search?.addEventListener(
-                'input',
 
-                C.debounce(
-                    (event) => {
-                        keyword =
-                            event.target
-                                .value
-                                .trim();
+            const paginationRoot =
+                $(
+                    '.data-list-card__footer ' +
+                    '[data-catalog-pagination]',
+                    listRoot
+                );
 
-                        listPage = 1;
 
-                        void load();
+            const detailTarget =
+                management
+                    ? $(
+                        '[data-management-detail]',
+                        root
+                    )
+                    : null;
+
+
+            if (!table) {
+
+                throw new Error(
+                    'Không tìm thấy [data-list-body] của common/data-list/data-card.'
+                );
+
+            }
+
+
+            const endpoint =
+                management
+                    ? '/nv-don-hang/quan-ly'
+                    : '/nv-don-hang/cua-toi';
+
+
+            let listPage =
+                1;
+
+            let pageSize =
+                20;
+
+            let filters =
+                {};
+
+            let keyword =
+                '';
+
+            let sequence =
+                0;
+
+            let selectedId =
+                '';
+
+            let detailBusy =
+                false;
+
+            let sort = {
+
+                key:
+                    null,
+
+                direction:
+                    'none'
+
+            };
+
+            /*
+             * ===============================================
+             * PAGINATION COMMON
+             * ===============================================
+             */
+
+            const pagination =
+                C.createPagination(
+                    paginationRoot,
+                    {
+                        page:
+                            listPage,
+
+                        pageSize,
+
+                        total:
+                            0,
+
+                        onChange(
+                            paginationState
+                        ) {
+
+                            listPage =
+                                paginationState
+                                    .page;
+
+                            pageSize =
+                                paginationState
+                                    .pageSize;
+
+                            void load();
+
+                        }
                     }
-                )
-            );
+                );
 
-            $('[data-search-picker-clear]',
-                search?.closest(
-                    '[data-search-picker]'
-                )
-            )?.addEventListener(
-                'click',
-                () => {
-                    search.value = '';
 
-                    keyword = '';
-                    listPage = 1;
+            /*
+             * ===============================================
+             * DETAIL
+             * ===============================================
+             */
 
-                    void load();
-                }
-            );
-        }
+            const detailController =
+                management
+                    ? C.createOrderDetailController(
+                        {
+                            root,
 
-        function bindActions() {
-            root.addEventListener(
-                'click',
-                async (event) => {
-                    const select =
-                        event.target.closest(
-                            '[data-order-select]'
-                        );
+                            management:
+                                true,
 
-                    if (
-                        select &&
-                        management
-                    ) {
-                        event.preventDefault();
+                            detailTarget,
 
-                        selectedId =
-                            select.dataset
-                                .orderSelect;
+                            autoRefresh:
+                                false,
 
-                        await detailController
-                            .load(
-                                selectedId
-                            );
+                            async onChanged() {
 
-                        return;
-                    }
+                                await load();
 
-                    const row =
-                        event.target.closest(
-                            '[data-order-row]'
-                        );
-
-                    if (
-                        row &&
-                        !select
-                    ) {
-                        if (management) {
-                            selectedId =
-                                row.dataset
-                                    .orderRow;
-
-                            await detailController
-                                .load(
-                                    selectedId
-                                );
-                        } else {
-                            const link = $(
-                                '[data-order-select]',
-                                row
-                            );
-
-                            if (link) {
-                                location.assign(
-                                    link.href
-                                );
                             }
                         }
+                    )
+                    : null;
 
-                        return;
+
+            function setPagination(
+                result
+            ) {
+
+                const paginationData =
+                    result.pagination ||
+                    {};
+
+
+                pagination
+                    ?.setData(
+                        {
+                            page:
+                                Number(
+                                    paginationData
+                                        .page ||
+                                    listPage
+                                ),
+
+                            pageSize:
+                                Number(
+                                    paginationData
+                                        .limit ||
+                                    pageSize
+                                ),
+
+                            total:
+                                Number(
+                                    paginationData
+                                        .total ||
+                                    0
+                                )
+                        }
+                    );
+
+            }
+
+
+            /*
+             * ===============================================
+             * STATISTICS
+             * ===============================================
+             */
+
+            function renderStatistics(
+                result
+            ) {
+
+                if (!management) {
+                    return;
+                }
+
+
+                const counts =
+                    result.thongKe ||
+                    {};
+
+
+                const target =
+                    $(
+                        '[data-management-stats]',
+                        root
+                    );
+
+
+                if (!target) {
+                    return;
+                }
+
+
+                mount(
+                    target,
+                    'quan-ly-don',
+                    {
+                        type:
+                            'statistics',
+
+                        statistics: [
+
+                            {
+                                label:
+                                    'Chờ xác nhận',
+
+                                count:
+                                    Number(
+                                        counts
+                                            .choXacNhan ||
+                                        0
+                                    ),
+
+                                theme:
+                                    'warning',
+
+                                icon:
+                                    'fa-clock'
+                            },
+
+                            {
+                                label:
+                                    'Đang chuẩn bị',
+
+                                count:
+                                    Number(
+                                        counts
+                                            .dangChuanBi ||
+                                        0
+                                    ),
+
+                                theme:
+                                    'primary',
+
+                                icon:
+                                    'fa-kitchen-set'
+                            },
+
+                            {
+                                label:
+                                    'Sẵn sàng / đang giao',
+
+                                count:
+                                    Number(
+                                        counts
+                                            .sanSangVaDangGiao ||
+                                        0
+                                    ),
+
+                                theme:
+                                    'success',
+
+                                icon:
+                                    'fa-truck'
+                            },
+
+                            {
+                                label:
+                                    'Hoàn thành',
+
+                                count:
+                                    Number(
+                                        counts
+                                            .hoanThanh ||
+                                        0
+                                    ),
+
+                                theme:
+                                    'muted',
+
+                                icon:
+                                    'fa-circle-check'
+                            }
+
+                        ]
                     }
+                );
 
-                    const button =
-                        event.target.closest(
-                            'button'
+            }
+
+
+            function detailUrl(
+                item
+            ) {
+
+                if (
+                    management
+                ) {
+
+                    return C.paths
+                        .managementDetail(
+                            item.nguoiDatId,
+                            item.id
                         );
 
-                    if (!button) return;
+                }
+
+
+                return C.paths
+                    .myDetail(
+                        state.user
+                            .taiKhoanId,
+                        item.id
+                    );
+
+            }
+
+
+            /*
+             * ===============================================
+             * ROW
+             * ===============================================
+             */
+
+            function renderRows(
+                items
+            ) {
+
+                table.innerHTML =
+                    items
+                        .map(
+                            (
+                                item,
+                                index
+                            ) =>
+                                C.render(
+                                    'quan-ly-don',
+                                    {
+                                        type:
+                                            'table-row',
+
+                                        ...item,
+
+                                        index:
+                                            (
+                                                listPage -
+                                                1
+                                            ) *
+                                            pageSize +
+                                            index +
+                                            1,
+
+                                        management,
+
+                                        selected:
+                                            String(
+                                                item.id
+                                            ) ===
+                                            selectedId,
+
+                                        detailUrl:
+                                            detailUrl(
+                                                item
+                                            )
+                                    }
+                                )
+                        )
+                        .join('');
+
+            }
+
+
+            function getTableColspan() {
+
+                return (
+                    listRoot
+                        .querySelectorAll(
+                            '.data-list-table ' +
+                            'thead th'
+                        )
+                        .length ||
+                    (
+                        management
+                            ? 10
+                            : 8
+                    )
+                );
+
+            }
+
+
+            function renderLoading() {
+
+                table
+                    .replaceChildren();
+
+
+                const row =
+                    table
+                        .insertRow();
+
+
+                const cell =
+                    row
+                        .insertCell();
+
+
+                cell.colSpan =
+                    getTableColspan();
+
+
+                mount(
+                    cell,
+                    'dung-chung',
+                    {
+                        type:
+                            'loading'
+                    }
+                );
+
+            }
+
+
+            function renderEmpty(
+                title,
+                description,
+                retry = false
+            ) {
+
+                table
+                    .replaceChildren();
+
+
+                const row =
+                    table
+                        .insertRow();
+
+
+                const cell =
+                    row
+                        .insertCell();
+
+
+                cell.colSpan =
+                    getTableColspan();
+
+
+                mount(
+                    cell,
+                    'dung-chung',
+                    {
+                        type:
+                            'empty',
+
+                        title,
+
+                        description,
+
+                        retry
+                    }
+                );
+
+            }
+
+
+            /*
+             * ===============================================
+             * LOAD
+             * ===============================================
+             */
+
+            async function load(
+                quiet = false
+            ) {
+
+                const current =
+                    ++sequence;
+
+
+                if (!quiet) {
+
+                    C.loadingStart
+                        ?.();
+
+                    renderLoading();
+
+                }
+
+
+                try {
+
+                    const requestQuery = {
+
+                        ...filters,
+
+                        keyword,
+
+                        page:
+                            listPage,
+
+                        limit:
+                            pageSize
+
+                    };
+
 
                     if (
-                        button.hasAttribute(
-                            'data-orders-refresh'
-                        ) ||
-                        button.hasAttribute(
-                            'data-retry'
-                        )
+                        sort.key &&
+                        sort.direction !==
+                            'none'
                     ) {
-                        await load();
 
-                        return;
+                        requestQuery.sortBy =
+                            sort.key;
+
+                        requestQuery.sortDir =
+                            sort.direction;
+
                     }
 
-                    if (
-                        button.hasAttribute(
-                            'data-toggle-filters'
-                        )
-                    ) {
 
-                        const panel =
-                            $(
-                                '[data-list-filter-panel]'
-                            );
-
-
-                        if (
-                            !panel
-                        ) {
-                            return;
-                        }
-
-
-                        panel.hidden =
-                            !panel.hidden;
-
-
-                        button.setAttribute(
-                            'aria-expanded',
-                            String(
-                                !panel.hidden
-                            )
+                    const result =
+                        await api(
+                            `${endpoint}?${C.query(
+                                requestQuery
+                            )}`
                         );
 
+                    if (
+                        current !==
+                        sequence
+                    ) {
 
                         return;
 
                     }
 
-                    if (
-                        button.hasAttribute(
-                            'data-list-filter-apply'
+
+                    const items =
+                        Array.isArray(
+                            result.items
                         )
+                            ? result.items
+                            : [];
+
+
+                    const paginationData =
+                        result.pagination ||
+                        {};
+
+
+                    if (
+                        listPage >
+                            1 &&
+                        !items.length
                     ) {
-
-                        const panel =
-                            $(
-                                '[data-list-filter-panel]'
-                            );
-
-
-                        const tuNgay =
-                            $('#orderFromDate')
-                                ?.value || '';
-
-
-                        const denNgay =
-                            $('#orderToDate')
-                                ?.value || '';
-
-
-                        if (
-                            tuNgay &&
-                            denNgay &&
-                            denNgay <
-                                tuNgay
-                        ) {
-
-                            MCS.toast.warning(
-                                'Ngày kết thúc phải từ ngày bắt đầu trở đi.'
-                            );
-
-
-                            return;
-
-                        }
-
-
-                        filters = {
-
-                            trangThai:
-                                $('#orderStatusFilter')
-                                    ?.value || '',
-
-                            trangThaiThanhToan:
-                                $('#orderPaymentFilter')
-                                    ?.value || '',
-
-                            tuNgay,
-
-                            denNgay
-
-                        };
-
 
                         listPage =
-                            1;
+                            Math.max(
+                                1,
+
+                                Number(
+                                    paginationData
+                                        .totalPages
+                                ) ||
+                                1
+                            );
 
 
-                        await load();
-
-
-                        return;
+                        return await load(
+                            quiet
+                        );
 
                     }
 
 
+                    renderStatistics(
+                        result
+                    );
+
+
+                    renderRows(
+                        items
+                    );
+
+
+                    setPagination(
+                        result
+                    );
+
+
                     if (
-                        button.hasAttribute(
-                            'data-list-filter-reset'
-                        )
+                        !items.length
                     ) {
 
-                        const panel =
-                            $(
-                                '[data-list-filter-panel]'
-                            );
+                        renderEmpty(
+                            'Chưa có đơn hàng phù hợp',
+                            'Thử thay đổi từ khóa hoặc bộ lọc.'
+                        );
 
 
-                        panel
-                            ?.querySelectorAll(
-                                '[data-date-picker]'
-                            )
-                            .forEach(
-                                field => {
+                        if (
+                            detailTarget
+                        ) {
 
-                                    field.datePicker
-                                        ?.setValue(
-                                            '',
-                                            false
-                                        );
+                            selectedId =
+                                '';
 
+
+                            mount(
+                                detailTarget,
+                                'dung-chung',
+                                {
+                                    type:
+                                        'empty',
+
+                                    title:
+                                        'Chưa chọn đơn hàng',
+
+                                    description:
+                                        'Chọn một đơn hàng trong danh sách để xem thông tin.'
                                 }
                             );
 
-
-                        C.setSelectValue(
-                            $('#orderStatusFilter'),
-                            ''
-                        );
-
-
-                        C.setSelectValue(
-                            $('#orderPaymentFilter'),
-                            ''
-                        );
-
-
-                        filters =
-                            {};
-
-
-                        listPage =
-                            1;
-
-
-                        await load();
+                        }
 
 
                         return;
 
                     }
+
 
                     if (
                         management &&
-                        button.hasAttribute(
-                            'data-management-export'
-                        )
+                        detailController
                     ) {
-                        button.disabled =
-                            true;
 
-                        try {
-                            const file =
-                                await MCS.api
-                                    .requestFile(
-                                        `/api/mcs/v1/nv-don-hang/quan-ly/xuat-du-lieu?${C.query({
-                                            ...filters,
-                                            keyword
-                                        })}`
+                        const item =
+                            items.find(
+                                row =>
+                                    String(
+                                        row.id
+                                    ) ===
+                                    selectedId
+                            ) ||
+                            items[0];
+
+
+                        selectedId =
+                            String(
+                                item.id
+                            );
+
+
+                        /*
+                         * Detail đầu tiên tải cùng list.
+                         * Không bật thêm overlay lần nữa.
+                         */
+                        await detailController
+                            .load(
+                                item.id,
+                                true
+                            );
+
+                    }
+
+                } catch (
+                    error
+                ) {
+
+                    if (
+                        current !==
+                        sequence
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    renderEmpty(
+                        'Không tải được danh sách đơn',
+                        error.message,
+                        true
+                    );
+
+                } finally {
+
+                    if (
+                        !quiet &&
+                        current ===
+                            sequence
+                    ) {
+
+                        C.loadingEnd
+                            ?.();
+
+                    }
+
+                }
+
+            }
+
+
+            /*
+             * ===============================================
+             * FILTER COMMON
+             * ===============================================
+             */
+
+            function bindFilters() {
+
+                    C.setOptions(
+                        $(
+                            '#orderStatusFilter',
+                            filterPanel
+                        ),
+
+                    Object.entries(
+                        C.statuses
+                    )
+                        .map(
+                            ([
+                                value,
+                                row
+                            ]) => ({
+                                value,
+
+                                label:
+                                    row[0]
+                            })
+                        )
+                );
+
+
+                C.setOptions(
+                    $(
+                        '#orderPaymentFilter',
+                        filterPanel
+                    ),
+
+                    Object.entries(
+                        C.paymentStatuses
+                    )
+                        .map(
+                            ([
+                                value,
+                                label
+                            ]) => ({
+                                value,
+                                label
+                            })
+                        )
+                );
+
+
+                search
+                    ?.addEventListener(
+                        'input',
+
+                        C.debounce(
+                            event => {
+
+                                keyword =
+                                    event
+                                        .target
+                                        .value
+                                        .trim();
+
+
+                                listPage =
+                                    1;
+
+
+                                void load();
+
+                            }
+                        )
+                    );
+
+
+                $(
+                    '[data-search-picker-clear]',
+
+                    search
+                        ?.closest(
+                            '[data-search-picker]'
+                        )
+                )
+                    ?.addEventListener(
+                        'click',
+                        () => {
+
+                            search.value =
+                                '';
+
+                            keyword =
+                                '';
+
+                            listPage =
+                                1;
+
+                            void load();
+
+                        }
+                    );
+
+            }
+
+            function updateSortIcons() {
+
+                listRoot
+                    .querySelectorAll(
+                        '[data-list-sort]'
+                    )
+                    .forEach(
+                        button => {
+
+                            const icon =
+                                button
+                                    .querySelector(
+                                        '[data-sort-icon]'
                                     );
 
-                            MCS.api.downloadBlob(
-                                file.blob,
 
-                                file.fileName ||
-                                    'don-hang.xlsx'
-                            );
-                        } catch (error) {
-                            MCS.toast.error(
-                                error.message
-                            );
-                        } finally {
-                            button.disabled =
-                                false;
+                            if (!icon) {
+                                return;
+                            }
+
+
+                            icon.dataset
+                                .sortDirection =
+                                    button.dataset
+                                        .listSort ===
+                                    sort.key
+                                        ? sort.direction
+                                        : 'none';
+
                         }
-                    }
-                }
-            );
-        }
+                    );
 
-        bindFilters();
-        bindActions();
-
-        await load();
-
-        const timer =
-            setInterval(
-                () => {
-                    if (
-                        !document.hidden &&
-                        !$(
-                            '[data-order-action-dialog]'
-                        )?.open
-                    ) {
-                        void load(true);
-                    }
-                },
-                20000
-            );
-
-        window.addEventListener(
-            'pagehide',
-            () =>
-                clearInterval(
-                    timer
-                ),
-            {
-                once: true
             }
-        );
 
-        document.addEventListener(
-            'visibilitychange',
-            () => {
+            function bindSort() {
+
+                listRoot
+                    .querySelectorAll(
+                        '[data-list-sort]'
+                    )
+                    .forEach(
+                        button => {
+
+                            button
+                                .addEventListener(
+                                    'click',
+                                    () => {
+
+                                        const key =
+                                            button.dataset
+                                                .listSort;
+
+
+                                        if (
+                                            sort.key !==
+                                            key
+                                        ) {
+
+                                            sort = {
+
+                                                key,
+
+                                                direction:
+                                                    'asc'
+
+                                            };
+
+                                        } else {
+
+                                            const next = {
+
+                                                none:
+                                                    'asc',
+
+                                                asc:
+                                                    'desc',
+
+                                                desc:
+                                                    'none'
+
+                                            };
+
+
+                                            const direction =
+                                                next[
+                                                    sort.direction
+                                                ];
+
+
+                                            sort =
+                                                direction ===
+                                                    'none'
+                                                    ? {
+                                                        key:
+                                                            null,
+
+                                                        direction:
+                                                            'none'
+                                                    }
+                                                    : {
+                                                        key,
+
+                                                        direction
+                                                    };
+
+                                        }
+
+
+                                        listPage =
+                                            1;
+
+
+                                        updateSortIcons();
+
+
+                                        void load();
+
+                                    }
+                                );
+
+                        }
+                    );
+
+
+                updateSortIcons();
+
+            }
+
+            function closeFilter() {
+
+                if (!filterPanel) {
+                    return;
+                }
+
+
+                filterPanel.hidden =
+                    true;
+
+
+                filterButton
+                    ?.setAttribute(
+                        'aria-expanded',
+                        'false'
+                    );
+
+            }
+
+            function bindFilterDismiss() {
+
+                const handlePointerDown =
+                    event => {
+
+                        if (
+                            !filterPanel ||
+                            filterPanel.hidden
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        const target =
+                            event.target;
+
+
+                        if (
+                            filterPanel.contains(
+                                target
+                            ) ||
+                            filterButton
+                                ?.contains(
+                                    target
+                                )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        closeFilter();
+
+                    };
+
+
+                document
+                    .addEventListener(
+                        'pointerdown',
+                        handlePointerDown
+                    );
+
+
+                window
+                    .addEventListener(
+                        'pagehide',
+                        () => {
+
+                            document
+                                .removeEventListener(
+                                    'pointerdown',
+                                    handlePointerDown
+                                );
+
+                        },
+                        {
+                            once:
+                                true
+                        }
+                    );
+
+            }
+
+            function resetFilters() {
+
+                filterPanel
+                    ?.querySelectorAll(
+                        '[data-date-picker]'
+                    )
+                    .forEach(
+                        field => {
+
+                            field
+                                .datePicker
+                                ?.setValue(
+                                    '',
+                                    false
+                                );
+
+                        }
+                    );
+
+                    C.setSelectValue(
+                        $(
+                            '#orderStatusFilter',
+                            filterPanel
+                        ),
+                        ''
+                    );
+
+
+                    C.setSelectValue(
+                        $(
+                            '#orderPaymentFilter',
+                            filterPanel
+                        ),
+                        ''
+                    );
+
+                filters =
+                    {};
+
+
+                listPage =
+                    1;
+
+            }
+
+
+            /*
+             * ===============================================
+             * DETAIL CLICK
+             * ===============================================
+             */
+
+            async function loadSelectedDetail(
+                id
+            ) {
+
                 if (
-                    !document.hidden
+                    !management ||
+                    !detailController ||
+                    !id ||
+                    detailBusy
                 ) {
-                    void load(true);
+
+                    return;
+
                 }
-            }
-        );
 
-        return {
-            load,
 
-            refresh() {
-                return load();
+                detailBusy =
+                    true;
+
+
+                C.loadingStart
+                    ?.();
+
+
+                try {
+
+                    selectedId =
+                        String(
+                            id
+                        );
+
+
+                    await detailController
+                        .load(
+                            selectedId
+                        );
+
+                } finally {
+
+                    C.loadingEnd
+                        ?.();
+
+
+                    detailBusy =
+                        false;
+
+                }
+
             }
+
+
+            /*
+             * ===============================================
+             * ACTIONS
+             * ===============================================
+             */
+
+            function bindActions() {
+
+                root
+                    .addEventListener(
+                        'click',
+
+                        async event => {
+
+                            const select =
+                                event.target
+                                    .closest(
+                                        '[data-order-select]'
+                                    );
+
+
+                            if (
+                                select &&
+                                management &&
+                                detailController
+                            ) {
+
+                                event
+                                    .preventDefault();
+
+
+                                await loadSelectedDetail(
+                                    select.dataset
+                                        .orderSelect
+                                );
+
+
+                                return;
+
+                            }
+
+
+                            const row =
+                                event.target
+                                    .closest(
+                                        '[data-order-row]'
+                                    );
+
+
+                            if (
+                                row &&
+                                !select
+                            ) {
+
+                                if (
+                                    management &&
+                                    detailController
+                                ) {
+
+                                    await loadSelectedDetail(
+                                        row.dataset
+                                            .orderRow
+                                    );
+
+                                } else {
+
+                                    const link =
+                                        $(
+                                            '[data-order-select]',
+                                            row
+                                        );
+
+
+                                    if (link) {
+
+                                        C.navigate(
+                                            link.href
+                                        );
+
+                                    }
+
+                                }
+
+
+                                return;
+
+                            }
+
+
+                            const button =
+                                event.target
+                                    .closest(
+                                        'button'
+                                    );
+
+
+                            if (!button) {
+                                return;
+                            }
+
+
+                            if (
+                                button.hasAttribute(
+                                    'data-orders-refresh'
+                                ) ||
+                                button.hasAttribute(
+                                    'data-retry'
+                                )
+                            ) {
+
+                                await load();
+
+                                return;
+
+                            }
+
+                            if (
+                                button.hasAttribute(
+                                    'data-toggle-filters'
+                                )
+                            ) {
+
+                                event.stopPropagation();
+
+
+                                if (!filterPanel) {
+                                    return;
+                                }
+
+
+                                const opening =
+                                    filterPanel.hidden;
+
+
+                                filterPanel.hidden =
+                                    !opening;
+
+
+                                filterButton
+                                    ?.setAttribute(
+                                        'aria-expanded',
+                                        String(
+                                            opening
+                                        )
+                                    );
+
+
+                                return;
+
+                            }
+
+                            if (
+                                button.hasAttribute(
+                                    'data-list-filter-apply'
+                                )
+                            ) {
+
+                                const tuNgay =
+                                    $(
+                                        '#orderFromDate',
+                                        filterPanel
+                                    )
+                                        ?.value ||
+                                    '';
+
+
+                                const denNgay =
+                                    $(
+                                        '#orderToDate',
+                                        filterPanel
+                                    )
+                                        ?.value ||
+                                    '';
+
+                                if (
+                                    tuNgay &&
+                                    denNgay &&
+                                    denNgay <
+                                        tuNgay
+                                ) {
+
+                                    MCS.toast
+                                        .warning(
+                                            'Ngày kết thúc phải từ ngày bắt đầu trở đi.'
+                                        );
+
+
+                                    return;
+
+                                }
+
+                                filters = {
+
+                                    trangThai:
+                                        $(
+                                            '#orderStatusFilter',
+                                            filterPanel
+                                        )
+                                            ?.value ||
+                                        '',
+
+                                    trangThaiThanhToan:
+                                        $(
+                                            '#orderPaymentFilter',
+                                            filterPanel
+                                        )
+                                            ?.value ||
+                                        '',
+
+                                    tuNgay,
+
+                                    denNgay
+
+                                };
+                                
+                                listPage =
+                                    1;
+
+
+                                closeFilter();
+
+
+                                await load();
+
+
+                                return;
+
+                            }
+
+
+                            if (
+                                button.hasAttribute(
+                                    'data-list-filter-reset'
+                                )
+                            ) {
+
+                                resetFilters();
+
+                                closeFilter();
+
+                                await load();
+
+                                return;
+
+                            }
+
+
+                            if (
+                                management &&
+                                button.hasAttribute(
+                                    'data-management-export'
+                                )
+                            ) {
+
+                                button.disabled =
+                                    true;
+
+
+                                C.loadingStart
+                                    ?.();
+
+
+                                try {
+
+                                    const file =
+                                        await MCS.api
+                                            .requestFile(
+                                                `/api/mcs/v1/nv-don-hang/quan-ly/xuat-du-lieu?${C.query({
+                                                    ...filters,
+                                                    keyword
+                                                })}`
+                                            );
+
+
+                                    MCS.api
+                                        .downloadBlob(
+                                            file.blob,
+
+                                            file.fileName ||
+                                            'don-hang.xlsx'
+                                        );
+
+                                } catch (
+                                    error
+                                ) {
+
+                                    MCS.toast
+                                        .error(
+                                            error.message
+                                        );
+
+                                } finally {
+
+                                    C.loadingEnd
+                                        ?.();
+
+
+                                    button.disabled =
+                                        false;
+
+                                }
+
+                            }
+
+                        }
+                    );
+
+            }
+            bindFilters();
+            bindSort();
+            bindActions();
+            bindFilterDismiss();
+            await load();
+
+            const timer =
+                setInterval(
+                    () => {
+
+                        if (
+                            !document.hidden &&
+                            !$(
+                                '[data-order-action-dialog]'
+                            )
+                                ?.open
+                        ) {
+
+                            void load(
+                                true
+                            );
+
+                        }
+
+                    },
+                    20000
+                );
+
+
+            window
+                .addEventListener(
+                    'pagehide',
+                    () => {
+
+                        clearInterval(
+                            timer
+                        );
+
+                    },
+                    {
+                        once:
+                            true
+                    }
+                );
+
+
+            document
+                .addEventListener(
+                    'visibilitychange',
+                    () => {
+
+                        if (
+                            !document.hidden
+                        ) {
+
+                            void load(
+                                true
+                            );
+
+                        }
+
+                    }
+                );
+
+
+            return {
+
+                load,
+
+                refresh() {
+
+                    return load();
+
+                }
+
+            };
+
         };
-    };
+
 })();

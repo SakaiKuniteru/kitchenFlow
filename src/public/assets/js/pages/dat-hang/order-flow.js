@@ -243,11 +243,29 @@
 
         const PAGE_PERMISSIONS = {
 
+            catalog:
+                'Q002021',
+
+            delivery:
+                'Q002021',
+
+            confirmation:
+                'Q002021',
+
+            completed:
+                'Q002021',
+
+            'my-orders':
+                'Q002021',
+
+            'my-order-detail':
+                'Q002021',
+
             management:
-                'Q002031',
+                'Q002041',
 
             'management-detail':
-                'Q002031'
+                'Q002041'
 
         };
 

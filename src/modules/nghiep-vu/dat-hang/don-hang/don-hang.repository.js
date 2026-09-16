@@ -186,6 +186,50 @@ class DonHangRepository {
         if (query.tuNgay) add('dh.created_at >= ?', query.tuNgay);
         if (query.denNgay) add("dh.created_at < (?::date + INTERVAL '1 day')", query.denNgay);
         const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+        const sortColumns = {
+
+            maDonHang:
+                'dh.ma_don_hang',
+
+            thoiGianDat:
+                'dh.created_at',
+
+            nguoiDat:
+                'nd.ho_ten',
+
+            nguoiNhan:
+                'dh.ten_nguoi_nhan',
+
+            soLoai:
+                '"soLoai"',
+
+            tongSoLuong:
+                '"tongSoLuong"',
+
+            tongThanhToan:
+                'dh.tong_thanh_toan',
+
+            phuongThucThanhToan:
+                'dh.phuong_thuc_thanh_toan',
+
+            trangThai:
+                'dh.trang_thai'
+
+        };
+
+
+        const sortColumn =
+            sortColumns[
+                query.sortBy
+            ] ||
+            'dh.created_at';
+
+
+        const sortDirection =
+            query.sortDir ===
+                'asc'
+                ? 'ASC'
+                : 'DESC';
         const count = await pool.query(
             `SELECT COUNT(*)::INTEGER total FROM nv_don_hang dh JOIN dm_nhan_vien nd ON nd.id = dh.nguoi_dat_id ${where}`,
             values
@@ -204,7 +248,12 @@ class DonHangRepository {
                 dh.tong_thanh_toan AS "tongThanhToan", 
                 dh.phuong_thuc_thanh_toan AS "phuongThucThanhToan", 
                 dh.trang_thai_thanh_toan AS "trangThaiThanhToan", 
-                dh.trang_thai AS "trangThai" FROM nv_don_hang dh JOIN dm_nhan_vien nd ON nd.id = dh.nguoi_dat_id ${where} ORDER BY dh.created_at DESC LIMIT $${values.length - 1} OFFSET $${values.length}`,
+                dh.trang_thai AS "trangThai" FROM nv_don_hang dh JOIN dm_nhan_vien nd ON nd.id = dh.nguoi_dat_id ${where} 
+                ORDER BY
+                    ${sortColumn}
+                    ${sortDirection},
+                    dh.id DESC 
+                LIMIT $${values.length - 1} OFFSET $${values.length}`,
             values
         );
         const total = count.rows[0].total;

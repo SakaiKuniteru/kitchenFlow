@@ -232,8 +232,19 @@
             progress,
 
             isPaid,
-            canConfirmPayment: management && C.permissions.MANAGEMENT_CONFIRM_PAYMENT && isQr &&
-                !isPaid && status > 0 && Number(order.trangThaiThanhToan) !== 50 && !!pendingPayment,
+            canConfirmPayment:
+            management &&
+            C.can(
+                C.permissions
+                    .MANAGEMENT_CONFIRM_PAYMENT
+            ) &&
+            isQr &&
+            !isPaid &&
+            status > 0 &&
+            Number(
+                order.trangThaiThanhToan
+            ) !== 50 &&
+            !!pendingPayment,
             pendingPayment,
 
             quantity:
@@ -283,7 +294,10 @@
 
             actionHint:
                 management &&
-                !C.can('Q002032')
+                !C.can(
+                    C.permissions
+                        .MANAGEMENT_UPDATE
+                )
                     ? 'Bạn đang xem đơn hàng. Cần quyền xử lý để cập nhật trạng thái.'
                     : status < 0
                       ? `Đơn đã dừng xử lý${order.lyDoHuy ? `: ${order.lyDoHuy}` : '.'}`
@@ -940,25 +954,6 @@
             $('[data-order-page]');
 
         if (!root) return null;
-
-        if (
-            options.management &&
-            !C.can('Q002031')
-        ) {
-            mount(
-                root,
-                'dung-chung',
-                {
-                    type: 'empty',
-                    title:
-                        'Bạn chưa có quyền xem đơn nhà ăn',
-                    description:
-                        'Liên hệ quản trị viên để cấp quyền nhận và xử lý đơn hàng.'
-                }
-            );
-
-            return null;
-        }
 
         const controller =
             createOrderDetailController({

@@ -9,19 +9,15 @@
     page="catalog"
 }}
 
+    {{> dat-hang/dung-chung
+        type="page-header"
+        title="Đặt món"
+    }}
+
+
     <div class="order-catalog-layout">
 
         <main class="order-catalog-main">
-
-            <div class="order-catalog-heading">
-
-                {{> dat-hang/dung-chung
-                    type="page-header"
-                    title="Đặt món"
-                }}
-
-            </div>
-
 
             {{> dat-hang/dat-mon
                 type="search"
@@ -44,13 +40,6 @@
 
             </div>
 
-
-            {{!--
-                Phân trang PHẢI nằm trong main.
-
-                Như vậy chiều cao giỏ hàng bên phải
-                không còn đẩy pagination xuống.
-            --}}
 
             <div
                 class="order-pagination-wrap"
