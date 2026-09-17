@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict J204Ujflee9jWkyBe0GrrzblDOUSGEmHttWTXMz9YObYhhwCqazZOsAVnRqVtdf
+\restrict T578lyifHUhLfRPnNpHH3nz0WgyhTnzkgbt1e0Z0DgydAIpfRHKypxg1NVN6Wyg
 
 -- Dumped from database version 18.4 (Postgres.app)
 -- Dumped by pg_dump version 18.4 (Postgres.app)
@@ -24,13 +24,6 @@ SET row_security = off;
 --
 
 CREATE SCHEMA public;
-
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 --
@@ -219,13 +212,6 @@ CREATE TABLE public.ct_don_hang (
     CONSTRAINT chk_ct_don_hang_tien CHECK (((don_gia >= (0)::numeric) AND (tien_giam >= (0)::numeric) AND (thanh_tien >= (0)::numeric) AND (tien_giam <= (so_luong * don_gia)) AND (thanh_tien = ((so_luong * don_gia) - tien_giam)))),
     CONSTRAINT chk_ct_don_hang_trang_thai CHECK ((trang_thai = ANY (ARRAY['-10'::integer, 10, 20, 30])))
 );
-
-
---
--- Name: COLUMN ct_don_hang.trang_thai; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.ct_don_hang.trang_thai IS '-10=Huy dong, 10=Cho xu ly, 20=Dang chuan bi, 30=Hoan thanh';
 
 
 --
@@ -1130,27 +1116,6 @@ CREATE TABLE public.dm_dia_diem_nhan_hang (
 
 
 --
--- Name: TABLE dm_dia_diem_nhan_hang; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE public.dm_dia_diem_nhan_hang IS 'Sổ địa điểm nhận hàng được lưu riêng theo từng nhân viên';
-
-
---
--- Name: COLUMN dm_dia_diem_nhan_hang.loai_dia_diem; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.dm_dia_diem_nhan_hang.loai_dia_diem IS '10=Địa điểm cố định, 20=Địa điểm ghi nhớ';
-
-
---
--- Name: COLUMN dm_dia_diem_nhan_hang.la_mac_dinh; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.dm_dia_diem_nhan_hang.la_mac_dinh IS 'TRUE=Địa điểm được tự động chọn khi nhân viên đặt hàng';
-
-
---
 -- Name: dm_dia_diem_nhan_hang_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1307,7 +1272,7 @@ CREATE TABLE public.dm_khung_gio_nhan_hang (
     active boolean DEFAULT true NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
-    CONSTRAINT chk_dm_khung_gio_nhan_hang_gio CHECK ((gio_bat_dau < gio_ket_thuc)),
+    CONSTRAINT chk_dm_khung_gio_nhan_hang_gio CHECK (((gio_bat_dau < gio_ket_thuc) OR ((gio_bat_dau = '23:45:00'::time without time zone) AND (gio_ket_thuc = '00:00:00'::time without time zone)))),
     CONSTRAINT chk_dm_khung_gio_nhan_hang_so_don CHECK (((so_don_toi_da IS NULL) OR (so_don_toi_da > (0)::numeric)))
 );
 
@@ -1507,13 +1472,6 @@ CREATE TABLE public.dm_nhom_san_pham (
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     CONSTRAINT chk_dm_nhom_san_pham_loai CHECK ((loai_san_pham = ANY (ARRAY[10, 20, 30, 40])))
 );
-
-
---
--- Name: COLUMN dm_nhom_san_pham.loai_san_pham; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.dm_nhom_san_pham.loai_san_pham IS '10=Do an, 20=Do uong, 30=Trang mieng, 40=Dich vu khac';
 
 
 --
@@ -1805,7 +1763,6 @@ CREATE TABLE public.dm_thiet_lap (
     id integer NOT NULL,
     ma_thiet_lap character varying(100) NOT NULL,
     ten_thiet_lap character varying(255) NOT NULL,
-    gia_tri text,
     mo_ta character varying(2000),
     active boolean DEFAULT true NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
@@ -1845,6 +1802,55 @@ CREATE SEQUENCE public.dm_thiet_lap_co_so_id_seq
 --
 
 ALTER SEQUENCE public.dm_thiet_lap_co_so_id_seq OWNED BY public.dm_thiet_lap_co_so.id;
+
+
+--
+-- Name: dm_thiet_lap_gia_tri; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dm_thiet_lap_gia_tri (
+    id bigint NOT NULL,
+    thiet_lap_id integer NOT NULL,
+    gia_tri text,
+    tu_ngay timestamp(0) without time zone,
+    den_ngay timestamp(0) without time zone,
+    active boolean DEFAULT true NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    CONSTRAINT chk_dm_thiet_lap_gia_tri_thoi_gian CHECK (((tu_ngay IS NULL) OR (den_ngay IS NULL) OR (tu_ngay <= den_ngay)))
+);
+
+
+--
+-- Name: dm_thiet_lap_gia_tri_co_so; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dm_thiet_lap_gia_tri_co_so (
+    thiet_lap_gia_tri_id bigint NOT NULL,
+    co_so_id integer NOT NULL,
+    active boolean DEFAULT true NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: dm_thiet_lap_gia_tri_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.dm_thiet_lap_gia_tri_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dm_thiet_lap_gia_tri_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.dm_thiet_lap_gia_tri_id_seq OWNED BY public.dm_thiet_lap_gia_tri.id;
 
 
 --
@@ -2071,20 +2077,6 @@ CREATE TABLE public.dm_voucher_don_hang (
 
 
 --
--- Name: COLUMN dm_voucher_don_hang.loai_giam; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.dm_voucher_don_hang.loai_giam IS '10=Phan tram, 20=So tien co dinh, 30=Mien phi dich vu';
-
-
---
--- Name: COLUMN dm_voucher_don_hang.pham_vi_ap_dung; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.dm_voucher_don_hang.pham_vi_ap_dung IS '10=Toan don, 20=Nhom san pham, 30=San pham cu the';
-
-
---
 -- Name: dm_voucher_don_hang_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -2186,27 +2178,6 @@ CREATE TABLE public.nv_don_hang (
     CONSTRAINT chk_nv_don_hang_trang_thai CHECK ((trang_thai = ANY (ARRAY['-20'::integer, '-10'::integer, 10, 20, 30, 40, 50, 60, 70]))),
     CONSTRAINT chk_nv_don_hang_version CHECK ((version > 0))
 );
-
-
---
--- Name: COLUMN nv_don_hang.phuong_thuc_thanh_toan; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.nv_don_hang.phuong_thuc_thanh_toan IS '10=Noi bo, 20=Tien mat, 30=Chuyen khoan, 40=QR';
-
-
---
--- Name: COLUMN nv_don_hang.trang_thai_thanh_toan; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.nv_don_hang.trang_thai_thanh_toan IS '10=Chua thanh toan, 20=Cho thanh toan, 30=Da thanh toan, 40=That bai, 50=Da hoan tien';
-
-
---
--- Name: COLUMN nv_don_hang.trang_thai; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.nv_don_hang.trang_thai IS '-20=Tu choi, -10=Da huy, 10=Nhap, 20=Cho xac nhan, 30=Dang chuan bi, 40=San sang giao, 50=Dang giao, 60=Hoan thanh, 70=Dong don';
 
 
 --
@@ -2519,25 +2490,12 @@ CREATE TABLE public.nv_thanh_toan_don_hang (
     thoi_gian_thanh_toan timestamp without time zone,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    nguoi_thu_tien_tai_khoan_id integer,
     CONSTRAINT chk_nv_thanh_toan_don_hang_loai CHECK ((loai_giao_dich = ANY (ARRAY[10, 20]))),
     CONSTRAINT chk_nv_thanh_toan_don_hang_phuong_thuc CHECK ((phuong_thuc = ANY (ARRAY[10, 20, 30, 40]))),
     CONSTRAINT chk_nv_thanh_toan_don_hang_tien CHECK ((so_tien >= (0)::numeric)),
     CONSTRAINT chk_nv_thanh_toan_don_hang_trang_thai CHECK ((trang_thai = ANY (ARRAY[10, 20, 30, 40, 50])))
 );
-
-
---
--- Name: COLUMN nv_thanh_toan_don_hang.loai_giao_dich; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.nv_thanh_toan_don_hang.loai_giao_dich IS '10=Thanh toan, 20=Hoan tien';
-
-
---
--- Name: COLUMN nv_thanh_toan_don_hang.trang_thai; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.nv_thanh_toan_don_hang.trang_thai IS '10=Khoi tao, 20=Cho xu ly, 30=Thanh cong, 40=That bai, 50=Da huy';
 
 
 --
@@ -2719,13 +2677,6 @@ CREATE TABLE public.nv_voucher_don_hang_su_dung (
     CONSTRAINT chk_nv_voucher_don_hang_su_dung_tien CHECK ((so_tien_giam >= (0)::numeric)),
     CONSTRAINT chk_nv_voucher_don_hang_su_dung_trang_thai CHECK ((trang_thai = ANY (ARRAY[10, 20, 30])))
 );
-
-
---
--- Name: COLUMN nv_voucher_don_hang_su_dung.trang_thai; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.nv_voucher_don_hang_su_dung.trang_thai IS '10=Giu cho, 20=Da su dung, 30=Da hoan luot';
 
 
 --
@@ -3080,6 +3031,13 @@ ALTER TABLE ONLY public.dm_thiet_lap ALTER COLUMN id SET DEFAULT nextval('public
 --
 
 ALTER TABLE ONLY public.dm_thiet_lap_co_so ALTER COLUMN id SET DEFAULT nextval('public.dm_thiet_lap_co_so_id_seq'::regclass);
+
+
+--
+-- Name: dm_thiet_lap_gia_tri id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dm_thiet_lap_gia_tri ALTER COLUMN id SET DEFAULT nextval('public.dm_thiet_lap_gia_tri_id_seq'::regclass);
 
 
 --
@@ -3751,6 +3709,14 @@ ALTER TABLE ONLY public.dm_thiet_lap_co_so
 
 
 --
+-- Name: dm_thiet_lap_gia_tri dm_thiet_lap_gia_tri_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dm_thiet_lap_gia_tri
+    ADD CONSTRAINT dm_thiet_lap_gia_tri_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: dm_thiet_lap dm_thiet_lap_ma_thiet_lap_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4028,6 +3994,14 @@ ALTER TABLE ONLY public.ct_thong_bao_doi_tuong
 
 ALTER TABLE ONLY public.ct_thong_bao_nguoi_nhan
     ADD CONSTRAINT pk_ct_thong_bao_nguoi_nhan PRIMARY KEY (thong_bao_id, tai_khoan_id);
+
+
+--
+-- Name: dm_thiet_lap_gia_tri_co_so pk_dm_thiet_lap_gia_tri_co_so; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dm_thiet_lap_gia_tri_co_so
+    ADD CONSTRAINT pk_dm_thiet_lap_gia_tri_co_so PRIMARY KEY (thiet_lap_gia_tri_id, co_so_id);
 
 
 --
@@ -4501,6 +4475,20 @@ CREATE INDEX idx_dm_thiet_lap_co_so_co_so_id ON public.dm_thiet_lap_co_so USING 
 --
 
 CREATE INDEX idx_dm_thiet_lap_co_so_thiet_lap_id ON public.dm_thiet_lap_co_so USING btree (thiet_lap_id);
+
+
+--
+-- Name: idx_dm_thiet_lap_gia_tri_thiet_lap; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_dm_thiet_lap_gia_tri_thiet_lap ON public.dm_thiet_lap_gia_tri USING btree (thiet_lap_id);
+
+
+--
+-- Name: idx_dm_thiet_lap_gia_tri_thoi_gian; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_dm_thiet_lap_gia_tri_thoi_gian ON public.dm_thiet_lap_gia_tri USING btree (thiet_lap_id, tu_ngay, den_ngay);
 
 
 --
@@ -5376,6 +5364,30 @@ ALTER TABLE ONLY public.dm_tai_khoan
 
 
 --
+-- Name: dm_thiet_lap_gia_tri_co_so fk_dm_thiet_lap_gia_tri_co_so_co_so; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dm_thiet_lap_gia_tri_co_so
+    ADD CONSTRAINT fk_dm_thiet_lap_gia_tri_co_so_co_so FOREIGN KEY (co_so_id) REFERENCES public.dm_co_so(id);
+
+
+--
+-- Name: dm_thiet_lap_gia_tri_co_so fk_dm_thiet_lap_gia_tri_co_so_gia_tri; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dm_thiet_lap_gia_tri_co_so
+    ADD CONSTRAINT fk_dm_thiet_lap_gia_tri_co_so_gia_tri FOREIGN KEY (thiet_lap_gia_tri_id) REFERENCES public.dm_thiet_lap_gia_tri(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: dm_thiet_lap_gia_tri fk_dm_thiet_lap_gia_tri_thiet_lap; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dm_thiet_lap_gia_tri
+    ADD CONSTRAINT fk_dm_thiet_lap_gia_tri_thiet_lap FOREIGN KEY (thiet_lap_id) REFERENCES public.dm_thiet_lap(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: dm_kho fk_kho_nha_an; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5888,6 +5900,14 @@ ALTER TABLE ONLY public.nv_thanh_toan_don_hang
 
 
 --
+-- Name: nv_thanh_toan_don_hang nv_thanh_toan_don_hang_nguoi_thu_tien_tai_khoan_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nv_thanh_toan_don_hang
+    ADD CONSTRAINT nv_thanh_toan_don_hang_nguoi_thu_tien_tai_khoan_id_fkey FOREIGN KEY (nguoi_thu_tien_tai_khoan_id) REFERENCES public.dm_tai_khoan(id);
+
+
+--
 -- Name: nv_thanh_toan_don_hang nv_thanh_toan_don_hang_nguoi_xac_nhan_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5931,5 +5951,5 @@ ALTER TABLE ONLY public.nv_voucher_don_hang_su_dung
 -- PostgreSQL database dump complete
 --
 
-\unrestrict J204Ujflee9jWkyBe0GrrzblDOUSGEmHttWTXMz9YObYhhwCqazZOsAVnRqVtdf
+\unrestrict T578lyifHUhLfRPnNpHH3nz0WgyhTnzkgbt1e0Z0DgydAIpfRHKypxg1NVN6Wyg
 
