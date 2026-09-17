@@ -113,19 +113,6 @@ if (
         VERSION
     ]);
 
-}
-
-if (
-    VERSION
-) {
-
-    runNpm([
-        'run',
-        `build:${STAGE}`,
-        '--',
-        VERSION
-    ]);
-
 
     console.log('');
 

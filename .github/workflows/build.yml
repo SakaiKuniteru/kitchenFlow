@@ -3,11 +3,15 @@ name: KitchenFlow Build
 on:
   push:
     branches:
-      - main
+      - development
+      - production
 
   pull_request:
     branches:
-      - main
+      - development
+      - production
+
+  workflow_dispatch:
 
 jobs:
   build:
@@ -26,16 +30,21 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Product 1
-        run: npm run build:product1
+      - name: Build templates
+        run: npm run build:templates
 
-      - name: Build Product 2
-        run: npm run build:product2
-
-      - name: Verify Product 1 manifest
+      - name: Verify Product 1 assets
+        env:
+          APP_ENV: product1
+          APP_VERSION: CI
         run: |
+          node src/scripts/build-production.js
           test -f src/public/assets/dist/product1/manifest.json
 
-      - name: Verify Product 2 manifest
+      - name: Verify Product 2 assets
+        env:
+          APP_ENV: product2
+          APP_VERSION: CI
         run: |
+          node src/scripts/build-production.js
           test -f src/public/assets/dist/product2/manifest.json
