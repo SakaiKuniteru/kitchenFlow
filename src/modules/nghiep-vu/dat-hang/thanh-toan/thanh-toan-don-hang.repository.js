@@ -25,21 +25,22 @@ class ThanhToanRepository {
 
     async list(donHangId, client = pool) {
         const result = await client.query(
-            `SELECT 
-                id, 
-                loai_giao_dich AS "loaiGiaoDich", 
-                phuong_thuc AS "phuongThuc", 
-                so_tien AS "soTien", 
-                ma_giao_dich AS "maGiaoDich", 
-                ma_tham_chieu AS "maThamChieu", 
-                qr_payload AS "qrPayload", 
+            `SELECT
+                id,
+                loai_giao_dich AS "loaiGiaoDich",
+                phuong_thuc AS "phuongThuc",
+                so_tien AS "soTien",
+                ma_giao_dich AS "maGiaoDich",
+                ma_tham_chieu AS "maThamChieu",
+                ma_chuan_chi AS "maChuanChi",
+                qr_payload AS "qrPayload",
                 qr_het_han_luc AT TIME ZONE 'Asia/Ho_Chi_Minh' AS "qrHetHanLuc",
-                trang_thai AS "trangThai", 
+                trang_thai AS "trangThai",
                 nguoi_thu_tien_tai_khoan_id AS "nguoiThuTienTaiKhoanId",
                 thoi_gian_thanh_toan AT TIME ZONE 'Asia/Ho_Chi_Minh' AS "thoiGianThanhToan",
                 created_at AT TIME ZONE 'Asia/Ho_Chi_Minh' AS "createdAt"
-                FROM nv_thanh_toan_don_hang 
-                WHERE don_hang_id = $1 
+                FROM nv_thanh_toan_don_hang
+                WHERE don_hang_id = $1
                 ORDER BY created_at DESC`,
             [donHangId]
         );
