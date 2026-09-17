@@ -6,6 +6,11 @@
     "format": "prettier --write \"src/**/*.{js,hbs,json,css}\"",
     "migrate:assets": "node src/scripts/migrate-assets.js",
 
+    "verify:build": "node src/scripts/verify-build.js",
+    "env:stage": "node src/scripts/create-stage-env.js",
+    "check:stage": "node src/scripts/check-stage-runtime.js",
+    "build:release": "node src/scripts/build-all-release-stages.js",
+
     "build:dev": "node src/scripts/build-dev-stage.js",
 
     "build:test": "node src/scripts/build-release-stage.js test",

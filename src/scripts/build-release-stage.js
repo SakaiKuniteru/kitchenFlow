@@ -419,8 +419,26 @@ if (
     )
 ) {
 
-    throw new Error(
-        `Không tìm thấy ${sourceEnv}`
+    console.log(
+        `[KitchenFlow] Không tìm thấy .env.${STAGE}; đang tạo từ biến môi trường.`
+    );
+
+    execFileSync(
+        process.execPath,
+        [
+            'src/scripts/create-stage-env.js',
+            STAGE
+        ],
+        {
+            cwd:
+                ROOT,
+
+            stdio:
+                'inherit',
+
+            env:
+                process.env
+        }
     );
 
 }
@@ -441,9 +459,15 @@ try {
 }
 
 
-fs.symlinkSync(
+fs.copyFileSync(
     sourceEnv,
     releaseEnv
+);
+
+
+fs.chmodSync(
+    releaseEnv,
+    0o600
 );
 
 execFileSync(

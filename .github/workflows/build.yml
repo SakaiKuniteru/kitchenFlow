@@ -17,6 +17,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -30,21 +33,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build templates
-        run: npm run build:templates
-
-      - name: Verify Product 1 assets
-        env:
-          APP_ENV: product1
-          APP_VERSION: CI
-        run: |
-          node src/scripts/build-production.js
-          test -f src/public/assets/dist/product1/manifest.json
-
-      - name: Verify Product 2 assets
-        env:
-          APP_ENV: product2
-          APP_VERSION: CI
-        run: |
-          node src/scripts/build-production.js
-          test -f src/public/assets/dist/product2/manifest.json
+      - name: Verify production build
+        run: npm run verify:build

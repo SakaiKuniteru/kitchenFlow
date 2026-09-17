@@ -32,19 +32,30 @@ const envFile =
     );
 
 
-const result =
-    dotenv.config({
-        path:
-            envFile
-    });
-
-
 if (
-    result.error
+    fs.existsSync(
+        envFile
+    )
 ) {
-    throw new Error(
-        `Không thể tải file môi trường: ${envFile}`
-    );
+
+    const result =
+        dotenv.config({
+            path:
+                envFile,
+
+            quiet:
+                true
+        });
+
+
+    if (
+        result.error
+    ) {
+        throw new Error(
+            `Không thể tải file môi trường: ${envFile}`
+        );
+    }
+
 }
 
 
@@ -53,6 +64,40 @@ if (
  * sau khi load env.
  */
 process.env.APP_ENV = APP_ENV;
+
+
+const requiredEnvironmentVariables = [
+    'DB_HOST',
+    'DB_PORT',
+    'DB_NAME',
+    'DB_USER',
+    'ACCESS_TOKEN_SECRET',
+    'REFRESH_TOKEN_SECRET'
+];
+
+
+const missingEnvironmentVariables =
+    requiredEnvironmentVariables.filter(
+        key =>
+            !String(
+                process.env[key] ||
+                ''
+            ).trim()
+    );
+
+
+if (
+    missingEnvironmentVariables.length >
+    0
+) {
+    throw new Error(
+        [
+            'Thiếu cấu hình môi trường:',
+            missingEnvironmentVariables.join(', '),
+            `Tạo ${envFile} hoặc inject các biến này từ Build Console.`
+        ].join(' ')
+    );
+}
 
 /*
  * ==========================================
