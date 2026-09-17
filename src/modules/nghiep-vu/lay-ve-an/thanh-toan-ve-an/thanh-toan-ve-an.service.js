@@ -10,6 +10,8 @@ const {
 } = require('../../../../constants/enums');
 
 const ApiError = require('../../../../utils/api-error');
+const cauHinhService = require('../../../cau-hinh/cau-hinh.service');
+const { MA_THIET_LAP } = require('../../../cau-hinh/cau-hinh.constants');
 const repository = require('./thanh-toan-ve-an.repository');
 const phieuLayVeAnService = require('../phieu-lay-ve-an/phieu-lay-ve-an.service');
 const qrPaymentGateway = require('./qr-payment.gateway');
@@ -136,21 +138,64 @@ class ThanhToanVeAnService {
         return phieu;
     }
 
-    taoMaGiaoDich() {
-        const now = new Date();
+    async taoMaThanhToan(
+        maThietLap,
+        cot,
+        db,
+        thoiDiem = new Date()
+    ) {
+        const quyTac =
+            await cauHinhService.getQuyTacSinhMa(
+                maThietLap
+            );
 
-        const time = [
-            now.getFullYear(),
-            String(now.getMonth() + 1).padStart(2, '0'),
-            String(now.getDate()).padStart(2, '0'),
-            String(now.getHours()).padStart(2, '0'),
-            String(now.getMinutes()).padStart(2, '0'),
-            String(now.getSeconds()).padStart(2, '0')
-        ].join('');
+        const nguCanh =
+            cauHinhService.taoNguCanhSinhMa(
+                quyTac,
+                thoiDiem
+            );
 
-        const random = crypto.randomBytes(4).toString('hex').toUpperCase();
+        return await repository.taoMaTheoQuyTac(
+            cot,
+            nguCanh,
+            db
+        );
+    }
 
-        return `TT${time}${random}`;
+    async taoMaGiaoDich(
+        db,
+        thoiDiem = new Date()
+    ) {
+        return await this.taoMaThanhToan(
+            MA_THIET_LAP.DINH_DANG_MA_GIAO_DICH_VE_AN,
+            'ma_giao_dich',
+            db,
+            thoiDiem
+        );
+    }
+
+    async taoMaThamChieu(
+        db,
+        thoiDiem = new Date()
+    ) {
+        return await this.taoMaThanhToan(
+            MA_THIET_LAP.DINH_DANG_MA_THAM_CHIEU_VE_AN,
+            'ma_tham_chieu',
+            db,
+            thoiDiem
+        );
+    }
+
+    async taoMaChuanChi(
+        db,
+        thoiDiem = new Date()
+    ) {
+        return await this.taoMaThanhToan(
+            MA_THIET_LAP.DINH_DANG_MA_CHUAN_CHI_VE_AN,
+            'ma_chuan_chi',
+            db,
+            thoiDiem
+        );
     }
 
     taoMaVe(phieuLayVeId, soThuTu) {
@@ -187,20 +232,48 @@ class ThanhToanVeAnService {
         }
     }
 
-    async hoanTatThanhToan(thanhToan, nguoiXacNhanId, data, db) {
-        const trangThaiThanhCong = this.getEnumValue(dsTrangThaiThanhToan, 'Thành công');
+    async hoanTatThanhToan(
+        thanhToan,
+        nguoiXacNhanId,
+        db
+    ) {
+        const trangThaiThanhCong =
+            this.getEnumValue(
+                dsTrangThaiThanhToan,
+                'Thành công'
+            );
 
-        const daThanhToan = await repository.existsThanhToanThanhCong(thanhToan.phieuLayVeId, db);
+        const daThanhToan =
+            await repository.existsThanhToanThanhCong(
+                thanhToan.phieuLayVeId,
+                db
+            );
 
-        if (daThanhToan && Number(thanhToan.trangThai) !== trangThaiThanhCong) {
-            throw new ApiError(409, 'Phiếu đã có giao dịch thanh toán thành công.');
+        if (
+            daThanhToan &&
+            Number(thanhToan.trangThai) !== trangThaiThanhCong
+        ) {
+            throw new ApiError(
+                409,
+                'Phiếu đã có giao dịch thanh toán thành công.'
+            );
         }
 
-        const phieu = await this.getPhieuHopLe(thanhToan.phieuLayVeId, db);
+        const phieu =
+            await this.getPhieuHopLe(
+                thanhToan.phieuLayVeId,
+                db
+            );
 
-        const phuongThucQr = this.getEnumValue(dsPhuongThucThanhToan, 'QR Code');
+        const phuongThucQr =
+            this.getEnumValue(
+                dsPhuongThucThanhToan,
+                'QR Code'
+            );
 
-        if (Number(thanhToan.phuongThuc) !== phuongThucQr) {
+        if (
+            Number(thanhToan.phuongThuc) !== phuongThucQr
+        ) {
             await repository.syncThanhToanChoXuLy(
                 thanhToan.id,
                 {
@@ -210,137 +283,296 @@ class ThanhToanVeAnService {
                 db
             );
 
-            thanhToan.soTien = Number(phieu.thanh_tien);
+            thanhToan.soTien =
+                Number(phieu.thanh_tien);
 
-            thanhToan.soLuong = Number(phieu.so_luong);
+            thanhToan.soLuong =
+                Number(phieu.so_luong);
         }
+
+        const thoiDiemSinhMa = new Date();
+
+        const maThamChieu =
+            thanhToan.maThamChieu ||
+            await this.taoMaThamChieu(
+                db,
+                thoiDiemSinhMa
+            );
+
+        const maChuanChi =
+            thanhToan.maChuanChi ||
+            await this.taoMaChuanChi(
+                db,
+                thoiDiemSinhMa
+            );
 
         await repository.updateTrangThai(
             thanhToan.id,
             {
                 trangThai: trangThaiThanhCong,
-                maThamChieu: data.maThamChieu || null,
-                maChuanChi: data.maChuanChi || null,
+                maThamChieu,
+                maChuanChi,
                 noiDungLoi: null,
                 nguoiXacNhanId
             },
             db
         );
 
-        await repository.updatePhieuThanhToan(phieu.id, thanhToan.phuongThuc, nguoiXacNhanId, db);
+        await repository.updatePhieuThanhToan(
+            phieu.id,
+            thanhToan.phuongThuc,
+            nguoiXacNhanId,
+            db
+        );
 
-        await repository.tangVoucherDaSuDung(phieu.id, db);
+        await repository.tangVoucherDaSuDung(
+            phieu.id,
+            db
+        );
 
-        await this.sinhVeSauThanhToan(phieu, db);
+        await this.sinhVeSauThanhToan(
+            phieu,
+            db
+        );
     }
 
     async create(data, nguoiKhoiTaoId) {
-        const taiKhoanId = this.parseTaiKhoanId(nguoiKhoiTaoId);
+        const taiKhoanId =
+            this.parseTaiKhoanId(
+                nguoiKhoiTaoId
+            );
 
-        const phuongThuc = Number(data.phuongThuc);
+        const phuongThuc =
+            Number(
+                data.phuongThuc
+            );
 
-        this.validateEnum(dsPhuongThucThanhToan, phuongThuc, 'Phương thức thanh toán không hợp lệ.');
+        this.validateEnum(
+            dsPhuongThucThanhToan,
+            phuongThuc,
+            'Phương thức thanh toán không hợp lệ.'
+        );
 
-        const phuongThucQr = this.getEnumValue(dsPhuongThucThanhToan, 'QR Code');
+        const phuongThucQr =
+            this.getEnumValue(
+                dsPhuongThucThanhToan,
+                'QR Code'
+            );
 
         if (phuongThuc === phuongThucQr) {
-            throw new ApiError(400, 'Thanh toán QR phải sử dụng API tạo QR.');
+            throw new ApiError(
+                400,
+                'Thanh toán QR phải sử dụng API tạo QR.'
+            );
         }
 
-        const phieuLayVeId = Number(data.phieuLayVeId);
+        const phieuLayVeId =
+            Number(
+                data.phieuLayVeId
+            );
 
-        const phieu = await this.getPhieuHopLe(phieuLayVeId);
+        const phieu =
+            await this.getPhieuHopLe(
+                phieuLayVeId
+            );
 
-        const daThanhToan = await repository.existsThanhToanThanhCong(phieuLayVeId);
+        const daThanhToan =
+            await repository.existsThanhToanThanhCong(
+                phieuLayVeId
+            );
 
         if (daThanhToan) {
-            throw new ApiError(409, 'Phiếu đã được thanh toán.');
+            throw new ApiError(
+                409,
+                'Phiếu đã được thanh toán.'
+            );
         }
 
-        const loaiThanhToan = this.getEnumValue(dsLoaiGiaoDich, 'Thanh toán');
+        const loaiThanhToan =
+            this.getEnumValue(
+                dsLoaiGiaoDich,
+                'Thanh toán'
+            );
 
-        const choXuLy = this.getEnumValue(dsTrangThaiThanhToan, 'Chờ xử lý');
+        const choXuLy =
+            this.getEnumValue(
+                dsTrangThaiThanhToan,
+                'Chờ xử lý'
+            );
 
-        const soTien = Number(phieu.thanh_tien);
+        const soTien =
+            Number(
+                phieu.thanh_tien
+            );
 
-        const id = await repository.create({
-            phieuLayVeId,
-            loaiGiaoDich: loaiThanhToan,
-            phuongThuc,
-            soTien,
-            soLuong: Number(phieu.so_luong),
-            thanhToanGocId: null,
-            phieuMoiId: null,
-            maGiaoDich: this.taoMaGiaoDich(),
-            maThamChieu: data.maThamChieu?.trim() || null,
-            maChuanChi: data.maChuanChi?.trim() || null,
-            trangThai: choXuLy,
-            noiDungLoi: null,
-            nguoiKhoiTaoId: taiKhoanId,
-            nguoiXacNhanId: null,
-            thoiGianThanhToan: null
-        });
+        const client =
+            await pool.connect();
 
-        return await repository.getChiTiet(id);
+        try {
+            await client.query('BEGIN');
+
+            const maGiaoDich =
+                await this.taoMaGiaoDich(
+                    client
+                );
+
+            const id =
+                await repository.create(
+                    {
+                        phieuLayVeId,
+                        loaiGiaoDich: loaiThanhToan,
+                        phuongThuc,
+                        soTien,
+                        soLuong: Number(phieu.so_luong),
+                        thanhToanGocId: null,
+                        phieuMoiId: null,
+                        maGiaoDich,
+                        maThamChieu: null,
+                        maChuanChi: null,
+                        trangThai: choXuLy,
+                        noiDungLoi: null,
+                        nguoiKhoiTaoId: taiKhoanId,
+                        nguoiXacNhanId: null,
+                        thoiGianThanhToan: null
+                    },
+                    client
+                );
+
+            await client.query('COMMIT');
+
+            return await repository.getChiTiet(
+                id
+            );
+        } catch (error) {
+            await client.query('ROLLBACK');
+
+            throw error;
+        } finally {
+            client.release();
+        }
     }
 
     async taoQr(data, nguoiKhoiTaoId) {
-        const taiKhoanId = this.parseTaiKhoanId(nguoiKhoiTaoId);
+        const taiKhoanId =
+            this.parseTaiKhoanId(
+                nguoiKhoiTaoId
+            );
 
-        const phieuLayVeId = Number(data.phieuLayVeId);
+        const phieuLayVeId =
+            Number(
+                data.phieuLayVeId
+            );
 
-        const phieu = await this.getPhieuHopLe(phieuLayVeId);
+        const phieu =
+            await this.getPhieuHopLe(
+                phieuLayVeId
+            );
 
-        const daThanhToan = await repository.existsThanhToanThanhCong(phieuLayVeId);
+        const daThanhToan =
+            await repository.existsThanhToanThanhCong(
+                phieuLayVeId
+            );
 
         if (daThanhToan) {
-            throw new ApiError(409, 'Phiếu đã được thanh toán.');
+            throw new ApiError(
+                409,
+                'Phiếu đã được thanh toán.'
+            );
         }
 
-        const phuongThucQr = this.getEnumValue(dsPhuongThucThanhToan, 'QR Code');
+        const phuongThucQr =
+            this.getEnumValue(
+                dsPhuongThucThanhToan,
+                'QR Code'
+            );
 
-        const loaiThanhToan = this.getEnumValue(dsLoaiGiaoDich, 'Thanh toán');
+        const loaiThanhToan =
+            this.getEnumValue(
+                dsLoaiGiaoDich,
+                'Thanh toán'
+            );
 
-        const dangXuLy = this.getEnumValue(dsTrangThaiThanhToan, 'Đang xử lý');
+        const dangXuLy =
+            this.getEnumValue(
+                dsTrangThaiThanhToan,
+                'Đang xử lý'
+            );
 
-        const maGiaoDich = this.taoMaGiaoDich();
+        const soTien =
+            Number(
+                phieu.thanh_tien
+            );
 
-        const soTien = Number(phieu.thanh_tien);
+        const client =
+            await pool.connect();
 
-        const qrData = await qrPaymentGateway.create({
-            maGiaoDich,
-            soTien,
-            soPhieu: phieu.so_phieu
-        });
+        try {
+            await client.query('BEGIN');
 
-        const id = await repository.create({
-            phieuLayVeId,
-            loaiGiaoDich: loaiThanhToan,
-            phuongThuc: phuongThucQr,
-            soTien: Number(phieu.thanh_tien),
-            soLuong: Number(phieu.so_luong),
-            thanhToanGocId: null,
-            phieuMoiId: null,
-            maGiaoDich,
-            maThamChieu: null,
-            maChuanChi: null,
-            trangThai: dangXuLy,
-            noiDungLoi: null,
-            nguoiKhoiTaoId: taiKhoanId,
-            nguoiXacNhanId: null,
-            thoiGianThanhToan: null
-        });
+            const maGiaoDich =
+                await this.taoMaGiaoDich(
+                    client
+                );
 
-        const trangThaiTaoQr = this.getEnumValue(dsTrangThaiPhieuThu, 'Tạo QR');
+            const qrData =
+                await qrPaymentGateway.create({
+                    maGiaoDich,
+                    soTien,
+                    soPhieu: phieu.so_phieu
+                });
 
-        await repository.updateTrangThaiPhieu(phieuLayVeId, trangThaiTaoQr);
+            const id =
+                await repository.create(
+                    {
+                        phieuLayVeId,
+                        loaiGiaoDich: loaiThanhToan,
+                        phuongThuc: phuongThucQr,
+                        soTien,
+                        soLuong: Number(phieu.so_luong),
+                        thanhToanGocId: null,
+                        phieuMoiId: null,
+                        maGiaoDich,
+                        maThamChieu: null,
+                        maChuanChi: null,
+                        trangThai: dangXuLy,
+                        noiDungLoi: null,
+                        nguoiKhoiTaoId: taiKhoanId,
+                        nguoiXacNhanId: null,
+                        thoiGianThanhToan: null
+                    },
+                    client
+                );
 
-        const thanhToan = await repository.getChiTiet(id);
+            const trangThaiTaoQr =
+                this.getEnumValue(
+                    dsTrangThaiPhieuThu,
+                    'Tạo QR'
+                );
 
-        return {
-            ...thanhToan,
-            qrData
-        };
+            await repository.updateTrangThaiPhieu(
+                phieuLayVeId,
+                trangThaiTaoQr,
+                client
+            );
+
+            await client.query('COMMIT');
+
+            const thanhToan =
+                await repository.getChiTiet(
+                    id
+                );
+
+            return {
+                ...thanhToan,
+                qrData
+            };
+        } catch (error) {
+            await client.query('ROLLBACK');
+
+            throw error;
+        } finally {
+            client.release();
+        }
     }
 
     async getQr(id) {
@@ -448,7 +680,7 @@ class ThanhToanVeAnService {
         try {
             await client.query('BEGIN');
 
-            await this.hoanTatThanhToan(thanhToan, taiKhoanId, data, client);
+            await this.hoanTatThanhToan(thanhToan, taiKhoanId, client);
 
             await client.query('COMMIT');
 
@@ -544,6 +776,27 @@ class ThanhToanVeAnService {
                 throw new ApiError(500, 'Không tạo được phiếu mới sau hoàn tiền.');
             }
 
+            const thoiDiemSinhMa =
+                new Date();
+
+            const maGiaoDich =
+                await this.taoMaGiaoDich(
+                    client,
+                    thoiDiemSinhMa
+                );
+
+            const maThamChieu =
+                await this.taoMaThamChieu(
+                    client,
+                    thoiDiemSinhMa
+                );
+
+            const maChuanChi =
+                await this.taoMaChuanChi(
+                    client,
+                    thoiDiemSinhMa
+                );
+
             const hoanTienId = await repository.create(
                 {
                     phieuLayVeId: phieuNguon.id,
@@ -553,9 +806,9 @@ class ThanhToanVeAnService {
                     soLuong: soLuongHoan,
                     thanhToanGocId: thanhToanId,
                     phieuMoiId,
-                    maGiaoDich: this.taoMaGiaoDich(),
-                    maThamChieu: data.maThamChieu?.trim() || null,
-                    maChuanChi: data.maChuanChi?.trim() || null,
+                    maGiaoDich,
+                    maThamChieu,
+                    maChuanChi,
                     trangThai: thanhCong,
                     noiDungLoi: lyDoHoan,
                     nguoiKhoiTaoId: taiKhoanId,
@@ -703,14 +956,14 @@ class ThanhToanVeAnService {
             await client.query('BEGIN');
 
             if (trangThaiCallback === thanhCong) {
-                await this.hoanTatThanhToan(thanhToan, null, data, client);
+                await this.hoanTatThanhToan(thanhToan, null, client);
             } else {
                 await repository.updateTrangThai(
                     thanhToan.id,
                     {
                         trangThai: thatBai,
-                        maThamChieu: data.maThamChieu || null,
-                        maChuanChi: data.maChuanChi || null,
+                        maThamChieu: null,
+                        maChuanChi: null,
                         noiDungLoi: data.noiDungLoi || null,
                         nguoiXacNhanId: null
                     },

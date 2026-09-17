@@ -770,6 +770,189 @@ class ThanhToanVeAnRepository {
         return result.rows[0].id;
     }
 
+    async taoMaTheoQuyTac(cot, nguCanh, db) {
+        const dsCotHopLe = new Set([
+            'ma_giao_dich',
+            'ma_tham_chieu',
+            'ma_chuan_chi'
+        ]);
+
+        if (!dsCotHopLe.has(cot)) {
+            throw new Error(
+                'Cột sinh mã thanh toán vé ăn không hợp lệ.'
+            );
+        }
+
+        const prefix = String(
+            nguCanh?.prefix || ''
+        );
+
+        const doRongDaySo = Number(
+            nguCanh?.doRongDaySo
+        );
+
+        if (
+            !prefix ||
+            !Number.isInteger(doRongDaySo) ||
+            doRongDaySo <= 0
+        ) {
+            throw new Error(
+                'Cấu hình sinh mã thanh toán vé ăn không hợp lệ.'
+            );
+        }
+
+        await db.query(
+            `
+                SELECT
+                    pg_advisory_xact_lock(
+                        hashtext(
+                            $1
+                        )
+                    )
+            `,
+            [
+                `THANH_TOAN_VE_AN:${cot}:${nguCanh.khoa}`
+            ]
+        );
+
+        const result = await db.query(
+            `
+                SELECT
+                    ${cot} AS ma
+
+                FROM nv_thanh_toan_ve_an
+
+                WHERE
+                    ${cot} IS NOT NULL
+
+                    AND LEFT(
+                        ${cot},
+                        CHAR_LENGTH(
+                            $1::text
+                        )
+                    ) = $1::text
+
+                    AND SUBSTRING(
+                        ${cot}
+                        FROM
+                            CHAR_LENGTH(
+                                $1::text
+                            ) + 1
+                    ) ~ '^[0-9]+$'
+
+                    AND CHAR_LENGTH(
+                        SUBSTRING(
+                            ${cot}
+                            FROM
+                                CHAR_LENGTH(
+                                    $1::text
+                                ) + 1
+                        )
+                    ) >= $2
+
+                ORDER BY
+                    CHAR_LENGTH(
+                        SUBSTRING(
+                            ${cot}
+                            FROM
+                                CHAR_LENGTH(
+                                    $1::text
+                                ) + 1
+                        )
+                    ) DESC,
+
+                    CAST(
+                        SUBSTRING(
+                            ${cot}
+                            FROM
+                                CHAR_LENGTH(
+                                    $1::text
+                                ) + 1
+                        )
+                        AS NUMERIC
+                    ) DESC,
+
+                    id DESC
+
+                LIMIT 1
+            `,
+            [
+                prefix,
+                doRongDaySo
+            ]
+        );
+
+        const lastCode =
+            result.rows[0]?.ma || null;
+
+        if (!lastCode) {
+            return (
+                prefix +
+                '1'.padStart(
+                    doRongDaySo,
+                    '0'
+                )
+            );
+        }
+
+        const lastSuffix = String(
+            lastCode
+        ).slice(
+            prefix.length
+        );
+
+        if (!/^\d+$/.test(lastSuffix)) {
+            return (
+                prefix +
+                '1'.padStart(
+                    doRongDaySo,
+                    '0'
+                )
+            );
+        }
+
+        const currentWidth = Math.max(
+            doRongDaySo,
+            lastSuffix.length
+        );
+
+        const currentValue = BigInt(
+            lastSuffix
+        );
+
+        const maxValue =
+            (
+                10n **
+                BigInt(
+                    currentWidth
+                )
+            ) -
+            1n;
+
+        let nextValue;
+        let nextWidth;
+
+        if (currentValue >= maxValue) {
+            nextValue = 1n;
+            nextWidth = currentWidth + 1;
+        } else {
+            nextValue = currentValue + 1n;
+            nextWidth = currentWidth;
+        }
+
+        const suffix = nextValue
+            .toString()
+            .padStart(
+                nextWidth,
+                '0'
+            );
+
+        return (
+            prefix +
+            suffix
+        );
+    }
+
     async syncThanhToanChoXuLy(id, data, db = pool) {
         const sql = `
 
