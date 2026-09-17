@@ -132,11 +132,58 @@ async function main() {
 }
 
 
+function formatDatabaseError(
+    error
+) {
+    const details =
+        [];
+
+
+    if (
+        error &&
+        error.message
+    ) {
+        details.push(
+            error.message
+        );
+    }
+
+
+    if (
+        error &&
+        error.code
+    ) {
+        details.push(
+            `code=${error.code}`
+        );
+    }
+
+
+    if (
+        error &&
+        error.errno &&
+        error.errno !==
+        error.code
+    ) {
+        details.push(
+            `errno=${error.errno}`
+        );
+    }
+
+
+    return details.join(
+        '; '
+    ) ||
+        (error && error.name) ||
+        'unknown error';
+}
+
+
 main()
     .catch(
         error => {
             console.error(
-                `[KitchenFlow] ${STAGE} database check failed: ${error.message}`
+                `[KitchenFlow] ${STAGE} database check failed: ${formatDatabaseError(error)}`
             );
 
             process.exitCode =

@@ -73,10 +73,115 @@ const outputFile =
     );
 
 
-if (
+function parseEnvFile(
+    filePath
+) {
+    const values =
+        {};
+
+
+    const lines =
+        fs.readFileSync(
+            filePath,
+            'utf8'
+        )
+            .split('\n');
+
+
+    for (
+        const line of lines
+    ) {
+        const text =
+            line.trim();
+
+
+        if (
+            !text ||
+            text.startsWith('#')
+        ) {
+            continue;
+        }
+
+
+        const separatorIndex =
+            text.indexOf('=');
+
+
+        if (
+            separatorIndex <=
+            0
+        ) {
+            continue;
+        }
+
+
+        const key =
+            text.slice(
+                0,
+                separatorIndex
+            )
+                .trim();
+
+
+        let value =
+            text.slice(
+                separatorIndex +
+                1
+            )
+                .trim();
+
+
+        if (
+            value.startsWith('"') &&
+            value.endsWith('"')
+        ) {
+            try {
+                value =
+                    JSON.parse(value);
+            } catch {
+                value =
+                    value.slice(
+                        1,
+                        -1
+                    );
+            }
+        } else if (
+            value.startsWith("'") &&
+            value.endsWith("'")
+        ) {
+            value =
+                value.slice(
+                    1,
+                    -1
+                );
+        }
+
+
+        values[key] =
+            value;
+    }
+
+
+    return values;
+}
+
+
+const hasExistingFile =
     fs.existsSync(
         outputFile
-    ) &&
+    );
+
+
+const existingFileValues =
+    hasExistingFile
+        ? parseEnvFile(
+            outputFile
+        )
+        : {};
+
+
+if (
+    hasExistingFile &&
     !FORCE
 ) {
     throw new Error(
@@ -122,6 +227,18 @@ function getValue(
     }
 
 
+    const existingValue =
+        existingFileValues[key];
+
+
+    if (
+        existingValue !==
+        undefined
+    ) {
+        return existingValue;
+    }
+
+
     return fallback;
 }
 
@@ -164,6 +281,8 @@ const provider =
 
 
 const values = {
+    ...existingFileValues,
+
     NODE_ENV:
         defaults.nodeEnv,
 
@@ -353,5 +472,7 @@ fs.chmodSync(
 
 
 console.log(
-    `[KitchenFlow] Đã tạo .env.${STAGE} từ biến môi trường.`
+    hasExistingFile
+        ? `[KitchenFlow] Đã cập nhật .env.${STAGE} từ cấu hình local và biến môi trường.`
+        : `[KitchenFlow] Đã tạo .env.${STAGE} từ biến môi trường.`
 );

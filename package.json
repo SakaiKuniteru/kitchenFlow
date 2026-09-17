@@ -29,6 +29,10 @@
     "start:product2": "node src/scripts/start-release-stage.js product2",
     "product2": "node src/scripts/run-release-stage.js product2"
   },
+  "engines": {
+    "node": ">=22.22.2 <23",
+    "npm": ">=10"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",

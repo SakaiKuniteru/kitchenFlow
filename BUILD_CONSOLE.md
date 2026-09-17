@@ -1,6 +1,8 @@
 # KitchenFlow Build Console contract
 
-Build Console phải chạy trong một checkout Git sạch, có Git history đầy đủ, Node.js 22 và npm.
+Build Console phải chạy trong một checkout Git sạch, có Git history đầy đủ, Node.js 22.22.2 và npm 10 trở lên.
+
+Khi chạy local, nếu `.env.<stage>` đã tồn tại thì `npm run env:stage -- <stage> --force` giữ lại các giá trị trong file đó và chỉ ghi đè bằng biến môi trường được truyền vào. Khi chạy trên Build Console với checkout mới, secret phải được truyền vào trước khi chạy lệnh này.
 
 ## Thêm project
 
@@ -9,7 +11,7 @@ Build Console phải chạy trong một checkout Git sạch, có Git history đ�
 | Repository | `https://github.com/SakaiKuniteru/ketchenFlow.git` |
 | Branch mặc định | `development` |
 | Working directory | thư mục gốc repository |
-| Runtime | Node.js 22 |
+| Runtime | Node.js 22.22.2 |
 | Install command | `npm ci` |
 | Verify command | `npm run verify:build` |
 | Release command | `npm run build:release -- <version>` |
